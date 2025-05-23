@@ -1,9 +1,5 @@
-import Image from "next/image";
+import { MarkdownToImageApp } from '@/components/markdown-to-image-app';
 
 export default function Home() {
-  return (
-    <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
-  );
+  return <MarkdownToImageApp />;
 }
