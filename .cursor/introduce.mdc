@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+## 技术栈
+
+- Nextjs@15
+- tailwindcss@4
+- react@19
+
+如果有你不知道的版本，请你通过 MCP context7 来获取文档。
