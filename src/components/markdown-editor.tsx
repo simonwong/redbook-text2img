@@ -28,7 +28,7 @@ export function MarkdownEditor({ value, onChange, placeholder }: MarkdownEditorP
         value={localValue}
         onChange={handleChange}
         placeholder={placeholder || '在这里输入您的 Markdown 内容...'}
-        className="h-full resize-none border-0 focus:ring-0 focus:border-0 text-sm font-mono leading-relaxed"
+        className="h-[calc(100vh-220px)] resize-none border-0 focus:ring-0 focus:border-0 text-sm font-mono leading-relaxed"
       />
     </div>
   );

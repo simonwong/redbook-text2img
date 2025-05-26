@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { MarkdownEditor } from './markdown-editor';
@@ -11,7 +11,7 @@ import { StyleSelector } from './style-selector';
 import { parseMarkdownToImages } from '@/lib/markdown-parser';
 import { getStyleById } from '@/lib/image-styles';
 import { useImageExport } from '@/hooks/use-image-export';
-import { Download, FileText, Image, Sparkles } from 'lucide-react';
+import { Download, FileText, Image, SettingsIcon, Sparkles } from 'lucide-react';
 
 const defaultMarkdown = `# 欢迎使用小红书图片生成器
 
@@ -44,6 +44,7 @@ export function MarkdownToImageApp() {
   const [markdown, setMarkdown] = useState(defaultMarkdown);
   const [selectedStyle, setSelectedStyle] = useState('simple');
   const [isExporting, setIsExporting] = useState(false);
+  const [showSetting, setShowSetting] = useState(false);
   
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { exportSingleImage, exportAllImages } = useImageExport();
@@ -100,6 +101,9 @@ export function MarkdownToImageApp() {
             </div>
             
             <div className="flex items-center gap-3">
+              <Button onClick={() => setShowSetting(s => !s)} variant="outline" size="icon">
+                <SettingsIcon />
+              </Button>
               <Badge variant="secondary" className="hidden sm:inline-flex">
                 <FileText className="w-3 h-3 mr-1" />
                 {segments.length} 张图片
@@ -117,113 +121,103 @@ export function MarkdownToImageApp() {
           </div>
         </div>
       </header>
-
-      {/* 主内容区域 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-120px)]">
-          {/* 左侧：Markdown 编辑器 */}
-          <div className="lg:col-span-1">
+        <div className="flex gap-6 h-[calc(100vh-120px)]">
+          <div className="flex-1">
             <Card className="h-full">
-              <CardContent className="p-0 h-full">
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center justify-between p-4 border-b">
-                    <h2 className="font-medium text-gray-900">Markdown 编辑器</h2>
-                    <Badge variant="outline" className="text-xs">
-                      实时预览
-                    </Badge>
-                  </div>
-                  <div className="flex-1 p-4">
-                    <MarkdownEditor
-                      value={markdown}
-                      onChange={setMarkdown}
-                      placeholder="在这里输入您的 Markdown 内容..."
-                    />
-                  </div>
+              <CardHeader className='flex items-center justify-between'>
+                <h2 className="font-medium text-gray-900">Markdown 编辑器</h2>
+                <Badge variant="outline" className="text-xs">
+                  实时预览
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                <MarkdownEditor
+                  value={markdown}
+                  onChange={setMarkdown}
+                  placeholder="在这里输入您的 Markdown 内容..."
+                />
+              </CardContent>
+            </Card>
+          </div>
+          <div>
+            <Card className="h-full">
+              <CardHeader className='flex items-center justify-between'>
+                <h2 className="font-medium text-gray-900">图片预览</h2>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs">
+                        <Image className="w-3 h-3 mr-1" />
+                        {segments.length} 张图片
+                      </Badge>
+                    </div>
+              </CardHeader>
+              <CardContent className="p-0 h-full overflow-auto">
+                <div className="flex-1 p-4">
+                  {segments.length === 0 ? (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      <div className="text-center">
+                        <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                        <p>请在左侧输入 Markdown 内容</p>
+                        <p className="text-sm text-gray-400 mt-1">
+                          使用 ## 二级标题来分割不同的图片
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {segments.map((segment, index) => (
+                        <div key={segment.id} className="relative">
+                          <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-sm font-medium text-gray-700">
+                              图片 {index + 1}: {segment.title}
+                            </h3>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleExportSingle(index)}
+                              disabled={isExporting}
+                              className="gap-1"
+                            >
+                              <Download className="w-3 h-3" />
+                              导出
+                            </Button>
+                          </div>
+                          
+                          <div className="flex justify-center">
+                            <ImagePreview
+                              ref={setImageRef(index)}
+                              segment={segment}
+                              style={currentStyle}
+                              index={index}
+                            />
+                          </div>
+                          
+                          {index < segments.length - 1 && (
+                            <Separator className="mt-6" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
-
-          {/* 右侧：预览和控制面板 */}
-          <div className="lg:col-span-2">
-            <div className="flex flex-col h-full gap-6">
-              {/* 样式选择器 */}
-              <Card>
-                <CardContent className="p-4">
-                  <StyleSelector
-                    selectedStyle={selectedStyle}
-                    onStyleChange={setSelectedStyle}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* 图片预览区域 */}
-              <Card className="flex-1">
-                <CardContent className="p-0 h-full">
-                  <div className="flex flex-col h-full">
-                    <div className="flex items-center justify-between p-4 border-b">
-                      <h2 className="font-medium text-gray-900">图片预览</h2>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-xs">
-                          <Image className="w-3 h-3 mr-1" />
-                          {segments.length} 张图片
-                        </Badge>
-                      </div>
-                    </div>
-                    
-                    <div className="flex-1 p-4 overflow-auto">
-                      {segments.length === 0 ? (
-                        <div className="flex items-center justify-center h-full text-gray-500">
-                          <div className="text-center">
-                            <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                            <p>请在左侧输入 Markdown 内容</p>
-                            <p className="text-sm text-gray-400 mt-1">
-                              使用 ## 二级标题来分割不同的图片
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="space-y-6">
-                          {segments.map((segment, index) => (
-                            <div key={segment.id} className="relative">
-                              <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-medium text-gray-700">
-                                  图片 {index + 1}: {segment.title}
-                                </h3>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleExportSingle(index)}
-                                  disabled={isExporting}
-                                  className="gap-1"
-                                >
-                                  <Download className="w-3 h-3" />
-                                  导出
-                                </Button>
-                              </div>
-                              
-                              <div className="flex justify-center">
-                                <ImagePreview
-                                  ref={setImageRef(index)}
-                                  segment={segment}
-                                  style={currentStyle}
-                                  index={index}
-                                />
-                              </div>
-                              
-                              {index < segments.length - 1 && (
-                                <Separator className="mt-6" />
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+          {
+            showSetting && (
+              <div>
+                {/* 样式选择器 */}
+                <Card>
+                  <CardContent className="p-4">
+                    <StyleSelector
+                      selectedStyle={selectedStyle}
+                      onStyleChange={setSelectedStyle}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            )
+          }
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 
 export function useImageExport() {
   const exportSingleImage = useCallback(async (element: HTMLElement, filename: string = 'image.png') => {
