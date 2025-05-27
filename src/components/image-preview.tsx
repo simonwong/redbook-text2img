@@ -102,7 +102,7 @@ const getMarkdownStyles = (isDark: boolean) => ({
 });
 
 export const ImagePreview = forwardRef<HTMLDivElement, ImagePreviewProps>(
-  ({ segment, style, index }, ref) => {
+  ({ segment, style }, ref) => {
     const styles = getImageStyles(style);
     const isDark = style.id === 'dark';
 

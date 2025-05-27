@@ -11,7 +11,7 @@ import { StyleSelector } from './style-selector';
 import { parseMarkdownToImages } from '@/lib/markdown-parser';
 import { getStyleById } from '@/lib/image-styles';
 import { useImageExport } from '@/hooks/use-image-export';
-import { Download, FileText, Image, SettingsIcon, Sparkles } from 'lucide-react';
+import { Download, FileText, ImageIcon, SettingsIcon, Sparkles } from 'lucide-react';
 
 const defaultMarkdown = `# 欢迎使用小红书图片生成器
 
@@ -146,7 +146,7 @@ export function MarkdownToImageApp() {
                 <h2 className="font-medium text-gray-900">图片预览</h2>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="text-xs">
-                        <Image className="w-3 h-3 mr-1" />
+                        <ImageIcon className="w-3 h-3 mr-1" />
                         {segments.length} 张图片
                       </Badge>
                     </div>
