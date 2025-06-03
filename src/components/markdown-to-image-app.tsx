@@ -188,7 +188,6 @@ export function MarkdownToImageApp() {
                               ref={setImageRef(index)}
                               segment={segment}
                               style={currentStyle}
-                              index={index}
                             />
                           </div>
                           

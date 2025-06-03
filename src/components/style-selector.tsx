@@ -2,7 +2,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { imageStyles } from '@/lib/image-styles';
+import { imageStyles, baseStyle } from '@/lib/image-styles';
 
 interface StyleSelectorProps {
   selectedStyle: string;
@@ -42,7 +42,9 @@ export function StyleSelector({ selectedStyle, onStyleChange }: StyleSelectorPro
         <div className="flex items-center gap-3">
           <div 
             className="w-12 h-8 rounded border"
-            style={{ background: currentStyle.backgroundGradient }}
+            style={{ 
+              background: currentStyle.styles.container?.background || baseStyle.styles.container?.background || '#fff'
+            }}
           />
           <div className="flex-1">
             <div className="text-sm font-medium">{currentStyle.name}</div>
