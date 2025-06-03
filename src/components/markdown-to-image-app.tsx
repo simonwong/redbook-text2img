@@ -3,7 +3,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { MarkdownEditor } from './markdown-editor';
 import { ImagePreview } from './image-preview';
@@ -11,7 +10,7 @@ import { StyleSelector } from './style-selector';
 import { parseMarkdownToImages } from '@/lib/markdown-parser';
 import { getStyleById } from '@/lib/image-styles';
 import { useImageExport } from '@/hooks/use-image-export';
-import { Download, FileText, ImageIcon, SettingsIcon, Sparkles } from 'lucide-react';
+import { Download, FileText, GithubIcon, ImageIcon, SettingsIcon, Sparkles } from 'lucide-react';
 
 const defaultMarkdown = `# 欢迎使用小红书图片生成器
 
@@ -116,6 +115,13 @@ export function MarkdownToImageApp() {
               >
                 <Download className="w-4 h-4" />
                 {isExporting ? '导出中...' : '导出全部'}
+              </Button>
+              <Button 
+                onClick={() => window.open('https://github.com/simonwong/redbook-text2img', '_blank')}
+                variant="outline"
+                size="icon"
+              >
+                <GithubIcon className="w-4 h-4" />
               </Button>
             </div>
           </div>
