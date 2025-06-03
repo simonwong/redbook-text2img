@@ -22,7 +22,7 @@ export function StyleSelector({ selectedStyle, onStyleChange }: StyleSelectorPro
       </div>
       
       <Select value={selectedStyle} onValueChange={onStyleChange}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full data-[size=default]:h-auto">
           <SelectValue placeholder="选择图片样式" />
         </SelectTrigger>
         <SelectContent>
