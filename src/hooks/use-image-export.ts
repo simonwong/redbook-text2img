@@ -7,12 +7,8 @@ export function useImageExport() {
   const exportSingleImage = useCallback(async (element: HTMLElement, filename: string = 'image.png') => {
     try {
       const canvas = await html2canvas(element, {
-        scale: 2, // 提高图片质量
-        useCORS: true,
         allowTaint: true,
         backgroundColor: null,
-        width: element.offsetWidth,
-        height: element.offsetHeight,
       });
 
       // 创建下载链接
