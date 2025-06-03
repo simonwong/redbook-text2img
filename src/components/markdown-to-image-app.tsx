@@ -166,11 +166,12 @@ export function MarkdownToImageApp() {
                   ) : (
                     <div className="space-y-6">
                       {segments.map((segment, index) => (
-                        <div key={segment.id} className="relative">
-                          <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-medium text-gray-700">
+                        <div key={segment.id} className="relative group">
+                          <div className="flex items-center justify-between px-3 absolute gap-4 z-10 top-2 left-0 w-full group-hover:opacity-100 opacity-0 transition-opacity duration-300">
+                            {/* <h3 className="text-sm font-medium text-gray-700">
                               图片 {index + 1}: {segment.title}
-                            </h3>
+                            </h3> */}
+                            <h3></h3>
                             <Button
                               size="sm"
                               variant="outline"
@@ -190,10 +191,6 @@ export function MarkdownToImageApp() {
                               style={currentStyle}
                             />
                           </div>
-                          
-                          {index < segments.length - 1 && (
-                            <Separator className="mt-6" />
-                          )}
                         </div>
                       ))}
                     </div>
