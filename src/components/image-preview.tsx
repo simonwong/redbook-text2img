@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { ImageSegment } from '@/lib/markdown-parser';
 import { ImageStyle } from '@/lib/image-styles';
 
@@ -15,83 +16,60 @@ export const ImagePreview = forwardRef<HTMLDivElement, ImagePreviewProps>(
     const content = segment.content.trim();
     const isCoverImage = content.startsWith('# ');
     const styles = isCoverImage ? style.coverStyles : style.styles;
-    // 常规模式：解析 Markdown 内容
-    const parseSimpleMarkdown = (content: string) => {
-      return content
-        .split('\n')
-        .map((line, lineIndex) => {
-          const trimmedLine = line.trim();
-          
-          // 处理标题
-          if (trimmedLine.startsWith('### ')) {
-            return (
-              <h3 key={lineIndex} style={styles.h3}>
-                {trimmedLine.substring(4)}
-              </h3>
-            );
-          } else if (trimmedLine.startsWith('## ')) {
-            return (
-              <h2 key={lineIndex} style={styles.h2}>
-                {trimmedLine.substring(3)}
-              </h2>
-            );
-          } else if (trimmedLine.startsWith('# ')) {
-            return (
-              <h1 key={lineIndex} style={styles.h1}>
-                {trimmedLine.substring(2)}
-              </h1>
-            );
-          }
-          
-          // 处理段落
-          if (trimmedLine) {
-            // 处理加粗和斜体
-            const processedText = trimmedLine;
-            
-            // 简单的加粗处理
-            const boldRegex = /\*\*(.*?)\*\*/g;
-            const parts = [];
-            let lastIndex = 0;
-            let match;
-            
-            while ((match = boldRegex.exec(processedText)) !== null) {
-              if (match.index > lastIndex) {
-                parts.push(processedText.slice(lastIndex, match.index));
-              }
-              parts.push(
-                <strong key={`bold-${lineIndex}-${match.index}`} style={styles.strong}>
-                  {match[1]}
-                </strong>
-              );
-              lastIndex = match.index + match[0].length;
-            }
-            
-            if (lastIndex < processedText.length) {
-              parts.push(processedText.slice(lastIndex));
-            }
-            
-            return (
-              <p key={lineIndex} style={styles.p}>
-                {parts.length > 0 ? parts : trimmedLine}
-              </p>
-            );
-          }
-          
-          return null;
-        })
-        .filter(Boolean);
-    };
 
     return (
-      <div ref={ref} style={styles.container}>
-        <div style={styles.innerContainer}>
+      <div 
+        ref={ref} 
+        key={`container-${style.id}-${segment.id}`}
+        style={{...styles.container}}
+      >
+        <div style={{...styles.innerContainer}}>
           {/* TODO: Title */}
           {/* <div style={styles.title}>
             {segment.title}
           </div> */}
           {/* 内容部分 */}
-          <div style={styles.content}>
-            {parseSimpleMarkdown(segment.content)}
+          <div style={{...styles.content}}>
+            <ReactMarkdown
+              key={`markdown-${style.id}-${segment.id}`}
+              components={{
+                h1: ({ children }) => (
+                  <h1 style={{...styles.h1}}>{children}</h1>
+                ),
+                h2: ({ children }) => (
+                  <h2 style={{...styles.h2}}>{children}</h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 style={{...styles.h3}}>{children}</h3>
+                ),
+                h4: ({ children }) => (
+                  <h4 style={{...styles.h4}}>{children}</h4>
+                ),
+                h5: ({ children }) => (
+                  <h5 style={{...styles.h5}}>{children}</h5>
+                ),
+                h6: ({ children }) => (
+                  <h6 style={{...styles.h6}}>{children}</h6>
+                ),
+                p: ({ children }) => (
+                  <p style={{...styles.p}}>{children}</p>
+                ),
+                strong: ({ children }) => (
+                  <strong style={{...styles.strong}}>{children}</strong>
+                ),
+                em: ({ children }) => (
+                  <em style={{...styles.em}}>{children}</em>
+                ),
+                ul: ({ children }) => (
+                  <ul style={{...styles.ul}}>{children}</ul>
+                ),
+                li: ({ children }) => (
+                  <li style={{...styles.li}}>{children}</li>
+                ),
+              }}
+            >
+              {segment.content}
+            </ReactMarkdown>
           </div>
           
           {/* TODO: Footer */}

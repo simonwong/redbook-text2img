@@ -22,6 +22,12 @@ const defaultMarkdown = `# 欢迎使用小红书图片生成器
 
 **样式丰富**：提供多种预设样式，满足不同的视觉需求。
 
+主要功能包括：
+- 支持完整的 Markdown 语法
+- 多种精美的预设样式
+- 一键导出高质量图片
+- 实时预览编辑效果
+
 ## 使用方法
 
 ### 第一步：编写内容
@@ -37,7 +43,8 @@ const defaultMarkdown = `# 欢迎使用小红书图片生成器
 
 - 使用 \`##\` 二级标题来分割不同的图片
 - 支持 **加粗** 和 *斜体* 文字
-- 三级及以下标题会自动加粗显示`;
+- 三级及以下标题会自动加粗显示
+- 支持无序列表，使用 \`-\` 或 \`*\` 开头`;
 
 export function MarkdownToImageApp() {
   const [markdown, setMarkdown] = useState(defaultMarkdown);

@@ -33,12 +33,8 @@ export function useImageExport() {
       const results = await Promise.allSettled(
         elements.map(async (element, index) => {
           const canvas = await html2canvas(element, {
-            scale: 2,
-            useCORS: true,
             allowTaint: true,
             backgroundColor: null,
-            width: element.offsetWidth,
-            height: element.offsetHeight,
           });
           
           return {

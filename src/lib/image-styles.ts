@@ -53,7 +53,6 @@ export const baseStyle: ImageStyle = {
       minHeight: '400px',
       background: '#ffffff',
       borderRadius: '12px',
-      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
       overflow: 'hidden',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
       display: 'flex',
@@ -150,21 +149,25 @@ export const baseStyle: ImageStyle = {
     },
     em: {
       fontStyle: 'italic',
-      color: '#555555',
+      color: '#666666',
+      position: 'relative',
+      fontWeight: '500',
     },
     ul: {
       marginBottom: '10px',
       paddingLeft: '16px',
-      listStyle: 'none',
+      listStyle: 'disc',
     },
     li: {
       marginBottom: '6px',
       lineHeight: '1.6',
       position: 'relative',
-      paddingLeft: '14px',
     },
   }
 }
+
+// 背景图片生成器
+// https://bgjar.com/
 
 export const imageStyles: ImageStyle[] = [
   {
@@ -174,8 +177,8 @@ export const imageStyles: ImageStyle[] = [
     coverStyles: {},
     styles: {
       container: {
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.08)',
+        backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='300' height='400' preserveAspectRatio='none' viewBox='0 0 300 400'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1002%26quot%3b)' fill='none'%3e%3crect width='300' height='400' x='0' y='0' fill='url(%26quot%3b%23SvgjsLinearGradient1003%26quot%3b)'%3e%3c/rect%3e%3cpath d='M0 0L80.23 0L0 35.62z' fill='rgba(255%2c 255%2c 255%2c .1)'%3e%3c/path%3e%3cpath d='M0 35.62L80.23 0L187.59 0L0 142.12z' fill='rgba(255%2c 255%2c 255%2c .075)'%3e%3c/path%3e%3cpath d='M0 142.12L187.59 0L228.57 0L0 213.05z' fill='rgba(255%2c 255%2c 255%2c .05)'%3e%3c/path%3e%3cpath d='M0 213.05L228.57 0L265.3 0L0 313.51z' fill='rgba(255%2c 255%2c 255%2c .025)'%3e%3c/path%3e%3cpath d='M300 400L229.24 400L300 255.57z' fill='rgba(0%2c 0%2c 0%2c .1)'%3e%3c/path%3e%3cpath d='M300 255.57L229.24 400L210.94 400L300 115.41z' fill='rgba(0%2c 0%2c 0%2c .075)'%3e%3c/path%3e%3cpath d='M300 115.40999999999997L210.94 400L200.76 400L300 97.06999999999996z' fill='rgba(0%2c 0%2c 0%2c .05)'%3e%3c/path%3e%3cpath d='M300 97.07L200.76 400L114.42999999999999 400L300 55.72999999999999z' fill='rgba(0%2c 0%2c 0%2c .025)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1002'%3e%3crect width='300' height='400' fill='white'%3e%3c/rect%3e%3c/mask%3e%3clinearGradient x1='100%25' y1='50%25' x2='0%25' y2='50%25' gradientUnits='userSpaceOnUse' id='SvgjsLinearGradient1003'%3e%3cstop stop-color='rgba(162%2c 196%2c 232%2c 1)' offset='0'%3e%3c/stop%3e%3cstop stop-color='rgba(248%2c 251%2c 255%2c 1)' offset='1'%3e%3c/stop%3e%3c/linearGradient%3e%3c/defs%3e%3c/svg%3e")`,
+        position: 'relative',
       },
       content: {
         color: '#2d3748',
@@ -199,11 +202,24 @@ export const imageStyles: ImageStyle[] = [
         color: '#1a202c',
         fontWeight: '700',
       },
-      li: {
-        marginBottom: '6px',
-        lineHeight: '1.6',
+      em: {
+        fontStyle: 'italic',
+        color: '#5a67d8',
+        fontWeight: '500',
         position: 'relative',
-        paddingLeft: '14px',
+        padding: '0 2px',
+        background: 'linear-gradient(120deg, rgba(90, 103, 216, 0.1) 0%, rgba(90, 103, 216, 0.05) 100%)',
+        borderRadius: '2px',
+      },
+      ul: {
+        marginBottom: '8px',
+        paddingLeft: '16px',
+        listStyle: 'circle',
+      },
+      li: {
+        marginBottom: '3px',
+        lineHeight: '1.5',
+        position: 'relative',
       },
     },
   },
@@ -215,7 +231,6 @@ export const imageStyles: ImageStyle[] = [
     styles: {
       container: {
         background: 'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)',
-        boxShadow: '0 25px 50px rgba(251, 113, 133, 0.15)',
       },
       content: {
         color: '#7c2d12',
@@ -243,11 +258,24 @@ export const imageStyles: ImageStyle[] = [
         padding: '2px 4px',
         borderRadius: '4px',
       },
-      li: {
-        marginBottom: '6px',
-        lineHeight: '1.6',
+      em: {
+        fontStyle: 'italic',
+        color: '#c2410c',
+        fontWeight: '500',
         position: 'relative',
-        paddingLeft: '14px',
+        textShadow: '0 1px 2px rgba(194, 65, 12, 0.2)',
+        borderBottom: '1px solid rgba(194, 65, 12, 0.3)',
+        paddingBottom: '1px',
+      },
+      ul: {
+        marginBottom: '8px',
+        paddingLeft: '16px',
+        listStyle: 'circle',
+      },
+      li: {
+        marginBottom: '3px',
+        lineHeight: '1.5',
+        position: 'relative',
       },
     },
   },
@@ -259,20 +287,15 @@ export const imageStyles: ImageStyle[] = [
     styles: {
       container: {
         background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%)',
-        boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(148, 163, 184, 0.1)',
       },
       content: {
         color: '#e2e8f0',
       },
       h1: {
-        color: '#f1f5f9',
+        color: '#60a5fa',
         fontWeight: '700',
-        textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
-        background: 'linear-gradient(120deg, #60a5fa, #c084fc)',
-        backgroundClip: 'text',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
+        textShadow: '0 0 10px rgba(96, 165, 250, 0.5), 0 2px 4px rgba(0, 0, 0, 0.5)',
       },
       h2: {
         color: '#f8fafc',
@@ -293,11 +316,26 @@ export const imageStyles: ImageStyle[] = [
         borderRadius: '4px',
         border: '1px solid rgba(96, 165, 250, 0.3)',
       },
-      li: {
-        marginBottom: '6px',
-        lineHeight: '1.6',
+      em: {
+        fontStyle: 'italic',
+        color: '#a78bfa',
+        fontWeight: '500',
         position: 'relative',
-        paddingLeft: '14px',
+        textShadow: '0 0 8px rgba(167, 139, 250, 0.4)',
+        background: 'rgba(167, 139, 250, 0.1)',
+        padding: '1px 3px',
+        borderRadius: '3px',
+        border: '1px solid rgba(167, 139, 250, 0.2)',
+      },
+      ul: {
+        marginBottom: '8px',
+        paddingLeft: '16px',
+        listStyle: 'square',
+      },
+      li: {
+        marginBottom: '3px',
+        lineHeight: '1.5',
+        position: 'relative',
       },
       footer: {
         color: '#64748b',
@@ -318,6 +356,7 @@ export function getStyleById(styleId: string): ImageStyle {
     coverStyles,
     styles,
   } = imageStyles.find(style => style.id === styleId) || imageStyles[0];
+  
   return {
     id,
     name,
@@ -325,98 +364,98 @@ export function getStyleById(styleId: string): ImageStyle {
     coverStyles: {
       container: {
         ...baseStyle.styles.container,
-        ...styles.container,
         ...baseStyle.coverStyles?.container,
+        ...styles?.container,
         ...coverStyles?.container,
       },
       innerContainer: {
         ...baseStyle.styles.innerContainer,
-        ...styles.innerContainer,
         ...baseStyle.coverStyles?.innerContainer,
+        ...styles?.innerContainer,
         ...coverStyles?.innerContainer,
       },
       header: {
         ...baseStyle.styles.header,
-        ...styles.header,
         ...baseStyle.coverStyles?.header,
+        ...styles?.header,
         ...coverStyles?.header,
       },
       content: {
         ...baseStyle.styles.content,
-        ...styles.content,
         ...baseStyle.coverStyles?.content,
+        ...styles?.content,
         ...coverStyles?.content,
       },
       footer: {
         ...baseStyle.styles.footer,
-        ...styles.footer,
         ...baseStyle.coverStyles?.footer,
+        ...styles?.footer,
         ...coverStyles?.footer,
       },
       h1: {
         ...baseStyle.styles.h1,
-        ...styles.h1,
         ...baseStyle.coverStyles?.h1,
+        ...styles?.h1,
         ...coverStyles?.h1,
       },
       h2: {
         ...baseStyle.styles.h2,
-        ...styles.h2,
         ...baseStyle.coverStyles?.h2,
+        ...styles?.h2,
         ...coverStyles?.h2,
       },
       h3: {
         ...baseStyle.styles.h3,
-        ...styles.h3,
         ...baseStyle.coverStyles?.h3,
+        ...styles?.h3,
         ...coverStyles?.h3,
       },
       h4: {
         ...baseStyle.styles.h4,
-        ...styles.h4,
         ...baseStyle.coverStyles?.h4,
+        ...styles?.h4,
         ...coverStyles?.h4,
       },
       h5: {
         ...baseStyle.styles.h5,
-        ...styles.h5,
         ...baseStyle.coverStyles?.h5,
+        ...styles?.h5,
         ...coverStyles?.h5,
       },
       h6: {
         ...baseStyle.styles.h6,
-        ...styles.h6,
         ...baseStyle.coverStyles?.h6,
+        ...styles?.h6,
         ...coverStyles?.h6,
       },
       p: {
         ...baseStyle.styles.p,
-        ...styles.p,
         ...baseStyle.coverStyles?.p,
+        ...styles?.p,
         ...coverStyles?.p,
       },
       strong: {
         ...baseStyle.styles.strong,
-        ...styles.strong,
         ...baseStyle.coverStyles?.strong,
+        ...styles?.strong,
         ...coverStyles?.strong,
       },
       em: {
         ...baseStyle.styles.em,
-        ...styles.em,
         ...baseStyle.coverStyles?.em,
+        ...styles?.em,
         ...coverStyles?.em,
       },
       ul: {
         ...baseStyle.styles.ul,
-        ...styles.ul,
         ...baseStyle.coverStyles?.ul,
+        ...styles?.ul,
         ...coverStyles?.ul,
       },
       li: {
         ...baseStyle.styles.li,
-        ...styles.li,
         ...baseStyle.coverStyles?.li,
+        ...styles?.li,
         ...coverStyles?.li,
       },
     },
@@ -486,5 +525,5 @@ export function getStyleById(styleId: string): ImageStyle {
         ...styles?.li,
       },
     },
-  }
+  };
 } 
