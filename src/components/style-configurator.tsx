@@ -13,7 +13,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ContentConfig } from '@/lib/image-style-config';
-import { StyleManager } from '@/lib/style-manager';
 import {
   BackgroundOptions,
   FontColorOptions,
@@ -159,7 +158,7 @@ export function StyleConfigurator() {
   const { styleConfig, setStyleConfig, isChange } = useStyleConfigStore();
 
   const handleStyleSelect = (styleId: string) => {
-    setStyleConfig(StyleManager.getStyleById(styleId)!);
+    setStyleConfig(defaultStyles.find((style) => style.id === styleId)!);
   };
 
   const isBuiltIn = defaultStyleIds.includes(styleConfig.id);
