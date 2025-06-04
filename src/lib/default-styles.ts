@@ -1,4 +1,11 @@
 import { StyleConfig } from './image-style-config';
+import {
+  BackgroundEnum,
+  FontColorEnum,
+  FontSizeEnum,
+  HorizontalEnum,
+  VerticalEnum,
+} from './preset-config';
 
 export const defaultStyles: StyleConfig[] = [
   // 1. 简约风格 - 现代简洁，适合商务和专业内容
@@ -7,18 +14,16 @@ export const defaultStyles: StyleConfig[] = [
     name: '简约风格',
     description: '现代简洁的设计，适合商务和专业内容。采用黑白配色，干净利落。',
     content: {
-      size: 'md',
-      titleColor: 'black',
-      contentColor: 'gray',
-      background: 'white',
-      vertical: 'top',
-      horizontal: 'left',
+      size: FontSizeEnum.md,
+      titleColor: FontColorEnum.black,
+      contentColor: FontColorEnum.black,
+      background: BackgroundEnum.TrianglifyGary,
+      vertical: VerticalEnum.top,
+      horizontal: HorizontalEnum.left,
     },
     cover: {
-      vertical: 'center',
-      horizontal: 'center',
-      titleColor: 'black',
-      background: 'white',
+      vertical: VerticalEnum.center,
+      horizontal: HorizontalEnum.center,
     },
   },
 
@@ -28,19 +33,16 @@ export const defaultStyles: StyleConfig[] = [
     name: '温暖风格',
     description: '温馨的暖色调设计，适合生活分享、美食、旅行等个人内容。',
     content: {
-      size: 'lg',
-      titleColor: 'orange',
-      contentColor: 'black',
-      background: 'white',
-      vertical: 'center',
-      horizontal: 'left',
+      size: FontSizeEnum.lg,
+      titleColor: FontColorEnum.orange,
+      contentColor: FontColorEnum.black,
+      background: BackgroundEnum.linearGradient1,
+      vertical: VerticalEnum.center,
+      horizontal: HorizontalEnum.left,
     },
     cover: {
-      vertical: 'center',
-      horizontal: 'center',
-      titleColor: 'white',
-      contentColor: 'white',
-      background: 'white',
+      vertical: VerticalEnum.center,
+      horizontal: HorizontalEnum.center,
     },
   },
 
@@ -50,19 +52,16 @@ export const defaultStyles: StyleConfig[] = [
     name: '科技风格',
     description: '现代科技感设计，适合科技、商业、数据分析等专业内容。',
     content: {
-      size: 'lg',
-      titleColor: 'blue',
-      contentColor: 'white',
-      background: 'white',
-      vertical: 'top',
-      horizontal: 'left',
+      size: FontSizeEnum.lg,
+      titleColor: FontColorEnum.blue,
+      contentColor: FontColorEnum.white,
+      background: BackgroundEnum.linearGradient2,
+      vertical: VerticalEnum.top,
+      horizontal: HorizontalEnum.left,
     },
     cover: {
-      vertical: 'center',
-      horizontal: 'center',
-      titleColor: 'white',
-      contentColor: 'blue',
-      background: 'white',
+      vertical: VerticalEnum.center,
+      horizontal: HorizontalEnum.center,
     },
   },
 ];

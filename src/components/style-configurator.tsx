@@ -18,7 +18,9 @@ import {
   BackgroundOptions,
   FontColorOptions,
   FontSizeOptions,
-  horizontalOptions,
+  getBackgroundCss,
+  getColorCss,
+  HorizontalOptions,
   VerticalOptions,
 } from '@/lib/preset-config';
 import { Palette, Trash2 } from 'lucide-react';
@@ -58,7 +60,13 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
           <SelectContent>
             {FontColorOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-4 h-4 rounded border"
+                    style={{ background: getColorCss(option.value) }}
+                  />
+                  <span className="text-xs">{option.label}</span>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
@@ -74,7 +82,13 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
           <SelectContent>
             {FontColorOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-4 h-4 rounded border"
+                    style={{ background: getColorCss(option.value) }}
+                  />
+                  <span className="text-xs">{option.label}</span>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
@@ -93,7 +107,10 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
           {BackgroundOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded border" style={{ background: option.value }} />
+                <div
+                  className="w-4 h-4 rounded border"
+                  style={{ background: getBackgroundCss(option.value) }}
+                />
                 <span className="text-xs">{option.label}</span>
               </div>
             </SelectItem>
@@ -124,7 +141,7 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {horizontalOptions.map((option) => (
+            {HorizontalOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>

@@ -1,156 +1,230 @@
-export const presetFontSize = {
-  sm: {
+import { TrianglifyGary } from './background-image-constants';
+
+// ========== font size ==========
+export enum FontSizeEnum {
+  sm = 'sm',
+  md = 'md',
+  lg = 'lg',
+  xl = 'xl',
+}
+
+export const fontSizeStyleMap: Record<FontSizeEnum, number> = {
+  [FontSizeEnum.sm]: 12,
+  [FontSizeEnum.md]: 14,
+  [FontSizeEnum.lg]: 16,
+  [FontSizeEnum.xl]: 18,
+};
+
+export const FontSizeOptions = [
+  {
     label: 'sm',
-    value: 12,
+    value: FontSizeEnum.sm,
   },
-  md: {
+  {
     label: 'md',
-    value: 14,
+    value: FontSizeEnum.md,
   },
-  lg: {
+  {
     label: 'lg',
-    value: 16,
+    value: FontSizeEnum.lg,
   },
-  xl: {
+  {
     label: 'xl',
-    value: 18,
+    value: FontSizeEnum.xl,
   },
+];
+
+// ========== font color ==========
+export enum FontColorEnum {
+  white = 'white',
+  black = 'black',
+  gray = 'gray',
+  blue = 'blue',
+  red = 'red',
+  green = 'green',
+  purple = 'purple',
+  orange = 'orange',
+  custom = 'custom',
+}
+export const fontColorStyleMap: Record<FontColorEnum, string> = {
+  [FontColorEnum.white]: '#ffffff',
+  [FontColorEnum.black]: '#000000',
+  [FontColorEnum.gray]: '#6b7280',
+  [FontColorEnum.blue]: '#3b82f6',
+  [FontColorEnum.red]: '#ef4444',
+  [FontColorEnum.green]: '#10b981',
+  [FontColorEnum.purple]: '#8b5cf6',
+  [FontColorEnum.orange]: '#f59e0b',
+  [FontColorEnum.custom]: 'custom',
 };
-
-export const FontSizeOptions = Object.values(presetFontSize);
-
-export type FontSize = keyof typeof presetFontSize;
-
-export const presetFontColor = {
-  white: {
+export const FontColorOptions = [
+  {
     label: '白色',
-    value: '#ffffff',
+    value: FontColorEnum.white,
   },
-  black: {
+  {
     label: '黑色',
-    value: '#000000',
+    value: FontColorEnum.black,
   },
-  gray: {
+  {
     label: '灰色',
-    value: '#6b7280',
+    value: FontColorEnum.gray,
   },
-  blue: {
+  {
     label: '蓝色',
-    value: '#3b82f6',
+    value: FontColorEnum.blue,
   },
-  red: {
+  {
     label: '红色',
-    value: '#ef4444',
+    value: FontColorEnum.red,
   },
-  green: {
+  {
     label: '绿色',
-    value: '#10b981',
+    value: FontColorEnum.green,
   },
-  purple: {
+  {
     label: '紫色',
-    value: '#8b5cf6',
+    value: FontColorEnum.purple,
   },
-  orange: {
+  {
     label: '橙色',
-    value: '#f59e0b',
+    value: FontColorEnum.orange,
   },
-  custom: {
+  {
     label: '自定义',
-    value: 'custom',
+    value: FontColorEnum.custom,
   },
+];
+
+// ========== background color ==========
+export enum BackgroundEnum {
+  white = 'white',
+  gray = 'gray',
+  blue = 'blue',
+  linearGradient1 = 'linearGradient1',
+  linearGradient2 = 'linearGradient2',
+  linearGradient3 = 'linearGradient3',
+  linearGradient4 = 'linearGradient4',
+  TrianglifyGary = 'TrianglifyGary',
+  custom = 'custom',
+}
+
+export const backgroundStyleMap: Record<BackgroundEnum, string> = {
+  [BackgroundEnum.white]: '#ffffff',
+  [BackgroundEnum.gray]: '#f8fafc',
+  [BackgroundEnum.blue]: '#f1f5f9',
+  [BackgroundEnum.linearGradient1]:
+    'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)',
+  [BackgroundEnum.linearGradient2]:
+    'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e40af 75%, #3b82f6 100%)',
+  [BackgroundEnum.linearGradient3]: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
+  [BackgroundEnum.linearGradient4]: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  [BackgroundEnum.TrianglifyGary]: TrianglifyGary,
+  [BackgroundEnum.custom]: 'custom',
 };
 
-export const FontColorOptions = Object.values(presetFontColor);
-
-export type FontColor = keyof typeof presetFontColor;
-
-export const presetBackground = {
+export const BackgroundOptions = [
   // 纯色背景
-  white: {
+  {
     label: '白色',
-    value: '#ffffff',
+    value: BackgroundEnum.white,
   },
-  gray: {
+  {
     label: '灰色',
-    value: '#f8fafc',
+    value: BackgroundEnum.gray,
   },
-  blue: {
+  {
     label: '蓝色',
-    value: '#f1f5f9',
+    value: BackgroundEnum.blue,
   },
 
   // 渐变背景
-  linearGradient1: {
+  {
     label: '渐变1',
-    value:
-      'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)',
+    value: BackgroundEnum.linearGradient1,
   },
-  linearGradient2: {
+  {
     label: '渐变2',
-    value:
-      'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%)',
+    value: BackgroundEnum.linearGradient2,
   },
-  linearGradient3: {
+  {
     label: '渐变3',
-    value: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
+    value: BackgroundEnum.linearGradient3,
   },
-  linearGradient4: {
+  {
     label: '渐变4',
-    value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    value: BackgroundEnum.linearGradient4,
   },
 
   // 图片背景（base64编码的简约图案）
-  image1: {
-    label: '图片1',
-    value: `url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA4gAAAJJCAMAAADfrelZAAAATlBMVEX////e3t7k5OTa2trm5ubi4uLr6+v7+/vg4ODt7e3X19fv7+/09PTx8fH9/f3o6Oj4+PjQ0ND29vbGxsbLy8vT09PIyMjNzc3CwsK/v7/xK3EAAAB51ElEQVR42uyc0W7jIBBFu6xtjDAE+f8/dmO10cTx4JnhomofOO7L7nOPTi7E/frf8F0opWwo8YewKJi64V6sV/7omRW4CWUJraTtxN4BbyMffA14sreR2ac82WEPX4SwiM9j6vOQh/PKm/hX9zMrTXxAT1ATP560vT2HiQV+vM+2J38NEUEPyUGWcoB6SITfS6ITRcSLiDcRD2LYTqQeSfRGRhAxD/NJQT6IcBLjGTGJS6ceEiuLNojrrMP9ShAjE8SPIm473kRjEb0fIvJklYJyEcs3oIe2Jj6mDriLiI1NlEXEm0hBxCfi8c/fH4nDROtBDddAIYhQEiOh3Yk9gujemNcKQBF770RzD+nZzkU0zkR8JOb8NSZijbqB2VRE)`,
+  {
+    label: '抽象三角形-灰色',
+    value: BackgroundEnum.TrianglifyGary,
   },
-  custom: {
+  {
     label: '自定义',
-    value: 'custom',
+    value: BackgroundEnum.custom,
   },
+];
+
+// ========== vertical ==========
+export enum VerticalEnum {
+  top = 'top',
+  center = 'center',
+  bottom = 'bottom',
+}
+
+export const verticalStyleMap: Record<VerticalEnum, string> = {
+  [VerticalEnum.top]: 'flex-start',
+  [VerticalEnum.center]: 'center',
+  [VerticalEnum.bottom]: 'flex-end',
 };
 
-export const BackgroundOptions = Object.values(presetBackground);
-
-export type Background = keyof typeof presetBackground;
-
-export const presetVertical = {
-  top: {
+export const VerticalOptions = [
+  {
     label: '顶部',
-    value: 'flex-start',
+    value: VerticalEnum.top,
   },
-  center: {
+  {
     label: '居中',
-    value: 'center',
+    value: VerticalEnum.center,
   },
-  bottom: {
+  {
     label: '底部',
-    value: 'flex-end',
+    value: VerticalEnum.bottom,
   },
+];
+
+// ========== horizontal ==========
+
+export enum HorizontalEnum {
+  left = 'left',
+  center = 'center',
+  right = 'right',
+}
+
+export const horizontalStyleMap: Record<HorizontalEnum, string> = {
+  [HorizontalEnum.left]: 'flex-start',
+  [HorizontalEnum.center]: 'center',
+  [HorizontalEnum.right]: 'flex-end',
 };
 
-export const VerticalOptions = Object.values(presetVertical);
-
-export type Vertical = keyof typeof presetVertical;
-
-export const presetHorizontal = {
-  left: {
+export const HorizontalOptions = [
+  {
     label: '左侧',
-    value: 'flex-start',
+    value: HorizontalEnum.left,
   },
-  center: {
+  {
     label: '居中',
-    value: 'center',
+    value: HorizontalEnum.center,
   },
-  right: {
+  {
     label: '右侧',
-    value: 'flex-end',
+    value: HorizontalEnum.right,
   },
-};
+];
 
-export const horizontalOptions = Object.values(presetHorizontal);
-
-export type Horizontal = keyof typeof presetHorizontal;
+// ========== typography ==========
 
 export const presetTypography = {
   // 相对于基础字体大小的比例（使用黄金比例和 Tailwind 的标准）
@@ -178,31 +252,31 @@ export const presetTypography = {
 export type TypographyElement = keyof typeof presetTypography.scales;
 
 // 获取实际字体大小的辅助函数
-export function getFontSize(size: FontSize): number {
-  return presetFontSize[size].value;
+export function getFontSizeCss(size: FontSizeEnum): number {
+  return fontSizeStyleMap[size];
 }
 // 获取实际颜色值的辅助函数
-export function getColorValue(color: FontColor, customColor?: string): string {
+export function getColorCss(color: FontColorEnum, customColor?: string): string {
   if (color === 'custom' && customColor) {
     return customColor;
   }
-  return presetFontColor[color].value || presetFontColor.black.value;
+  return fontColorStyleMap[color] || fontColorStyleMap[FontColorEnum.black];
 }
 
-export function getBackgroundValue(color: Background, customColor?: string): string {
+export function getBackgroundCss(color: BackgroundEnum, customColor?: string): string {
   if (color === 'custom' && customColor) {
     return customColor;
   }
-  return presetBackground[color].value || presetBackground.white.value;
+  return backgroundStyleMap[color] || backgroundStyleMap[BackgroundEnum.white];
 }
 
 // 新增：获取 Typography 比例的辅助函数
-export function getTypographyScale(element: keyof typeof presetTypography.scales): number {
+export function getTypographyScale(element: TypographyElement): number {
   return presetTypography.scales[element];
 }
 
 // 新增：获取行高比例的辅助函数
-export function getLineHeight(element: keyof typeof presetTypography.lineHeights): number {
+export function getLineHeight(element: TypographyElement): number {
   return presetTypography.lineHeights[element];
 }
 

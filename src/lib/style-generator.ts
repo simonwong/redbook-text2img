@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleConfig, ContentConfig, CoverConfig, GeneratedStyles } from './image-style-config';
 import {
-  getColorValue,
-  getFontSize,
+  getColorCss,
+  getFontSizeCss,
   getTypographyScale,
   getLineHeight,
   TypographyElement,
-  presetHorizontal,
-  presetVertical,
+  horizontalStyleMap,
+  verticalStyleMap,
+  getBackgroundCss,
 } from './preset-config';
 
 // 基于 Typography 系统生成字体样式
@@ -23,9 +24,9 @@ function generateTypographyStyle(element: TypographyElement): React.CSSPropertie
 
 // 生成内容样式（优化版）
 function generateContentStyles(config: ContentConfig): GeneratedStyles {
-  const baseFontSize = getFontSize(config.size);
-  const titleColor = getColorValue(config.titleColor);
-  const contentColor = getColorValue(config.contentColor);
+  const baseFontSize = getFontSizeCss(config.size);
+  const titleColor = getColorCss(config.titleColor);
+  const contentColor = getColorCss(config.contentColor);
 
   // 容器样式 - 使用 rem 单位和现代化的设计
   const containerStyles: React.CSSProperties = {
@@ -33,7 +34,7 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
     minWidth: '300px',
     height: '400px',
     minHeight: '400px',
-    background: config.background,
+    background: getBackgroundCss(config.background),
     borderRadius: '12px',
     overflow: 'hidden',
     fontFamily:
@@ -48,9 +49,6 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
     height: '100%',
     padding: `${2.3}em ${1.9}em`,
     boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: `${0.9}em`,
   };
 
   const contentStyles: React.CSSProperties = {
@@ -59,8 +57,11 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
     ...generateTypographyStyle('body'),
     color: contentColor,
     wordBreak: 'break-word',
-    justifyContent: presetHorizontal[config.horizontal].value,
-    alignItems: presetVertical[config.vertical].value,
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    justifyContent: horizontalStyleMap[config.horizontal],
+    alignItems: verticalStyleMap[config.vertical],
   };
 
   return {
