@@ -1,6 +1,5 @@
 import { StyleConfig } from './image-style-config';
 
-// 内置的三套默认风格配置
 export const defaultStyles: StyleConfig[] = [
   // 1. 简约风格 - 现代简洁，适合商务和专业内容
   {
@@ -11,19 +10,15 @@ export const defaultStyles: StyleConfig[] = [
       size: 'md',
       titleColor: 'black',
       contentColor: 'gray',
-      background: '#ffffff',
-      position: {
-        vertical: 'top',
-        horizontal: 'left',
-      },
+      background: 'white',
+      vertical: 'top',
+      horizontal: 'left',
     },
     cover: {
-      position: {
-        vertical: 'center',
-        horizontal: 'center',
-      },
+      vertical: 'center',
+      horizontal: 'center',
       titleColor: 'black',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)',
+      background: 'white',
     },
   },
 
@@ -36,22 +31,16 @@ export const defaultStyles: StyleConfig[] = [
       size: 'lg',
       titleColor: 'orange',
       contentColor: 'black',
-      background:
-        'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fed7aa 50%, #fb923c 75%, #ea580c 100%)',
-      position: {
-        vertical: 'center',
-        horizontal: 'left',
-      },
+      background: 'white',
+      vertical: 'center',
+      horizontal: 'left',
     },
     cover: {
-      position: {
-        vertical: 'center',
-        horizontal: 'center',
-      },
+      vertical: 'center',
+      horizontal: 'center',
       titleColor: 'white',
       contentColor: 'white',
-      background:
-        'linear-gradient(45deg, #ff6b6b 0%, #ff8e53 25%, #ff6b9d 50%, #c44569 75%, #f8b500 100%)',
+      background: 'white',
     },
   },
 
@@ -64,24 +53,21 @@ export const defaultStyles: StyleConfig[] = [
       size: 'lg',
       titleColor: 'blue',
       contentColor: 'white',
-      background:
-        'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e40af 75%, #3b82f6 100%)',
-      position: {
-        vertical: 'top',
-        horizontal: 'left',
-      },
+      background: 'white',
+      vertical: 'top',
+      horizontal: 'left',
     },
     cover: {
-      position: {
-        vertical: 'center',
-        horizontal: 'center',
-      },
+      vertical: 'center',
+      horizontal: 'center',
       titleColor: 'white',
       contentColor: 'blue',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%)',
+      background: 'white',
     },
   },
 ];
+
+export const defaultStyleIds = defaultStyles.map((style) => style.id);
 
 // 根据ID获取默认风格
 export function getDefaultStyleById(id: string): StyleConfig | undefined {

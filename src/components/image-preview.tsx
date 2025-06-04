@@ -3,82 +3,54 @@
 import { forwardRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { ImageSegment } from '@/lib/markdown-parser';
-import { ImageStyle } from '@/lib/image-styles';
+import { generateStylesFromConfig } from '@/lib/style-generator';
+import { useStyleConfigStore } from '@/store/styleConfig';
 
 interface ImagePreviewProps {
   segment: ImageSegment;
-  style: ImageStyle;
 }
 
-export const ImagePreview = forwardRef<HTMLDivElement, ImagePreviewProps>(
-  ({ segment, style }, ref) => {
-    // 检测内容是否以 # 开头（封面模式）
-    const content = segment.content.trim();
-    const isCoverImage = content.startsWith('# ');
-    const styles = isCoverImage ? style.coverStyles : style.styles;
+export const ImagePreview = forwardRef<HTMLDivElement, ImagePreviewProps>(({ segment }, ref) => {
+  // 检测内容是否以 # 开头（封面模式）
+  const content = segment.content.trim();
+  const isCoverImage = content.startsWith('# ');
 
-    return (
-      <div 
-        ref={ref} 
-        key={`container-${style.id}-${segment.id}`}
-        style={{...styles.container}}
-      >
-        <div style={{...styles.innerContainer}}>
-          {/* TODO: Title */}
-          {/* <div style={styles.title}>
-            {segment.title}
-          </div> */}
-          {/* 内容部分 */}
-          <div style={{...styles.content}}>
-            <ReactMarkdown
-              key={`markdown-${style.id}-${segment.id}`}
-              components={{
-                h1: ({ children }) => (
-                  <h1 style={{...styles.h1}}>{children}</h1>
-                ),
-                h2: ({ children }) => (
-                  <h2 style={{...styles.h2}}>{children}</h2>
-                ),
-                h3: ({ children }) => (
-                  <h3 style={{...styles.h3}}>{children}</h3>
-                ),
-                h4: ({ children }) => (
-                  <h4 style={{...styles.h4}}>{children}</h4>
-                ),
-                h5: ({ children }) => (
-                  <h5 style={{...styles.h5}}>{children}</h5>
-                ),
-                h6: ({ children }) => (
-                  <h6 style={{...styles.h6}}>{children}</h6>
-                ),
-                p: ({ children }) => (
-                  <p style={{...styles.p}}>{children}</p>
-                ),
-                strong: ({ children }) => (
-                  <strong style={{...styles.strong}}>{children}</strong>
-                ),
-                em: ({ children }) => (
-                  <em style={{...styles.em}}>{children}</em>
-                ),
-                ul: ({ children }) => (
-                  <ul style={{...styles.ul}}>{children}</ul>
-                ),
-                li: ({ children }) => (
-                  <li style={{...styles.li}}>{children}</li>
-                ),
-              }}
-            >
-              {segment.content}
-            </ReactMarkdown>
-          </div>
-          
-          {/* TODO: Footer */}
-          {/* <div style={styles.footer}>
-          </div> */}
+  const currentStyleConfig = useStyleConfigStore((state) => state.styleConfig);
+  // 生成样式
+  const styles = generateStylesFromConfig(currentStyleConfig);
+  const currentStyles = isCoverImage ? styles.coverStyles : styles.contentStyles;
+
+  return (
+    <div
+      ref={ref}
+      key={`container-${currentStyleConfig.id}-${segment.id}`}
+      style={currentStyles.container}
+    >
+      <div style={currentStyles.innerContainer}>
+        {/* 内容部分 */}
+        <div style={currentStyles.content}>
+          <ReactMarkdown
+            key={`markdown-${currentStyleConfig.id}-${segment.id}`}
+            components={{
+              h1: ({ children }) => <h1 style={currentStyles.h1}>{children}</h1>,
+              h2: ({ children }) => <h2 style={currentStyles.h2}>{children}</h2>,
+              h3: ({ children }) => <h3 style={currentStyles.h3}>{children}</h3>,
+              h4: ({ children }) => <h4 style={currentStyles.h4}>{children}</h4>,
+              h5: ({ children }) => <h5 style={currentStyles.h5}>{children}</h5>,
+              h6: ({ children }) => <h6 style={currentStyles.h6}>{children}</h6>,
+              p: ({ children }) => <p style={currentStyles.p}>{children}</p>,
+              strong: ({ children }) => <strong style={currentStyles.strong}>{children}</strong>,
+              em: ({ children }) => <em style={currentStyles.em}>{children}</em>,
+              ul: ({ children }) => <ul style={currentStyles.ul}>{children}</ul>,
+              li: ({ children }) => <li style={currentStyles.li}>{children}</li>,
+            }}
+          >
+            {segment.content}
+          </ReactMarkdown>
         </div>
       </div>
-    );
-  }
-);
+    </div>
+  );
+});
 
-ImagePreview.displayName = 'ImagePreview'; 
+ImagePreview.displayName = 'ImagePreview';

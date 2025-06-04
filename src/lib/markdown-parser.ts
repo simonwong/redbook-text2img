@@ -9,26 +9,26 @@ export interface ImageSegment {
 export function parseMarkdownToImages(markdown: string): ImageSegment[] {
   const segments: ImageSegment[] = [];
   const lines = markdown.split('\n');
-  
+
   let currentSegment: ImageSegment | null = null;
   let segmentId = 0;
-  
+
   for (const line of lines) {
     const trimmedLine = line.trim();
-    
+
     // 处理一级标题 - 作为首图
     if (trimmedLine.startsWith('# ')) {
       if (currentSegment) {
         segments.push(currentSegment);
       }
-      
+
       segmentId++;
       currentSegment = {
         id: `segment-${segmentId}`,
         title: trimmedLine.substring(2).trim(),
         content: trimmedLine,
         isFirstImage: segments.length === 0,
-        type: 'h1'
+        type: 'h1',
       };
     }
     // 处理二级标题 - 开始新的图片段落
@@ -36,14 +36,14 @@ export function parseMarkdownToImages(markdown: string): ImageSegment[] {
       if (currentSegment) {
         segments.push(currentSegment);
       }
-      
+
       segmentId++;
       currentSegment = {
         id: `segment-${segmentId}`,
         title: trimmedLine.substring(3).trim(),
         content: trimmedLine,
         isFirstImage: segments.length === 0,
-        type: 'h2'
+        type: 'h2',
       };
     }
     // 处理其他级别标题和内容
@@ -58,24 +58,24 @@ export function parseMarkdownToImages(markdown: string): ImageSegment[] {
           title: '内容',
           content: line,
           isFirstImage: segments.length === 0,
-          type: 'content'
+          type: 'content',
         };
       }
     }
   }
-  
+
   // 添加最后一个段落
   if (currentSegment) {
     segments.push(currentSegment);
   }
-  
-  return segments.filter(segment => segment.content.trim());
+
+  return segments.filter((segment) => segment.content.trim());
 }
 
 export function formatMarkdownContent(content: string): string {
   return content
     .split('\n')
-    .map(line => {
+    .map((line) => {
       const trimmedLine = line.trim();
       // 三到六级标题加粗处理
       if (trimmedLine.match(/^#{3,6}\s/)) {
@@ -86,4 +86,4 @@ export function formatMarkdownContent(content: string): string {
       return line;
     })
     .join('\n');
-} 
+}

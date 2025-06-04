@@ -16,9 +16,6 @@ export class StyleManager {
   // 获取用户自定义的样式
   static getCustomStyles(): StyleConfig[] {
     try {
-      // 检查是否在浏览器环境
-      if (typeof window === 'undefined') return [];
-
       const saved = localStorage.getItem(CUSTOM_STYLES_KEY);
       if (!saved) return [];
 
@@ -198,52 +195,6 @@ export class StyleManager {
       return true;
     } catch (error) {
       console.error('导入样式失败:', error);
-      return false;
-    }
-  }
-
-  // 验证样式配置格式
-  private static validateStyleConfig(style: unknown): style is StyleConfig {
-    try {
-      if (typeof style !== 'object' || style === null) {
-        return false;
-      }
-
-      const s = style as Record<string, unknown>;
-
-      // 检查基础属性
-      if (
-        typeof s.id !== 'string' ||
-        typeof s.name !== 'string' ||
-        typeof s.description !== 'string' ||
-        typeof s.content !== 'object' ||
-        s.content === null
-      ) {
-        return false;
-      }
-
-      const content = s.content as Record<string, unknown>;
-
-      // 检查 content 属性
-      if (
-        !['sm', 'md', 'lg', 'xl'].includes(content.size as string) ||
-        typeof content.titleColor !== 'string' ||
-        typeof content.contentColor !== 'string' ||
-        typeof content.background !== 'string' ||
-        typeof content.position !== 'object' ||
-        content.position === null
-      ) {
-        return false;
-      }
-
-      const position = content.position as Record<string, unknown>;
-
-      // 检查 position 属性
-      return (
-        ['top', 'center', 'bottom'].includes(position.vertical as string) &&
-        ['left', 'center', 'right'].includes(position.horizontal as string)
-      );
-    } catch {
       return false;
     }
   }
