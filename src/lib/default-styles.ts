@@ -1,0 +1,108 @@
+import { StyleConfig } from './image-style-config';
+
+// 内置的三套默认风格配置
+export const defaultStyles: StyleConfig[] = [
+  // 1. 简约风格 - 现代简洁，适合商务和专业内容
+  {
+    id: 'minimal',
+    name: '简约风格',
+    description: '现代简洁的设计，适合商务和专业内容。采用黑白配色，干净利落。',
+    content: {
+      size: 'md',
+      titleColor: 'black',
+      contentColor: 'gray',
+      background: '#ffffff',
+      position: {
+        vertical: 'top',
+        horizontal: 'left',
+      },
+    },
+    cover: {
+      position: {
+        vertical: 'center',
+        horizontal: 'center',
+      },
+      titleColor: 'black',
+      background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)',
+    },
+  },
+
+  // 2. 温暖风格 - 暖色调，适合生活分享和个人内容
+  {
+    id: 'warm',
+    name: '温暖风格',
+    description: '温馨的暖色调设计，适合生活分享、美食、旅行等个人内容。',
+    content: {
+      size: 'lg',
+      titleColor: 'orange',
+      contentColor: 'black',
+      background:
+        'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fed7aa 50%, #fb923c 75%, #ea580c 100%)',
+      position: {
+        vertical: 'center',
+        horizontal: 'left',
+      },
+    },
+    cover: {
+      position: {
+        vertical: 'center',
+        horizontal: 'center',
+      },
+      titleColor: 'white',
+      contentColor: 'white',
+      background:
+        'linear-gradient(45deg, #ff6b6b 0%, #ff8e53 25%, #ff6b9d 50%, #c44569 75%, #f8b500 100%)',
+    },
+  },
+
+  // 3. 科技风格 - 冷色调，适合科技、商业、数据相关内容
+  {
+    id: 'tech',
+    name: '科技风格',
+    description: '现代科技感设计，适合科技、商业、数据分析等专业内容。',
+    content: {
+      size: 'lg',
+      titleColor: 'blue',
+      contentColor: 'white',
+      background:
+        'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e40af 75%, #3b82f6 100%)',
+      position: {
+        vertical: 'top',
+        horizontal: 'left',
+      },
+    },
+    cover: {
+      position: {
+        vertical: 'center',
+        horizontal: 'center',
+      },
+      titleColor: 'white',
+      contentColor: 'blue',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%)',
+    },
+  },
+];
+
+// 根据ID获取默认风格
+export function getDefaultStyleById(id: string): StyleConfig | undefined {
+  return defaultStyles.find((style) => style.id === id);
+}
+
+// 获取所有默认风格的名称和描述
+export function getDefaultStyleOptions(): Array<{ id: string; name: string; description: string }> {
+  return defaultStyles.map((style) => ({
+    id: style.id,
+    name: style.name,
+    description: style.description,
+  }));
+}
+
+// 检查是否为内置风格
+export function isBuiltInStyle(id: string): boolean {
+  return defaultStyles.some((style) => style.id === id);
+}
+
+// 获取默认风格配置（用于初始化）
+export function getDefaultStyleConfig(): StyleConfig {
+  return defaultStyles[0]; // 返回简约风格作为默认配置
+}

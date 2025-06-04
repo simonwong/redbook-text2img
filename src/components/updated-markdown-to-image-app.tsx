@@ -46,44 +46,21 @@ const defaultMarkdown = `# 欢迎使用小红书图片生成器
 - 三级及以下标题会自动加粗显示
 - 支持无序列表，使用 \`-\` 或 \`*\` 开头`;
 
-export function MarkdownToImageApp() {
+export function UpdatedMarkdownToImageApp() {
   const [markdown, setMarkdown] = useState(defaultMarkdown);
   const [selectedStyleId, setSelectedStyleId] = useState('minimal');
-  const [currentStyleConfig, setCurrentStyleConfig] = useState(
-    () => StyleManager.getStyleById('minimal')!
+  const [currentStyleConfig, setCurrentStyleConfig] = useState(() =>
+    StyleManager.getCurrentStyle()
   );
   const [isExporting, setIsExporting] = useState(false);
   const [showSetting, setShowSetting] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [isClient, setIsClient] = useState(false);
 
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { exportSingleImage, exportAllImages } = useImageExport();
 
   // 解析 Markdown 为图片段落
   const segments = parseMarkdownToImages(markdown);
-
-  // 客户端初始化
-  useEffect(() => {
-    setIsClient(true);
-    // 在客户端加载用户的当前样式
-    const currentStyleId = StyleManager.getCurrentStyleId();
-    setSelectedStyleId(currentStyleId);
-    const styleConfig = StyleManager.getStyleById(currentStyleId);
-    if (styleConfig) {
-      setCurrentStyleConfig(styleConfig);
-    }
-  }, []);
-
-  // 当样式改变时更新配置
-  useEffect(() => {
-    if (!isClient) return;
-
-    const styleConfig = StyleManager.getStyleById(selectedStyleId);
-    if (styleConfig) {
-      setCurrentStyleConfig(styleConfig);
-    }
-  }, [selectedStyleId, refreshKey, isClient]);
 
   // 设置图片引用
   const setImageRef = useCallback(
@@ -92,6 +69,14 @@ export function MarkdownToImageApp() {
     },
     []
   );
+
+  // 当样式改变时更新配置
+  useEffect(() => {
+    const styleConfig = StyleManager.getStyleById(selectedStyleId);
+    if (styleConfig) {
+      setCurrentStyleConfig(styleConfig);
+    }
+  }, [selectedStyleId, refreshKey]);
 
   // 导出单张图片
   const handleExportSingle = async (index: number) => {
@@ -117,6 +102,11 @@ export function MarkdownToImageApp() {
     setIsExporting(false);
 
     console.log(`成功导出 ${successCount} 张图片，失败 ${failureCount} 张`);
+  };
+
+  // 样式更新回调
+  const handleStyleUpdate = () => {
+    setRefreshKey((prev) => prev + 1);
   };
 
   return (
@@ -165,8 +155,10 @@ export function MarkdownToImageApp() {
           </div>
         </div>
       </header>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex gap-6 h-[calc(100vh-120px)]">
+          {/* 左侧编辑器 */}
           <div className="flex-1">
             <Card className="h-full">
               <CardHeader className="flex items-center justify-between">
@@ -184,7 +176,9 @@ export function MarkdownToImageApp() {
               </CardContent>
             </Card>
           </div>
-          <div>
+
+          {/* 中间预览区 */}
+          <div className="w-80">
             <Card className="h-full">
               <CardHeader className="flex items-center justify-between">
                 <h2 className="font-medium text-gray-900">图片预览</h2>
@@ -212,9 +206,6 @@ export function MarkdownToImageApp() {
                       {segments.map((segment, index) => (
                         <div key={segment.id} className="relative group">
                           <div className="flex items-center justify-between px-3 absolute gap-4 z-10 top-2 left-0 w-full group-hover:opacity-100 opacity-0 transition-opacity duration-300">
-                            {/* <h3 className="text-sm font-medium text-gray-700">
-                              图片 {index + 1}: {segment.title}
-                            </h3> */}
                             <h3></h3>
                             <Button
                               size="sm"
@@ -243,7 +234,9 @@ export function MarkdownToImageApp() {
               </CardContent>
             </Card>
           </div>
-          {showSetting && isClient && (
+
+          {/* 右侧样式配置器 */}
+          {showSetting && (
             <div className="w-80">
               <Card className="h-full">
                 <CardHeader>
@@ -254,7 +247,7 @@ export function MarkdownToImageApp() {
                     <StyleConfigurator
                       selectedStyleId={selectedStyleId}
                       onStyleChange={setSelectedStyleId}
-                      onStyleUpdate={() => setRefreshKey((prev) => prev + 1)}
+                      onStyleUpdate={handleStyleUpdate}
                     />
                   </div>
                 </CardContent>
