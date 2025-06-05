@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -31,7 +31,7 @@ const MarkdownToImageApp = () => {
   const { exportSingleImage, exportAllImages } = useImageExport();
 
   // 解析 Markdown 为图片段落
-  const segments = parseMarkdownToImages(markdown);
+  const segments = useMemo(() => parseMarkdownToImages(markdown), [markdown]);
 
   // 设置图片引用
   const setImageRef = useCallback(
@@ -180,7 +180,7 @@ const MarkdownToImageApp = () => {
               </CardContent>
             </Card>
           </div>
-          {!showSetting && (
+          {showSetting && (
             <div className="w-80 overflow-auto">
               <StyleConfigurator />
             </div>

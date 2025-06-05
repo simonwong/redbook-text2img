@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef } from 'react';
+import { memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { ImageSegment } from '@/lib/markdown-parser';
 import { generateStylesFromConfig } from '@/lib/style-generator';
@@ -8,9 +8,10 @@ import { useStyleConfigStore } from '@/store/styleConfig';
 
 interface ImagePreviewProps {
   segment: ImageSegment;
+  ref: React.Ref<HTMLDivElement>;
 }
 
-export const ImagePreview = forwardRef<HTMLDivElement, ImagePreviewProps>(({ segment }, ref) => {
+export const ImagePreview: React.FC<ImagePreviewProps> = memo(({ segment, ref }) => {
   // 使用 segment.isFirstImage 判断是否为首图（封面模式）
   const isCoverImage = segment.isFirstImage;
 
