@@ -11,9 +11,8 @@ interface ImagePreviewProps {
 }
 
 export const ImagePreview = forwardRef<HTMLDivElement, ImagePreviewProps>(({ segment }, ref) => {
-  // 检测内容是否以 # 开头（封面模式）
-  const content = segment.content.trim();
-  const isCoverImage = content.startsWith('# ');
+  // 使用 segment.isFirstImage 判断是否为首图（封面模式）
+  const isCoverImage = segment.isFirstImage;
 
   const currentStyleConfig = useStyleConfigStore((state) => state.styleConfig);
   // 生成样式

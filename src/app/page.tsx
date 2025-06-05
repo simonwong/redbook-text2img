@@ -10,14 +10,22 @@ import { StyleConfigurator } from '@/components/style-configurator';
 import { parseMarkdownToImages } from '@/lib/markdown-parser';
 import { useImageExport } from '@/hooks/use-image-export';
 import { useMarkdownContentStore } from '@/store/markdownContent';
-import { Download, FileText, GithubIcon, ImageIcon, SettingsIcon, Sparkles } from 'lucide-react';
+import {
+  Download,
+  FileText,
+  GithubIcon,
+  ImageIcon,
+  SettingsIcon,
+  Sparkles,
+  RotateCcw,
+} from 'lucide-react';
 
 const MarkdownToImageApp = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [showSetting, setShowSetting] = useState(false);
 
-  // 从 zustand store 获取 markdown 内容
-  const { content: markdown } = useMarkdownContentStore();
+  // 从 zustand store 获取 markdown 内容和重置方法
+  const { content: markdown, resetContent } = useMarkdownContentStore();
 
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { exportSingleImage, exportAllImages } = useImageExport();
@@ -107,6 +115,10 @@ const MarkdownToImageApp = () => {
             <Card className="h-full">
               <CardHeader className="flex items-center justify-between">
                 <h2 className="font-medium text-gray-900">Markdown 编辑器</h2>
+                <Button onClick={resetContent} variant="outline" size="sm" className="gap-2">
+                  <RotateCcw className="w-4 h-4" />
+                  重置示例
+                </Button>
               </CardHeader>
               <CardContent>
                 <MarkdownEditor placeholder="在这里输入您的 Markdown 内容..." />
