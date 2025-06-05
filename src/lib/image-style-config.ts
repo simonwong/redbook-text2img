@@ -43,6 +43,8 @@ export interface GeneratedStyles {
   em: React.CSSProperties;
   ul: React.CSSProperties;
   li: React.CSSProperties;
+  pre: React.CSSProperties;
+  code: React.CSSProperties;
 }
 
 // 图片样式接口（新版本）

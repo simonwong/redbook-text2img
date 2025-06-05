@@ -133,6 +133,24 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
       ...generateTypographyStyle('body'),
       position: 'relative',
     },
+    pre: {
+      marginBottom: `${0.77}em`,
+      color: contentColor,
+      whiteSpace: 'break-spaces',
+      fontSize: `0.857em`,
+      lineHeight: `1.5`,
+      wordBreak: 'break-word',
+      borderRadius: `0.4em`,
+      padding: `0.4em 0.6em`,
+      backgroundColor: `rgba(0,0,0,0.05)`,
+    },
+    code: {
+      marginBottom: `${0.77}em`,
+      color: contentColor,
+      fontSize: `0.857em`,
+      lineHeight: `1.5`,
+      wordBreak: 'break-word',
+    },
   };
 }
 

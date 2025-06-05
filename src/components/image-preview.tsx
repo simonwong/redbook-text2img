@@ -42,6 +42,8 @@ export const ImagePreview = forwardRef<HTMLDivElement, ImagePreviewProps>(({ seg
               em: ({ children }) => <em style={currentStyles.em}>{children}</em>,
               ul: ({ children }) => <ul style={currentStyles.ul}>{children}</ul>,
               li: ({ children }) => <li style={currentStyles.li}>{children}</li>,
+              pre: ({ children }) => <pre style={currentStyles.pre}>{children}</pre>,
+              code: ({ children }) => <code style={currentStyles.code}>{children}</code>,
             }}
           >
             {segment.content}
