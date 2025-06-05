@@ -65,7 +65,7 @@ export function parseMarkdownToImages(markdown: string): ImageSegment[] {
 
   // 标记包含一级标题的段落为首图
   validSegments.forEach((segment) => {
-    const hasH1 = segment.content.trim().includes('# ');
+    const hasH1 = segment.content.trim().startsWith('# ');
     segment.isFirstImage = hasH1;
 
     // 如果包含一级标题，提取标题作为段落标题
