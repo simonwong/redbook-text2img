@@ -19,6 +19,7 @@ import {
   Sparkles,
   RotateCcw,
 } from 'lucide-react';
+import { useImageRefs } from '@/hooks/use-image-refs';
 
 const MarkdownToImageApp = () => {
   const [isExporting, setIsExporting] = useState(false);
@@ -27,19 +28,12 @@ const MarkdownToImageApp = () => {
   // 从 zustand store 获取 markdown 内容和重置方法
   const { content: markdown, resetContent } = useMarkdownContentStore();
 
-  const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { exportSingleImage, exportAllImages } = useImageExport();
 
   // 解析 Markdown 为图片段落
   const segments = useMemo(() => parseMarkdownToImages(markdown), [markdown]);
 
-  // 设置图片引用
-  const setImageRef = useCallback(
-    (index: number) => (el: HTMLDivElement | null) => {
-      imageRefs.current[index] = el;
-    },
-    []
-  );
+  const { imageRefs, setImageRef } = useImageRefs();
 
   // 导出单张图片
   const handleExportSingle = async (index: number) => {

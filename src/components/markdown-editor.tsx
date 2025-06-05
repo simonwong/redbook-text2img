@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { useMarkdownContentStore } from '@/store/markdownContent';
 
@@ -7,7 +8,7 @@ interface MarkdownEditorProps {
   placeholder?: string;
 }
 
-export function MarkdownEditor({ placeholder }: MarkdownEditorProps) {
+export const MarkdownEditor = memo(({ placeholder }: MarkdownEditorProps) => {
   const { content, setContent } = useMarkdownContentStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -25,4 +26,6 @@ export function MarkdownEditor({ placeholder }: MarkdownEditorProps) {
       />
     </div>
   );
-}
+});
+
+MarkdownEditor.displayName = 'MarkdownEditor';

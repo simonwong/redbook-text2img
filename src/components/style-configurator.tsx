@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -152,7 +152,7 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
   </>
 );
 
-export function StyleConfigurator() {
+export const StyleConfigurator = memo(() => {
   const [newStyleName, setNewStyleName] = useState('');
 
   const { styleConfig, setStyleConfig, isChange } = useStyleConfigStore();
@@ -255,4 +255,6 @@ export function StyleConfigurator() {
       </Card>
     </div>
   );
-}
+});
+
+StyleConfigurator.displayName = 'StyleConfigurator';
