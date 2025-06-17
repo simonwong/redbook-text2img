@@ -8,9 +8,10 @@ import { ImagePreview } from '@/features/preview/image-preview';
 import { parseMarkdownToImages } from '@/lib/markdown-parser';
 import { useImageExport } from './hooks/use-image-export';
 import { useMarkdownContentStore } from '@/store/markdownContent';
-import { Download, FileText, ImageIcon, SettingsIcon } from 'lucide-react';
+import { Download, FileText, ImageDownIcon, PaletteIcon } from 'lucide-react';
 import { useImageRefs } from '@/features/preview/hooks/use-image-refs';
 import { showSettingStore } from '@/store/styleConfig';
+import { Tooltip } from '@/components/tooltip';
 
 export const PreviewCard = () => {
   const [isExporting, setIsExporting] = useState(false);
@@ -55,18 +56,21 @@ export const PreviewCard = () => {
     <CardWrap
       title="图片预览"
       extra={[
-        <Button key="setting" onClick={switchShowSetting} variant="outline">
-          <SettingsIcon />
-        </Button>,
-        <Button
-          key="export"
-          onClick={handleExportAll}
-          disabled={segments.length === 0 || isExporting}
-          className="gap-2"
-        >
-          <ImageIcon className="w-4 h-4" />
-          {isExporting ? '导出中...' : `导出全部(${segments.length} 张)`}
-        </Button>,
+        <Tooltip key="setting" content="设置样式">
+          <Button onClick={switchShowSetting} variant="outline">
+            <PaletteIcon />
+          </Button>
+        </Tooltip>,
+        <Tooltip key="export" content={`导出全部 (${segments.length} 张)`}>
+          <Button
+            onClick={handleExportAll}
+            disabled={segments.length === 0 || isExporting}
+            className="gap-2"
+            variant="outline"
+          >
+            <ImageDownIcon className="w-4 h-4" />
+          </Button>
+        </Tooltip>,
       ]}
     >
       <div className="h-full overflow-auto">
