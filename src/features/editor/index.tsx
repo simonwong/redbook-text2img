@@ -8,17 +8,19 @@ import { RotateCcwIcon } from 'lucide-react';
 import { useMarkdownContentStore } from '@/store/markdownContent';
 
 export const EditorCard = () => {
-  const { resetContent } = useMarkdownContentStore();
+  const { resetContent, isChange } = useMarkdownContentStore();
 
   return (
     <CardWrap
       className="flex-1"
       title="Markdown 编辑器"
       extra={
-        <Button onClick={resetContent} variant="outline" size="sm">
-          <RotateCcwIcon className="w-4 h-4" />
-          重置示例
-        </Button>
+        isChange && (
+          <Button onClick={resetContent} variant="outline" size="sm">
+            <RotateCcwIcon className="w-4 h-4" />
+            重置示例
+          </Button>
+        )
       }
     >
       <MarkdownEditor placeholder="在这里输入您的 Markdown 内容..." />

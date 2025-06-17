@@ -3,6 +3,7 @@ import { devtools, persist } from 'zustand/middleware';
 
 interface MarkdownContentState {
   content: string;
+  isChange: boolean;
   setContent: (content: string) => void;
   resetContent: () => void;
 }
@@ -53,8 +54,9 @@ export const useMarkdownContentStore = create<MarkdownContentState>()(
     persist(
       (set) => ({
         content: defaultMarkdown,
-        setContent: (content) => set({ content }),
-        resetContent: () => set({ content: defaultMarkdown }),
+        isChange: false,
+        setContent: (content) => set({ content, isChange: true }),
+        resetContent: () => set({ content: defaultMarkdown, isChange: false }),
       }),
       {
         name: 'redbook-markdown-content',
