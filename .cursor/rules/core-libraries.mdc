@@ -1,0 +1,219 @@
+---
+description: Core Library Usage Guide
+globs: 
+alwaysApply: false
+---
+# 核心库使用指南
+
+## 核心依赖库
+
+### 1. Next.js 15
+- **版本**：15.1.8
+- **特性**：App Router, Turbopack, React 19 支持
+- **配置**：[next.config.ts](mdc:next.config.ts)
+
+#### 使用要点
+```typescript
+// 客户端组件标记
+'use client';
+
+// 服务端组件（默认）
+export default function ServerComponent() {
+  return <div>服务端渲染内容</div>;
+}
+```
+
+### 2. React 19
+- **版本**：^19.0.0
+- **新特性**：Enhanced hooks, Concurrent features
+- **类型支持**：@types/react ^19
+
+#### 关键 Hooks
+```typescript
+import { memo, forwardRef, useCallback, useMemo } from 'react';
+
+// 性能优化
+const MemoComponent = memo(Component);
+const RefComponent = forwardRef(Component);
+```
+
+### 3. Zustand (状态管理)
+- **版本**：^5.0.5
+- **特点**：轻量级、类型安全、中间件支持
+
+#### 使用模式
+参考 [src/store/styleConfig.ts](mdc:src/store/styleConfig.ts)：
+```typescript
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+
+interface State {
+  value: string;
+  setValue: (value: string) => void;
+}
+
+export const useStore = create<State>()(
+  devtools(
+    persist(
+      (set) => ({
+        value: '',
+        setValue: (value) => set({ value }),
+      }),
+      { name: 'store-name' }
+    )
+  )
+);
+```
+
+### 4. Tailwind CSS 4.x
+- **版本**：^4.1.7
+- **特点**：最新版本，更好的性能
+- **配置**：[postcss.config.mjs](mdc:postcss.config.mjs)
+
+#### 使用原则
+```typescript
+// 优先使用 Tailwind 类
+<div className="w-80 p-4 bg-white rounded-lg shadow-md">
+  
+// 复杂样式使用 CSS-in-JS
+const dynamicStyles: React.CSSProperties = {
+  backgroundColor: getBackgroundColor(config),
+  fontSize: `${getFontSize(config)}px`,
+};
+```
+
+### 5. Radix UI
+- **组件库**：@radix-ui/react-*
+- **特点**：无障碍访问、无样式、可定制
+
+#### 核心组件
+- **Select**：[src/components/ui/select.tsx](mdc:src/components/ui/select.tsx)
+- **Separator**：[src/components/ui/separator.tsx](mdc:src/components/ui/separator.tsx)
+- **Slot**：用于 polymorphic 组件
+
+### 6. html2canvas-pro
+- **版本**：^1.5.11
+- **用途**：DOM 转换为图片
+- **使用**：[src/hooks/use-image-export.ts](mdc:src/hooks/use-image-export.ts)
+
+#### 配置选项
+```typescript
+import html2canvas from 'html2canvas-pro';
+
+const canvas = await html2canvas(element, {
+  backgroundColor: '#ffffff',
+  scale: 2,
+  useCORS: true,
+  allowTaint: false,
+  logging: false,
+});
+```
+
+### 7. Markdown 处理
+- **react-markdown**：^10.1.0 - 渲染 Markdown
+- **markdown-to-jsx**：^7.7.6 - Markdown 转 JSX
+
+#### 使用示例
+```typescript
+import ReactMarkdown from 'react-markdown';
+
+<ReactMarkdown 
+  components={{
+    h1: ({ children }) => <h1 className="text-2xl font-bold">{children}</h1>,
+    p: ({ children }) => <p className="text-base">{children}</p>,
+  }}
+>
+  {markdownContent}
+</ReactMarkdown>
+```
+
+## 工具库
+
+### 1. class-variance-authority
+- **用途**：管理组件样式变体
+- **配合**：clsx, tailwind-merge
+
+```typescript
+import { cva } from 'class-variance-authority';
+
+const buttonVariants = cva(
+  'inline-flex items-center justify-center rounded-md',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary text-primary-foreground',
+        secondary: 'bg-secondary text-secondary-foreground',
+      },
+      size: {
+        default: 'h-10 px-4 py-2',
+        sm: 'h-9 rounded-md px-3',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+    },
+  }
+);
+```
+
+### 2. Lucide React
+- **版本**：^0.511.0
+- **用途**：图标库
+- **特点**：SVG 图标、可定制
+
+```typescript
+import { Download, Settings, Github } from 'lucide-react';
+
+<Button>
+  <Download className="w-4 h-4 mr-2" />
+  下载
+</Button>
+```
+
+### 3. Monaco Editor
+- **版本**：@monaco-editor/react ^4.7.0
+- **用途**：代码编辑器
+- **特点**：VS Code 编辑器内核
+
+## 开发工具
+
+### 1. TypeScript
+- **版本**：^5
+- **配置**：[tsconfig.json](mdc:tsconfig.json)
+- **严格模式**：启用所有严格检查
+
+### 2. ESLint
+- **版本**：^9
+- **配置**：[eslint.config.mjs](mdc:eslint.config.mjs)
+- **规则**：Next.js + React Hooks + Prettier
+
+### 3. Prettier
+- **版本**：^3.5.3
+- **配置**：[prettier.config.mjs](mdc:prettier.config.mjs)
+- **集成**：与 ESLint 配合使用
+
+## 性能优化库
+
+### 1. tw-animate-css
+- **版本**：^1.3.0
+- **用途**：CSS 动画工具
+- **特点**：与 Tailwind 集成
+
+### 2. 构建优化
+- **Turbopack**：Next.js 15 内置
+- **Tree Shaking**：自动代码分割
+- **Image Optimization**：Next.js Image 组件
+
+## 最佳实践
+
+### 库的选择原则
+1. **类型安全**：优先选择 TypeScript 支持的库
+2. **包大小**：考虑 bundle size 影响
+3. **维护状态**：选择活跃维护的库
+4. **生态系统**：与现有技术栈兼容
+
+### 版本管理
+- **锁定主版本**：避免破坏性更新
+- **定期更新**：保持安全性和性能
+- **测试回归**：更新后充分测试

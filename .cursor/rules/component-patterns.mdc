@@ -1,0 +1,196 @@
+---
+description: Component design pattern
+globs: 
+alwaysApply: false
+---
+# 组件设计模式
+
+## 组件分类
+
+### 1. UI 基础组件 (src/components/ui/)
+基于 Radix UI 的可复用基础组件：
+- [src/components/ui/button.tsx](mdc:src/components/ui/button.tsx) - 按钮组件
+- [src/components/ui/card.tsx](mdc:src/components/ui/card.tsx) - 卡片组件
+- [src/components/ui/input.tsx](mdc:src/components/ui/input.tsx) - 输入框组件
+- [src/components/ui/select.tsx](mdc:src/components/ui/select.tsx) - 选择器组件
+- [src/components/ui/textarea.tsx](mdc:src/components/ui/textarea.tsx) - 文本域组件
+
+**设计原则**：
+- 基于 Radix UI 提供无障碍访问支持
+- 使用 class-variance-authority 管理样式变体
+- 完全可定制的 props 接口
+- 支持 forwardRef 传递引用
+
+### 2. 业务组件 (src/components/)
+应用特定的业务逻辑组件：
+
+#### MarkdownEditor 组件
+- **文件**：[src/components/markdown-editor.tsx](mdc:src/components/markdown-editor.tsx)
+- **职责**：Markdown 内容编辑
+- **状态管理**：使用 useMarkdownContentStore
+- **特点**：使用 memo 优化渲染性能
+
+#### ImagePreview 组件
+- **文件**：[src/components/image-preview.tsx](mdc:src/components/image-preview.tsx)
+- **职责**：渲染 Markdown 为图片预览
+- **特点**：使用 forwardRef 支持导出功能
+
+#### StyleConfigurator 组件
+- **文件**：[src/components/style-configurator.tsx](mdc:src/components/style-configurator.tsx)
+- **职责**：样式配置界面
+- **状态管理**：使用 useStyleConfigStore
+
+## 组件设计模式
+
+### 1. Container-Presenter 模式
+```typescript
+// Container 组件：处理业务逻辑和状态
+const MarkdownEditorContainer = () => {
+  const { content, setContent } = useMarkdownContentStore();
+  
+  return <MarkdownEditorPresenter 
+    content={content} 
+    onChange={setContent} 
+  />;
+};
+
+// Presenter 组件：纯 UI 渲染
+const MarkdownEditorPresenter = ({ content, onChange }) => {
+  return <Textarea value={content} onChange={onChange} />;
+};
+```
+
+### 2. Compound 组件模式
+```typescript
+// Card 组件使用 compound 模式
+<Card>
+  <CardHeader>标题</CardHeader>
+  <CardContent>内容</CardContent>
+</Card>
+```
+
+### 3. Render Props 模式
+```typescript
+// 用于复杂的共享逻辑
+const DataProvider = ({ children, render }) => {
+  const data = useData();
+  return render ? render(data) : children(data);
+};
+```
+
+## 组件通信模式
+
+### 1. Props 传递
+- **适用**：父子组件直接通信
+- **示例**：按钮点击事件传递
+
+### 2. 状态管理 (Zustand)
+- **适用**：跨组件状态共享
+- **示例**：Markdown 内容、样式配置
+
+### 3. Context 传递
+- **适用**：深层嵌套组件传递
+- **示例**：主题、语言配置
+
+## ref 传递模式
+
+### forwardRef 使用
+```typescript
+export const ImagePreview = forwardRef<HTMLDivElement, ImagePreviewProps>(
+  ({ segment }, ref) => {
+    return <div ref={ref}>{/* 内容 */}</div>;
+  }
+);
+
+ImagePreview.displayName = 'ImagePreview';
+```
+
+### useImperativeHandle
+```typescript
+const AdvancedComponent = forwardRef((props, ref) => {
+  useImperativeHandle(ref, () => ({
+    customMethod: () => {
+      // 自定义方法
+    }
+  }));
+  
+  return <div>内容</div>;
+});
+```
+
+## 性能优化模式
+
+### 1. React.memo
+```typescript
+export const ExpensiveComponent = memo(({ data }: Props) => {
+  return <div>{/* 复杂渲染逻辑 */}</div>;
+}, (prevProps, nextProps) => {
+  // 自定义比较逻辑
+  return prevProps.data.id === nextProps.data.id;
+});
+```
+
+### 2. useMemo 和 useCallback
+```typescript
+const Component = ({ items, onSelect }) => {
+  const expensiveValue = useMemo(() => {
+    return items.reduce((sum, item) => sum + item.value, 0);
+  }, [items]);
+  
+  const handleSelect = useCallback((item) => {
+    onSelect(item.id);
+  }, [onSelect]);
+  
+  return <div>{/* 渲染逻辑 */}</div>;
+};
+```
+
+## 错误边界模式
+
+### 组件错误处理
+```typescript
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  
+  componentDidCatch(error, errorInfo) {
+    console.log('Error caught:', error, errorInfo);
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong.</h1>;
+    }
+    
+    return this.props.children;
+  }
+}
+```
+
+## 可访问性模式
+
+### ARIA 属性
+```typescript
+<button
+  aria-label="导出图片"
+  aria-describedby="export-help"
+  role="button"
+>
+  导出
+</button>
+```
+
+### 键盘导航
+```typescript
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    handleClick();
+  }
+};
+```

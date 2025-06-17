@@ -1,0 +1,97 @@
+---
+description: Coding standards and best practices
+globs: 
+alwaysApply: false
+---
+# 编码标准和最佳实践
+
+## 文件命名规范
+- **组件文件**：使用 kebab-case，如 `markdown-editor.tsx`
+- **Hook 文件**：使用 kebab-case，以 `use-` 开头，如 `use-image-export.ts`
+- **工具文件**：使用 kebab-case，描述性名称，如 `style-generator.ts`
+- **Store 文件**：使用 camelCase，如 `markdownContent.ts`
+
+## TypeScript 规范
+- **严格类型检查**：启用所有严格模式选项
+- **接口定义**：所有复杂对象都需要定义接口，如 [src/lib/image-style-config.ts](mdc:src/lib/image-style-config.ts)
+- **类型导出**：在需要复用的地方导出类型定义
+- **泛型使用**：适当使用泛型提高代码复用性
+
+## 组件开发规范
+
+### React 组件
+- **函数组件**：优先使用函数组件
+- **memo 优化**：对于可能频繁渲染的组件使用 `React.memo`
+- **forwardRef**：需要 ref 的组件使用 `forwardRef`
+- **displayName**：导出组件需要设置 displayName
+
+### Props 类型定义
+```typescript
+interface ComponentProps {
+  // 必需的 props
+  required: string;
+  // 可选的 props
+  optional?: number;
+  // 回调函数
+  onCallback?: (value: string) => void;
+}
+```
+
+### 组件文件结构
+```typescript
+'use client'; // 客户端组件标记
+
+import { ... } from 'react';
+import { ... } from '@/components/...';
+
+interface ComponentProps {
+  // props 定义
+}
+
+export const Component = memo(({ ... }: ComponentProps) => {
+  // 组件逻辑
+  return (
+    // JSX
+  );
+});
+
+Component.displayName = 'Component';
+```
+
+## 状态管理规范
+
+### Zustand Store 结构
+参考 [src/store/styleConfig.ts](mdc:src/store/styleConfig.ts) 的模式：
+- **类型定义**：明确定义 State 和 Actions 接口
+- **中间件使用**：使用 devtools 和 persist 中间件
+- **命名规范**：使用 `useXxxStore` 命名
+
+## 样式规范
+
+### Tailwind CSS
+- **实用类优先**：优先使用 Tailwind 实用类
+- **自定义样式**：复杂样式使用 CSS-in-JS
+- **响应式设计**：使用 Tailwind 响应式前缀
+- **暗色模式**：考虑暗色模式支持
+
+### CSS-in-JS
+参考 [src/lib/style-generator.ts](mdc:src/lib/style-generator.ts)：
+- **类型安全**：使用 React.CSSProperties 类型
+- **单位统一**：使用 em/rem 相对单位
+- **变量复用**：提取常用样式变量
+
+## 错误处理
+- **边界检查**：对用户输入进行验证
+- **异步操作**：使用 try-catch 处理异步错误
+- **用户反馈**：提供清晰的错误信息
+
+## 性能优化
+- **懒加载**：大组件使用 React.lazy
+- **memo 缓存**：缓存计算结果
+- **useCallback**：缓存事件处理函数
+- **useMemo**：缓存复杂计算
+
+## 测试规范
+- **组件测试**：测试组件的主要功能
+- **工具函数测试**：测试核心工具函数
+- **类型测试**：确保类型定义正确

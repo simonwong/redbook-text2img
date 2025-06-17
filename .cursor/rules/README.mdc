@@ -1,0 +1,87 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor Rules 索引
+
+## 规则文件概览
+
+本项目的 Cursor Rules 分为以下几个方面，帮助 AI 更好地理解和协助项目开发：
+
+### 1. 项目总览
+- **文件**：[project-overview.mdc](mdc:.cursor/rules/project-overview.mdc)
+- **内容**：项目介绍、核心功能、技术栈、文件结构
+- **用途**：快速了解项目整体情况
+
+### 2. 架构指南  
+- **文件**：[architecture-guide.mdc](mdc:.cursor/rules/architecture-guide.mdc)
+- **内容**：整体架构、模块分层、数据流、设计原则
+- **用途**：理解项目架构和设计思路
+
+### 3. 编码标准
+- **文件**：[coding-standards.mdc](mdc:.cursor/rules/coding-standards.mdc)
+- **内容**：命名规范、TypeScript 规范、组件开发、样式规范
+- **用途**：确保代码质量和一致性
+
+### 4. 开发工作流
+- **文件**：[development-workflow.mdc](mdc:.cursor/rules/development-workflow.mdc)
+- **内容**：项目启动、开发流程、调试指南、部署流程
+- **用途**：指导日常开发工作
+
+### 5. 组件模式
+- **文件**：[component-patterns.mdc](mdc:.cursor/rules/component-patterns.mdc)
+- **内容**：组件分类、设计模式、性能优化、可访问性
+- **用途**：组件开发的最佳实践
+
+### 6. 核心库指南
+- **文件**：[core-libraries.mdc](mdc:.cursor/rules/core-libraries.mdc)
+- **内容**：核心依赖库、工具库、开发工具、最佳实践
+- **用途**：了解技术栈和使用方法
+
+## 使用建议
+
+### 对于新开发者
+1. 首先阅读 [项目总览](mdc:.cursor/rules/project-overview.mdc) 了解项目
+2. 然后查看 [架构指南](mdc:.cursor/rules/architecture-guide.mdc) 理解设计
+3. 遵循 [编码标准](mdc:.cursor/rules/coding-standards.mdc) 进行开发
+
+### 对于功能开发
+1. 参考 [开发工作流](mdc:.cursor/rules/development-workflow.mdc) 流程
+2. 使用 [组件模式](mdc:.cursor/rules/component-patterns.mdc) 设计组件
+3. 查阅 [核心库指南](mdc:.cursor/rules/core-libraries.mdc) 正确使用依赖
+
+### 对于代码审查
+1. 检查是否符合 [编码标准](mdc:.cursor/rules/coding-standards.mdc)
+2. 验证架构是否符合 [架构指南](mdc:.cursor/rules/architecture-guide.mdc)
+3. 确认组件设计遵循 [组件模式](mdc:.cursor/rules/component-patterns.mdc)
+
+## 关键文件快速访问
+
+### 应用入口
+- [src/app/page.tsx](mdc:src/app/page.tsx) - 主页面
+
+### 核心组件
+- [src/components/markdown-editor.tsx](mdc:src/components/markdown-editor.tsx) - Markdown 编辑器
+- [src/components/image-preview.tsx](mdc:src/components/image-preview.tsx) - 图片预览
+- [src/components/style-configurator.tsx](mdc:src/components/style-configurator.tsx) - 样式配置
+
+### 核心逻辑
+- [src/lib/markdown-parser.ts](mdc:src/lib/markdown-parser.ts) - Markdown 解析
+- [src/lib/style-generator.ts](mdc:src/lib/style-generator.ts) - 样式生成
+
+### 状态管理
+- [src/store/markdownContent.ts](mdc:src/store/markdownContent.ts) - 内容状态
+- [src/store/styleConfig.ts](mdc:src/store/styleConfig.ts) - 样式状态
+
+### 配置文件
+- [package.json](mdc:package.json) - 项目配置
+- [next.config.ts](mdc:next.config.ts) - Next.js 配置
+- [tsconfig.json](mdc:tsconfig.json) - TypeScript 配置
+
+## 规则维护
+
+这些规则文件会随着项目的发展而更新，建议：
+- 新增功能时更新相应规则
+- 架构调整时同步更新文档
+- 定期检查规则的准确性和完整性
