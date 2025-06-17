@@ -23,7 +23,7 @@ import {
   VerticalOptions,
 } from '@/lib/preset-config';
 import { Palette, Trash2 } from 'lucide-react';
-import { useStyleConfigStore } from '@/store/styleConfig';
+import { showSettingStore, useStyleConfigStore } from '@/store/styleConfig';
 import { defaultStyles, defaultStyleIds } from '@/lib/default-styles';
 import { mergeCoverConfig } from '@/lib/style-generator';
 
@@ -152,10 +152,11 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
   </>
 );
 
-export const StyleConfigurator = memo(() => {
+export const Configurator = memo(() => {
   const [newStyleName, setNewStyleName] = useState('');
 
   const { styleConfig, setStyleConfig, isChange } = useStyleConfigStore();
+  const isShowSetting = showSettingStore((state) => state.isShowSetting);
 
   const handleStyleSelect = (styleId: string) => {
     setStyleConfig(defaultStyles.find((style) => style.id === styleId)!);
@@ -163,65 +164,68 @@ export const StyleConfigurator = memo(() => {
 
   const isBuiltIn = defaultStyleIds.includes(styleConfig.id);
 
+  if (!isShowSetting) return null;
+
   return (
-    <div className="space-y-4">
-      {/* 样式选择器 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm">
-            <Palette className="w-4 h-4" />
-            样式选择
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Select value={styleConfig?.id} onValueChange={handleStyleSelect}>
-            <SelectTrigger className="data-[size=default]:h-auto whitespace-normal text-left">
-              <SelectValue placeholder="选择样式" />
-            </SelectTrigger>
-            <SelectContent>
-              {defaultStyles.map((style) => (
-                <SelectItem key={style.id} value={style.id}>
-                  <div className="flex flex-col items-start">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{style.name}</span>
-                      {defaultStyleIds.includes(style.id) && (
-                        <Badge variant="secondary" className="text-xs">
-                          内置
-                        </Badge>
-                      )}
-                    </div>
-                    <span className="text-xs text-gray-500">{style.description}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* 样式操作按钮 */}
-          <div className="flex gap-2">
-            {!isBuiltIn && (
-              <Button variant="outline" size="sm" disabled={!styleConfig || isBuiltIn}>
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-      {isChange && (
+    <div className="w-80 overflow-auto">
+      <div className="space-y-4">
+        {/* 样式选择器 */}
         <Card>
-          <CardContent className="pt-4">
-            {isBuiltIn && (
-              <div className="space-y-2 mb-4">
-                <label className="text-sm font-medium">新样式名称</label>
-                <Input
-                  value={newStyleName}
-                  onChange={(e) => setNewStyleName(e.target.value)}
-                  placeholder={`自定义 ${styleConfig.name}`}
-                />
-              </div>
-            )}
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Palette className="w-4 h-4" />
+              样式选择
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Select value={styleConfig?.id} onValueChange={handleStyleSelect}>
+              <SelectTrigger className="data-[size=default]:h-auto whitespace-normal text-left">
+                <SelectValue placeholder="选择样式" />
+              </SelectTrigger>
+              <SelectContent>
+                {defaultStyles.map((style) => (
+                  <SelectItem key={style.id} value={style.id}>
+                    <div className="flex flex-col items-start">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{style.name}</span>
+                        {defaultStyleIds.includes(style.id) && (
+                          <Badge variant="secondary" className="text-xs">
+                            内置
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="text-xs text-gray-500">{style.description}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            {/* <div className="flex gap-2">
+            {/* 样式操作按钮 */}
+            <div className="flex gap-2">
+              {!isBuiltIn && (
+                <Button variant="outline" size="sm" disabled={!styleConfig || isBuiltIn}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        {isChange && (
+          <Card>
+            <CardContent className="pt-4">
+              {isBuiltIn && (
+                <div className="space-y-2 mb-4">
+                  <label className="text-sm font-medium">新样式名称</label>
+                  <Input
+                    value={newStyleName}
+                    onChange={(e) => setNewStyleName(e.target.value)}
+                    placeholder={`自定义 ${styleConfig.name}`}
+                  />
+                </div>
+              )}
+
+              {/* <div className="flex gap-2">
               <Button onClick={saveEditing} className="flex-1">
                 <Save className="w-3 h-3 mr-1" />
                 {isBuiltIn ? '保存为新样式' : '保存更改'}
@@ -230,31 +234,32 @@ export const StyleConfigurator = memo(() => {
                 取消
               </Button>
             </div> */}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* 内容设置 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">内容设置</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ConfigForm config={styleConfig.content} />
           </CardContent>
         </Card>
-      )}
 
-      {/* 内容设置 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">内容设置</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <ConfigForm config={styleConfig.content} />
-        </CardContent>
-      </Card>
-
-      {/* 封面设置 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">封面设置</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <ConfigForm config={mergeCoverConfig(styleConfig.content, styleConfig.cover)} />
-        </CardContent>
-      </Card>
+        {/* 封面设置 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">封面设置</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ConfigForm config={mergeCoverConfig(styleConfig.content, styleConfig.cover)} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 });
 
-StyleConfigurator.displayName = 'StyleConfigurator';
+Configurator.displayName = 'Configurator';

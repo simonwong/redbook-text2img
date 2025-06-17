@@ -25,3 +25,15 @@ export const useStyleConfigStore = create<StyleConfigState>()(
     )
   )
 );
+
+interface ShowConfigState {
+  isShowSetting: boolean;
+  switchShowSetting: () => void;
+}
+
+export const showSettingStore = create<ShowConfigState>()((set) => ({
+  isShowSetting: false,
+  switchShowSetting: () => {
+    set((state) => ({ isShowSetting: !state.isShowSetting }));
+  },
+}));

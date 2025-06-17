@@ -25,9 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-gray-50`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} h-screen max-h-screen flex flex-col bg-gray-50`}
+      >
         <Header />
-        {children}
+        <main className="flex-1 overflow-hidden">{children}</main>
       </body>
     </html>
   );
