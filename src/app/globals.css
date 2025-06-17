@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
- 
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -72,7 +72,6 @@
   --sidebar-ring: oklch(0.645 0.246 16.439);
 }
 
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -111,7 +110,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
- 
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -119,57 +118,4 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-/* 自定义样式 */
-.image-preview {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.image-preview:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-}
-
-/* 滚动条样式 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* 确保图片预览区域不会出现不必要的滚动条 */
-.image-preview * {
-  box-sizing: border-box;
-}
-
-/* 动画效果 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.image-preview {
-  animation: fadeIn 0.3s ease-out;
 }

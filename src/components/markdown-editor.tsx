@@ -22,7 +22,11 @@ export const MarkdownEditor = memo(({ placeholder }: MarkdownEditorProps) => {
         value={content}
         onChange={handleChange}
         placeholder={placeholder || '在这里输入您的 Markdown 内容...'}
-        className="h-[calc(100vh-220px)] resize-none border-0 focus:ring-0 focus:border-0 text-sm font-mono leading-relaxed"
+        className="h-[calc(100vh-220px)] resize-none border-0 
+        focus:ring-0 focus:border-0 text-sm font-mono 
+        leading-relaxed focus-visible:ring-0 focus-visible:ring-offset-0
+        bg-accent
+        "
       />
     </div>
   );
