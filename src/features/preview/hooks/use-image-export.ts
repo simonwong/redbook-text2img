@@ -13,13 +13,6 @@ export function useImageExport() {
           useCORS: true,
           logging: true,
           scale: 3,
-          onclone: (clonedDoc) => {
-            // 处理克隆文档中的图片
-            const images = clonedDoc.querySelectorAll('img');
-            images.forEach((img) => {
-              img.crossOrigin = 'anonymous';
-            });
-          },
         });
 
         // 创建下载链接
@@ -52,13 +45,6 @@ export function useImageExport() {
               useCORS: true,
               logging: true,
               scale: 3,
-              onclone: (clonedDoc) => {
-                // 处理克隆文档中的图片
-                const images = clonedDoc.querySelectorAll('img');
-                images.forEach((img) => {
-                  img.crossOrigin = 'anonymous';
-                });
-              },
             });
 
             return {
