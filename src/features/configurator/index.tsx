@@ -1,8 +1,12 @@
 'use client';
 
+import { Palette, Trash2 } from 'lucide-react';
 import { memo, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -10,9 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { ContentConfig } from '@/lib/image-style-config';
+import { defaultStyleIds, defaultStyles } from '@/lib/default-styles';
+import type { ContentConfig } from '@/lib/image-style-config';
 import {
   BackgroundOptions,
   FontColorOptions,
@@ -22,16 +25,14 @@ import {
   HorizontalOptions,
   VerticalOptions,
 } from '@/lib/preset-config';
-import { Palette, Trash2 } from 'lucide-react';
-import { showSettingStore, useStyleConfigStore } from '@/store/styleConfig';
-import { defaultStyles, defaultStyleIds } from '@/lib/default-styles';
 import { mergeCoverConfig } from '@/lib/style-generator';
+import { showSettingStore, useStyleConfigStore } from '@/store/styleConfig';
 
 const ConfigForm = ({ config }: { config: ContentConfig }) => (
   <>
     {/* 大小设置 */}
     <div className="space-y-2">
-      <label className="text-sm font-medium">大小</label>
+      <Label className="font-medium text-sm">大小</Label>
       <div className="flex gap-2">
         <Select value={config.size}>
           <SelectTrigger className="flex-1">
@@ -51,7 +52,7 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
     {/* 颜色设置 */}
     <div className="grid grid-cols-2 gap-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium">标题颜色</label>
+        <Label className="font-medium text-sm">标题颜色</Label>
         <Select value={config.titleColor}>
           <SelectTrigger>
             <SelectValue />
@@ -61,7 +62,7 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
               <SelectItem key={option.value} value={option.value}>
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-4 h-4 rounded border"
+                    className="h-4 w-4 rounded border"
                     style={{ background: getColorCss(option.value) }}
                   />
                   <span className="text-xs">{option.label}</span>
@@ -73,7 +74,7 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">内容颜色</label>
+        <Label className="font-medium text-sm">内容颜色</Label>
         <Select value={config.contentColor}>
           <SelectTrigger>
             <SelectValue />
@@ -83,7 +84,7 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
               <SelectItem key={option.value} value={option.value}>
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-4 h-4 rounded border"
+                    className="h-4 w-4 rounded border"
                     style={{ background: getColorCss(option.value) }}
                   />
                   <span className="text-xs">{option.label}</span>
@@ -97,7 +98,7 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
 
     {/* 背景设置 */}
     <div className="space-y-2">
-      <label className="text-sm font-medium">背景</label>
+      <Label className="font-medium text-sm">背景</Label>
       <Select value={config.background}>
         <SelectTrigger>
           <SelectValue placeholder="选择背景" />
@@ -107,7 +108,7 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
             <SelectItem key={option.value} value={option.value}>
               <div className="flex items-center gap-2">
                 <div
-                  className="w-4 h-4 rounded border"
+                  className="h-4 w-4 rounded border"
                   style={{ background: getBackgroundCss(option.value) }}
                 />
                 <span className="text-xs">{option.label}</span>
@@ -120,7 +121,7 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
 
     {/* 位置设置 */}
     <div className="space-y-2">
-      <label className="text-sm font-medium">位置</label>
+      <Label className="font-medium text-sm">位置</Label>
       <div className="grid grid-cols-2 gap-2">
         <Select value={config.vertical}>
           <SelectTrigger>
@@ -157,14 +158,18 @@ export const Configurator = memo(() => {
 
   const { styleConfig, setStyleConfig, isChange } = useStyleConfigStore();
   const isShowSetting = showSettingStore((state) => state.isShowSetting);
-
   const handleStyleSelect = (styleId: string) => {
-    setStyleConfig(defaultStyles.find((style) => style.id === styleId)!);
+    const selectedStyle = defaultStyles.find((style) => style.id === styleId);
+    if (selectedStyle) {
+      setStyleConfig(selectedStyle);
+    }
   };
 
   const isBuiltIn = defaultStyleIds.includes(styleConfig.id);
 
-  if (!isShowSetting) return null;
+  if (!isShowSetting) {
+    return null;
+  }
 
   return (
     <div className="w-80 overflow-auto">
@@ -173,13 +178,13 @@ export const Configurator = memo(() => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
-              <Palette className="w-4 h-4" />
+              <Palette className="h-4 w-4" />
               样式选择
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Select value={styleConfig?.id} onValueChange={handleStyleSelect}>
-              <SelectTrigger className="data-[size=default]:h-auto whitespace-normal text-left">
+            <Select onValueChange={handleStyleSelect} value={styleConfig?.id}>
+              <SelectTrigger className="whitespace-normal text-left data-[size=default]:h-auto">
                 <SelectValue placeholder="选择样式" />
               </SelectTrigger>
               <SelectContent>
@@ -189,12 +194,14 @@ export const Configurator = memo(() => {
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{style.name}</span>
                         {defaultStyleIds.includes(style.id) && (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge className="text-xs" variant="secondary">
                             内置
                           </Badge>
                         )}
                       </div>
-                      <span className="text-xs text-gray-500">{style.description}</span>
+                      <span className="text-gray-500 text-xs">
+                        {style.description}
+                      </span>
                     </div>
                   </SelectItem>
                 ))}
@@ -204,8 +211,12 @@ export const Configurator = memo(() => {
             {/* 样式操作按钮 */}
             <div className="flex gap-2">
               {!isBuiltIn && (
-                <Button variant="outline" size="sm" disabled={!styleConfig || isBuiltIn}>
-                  <Trash2 className="w-3 h-3" />
+                <Button
+                  disabled={!styleConfig || isBuiltIn}
+                  size="sm"
+                  variant="outline"
+                >
+                  <Trash2 className="h-3 w-3" />
                 </Button>
               )}
             </div>
@@ -215,12 +226,12 @@ export const Configurator = memo(() => {
           <Card>
             <CardContent className="pt-4">
               {isBuiltIn && (
-                <div className="space-y-2 mb-4">
-                  <label className="text-sm font-medium">新样式名称</label>
+                <div className="mb-4 space-y-2">
+                  <Label className="font-medium text-sm">新样式名称</Label>
                   <Input
-                    value={newStyleName}
                     onChange={(e) => setNewStyleName(e.target.value)}
                     placeholder={`自定义 ${styleConfig.name}`}
+                    value={newStyleName}
                   />
                 </div>
               )}
@@ -254,7 +265,9 @@ export const Configurator = memo(() => {
             <CardTitle className="text-sm">封面设置</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <ConfigForm config={mergeCoverConfig(styleConfig.content, styleConfig.cover)} />
+            <ConfigForm
+              config={mergeCoverConfig(styleConfig.content, styleConfig.cover)}
+            />
           </CardContent>
         </Card>
       </div>

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { StyleConfig } from '@/lib/image-style-config';
 import { defaultStyles } from '@/lib/default-styles';
+import type { StyleConfig } from '@/lib/image-style-config';
 
 interface StyleConfigState {
   isChange: boolean;
