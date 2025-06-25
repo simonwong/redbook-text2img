@@ -1,3 +1,6 @@
+const SEPARATOR_PATTERN = /^-{3,}$/;
+const H1_PATTERN = /^#\s+(.+)$/m;
+
 export interface ImageSegment {
   id: string;
   title: string;
@@ -6,7 +9,76 @@ export interface ImageSegment {
   type: 'content' | 'separator';
 }
 
-export function parseMarkdownToImages(markdown: string): ImageSegment[] {
+// 辅助函数：创建新段落
+const createSegment = (
+  segmentId: number,
+  type: 'content' | 'separator'
+): ImageSegment => ({
+  id: `segment-${segmentId}`,
+  title: `图片 ${segmentId}`,
+  content: '',
+  isFirstImage: false,
+  type,
+});
+
+// 辅助函数：处理段落内容
+const addContentToSegment = (segment: ImageSegment, line: string): void => {
+  if (segment.content === '') {
+    segment.content = line;
+  } else {
+    segment.content += `\n${line}`;
+  }
+};
+
+// 辅助函数：处理分割线
+const handleSeparator = (
+  segments: ImageSegment[],
+  currentSegment: ImageSegment | null,
+  segmentId: number
+): [ImageSegment, number] => {
+  if (currentSegment) {
+    segments.push(currentSegment);
+  }
+  const newSegmentId = segmentId + 1;
+  return [createSegment(newSegmentId, 'separator'), newSegmentId];
+};
+
+// 辅助函数：处理内容行
+const handleContentLine = (
+  currentSegment: ImageSegment | null,
+  line: string,
+  trimmedLine: string,
+  segmentId: number
+): [ImageSegment | null, number] => {
+  if (currentSegment) {
+    addContentToSegment(currentSegment, line);
+    return [currentSegment, segmentId];
+  }
+  if (trimmedLine) {
+    const newSegmentId = segmentId + 1;
+    const newSegment = createSegment(newSegmentId, 'content');
+    newSegment.content = line;
+    return [newSegment, newSegmentId];
+  }
+  return [null, segmentId];
+};
+
+// 辅助函数：标记首图并提取标题
+const processSegmentTitles = (segments: ImageSegment[]): void => {
+  for (const segment of segments) {
+    const hasH1 = segment.content.trim().startsWith('# ');
+    segment.isFirstImage = hasH1;
+
+    if (hasH1) {
+      const h1Match = segment.content.match(H1_PATTERN);
+      if (h1Match) {
+        segment.title = h1Match[1].trim();
+      }
+    }
+  }
+};
+
+export const parseMarkdownToImages = (markdown: string): ImageSegment[] => {
   const segments: ImageSegment[] = [];
   const lines = markdown.split('\n');
 
@@ -16,42 +88,19 @@ export function parseMarkdownToImages(markdown: string): ImageSegment[] {
   for (const line of lines) {
     const trimmedLine = line.trim();
 
-    // 处理分割线 - 开始新的图片段落
-    if (trimmedLine.match(/^-{3,}$/)) {
-      if (currentSegment) {
-        segments.push(currentSegment);
-      }
-
-      segmentId++;
-      // 创建新段落，标题使用段落编号
-      currentSegment = {
-        id: `segment-${segmentId}`,
-        title: `图片 ${segmentId}`,
-        content: '',
-        isFirstImage: false, // 稍后根据内容判断
-        type: 'separator',
-      };
-    }
-    // 处理其他内容
-    else if (trimmedLine || currentSegment) {
-      if (currentSegment) {
-        // 如果当前段落的内容为空且是分割线创建的段落，则直接添加内容
-        if (currentSegment.content === '') {
-          currentSegment.content = line;
-        } else {
-          currentSegment.content += '\n' + line;
-        }
-      } else if (trimmedLine) {
-        // 如果没有当前段落但有内容，创建一个默认段落（第一个段落）
-        segmentId++;
-        currentSegment = {
-          id: `segment-${segmentId}`,
-          title: `图片 ${segmentId}`,
-          content: line,
-          isFirstImage: false, // 稍后根据内容判断
-          type: 'content',
-        };
-      }
+    if (trimmedLine.match(SEPARATOR_PATTERN)) {
+      [currentSegment, segmentId] = handleSeparator(
+        segments,
+        currentSegment,
+        segmentId
+      );
+    } else if (trimmedLine || currentSegment) {
+      [currentSegment, segmentId] = handleContentLine(
+        currentSegment,
+        line,
+        trimmedLine,
+        segmentId
+      );
     }
   }
 
@@ -62,36 +111,7 @@ export function parseMarkdownToImages(markdown: string): ImageSegment[] {
 
   // 过滤空内容的段落并标记首图
   const validSegments = segments.filter((segment) => segment.content.trim());
-
-  // 标记包含一级标题的段落为首图
-  validSegments.forEach((segment) => {
-    const hasH1 = segment.content.trim().startsWith('# ');
-    segment.isFirstImage = hasH1;
-
-    // 如果包含一级标题，提取标题作为段落标题
-    if (hasH1) {
-      const h1Match = segment.content.match(/^#\s+(.+)$/m);
-      if (h1Match) {
-        segment.title = h1Match[1].trim();
-      }
-    }
-  });
+  processSegmentTitles(validSegments);
 
   return validSegments;
-}
-
-export function formatMarkdownContent(content: string): string {
-  return content
-    .split('\n')
-    .map((line) => {
-      const trimmedLine = line.trim();
-      // 三到六级标题加粗处理
-      if (trimmedLine.match(/^#{3,6}\s/)) {
-        const level = trimmedLine.match(/^#+/)?.[0].length || 0;
-        const text = trimmedLine.substring(level + 1).trim();
-        return `**${text}**`;
-      }
-      return line;
-    })
-    .join('\n');
-}
+};

@@ -1,18 +1,25 @@
-import React from 'react';
-import { StyleConfig, ContentConfig, CoverConfig, GeneratedStyles } from './image-style-config';
+import type React from 'react';
+import type {
+  ContentConfig,
+  CoverConfig,
+  GeneratedStyles,
+  StyleConfig,
+} from './image-style-config';
 import {
+  getBackgroundCss,
   getColorCss,
   getFontSizeCss,
-  getTypographyScale,
   getLineHeight,
-  TypographyElement,
+  getTypographyScale,
   horizontalStyleMap,
+  type TypographyElement,
   verticalStyleMap,
-  getBackgroundCss,
 } from './preset-config';
 
 // 基于 Typography 系统生成字体样式
-function generateTypographyStyle(element: TypographyElement): React.CSSProperties {
+function generateTypographyStyle(
+  element: TypographyElement
+): React.CSSProperties {
   const scale = getTypographyScale(element);
   const lineHeight = getLineHeight(element);
 
@@ -137,19 +144,22 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
       marginBottom: `${0.77}em`,
       color: contentColor,
       whiteSpace: 'break-spaces',
-      fontSize: `0.857em`,
-      lineHeight: `1.5`,
+      fontSize: '0.857em',
+      lineHeight: '1.5',
       wordBreak: 'break-word',
-      borderRadius: `0.4em`,
-      padding: `0.4em 0.6em`,
-      backgroundColor: `rgba(0,0,0,0.05)`,
+      borderRadius: '0.4em',
+      padding: '0.4em 0.6em',
+      backgroundColor: 'rgba(0,0,0,0.05)',
+      width: '100%',
     },
     code: {
       marginBottom: `${0.77}em`,
       color: contentColor,
-      fontSize: `0.857em`,
-      lineHeight: `1.5`,
+      fontSize: '0.857em',
+      lineHeight: '1.5',
       wordBreak: 'break-word',
+      padding: '0.4em 0.6em',
+      backgroundColor: 'rgba(0,0,0,0.05)',
     },
   };
 }
