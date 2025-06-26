@@ -2,18 +2,12 @@
 
 import { Palette, Trash2 } from 'lucide-react';
 import { memo, useState } from 'react';
+import { Select } from '@/components/enhance/select';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { defaultStyleIds, defaultStyles } from '@/lib/default-styles';
 import type { ContentConfig } from '@/lib/image-style-config';
 import {
@@ -28,24 +22,23 @@ import {
 import { mergeCoverConfig } from '@/lib/style-generator';
 import { showSettingStore, useStyleConfigStore } from '@/store/styleConfig';
 
-const ConfigForm = ({ config }: { config: ContentConfig }) => (
+const ConfigForm = ({
+  config,
+  onConfigChange,
+}: {
+  config: ContentConfig;
+  onConfigChange: (change: Partial<ContentConfig>) => void;
+}) => (
   <>
     {/* 大小设置 */}
     <div className="space-y-2">
       <Label className="font-medium text-sm">大小</Label>
       <div className="flex gap-2">
-        <Select value={config.size}>
-          <SelectTrigger className="flex-1">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {FontSizeOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value.toString()}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Select
+          onChange={(v) => onConfigChange({ size: v })}
+          options={FontSizeOptions}
+          value={config.size}
+        />
       </div>
     </div>
 
@@ -53,101 +46,80 @@ const ConfigForm = ({ config }: { config: ContentConfig }) => (
     <div className="grid grid-cols-2 gap-4">
       <div className="space-y-2">
         <Label className="font-medium text-sm">标题颜色</Label>
-        <Select value={config.titleColor}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {FontColorOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                <div className="flex items-center gap-2">
-                  <div
-                    className="h-4 w-4 rounded border"
-                    style={{ background: getColorCss(option.value) }}
-                  />
-                  <span className="text-xs">{option.label}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Select
+          onChange={(v) => onConfigChange({ titleColor: v })}
+          options={FontColorOptions.map((option) => ({
+            label: (
+              <div className="flex items-center gap-2">
+                <div
+                  className="h-4 w-4 rounded border"
+                  style={{ background: getColorCss(option.value) }}
+                />
+                <span className="text-xs">{option.label}</span>
+              </div>
+            ),
+            value: option.value,
+          }))}
+          value={config.titleColor}
+        />
       </div>
 
       <div className="space-y-2">
         <Label className="font-medium text-sm">内容颜色</Label>
-        <Select value={config.contentColor}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {FontColorOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                <div className="flex items-center gap-2">
-                  <div
-                    className="h-4 w-4 rounded border"
-                    style={{ background: getColorCss(option.value) }}
-                  />
-                  <span className="text-xs">{option.label}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Select
+          onChange={(v) => onConfigChange({ contentColor: v })}
+          options={FontColorOptions.map((option) => ({
+            label: (
+              <div className="flex items-center gap-2">
+                <div
+                  className="h-4 w-4 rounded border"
+                  style={{ background: getColorCss(option.value) }}
+                />
+                <span className="text-xs">{option.label}</span>
+              </div>
+            ),
+            value: option.value,
+          }))}
+          value={config.contentColor}
+        />
       </div>
     </div>
 
     {/* 背景设置 */}
     <div className="space-y-2">
       <Label className="font-medium text-sm">背景</Label>
-      <Select value={config.background}>
-        <SelectTrigger>
-          <SelectValue placeholder="选择背景" />
-        </SelectTrigger>
-        <SelectContent>
-          {BackgroundOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              <div className="flex items-center gap-2">
-                <div
-                  className="h-4 w-4 rounded border"
-                  style={{ background: getBackgroundCss(option.value) }}
-                />
-                <span className="text-xs">{option.label}</span>
-              </div>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Select
+        onChange={(v) => onConfigChange({ background: v })}
+        options={BackgroundOptions.map((option) => ({
+          label: (
+            <div className="flex items-center gap-2">
+              <div
+                className="h-4 w-4 rounded border"
+                style={{ background: getBackgroundCss(option.value) }}
+              />
+              <span className="text-xs">{option.label}</span>
+            </div>
+          ),
+          value: option.value,
+        }))}
+        value={config.background}
+      />
     </div>
 
     {/* 位置设置 */}
     <div className="space-y-2">
       <Label className="font-medium text-sm">位置</Label>
       <div className="grid grid-cols-2 gap-2">
-        <Select value={config.vertical}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {VerticalOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select value={config.horizontal}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {HorizontalOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Select
+          onChange={(v) => onConfigChange({ vertical: v })}
+          options={VerticalOptions}
+          value={config.vertical}
+        />
+        <Select
+          onChange={(v) => onConfigChange({ horizontal: v })}
+          options={HorizontalOptions}
+          value={config.horizontal}
+        />
       </div>
     </div>
   </>
@@ -163,6 +135,26 @@ export const Configurator = memo(() => {
     if (selectedStyle) {
       setStyleConfig(selectedStyle);
     }
+  };
+
+  const handleContentChange = (change: Partial<ContentConfig>) => {
+    setStyleConfig({
+      ...styleConfig,
+      content: {
+        ...styleConfig.content,
+        ...change,
+      },
+    });
+  };
+
+  const handleCoverChange = (change: Partial<ContentConfig>) => {
+    setStyleConfig({
+      ...styleConfig,
+      cover: {
+        ...styleConfig.cover,
+        ...change,
+      },
+    });
   };
 
   const isBuiltIn = defaultStyleIds.includes(styleConfig.id);
@@ -183,31 +175,30 @@ export const Configurator = memo(() => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Select onValueChange={handleStyleSelect} value={styleConfig?.id}>
-              <SelectTrigger className="whitespace-normal text-left data-[size=default]:h-auto">
-                <SelectValue placeholder="选择样式" />
-              </SelectTrigger>
-              <SelectContent>
-                {defaultStyles.map((style) => (
-                  <SelectItem key={style.id} value={style.id}>
-                    <div className="flex flex-col items-start">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{style.name}</span>
-                        {defaultStyleIds.includes(style.id) && (
-                          <Badge className="text-xs" variant="secondary">
-                            内置
-                          </Badge>
-                        )}
-                      </div>
-                      <span className="text-gray-500 text-xs">
-                        {style.description}
-                      </span>
+            <Select
+              className="whitespace-normal text-left data-[size=default]:h-auto"
+              onChange={(v) => handleStyleSelect(v)}
+              options={defaultStyles.map((style) => ({
+                label: (
+                  <div className="flex flex-col items-start">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{style.name}</span>
+                      {defaultStyleIds.includes(style.id) && (
+                        <Badge className="text-xs" variant="secondary">
+                          内置
+                        </Badge>
+                      )}
                     </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
+                    <span className="text-gray-500 text-xs">
+                      {style.description}
+                    </span>
+                  </div>
+                ),
+                value: style.id,
+              }))}
+              placeholder="选择样式"
+              value={styleConfig?.id}
+            />
             {/* 样式操作按钮 */}
             <div className="flex gap-2">
               {!isBuiltIn && (
@@ -255,7 +246,10 @@ export const Configurator = memo(() => {
             <CardTitle className="text-sm">内容设置</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <ConfigForm config={styleConfig.content} />
+            <ConfigForm
+              config={styleConfig.content}
+              onConfigChange={handleContentChange}
+            />
           </CardContent>
         </Card>
 
@@ -267,6 +261,7 @@ export const Configurator = memo(() => {
           <CardContent className="space-y-4">
             <ConfigForm
               config={mergeCoverConfig(styleConfig.content, styleConfig.cover)}
+              onConfigChange={handleCoverChange}
             />
           </CardContent>
         </Card>

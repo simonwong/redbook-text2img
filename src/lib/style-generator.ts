@@ -67,8 +67,8 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    justifyContent: horizontalStyleMap[config.horizontal],
-    alignItems: verticalStyleMap[config.vertical],
+    justifyContent: verticalStyleMap[config.vertical],
+    alignItems: horizontalStyleMap[config.horizontal],
   };
 
   return {

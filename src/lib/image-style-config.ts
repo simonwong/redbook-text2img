@@ -1,20 +1,20 @@
-import React from 'react';
-import {
-  BackgroundEnum,
-  FontColorEnum,
-  FontSizeEnum,
-  HorizontalEnum,
-  VerticalEnum,
+import type React from 'react';
+import type {
+  Background,
+  FontColor,
+  FontSize,
+  Horizontal,
+  Vertical,
 } from './preset-config';
 
 // 内容设置
 export interface ContentConfig {
-  size: FontSizeEnum;
-  titleColor: FontColorEnum;
-  contentColor: FontColorEnum;
-  background: BackgroundEnum;
-  vertical: VerticalEnum;
-  horizontal: HorizontalEnum;
+  size: FontSize;
+  titleColor: FontColor;
+  contentColor: FontColor;
+  background: Background;
+  vertical: Vertical;
+  horizontal: Horizontal;
 }
 export type CoverConfig = Partial<ContentConfig>;
 

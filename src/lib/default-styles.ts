@@ -1,10 +1,10 @@
-import { StyleConfig } from './image-style-config';
+import type { StyleConfig } from './image-style-config';
 import {
-  BackgroundEnum,
-  FontColorEnum,
-  FontSizeEnum,
-  HorizontalEnum,
-  VerticalEnum,
+  Background,
+  FontColor,
+  FontSize,
+  Horizontal,
+  Vertical,
 } from './preset-config';
 
 export const defaultStyles: StyleConfig[] = [
@@ -14,16 +14,16 @@ export const defaultStyles: StyleConfig[] = [
     name: '简约风格',
     description: '现代简洁的设计，适合商务和专业内容。采用黑白配色，干净利落。',
     content: {
-      size: FontSizeEnum.md,
-      titleColor: FontColorEnum.black,
-      contentColor: FontColorEnum.black,
-      background: BackgroundEnum.TrianglifyGary,
-      vertical: VerticalEnum.top,
-      horizontal: HorizontalEnum.left,
+      size: FontSize.md,
+      titleColor: FontColor.black,
+      contentColor: FontColor.black,
+      background: Background.TrianglifyGary,
+      vertical: Vertical.top,
+      horizontal: Horizontal.left,
     },
     cover: {
-      vertical: VerticalEnum.center,
-      horizontal: HorizontalEnum.center,
+      vertical: Vertical.center,
+      horizontal: Horizontal.center,
     },
   },
 
@@ -33,16 +33,16 @@ export const defaultStyles: StyleConfig[] = [
     name: '温暖风格',
     description: '温馨的暖色调设计，适合生活分享、美食、旅行等个人内容。',
     content: {
-      size: FontSizeEnum.lg,
-      titleColor: FontColorEnum.orange,
-      contentColor: FontColorEnum.black,
-      background: BackgroundEnum.linearGradient1,
-      vertical: VerticalEnum.center,
-      horizontal: HorizontalEnum.left,
+      size: FontSize.lg,
+      titleColor: FontColor.orange,
+      contentColor: FontColor.black,
+      background: Background.linearGradient1,
+      vertical: Vertical.center,
+      horizontal: Horizontal.left,
     },
     cover: {
-      vertical: VerticalEnum.center,
-      horizontal: HorizontalEnum.center,
+      vertical: Vertical.center,
+      horizontal: Horizontal.center,
     },
   },
 
@@ -52,16 +52,16 @@ export const defaultStyles: StyleConfig[] = [
     name: '科技风格',
     description: '现代科技感设计，适合科技、商业、数据分析等专业内容。',
     content: {
-      size: FontSizeEnum.lg,
-      titleColor: FontColorEnum.blue,
-      contentColor: FontColorEnum.white,
-      background: BackgroundEnum.linearGradient2,
-      vertical: VerticalEnum.top,
-      horizontal: HorizontalEnum.left,
+      size: FontSize.lg,
+      titleColor: FontColor.blue,
+      contentColor: FontColor.white,
+      background: Background.linearGradient2,
+      vertical: Vertical.top,
+      horizontal: Horizontal.left,
     },
     cover: {
-      vertical: VerticalEnum.center,
-      horizontal: HorizontalEnum.center,
+      vertical: Vertical.center,
+      horizontal: Horizontal.center,
     },
   },
 ];
@@ -74,7 +74,11 @@ export function getDefaultStyleById(id: string): StyleConfig | undefined {
 }
 
 // 获取所有默认风格的名称和描述
-export function getDefaultStyleOptions(): Array<{ id: string; name: string; description: string }> {
+export function getDefaultStyleOptions(): Array<{
+  id: string;
+  name: string;
+  description: string;
+}> {
   return defaultStyles.map((style) => ({
     id: style.id,
     name: style.name,

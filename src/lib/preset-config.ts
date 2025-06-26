@@ -1,226 +1,233 @@
 import { TrianglifyGary } from './background-image-constants';
 
 // ========== font size ==========
-export enum FontSizeEnum {
-  sm = 'sm',
-  md = 'md',
-  lg = 'lg',
-  xl = 'xl',
-}
+export const FontSize = {
+  sm: 'sm',
+  md: 'md',
+  lg: 'lg',
+  xl: 'xl',
+} as const;
+export type FontSize = (typeof FontSize)[keyof typeof FontSize];
 
-export const fontSizeStyleMap: Record<FontSizeEnum, number> = {
-  [FontSizeEnum.sm]: 12,
-  [FontSizeEnum.md]: 14,
-  [FontSizeEnum.lg]: 16,
-  [FontSizeEnum.xl]: 18,
+export const fontSizeStyleMap: Record<FontSize, number> = {
+  [FontSize.sm]: 12,
+  [FontSize.md]: 14,
+  [FontSize.lg]: 16,
+  [FontSize.xl]: 18,
 };
 
 export const FontSizeOptions = [
   {
     label: 'sm',
-    value: FontSizeEnum.sm,
+    value: FontSize.sm,
   },
   {
     label: 'md',
-    value: FontSizeEnum.md,
+    value: FontSize.md,
   },
   {
     label: 'lg',
-    value: FontSizeEnum.lg,
+    value: FontSize.lg,
   },
   {
     label: 'xl',
-    value: FontSizeEnum.xl,
+    value: FontSize.xl,
   },
 ];
 
 // ========== font color ==========
-export enum FontColorEnum {
-  white = 'white',
-  black = 'black',
-  gray = 'gray',
-  blue = 'blue',
-  red = 'red',
-  green = 'green',
-  purple = 'purple',
-  orange = 'orange',
-  custom = 'custom',
-}
-export const fontColorStyleMap: Record<FontColorEnum, string> = {
-  [FontColorEnum.white]: '#ffffff',
-  [FontColorEnum.black]: '#000000',
-  [FontColorEnum.gray]: '#6b7280',
-  [FontColorEnum.blue]: '#3b82f6',
-  [FontColorEnum.red]: '#ef4444',
-  [FontColorEnum.green]: '#10b981',
-  [FontColorEnum.purple]: '#8b5cf6',
-  [FontColorEnum.orange]: '#f59e0b',
-  [FontColorEnum.custom]: 'custom',
+export const FontColor = {
+  white: 'white',
+  black: 'black',
+  gray: 'gray',
+  blue: 'blue',
+  red: 'red',
+  green: 'green',
+  purple: 'purple',
+  orange: 'orange',
+  custom: 'custom',
+} as const;
+export type FontColor = (typeof FontColor)[keyof typeof FontColor];
+
+export const fontColorStyleMap: Record<FontColor, string> = {
+  [FontColor.white]: '#ffffff',
+  [FontColor.black]: '#000000',
+  [FontColor.gray]: '#6b7280',
+  [FontColor.blue]: '#3b82f6',
+  [FontColor.red]: '#ef4444',
+  [FontColor.green]: '#10b981',
+  [FontColor.purple]: '#8b5cf6',
+  [FontColor.orange]: '#f59e0b',
+  [FontColor.custom]: 'custom',
 };
 export const FontColorOptions = [
   {
     label: '白色',
-    value: FontColorEnum.white,
+    value: FontColor.white,
   },
   {
     label: '黑色',
-    value: FontColorEnum.black,
+    value: FontColor.black,
   },
   {
     label: '灰色',
-    value: FontColorEnum.gray,
+    value: FontColor.gray,
   },
   {
     label: '蓝色',
-    value: FontColorEnum.blue,
+    value: FontColor.blue,
   },
   {
     label: '红色',
-    value: FontColorEnum.red,
+    value: FontColor.red,
   },
   {
     label: '绿色',
-    value: FontColorEnum.green,
+    value: FontColor.green,
   },
   {
     label: '紫色',
-    value: FontColorEnum.purple,
+    value: FontColor.purple,
   },
   {
     label: '橙色',
-    value: FontColorEnum.orange,
+    value: FontColor.orange,
   },
   {
     label: '自定义',
-    value: FontColorEnum.custom,
+    value: FontColor.custom,
   },
 ];
 
 // ========== background color ==========
-export enum BackgroundEnum {
-  white = 'white',
-  gray = 'gray',
-  blue = 'blue',
-  linearGradient1 = 'linearGradient1',
-  linearGradient2 = 'linearGradient2',
-  linearGradient3 = 'linearGradient3',
-  linearGradient4 = 'linearGradient4',
-  TrianglifyGary = 'TrianglifyGary',
-  custom = 'custom',
-}
+export const Background = {
+  white: 'white',
+  gray: 'gray',
+  blue: 'blue',
+  linearGradient1: 'linearGradient1',
+  linearGradient2: 'linearGradient2',
+  linearGradient3: 'linearGradient3',
+  linearGradient4: 'linearGradient4',
+  TrianglifyGary: 'TrianglifyGary',
+  custom: 'custom',
+} as const;
+export type Background = (typeof Background)[keyof typeof Background];
 
-export const backgroundStyleMap: Record<BackgroundEnum, string> = {
-  [BackgroundEnum.white]: '#ffffff',
-  [BackgroundEnum.gray]: '#f8fafc',
-  [BackgroundEnum.blue]: '#f1f5f9',
-  [BackgroundEnum.linearGradient1]:
+export const backgroundStyleMap: Record<Background, string> = {
+  [Background.white]: '#ffffff',
+  [Background.gray]: '#f8fafc',
+  [Background.blue]: '#f1f5f9',
+  [Background.linearGradient1]:
     'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)',
-  [BackgroundEnum.linearGradient2]:
+  [Background.linearGradient2]:
     'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e40af 75%, #3b82f6 100%)',
-  [BackgroundEnum.linearGradient3]: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
-  [BackgroundEnum.linearGradient4]: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  [BackgroundEnum.TrianglifyGary]: TrianglifyGary,
-  [BackgroundEnum.custom]: 'custom',
+  [Background.linearGradient3]: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
+  [Background.linearGradient4]:
+    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  [Background.TrianglifyGary]: TrianglifyGary,
+  [Background.custom]: 'custom',
 };
 
 export const BackgroundOptions = [
   // 纯色背景
   {
     label: '白色',
-    value: BackgroundEnum.white,
+    value: Background.white,
   },
   {
     label: '灰色',
-    value: BackgroundEnum.gray,
+    value: Background.gray,
   },
   {
     label: '蓝色',
-    value: BackgroundEnum.blue,
+    value: Background.blue,
   },
 
   // 渐变背景
   {
     label: '渐变1',
-    value: BackgroundEnum.linearGradient1,
+    value: Background.linearGradient1,
   },
   {
     label: '渐变2',
-    value: BackgroundEnum.linearGradient2,
+    value: Background.linearGradient2,
   },
   {
     label: '渐变3',
-    value: BackgroundEnum.linearGradient3,
+    value: Background.linearGradient3,
   },
   {
     label: '渐变4',
-    value: BackgroundEnum.linearGradient4,
+    value: Background.linearGradient4,
   },
 
   // 图片背景（base64编码的简约图案）
   {
     label: '抽象三角形-灰色',
-    value: BackgroundEnum.TrianglifyGary,
+    value: Background.TrianglifyGary,
   },
   {
     label: '自定义',
-    value: BackgroundEnum.custom,
+    value: Background.custom,
   },
 ];
 
 // ========== vertical ==========
-export enum VerticalEnum {
-  top = 'top',
-  center = 'center',
-  bottom = 'bottom',
-}
+export const Vertical = {
+  top: 'top',
+  center: 'center',
+  bottom: 'bottom',
+} as const;
+export type Vertical = (typeof Vertical)[keyof typeof Vertical];
 
-export const verticalStyleMap: Record<VerticalEnum, string> = {
-  [VerticalEnum.top]: 'flex-start',
-  [VerticalEnum.center]: 'center',
-  [VerticalEnum.bottom]: 'flex-end',
+export const verticalStyleMap: Record<Vertical, string> = {
+  [Vertical.top]: 'flex-start',
+  [Vertical.center]: 'center',
+  [Vertical.bottom]: 'flex-end',
 };
 
 export const VerticalOptions = [
   {
-    label: '顶部',
-    value: VerticalEnum.top,
+    label: '居上',
+    value: Vertical.top,
   },
   {
     label: '居中',
-    value: VerticalEnum.center,
+    value: Vertical.center,
   },
   {
-    label: '底部',
-    value: VerticalEnum.bottom,
+    label: '居下',
+    value: Vertical.bottom,
   },
 ];
 
 // ========== horizontal ==========
 
-export enum HorizontalEnum {
-  left = 'left',
-  center = 'center',
-  right = 'right',
-}
+export const Horizontal = {
+  left: 'left',
+  center: 'center',
+  right: 'right',
+} as const;
+export type Horizontal = (typeof Horizontal)[keyof typeof Horizontal];
 
-export const horizontalStyleMap: Record<HorizontalEnum, string> = {
-  [HorizontalEnum.left]: 'flex-start',
-  [HorizontalEnum.center]: 'center',
-  [HorizontalEnum.right]: 'flex-end',
+export const horizontalStyleMap: Record<Horizontal, string> = {
+  [Horizontal.left]: 'flex-start',
+  [Horizontal.center]: 'center',
+  [Horizontal.right]: 'flex-end',
 };
 
 export const HorizontalOptions = [
   {
-    label: '左侧',
-    value: HorizontalEnum.left,
+    label: '居左',
+    value: Horizontal.left,
   },
   {
     label: '居中',
-    value: HorizontalEnum.center,
+    value: Horizontal.center,
   },
   {
-    label: '右侧',
-    value: HorizontalEnum.right,
+    label: '居右',
+    value: Horizontal.right,
   },
 ];
 
@@ -252,22 +259,25 @@ export const presetTypography = {
 export type TypographyElement = keyof typeof presetTypography.scales;
 
 // 获取实际字体大小的辅助函数
-export function getFontSizeCss(size: FontSizeEnum): number {
+export function getFontSizeCss(size: FontSize): number {
   return fontSizeStyleMap[size];
 }
 // 获取实际颜色值的辅助函数
-export function getColorCss(color: FontColorEnum, customColor?: string): string {
+export function getColorCss(color: FontColor, customColor?: string): string {
   if (color === 'custom' && customColor) {
     return customColor;
   }
-  return fontColorStyleMap[color] || fontColorStyleMap[FontColorEnum.black];
+  return fontColorStyleMap[color] || fontColorStyleMap[FontColor.black];
 }
 
-export function getBackgroundCss(color: BackgroundEnum, customColor?: string): string {
+export function getBackgroundCss(
+  color: Background,
+  customColor?: string
+): string {
   if (color === 'custom' && customColor) {
     return customColor;
   }
-  return backgroundStyleMap[color] || backgroundStyleMap[BackgroundEnum.white];
+  return backgroundStyleMap[color] || backgroundStyleMap[Background.white];
 }
 
 // 新增：获取 Typography 比例的辅助函数
