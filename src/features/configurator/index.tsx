@@ -30,7 +30,6 @@ const ConfigForm = ({
   onConfigChange: (change: Partial<ContentConfig>) => void;
 }) => (
   <>
-    {/* 大小设置 */}
     <div className="space-y-2">
       <Label className="font-medium text-sm">大小</Label>
       <div className="flex gap-2">
@@ -189,9 +188,6 @@ export const Configurator = memo(() => {
                         </Badge>
                       )}
                     </div>
-                    <span className="text-gray-500 text-xs">
-                      {style.description}
-                    </span>
                   </div>
                 ),
                 value: style.id,

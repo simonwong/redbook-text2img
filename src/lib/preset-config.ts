@@ -18,19 +18,19 @@ export const fontSizeStyleMap: Record<FontSize, number> = {
 
 export const FontSizeOptions = [
   {
-    label: 'sm',
+    label: '小号',
     value: FontSize.sm,
   },
   {
-    label: 'md',
+    label: '中号',
     value: FontSize.md,
   },
   {
-    label: 'lg',
+    label: '大号',
     value: FontSize.lg,
   },
   {
-    label: 'xl',
+    label: '特大号',
     value: FontSize.xl,
   },
 ];
@@ -106,8 +106,6 @@ export const Background = {
   blue: 'blue',
   linearGradient1: 'linearGradient1',
   linearGradient2: 'linearGradient2',
-  linearGradient3: 'linearGradient3',
-  linearGradient4: 'linearGradient4',
   TrianglifyGary: 'TrianglifyGary',
   custom: 'custom',
 } as const;
@@ -121,9 +119,6 @@ export const backgroundStyleMap: Record<Background, string> = {
     'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)',
   [Background.linearGradient2]:
     'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e40af 75%, #3b82f6 100%)',
-  [Background.linearGradient3]: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
-  [Background.linearGradient4]:
-    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   [Background.TrianglifyGary]: TrianglifyGary,
   [Background.custom]: 'custom',
 };
@@ -152,15 +147,6 @@ export const BackgroundOptions = [
     label: '渐变2',
     value: Background.linearGradient2,
   },
-  {
-    label: '渐变3',
-    value: Background.linearGradient3,
-  },
-  {
-    label: '渐变4',
-    value: Background.linearGradient4,
-  },
-
   // 图片背景（base64编码的简约图案）
   {
     label: '抽象三角形-灰色',

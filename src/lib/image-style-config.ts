@@ -22,7 +22,6 @@ export type CoverConfig = Partial<ContentConfig>;
 export interface StyleConfig {
   id: string;
   name: string;
-  description: string;
   content: ContentConfig;
   cover: CoverConfig;
 }

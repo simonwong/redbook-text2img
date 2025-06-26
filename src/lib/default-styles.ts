@@ -8,11 +8,26 @@ import {
 } from './preset-config';
 
 export const defaultStyles: StyleConfig[] = [
-  // 1. 简约风格 - 现代简洁，适合商务和专业内容
   {
-    id: 'minimal',
+    id: 'built-in-minimal',
+    name: '基础风格',
+    content: {
+      size: FontSize.md,
+      titleColor: FontColor.black,
+      contentColor: FontColor.black,
+      background: Background.gray,
+      vertical: Vertical.top,
+      horizontal: Horizontal.left,
+    },
+    cover: {
+      size: FontSize.lg,
+      vertical: Vertical.center,
+      horizontal: Horizontal.center,
+    },
+  },
+  {
+    id: 'built-in-simple',
     name: '简约风格',
-    description: '现代简洁的设计，适合商务和专业内容。采用黑白配色，干净利落。',
     content: {
       size: FontSize.md,
       titleColor: FontColor.black,
@@ -22,37 +37,33 @@ export const defaultStyles: StyleConfig[] = [
       horizontal: Horizontal.left,
     },
     cover: {
+      size: FontSize.lg,
       vertical: Vertical.center,
       horizontal: Horizontal.center,
     },
   },
-
-  // 2. 温暖风格 - 暖色调，适合生活分享和个人内容
   {
-    id: 'warm',
+    id: 'built-in-warm',
     name: '温暖风格',
-    description: '温馨的暖色调设计，适合生活分享、美食、旅行等个人内容。',
     content: {
-      size: FontSize.lg,
+      size: FontSize.md,
       titleColor: FontColor.orange,
       contentColor: FontColor.black,
       background: Background.linearGradient1,
-      vertical: Vertical.center,
+      vertical: Vertical.top,
       horizontal: Horizontal.left,
     },
     cover: {
+      size: FontSize.lg,
       vertical: Vertical.center,
       horizontal: Horizontal.center,
     },
   },
-
-  // 3. 科技风格 - 冷色调，适合科技、商业、数据相关内容
   {
-    id: 'tech',
+    id: 'built-in-tech',
     name: '科技风格',
-    description: '现代科技感设计，适合科技、商业、数据分析等专业内容。',
     content: {
-      size: FontSize.lg,
+      size: FontSize.md,
       titleColor: FontColor.blue,
       contentColor: FontColor.white,
       background: Background.linearGradient2,
@@ -60,6 +71,7 @@ export const defaultStyles: StyleConfig[] = [
       horizontal: Horizontal.left,
     },
     cover: {
+      size: FontSize.lg,
       vertical: Vertical.center,
       horizontal: Horizontal.center,
     },
@@ -77,12 +89,10 @@ export function getDefaultStyleById(id: string): StyleConfig | undefined {
 export function getDefaultStyleOptions(): Array<{
   id: string;
   name: string;
-  description: string;
 }> {
   return defaultStyles.map((style) => ({
     id: style.id,
     name: style.name,
-    description: style.description,
   }));
 }
 
