@@ -11,6 +11,7 @@ import { parseMarkdownToImages } from '@/lib/markdown-parser';
 import { useMarkdownContentStore } from '@/store/markdownContent';
 import { showSettingStore } from '@/store/styleConfig';
 import { useImageExport } from './hooks/use-image-export';
+import './index.css';
 
 export const PreviewCard = () => {
   const [isExporting, setIsExporting] = useState(false);

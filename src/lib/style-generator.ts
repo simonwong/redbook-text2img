@@ -132,13 +132,10 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
     },
     ul: {
       marginBottom: `${0.77}em`,
-      paddingLeft: `${1.23}em`,
-      listStyle: 'disc',
     },
     li: {
       marginBottom: `${0.46}em`,
       ...generateTypographyStyle('body'),
-      position: 'relative',
     },
     pre: {
       marginBottom: `${0.77}em`,

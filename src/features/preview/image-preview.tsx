@@ -27,6 +27,7 @@ const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({
 
   return (
     <div
+      className="img-preview"
       key={`container-${currentStyleConfig.id}-${segment.id}`}
       ref={ref}
       style={currentStyles.container}
