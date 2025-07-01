@@ -9,9 +9,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export interface SelectProps<
-  OptionType extends { label: React.ReactNode; value: string },
-> {
+export type BaseOptionType = {
+  label: React.ReactNode;
+  value: string;
+} & {
+  [K in string]: unknown;
+};
+
+export interface SelectProps<OptionType extends BaseOptionType> {
   options: readonly OptionType[];
   value?: OptionType['value'];
   onChange?: (value: OptionType['value'], option: OptionType) => void;
@@ -19,9 +24,7 @@ export interface SelectProps<
   className?: string;
 }
 
-export const Select = <
-  OptionType extends { label: React.ReactNode; value: string },
->({
+export const Select = <OptionType extends BaseOptionType>({
   options,
   value,
   onChange,

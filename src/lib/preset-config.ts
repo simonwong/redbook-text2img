@@ -64,38 +64,47 @@ export const FontColorOptions = [
   {
     label: '白色',
     value: FontColor.white,
+    color: '#ffffff',
   },
   {
     label: '黑色',
     value: FontColor.black,
+    color: '#000000',
   },
   {
     label: '灰色',
     value: FontColor.gray,
+    color: '#6b7280',
   },
   {
     label: '蓝色',
     value: FontColor.blue,
+    color: '#3b82f6',
   },
   {
     label: '红色',
     value: FontColor.red,
+    color: '#ef4444',
   },
   {
     label: '绿色',
     value: FontColor.green,
+    color: '#10b981',
   },
   {
     label: '紫色',
     value: FontColor.purple,
+    color: '#8b5cf6',
   },
   {
     label: '橙色',
     value: FontColor.orange,
+    color: '#f59e0b',
   },
   {
     label: '自定义',
     value: FontColor.custom,
+    color: '#ffffff',
   },
 ];
 
@@ -111,50 +120,47 @@ export const Background = {
 } as const;
 export type Background = (typeof Background)[keyof typeof Background];
 
-export const backgroundStyleMap: Record<Background, string> = {
-  [Background.white]: '#ffffff',
-  [Background.gray]: '#f8fafc',
-  [Background.blue]: '#f1f5f9',
-  [Background.linearGradient1]:
-    'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)',
-  [Background.linearGradient2]:
-    'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e40af 75%, #3b82f6 100%)',
-  [Background.TrianglifyGary]: TrianglifyGary,
-  [Background.custom]: 'custom',
-};
-
 export const BackgroundOptions = [
   // 纯色背景
   {
     label: '白色',
     value: Background.white,
+    color: '#ffffff',
   },
   {
     label: '灰色',
     value: Background.gray,
+    color: '#f8fafc',
   },
   {
     label: '蓝色',
     value: Background.blue,
+    color: '#f1f5f9',
   },
 
   // 渐变背景
   {
     label: '渐变1',
     value: Background.linearGradient1,
+    color:
+      'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)',
   },
   {
     label: '渐变2',
     value: Background.linearGradient2,
+    color:
+      'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e40af 75%, #3b82f6 100%)',
   },
   // 图片背景（base64编码的简约图案）
   {
     label: '抽象三角形-灰色',
     value: Background.TrianglifyGary,
+    color: TrianglifyGary,
   },
   {
     label: '自定义',
     value: Background.custom,
+    color: '#ffffff',
   },
 ];
 
@@ -249,21 +255,12 @@ export function getFontSizeCss(size: FontSize): number {
   return fontSizeStyleMap[size];
 }
 // 获取实际颜色值的辅助函数
-export function getColorCss(color: FontColor, customColor?: string): string {
-  if (color === 'custom' && customColor) {
-    return customColor;
-  }
-  return fontColorStyleMap[color] || fontColorStyleMap[FontColor.black];
+export function getColorCss(color: FontColor | string): string {
+  return FontColorOptions.find((item) => item.value === color)?.color || color;
 }
 
-export function getBackgroundCss(
-  color: Background,
-  customColor?: string
-): string {
-  if (color === 'custom' && customColor) {
-    return customColor;
-  }
-  return backgroundStyleMap[color] || backgroundStyleMap[Background.white];
+export function getBackgroundCss(color: Background | string): string {
+  return BackgroundOptions.find((item) => item.value === color)?.color || color;
 }
 
 // 新增：获取 Typography 比例的辅助函数

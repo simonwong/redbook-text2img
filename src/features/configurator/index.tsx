@@ -15,12 +15,12 @@ import {
   FontColorOptions,
   FontSizeOptions,
   getBackgroundCss,
-  getColorCss,
   HorizontalOptions,
   VerticalOptions,
 } from '@/lib/preset-config';
 import { mergeCoverConfig } from '@/lib/style-generator';
 import { showSettingStore, useStyleConfigStore } from '@/store/styleConfig';
+import { ColorSelect } from './ColorSelect';
 
 const ConfigForm = ({
   config,
@@ -45,40 +45,18 @@ const ConfigForm = ({
     <div className="grid grid-cols-2 gap-4">
       <div className="space-y-2">
         <Label className="font-medium text-sm">标题颜色</Label>
-        <Select
+        <ColorSelect
           onChange={(v) => onConfigChange({ titleColor: v })}
-          options={FontColorOptions.map((option) => ({
-            label: (
-              <div className="flex items-center gap-2">
-                <div
-                  className="h-4 w-4 rounded border"
-                  style={{ background: getColorCss(option.value) }}
-                />
-                <span className="text-xs">{option.label}</span>
-              </div>
-            ),
-            value: option.value,
-          }))}
+          options={FontColorOptions}
           value={config.titleColor}
         />
       </div>
 
       <div className="space-y-2">
         <Label className="font-medium text-sm">内容颜色</Label>
-        <Select
+        <ColorSelect
           onChange={(v) => onConfigChange({ contentColor: v })}
-          options={FontColorOptions.map((option) => ({
-            label: (
-              <div className="flex items-center gap-2">
-                <div
-                  className="h-4 w-4 rounded border"
-                  style={{ background: getColorCss(option.value) }}
-                />
-                <span className="text-xs">{option.label}</span>
-              </div>
-            ),
-            value: option.value,
-          }))}
+          options={FontColorOptions}
           value={config.contentColor}
         />
       </div>
