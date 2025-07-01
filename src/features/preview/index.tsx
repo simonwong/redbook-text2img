@@ -22,10 +22,14 @@ export const PreviewCard = () => {
   // 从 zustand store 获取 markdown 内容和重置方法
   const { content: markdown } = useMarkdownContentStore();
 
-  const { exportSingleImage, exportAllImages } = useImageExport();
-
   // 解析 Markdown 为图片段落
   const segments = useMemo(() => parseMarkdownToImages(markdown), [markdown]);
+
+  const title = useMemo(() => {
+    return segments.find((segment) => segment.isFirstImage)?.title ?? '';
+  }, [segments]);
+
+  const { exportSingleImage, exportAllImages } = useImageExport(title);
 
   const { imageRefs, setImageRef } = useImageRefs();
 
@@ -37,15 +41,8 @@ export const PreviewCard = () => {
     }
 
     setIsExporting(true);
-    const success = await exportSingleImage(
-      element,
-      `xiaohongshu-${index + 1}.png`
-    );
+    await exportSingleImage(element, index);
     setIsExporting(false);
-
-    if (success) {
-      console.log(`图片 ${index + 1} 导出成功`);
-    }
   };
   // 导出所有图片
   const handleExportAll = async () => {
@@ -57,10 +54,8 @@ export const PreviewCard = () => {
     }
 
     setIsExporting(true);
-    const { successCount, failureCount } = await exportAllImages(elements);
+    await exportAllImages(elements);
     setIsExporting(false);
-
-    console.log(`成功导出 ${successCount} 张图片，失败 ${failureCount} 张`);
   };
 
   return (
