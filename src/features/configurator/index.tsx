@@ -163,9 +163,8 @@ export const Configurator = memo(() => {
   }
 
   return (
-    <div className="w-80 overflow-auto">
+    <div className="overflow-auto">
       <div className="space-y-4">
-        {/* 样式选择器 */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
@@ -236,31 +235,33 @@ export const Configurator = memo(() => {
           </Card>
         )}
 
-        {/* 内容设置 */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">内容设置</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ConfigForm
-              config={styleConfig.content}
-              onConfigChange={handleContentChange}
-            />
-          </CardContent>
-        </Card>
-
-        {/* 封面设置 */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">封面设置</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ConfigForm
-              config={mergeCoverConfig(styleConfig.content, styleConfig.cover)}
-              onConfigChange={handleCoverChange}
-            />
-          </CardContent>
-        </Card>
+        <div className="flex gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">封面设置</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ConfigForm
+                config={mergeCoverConfig(
+                  styleConfig.content,
+                  styleConfig.cover
+                )}
+                onConfigChange={handleCoverChange}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">内容设置</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ConfigForm
+                config={styleConfig.content}
+                onConfigChange={handleContentChange}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
