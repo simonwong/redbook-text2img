@@ -54,7 +54,8 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
   const innerContainerStyles: React.CSSProperties = {
     width: '100%',
     height: '100%',
-    padding: `${2.3}em ${1.9}em`,
+    // padding: `${2.3}em ${1.9}em`,
+    padding: `${1.5}em ${1.5}em`,
     boxSizing: 'border-box',
   };
 
