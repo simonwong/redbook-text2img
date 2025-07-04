@@ -1,17 +1,19 @@
 ---
-description: Project Architecture Guide
-globs: 
+description: Project Architecture Guidelines
 alwaysApply: false
 ---
 # 项目架构指南
 
 ## 整体架构
+
 采用模块化设计，将功能按职责分离：
 
 ### 页面层 (App Router)
+
 - [src/app/page.tsx](mdc:src/app/page.tsx) - 主应用页面，集成所有核心组件
 
 ### 组件层 (Components)
+
 - **UI 基础组件**：[src/components/ui/](mdc:src/components/ui) - 基于 Radix UI 的可复用组件
 - **业务组件**：
   - [src/components/markdown-editor.tsx](mdc:src/components/markdown-editor.tsx) - Markdown 编辑器
@@ -19,11 +21,14 @@ alwaysApply: false
   - [src/components/style-configurator.tsx](mdc:src/components/style-configurator.tsx) - 样式配置器
 
 ### 状态管理层 (Store)
+
 使用 Zustand 进行状态管理，采用模块化设计：
+
 - [src/store/markdownContent.ts](mdc:src/store/markdownContent.ts) - Markdown 内容状态
 - [src/store/styleConfig.ts](mdc:src/store/styleConfig.ts) - 样式配置状态
 
 ### 业务逻辑层 (Lib)
+
 - **核心解析器**：[src/lib/markdown-parser.ts](mdc:src/lib/markdown-parser.ts) - Markdown 解析为图片段落
 - **样式生成器**：[src/lib/style-generator.ts](mdc:src/lib/style-generator.ts) - 根据配置生成 CSS 样式
 - **配置管理**：
@@ -32,16 +37,19 @@ alwaysApply: false
   - [src/lib/preset-config.ts](mdc:src/lib/preset-config.ts) - 预设配置工具
 
 ### Hooks 层
+
 - [src/hooks/use-image-export.ts](mdc:src/hooks/use-image-export.ts) - 图片导出功能
 - [src/hooks/use-image-refs.ts](mdc:src/hooks/use-image-refs.ts) - 图片引用管理
 
 ## 数据流
+
 1. **输入**：用户在 MarkdownEditor 中输入内容
 2. **解析**：markdown-parser 将内容解析为图片段落
 3. **渲染**：ImagePreview 组件根据样式配置渲染图片
 4. **导出**：use-image-export hook 将 DOM 转换为图片文件
 
 ## 设计原则
+
 - **关注点分离**：UI、业务逻辑、状态管理分离
 - **可复用性**：组件和 hooks 设计为可复用
 - **类型安全**：完全使用 TypeScript 保证类型安全

@@ -1,6 +1,5 @@
 ---
 description: Development Workflow Guide
-globs: 
 alwaysApply: false
 ---
 # 开发工作流指南
@@ -8,27 +7,32 @@ alwaysApply: false
 ## 项目启动
 
 ### 环境要求
+
 - Node.js 18+
 - pnpm 9+
 
 ### 安装依赖
+
 ```bash
 pnpm install
 ```
 
 ### 开发模式
+
 ```bash
 pnpm dev
 # 启动开发服务器，支持 Turbopack 加速
 ```
 
 ### 构建项目
+
 ```bash
 pnpm build  # 生产构建
 pnpm start  # 启动生产服务器
 ```
 
 ### 代码质量
+
 ```bash
 pnpm lint   # ESLint 检查
 ```
@@ -36,6 +40,7 @@ pnpm lint   # ESLint 检查
 ## 关键开发文件
 
 ### 配置文件
+
 - [package.json](mdc:package.json) - 项目配置和依赖
 - [tsconfig.json](mdc:tsconfig.json) - TypeScript 配置
 - [next.config.ts](mdc:next.config.ts) - Next.js 配置
@@ -43,12 +48,14 @@ pnpm lint   # ESLint 检查
 - [prettier.config.mjs](mdc:prettier.config.mjs) - Prettier 配置
 
 ### 样式配置
+
 - [postcss.config.mjs](mdc:postcss.config.mjs) - PostCSS 配置
 - [src/app/globals.css](mdc:src/app/globals.css) - 全局样式
 
 ## 开发流程
 
 ### 1. 新功能开发
+
 1. **分析需求**：确定功能范围和接口
 2. **设计类型**：在 lib/ 目录定义相关类型
 3. **实现逻辑**：在 lib/ 目录实现核心逻辑
@@ -56,12 +63,14 @@ pnpm lint   # ESLint 检查
 5. **集成测试**：在主页面集成并测试
 
 ### 2. 样式系统开发
+
 - **配置定义**：在 [src/lib/image-style-config.ts](mdc:src/lib/image-style-config.ts) 定义类型
 - **样式生成**：在 [src/lib/style-generator.ts](mdc:src/lib/style-generator.ts) 实现生成逻辑
 - **预设管理**：在 [src/lib/default-styles.ts](mdc:src/lib/default-styles.ts) 管理预设
 - **组件应用**：在 ImagePreview 组件中应用样式
 
 ### 3. 状态管理开发
+
 - **Store 创建**：在 store/ 目录创建 Zustand store
 - **类型定义**：明确定义 State 和 Actions 接口
 - **组件连接**：在组件中使用 store hooks
@@ -69,11 +78,13 @@ pnpm lint   # ESLint 检查
 ## 调试指南
 
 ### 开发工具
+
 - **React DevTools**：组件状态调试
 - **Zustand DevTools**：状态管理调试
 - **Chrome DevTools**：网络和性能调试
 
 ### 常见问题
+
 1. **图片导出失败**：检查 html2canvas 配置和 DOM 结构
 2. **样式不生效**：检查 CSS-in-JS 对象和 Tailwind 类冲突
 3. **类型错误**：检查接口定义和类型导入
@@ -81,18 +92,22 @@ pnpm lint   # ESLint 检查
 ## 部署流程
 
 ### 构建检查
+
 ```bash
 pnpm build
 # 确保构建成功，无类型错误
 ```
 
 ### 静态导出（可选）
+
 ```bash
 # 如需静态导出，需要在 next.config.ts 中配置 output: 'export'
 ```
 
 ## 文件监控
+
 重要文件变更时需要注意：
+
 - **package.json**：依赖变更时需要重新安装
 - **tsconfig.json**：TypeScript 配置变更可能需要重启 IDE
 - **next.config.ts**：Next.js 配置变更需要重启开发服务器

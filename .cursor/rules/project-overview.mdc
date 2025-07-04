@@ -1,20 +1,21 @@
 ---
-description: Overview of Xiaohongshu Image Generator Project
-globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # 小红书图片生成器项目总览
 
 ## 项目介绍
+
 这是一个基于 Next.js 15 的 Web 应用，主要功能是将 Markdown 内容转换为小红书风格的图片。用户可以在左侧编辑器中输入 Markdown 内容，右侧实时预览生成的图片，并支持导出。
 
 ## 核心功能
+
 - **Markdown 编辑器**：支持实时编辑 Markdown 内容
 - **图片预览**：实时渲染 Markdown 为图片格式
 - **样式配置**：支持自定义图片样式（字体、颜色、背景等）
 - **图片导出**：支持单张或批量导出图片为 PNG 格式
 
 ## 技术栈
+
 - **前端框架**：Next.js 15 with App Router
 - **状态管理**：Zustand
 - **UI 组件**：Radix UI + Tailwind CSS
@@ -23,6 +24,7 @@ alwaysApply: false
 - **代码编辑**：Monaco Editor
 
 ## 主要文件结构
+
 - **应用入口**：[src/app/page.tsx](mdc:src/app/page.tsx) - 主页面组件
 - **组件库**：[src/components/](mdc:src/components) - UI 组件
 - **状态管理**：[src/store/](mdc:src/store) - Zustand stores
@@ -30,6 +32,7 @@ alwaysApply: false
 - **自定义 Hooks**：[src/hooks/](mdc:src/hooks) - React hooks
 
 ## 项目配置
+
 - **包管理器**：pnpm
 - **TypeScript**：完全类型化
 - **代码规范**：ESLint + Prettier
