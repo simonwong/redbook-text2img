@@ -9,9 +9,12 @@ export const Header = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center gap-4">
           <div className="flex flex-1 items-center gap-3">
-            <Link href="/">
+            <Link aria-label="Home" href="/">
               <div className="flex items-center gap-2">
-                <SparkleIcon className="h-6 w-6 text-pink-500" />
+                <SparkleIcon
+                  aria-hidden="true"
+                  className="h-6 w-6 text-pink-500"
+                />
                 <h1 className="font-bold text-gray-900 text-xl">
                   小红书图片生成器
                 </h1>
@@ -21,21 +24,26 @@ export const Header = () => {
               Markdown 转图片
             </Badge>
           </div>
-          <div>
+          <nav aria-label="Main Navigation" className="flex items-center gap-3">
             <Button asChild className="text-accent-foreground" variant="link">
               <Link href="/changelog">更新日志</Link>
             </Button>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button asChild size="icon" variant="outline">
+            <Button
+              asChild
+              size="icon"
+              title="GitHub Repository"
+              variant="outline"
+            >
               <Link
+                aria-label="GitHub"
                 href="https://github.com/simonwong/redbook-text2img"
+                rel="noopener noreferrer"
                 target="_blank"
               >
-                <GithubIcon className="h-4 w-4" />
+                <GithubIcon aria-hidden="true" className="h-4 w-4" />
               </Link>
             </Button>
-          </div>
+          </nav>
         </div>
       </div>
     </header>
