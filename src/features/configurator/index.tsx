@@ -135,13 +135,12 @@ export const Configurator = memo(() => {
   };
 
   const isBuiltIn = defaultStyleIds.includes(styleConfig.id);
-
   if (!isShowSetting) {
     return null;
   }
 
   return (
-    <div className="overflow-auto">
+    <aside aria-label="样式配置" className="overflow-auto">
       <div className="space-y-4">
         <Card>
           <CardHeader>
@@ -241,7 +240,7 @@ export const Configurator = memo(() => {
           </Card>
         </div>
       </div>
-    </div>
+    </aside>
   );
 });
 

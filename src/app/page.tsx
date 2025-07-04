@@ -13,15 +13,9 @@ const MarkdownToImageApp = () => {
           className="flex h-full max-h-full gap-6 px-4"
           role="application"
         >
-          <section aria-label="Markdown 编辑器">
-            <EditorCard />
-          </section>
-          <section aria-label="图片预览">
-            <PreviewCard />
-          </section>
-          <aside aria-label="样式配置">
-            <Configurator />
-          </aside>
+          <EditorCard />
+          <PreviewCard />
+          <Configurator />
         </div>
       </div>
     </>
