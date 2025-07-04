@@ -2,6 +2,8 @@
 
 在线 Markdown 转换为小红书图片的工具。内置了一些风格样式，也可以轻量的自定义样式。
 
+![screenshot](./public/screenshot-1.png)
+
 ## 风格来源
 
 ### 样式参考
