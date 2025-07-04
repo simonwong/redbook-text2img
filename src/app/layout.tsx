@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { Header } from '@/components/header';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/next';
+import { Header } from '@/components/header';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: '小红书图片生成器 - Markdown 转图片工具',
-  description: '将 Markdown 文本快速转换为精美的小红书风格图片，支持多种样式，一键导出下载。',
+  description:
+    '将 Markdown 文本快速转换为精美的小红书风格图片，支持多种样式，一键导出下载。',
 };
 
 export default function RootLayout({
@@ -27,12 +29,13 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} h-screen max-h-screen flex flex-col bg-gray-50`}
+        className={`${geistSans.variable} ${geistMono.variable} flex h-screen max-h-screen flex-col bg-gray-50`}
       >
         <Header />
         <main className="flex-1 overflow-hidden">{children}</main>
         <Analytics />
       </body>
+      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ''} />
     </html>
   );
 }
