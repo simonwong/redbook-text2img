@@ -5,8 +5,8 @@ import type { StyleConfig } from '@/lib/image-style-config';
 
 interface StyleConfigState {
   isChange: boolean;
-  setIsChange: (isChange: boolean) => void;
   styleConfig: StyleConfig;
+  setBuildInStyleConfig: (styleConfig: StyleConfig) => void;
   setStyleConfig: (styleConfig: StyleConfig) => void;
 }
 
@@ -15,9 +15,10 @@ export const useStyleConfigStore = create<StyleConfigState>()(
     persist(
       (set) => ({
         isChange: false,
-        setIsChange: (isChange) => set({ isChange }),
         styleConfig: defaultStyles[0],
-        setStyleConfig: (styleConfig) => set({ styleConfig }),
+        setBuildInStyleConfig: (styleConfig) =>
+          set({ styleConfig, isChange: false }),
+        setStyleConfig: (styleConfig) => set({ styleConfig, isChange: true }),
       }),
       {
         name: 'redbook-current-style-config',

@@ -1,12 +1,11 @@
 'use client';
 
 import { Palette, Trash2 } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
+import { Card } from '@/components/enhance/card';
 import { Select } from '@/components/enhance/select';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { defaultStyleIds, defaultStyles } from '@/lib/default-styles';
 import type { ContentConfig } from '@/lib/image-style-config';
@@ -89,14 +88,22 @@ const ConfigForm = ({
 );
 
 export const Configurator = memo(() => {
-  const [newStyleName, setNewStyleName] = useState('');
-
-  const { styleConfig, setStyleConfig, isChange } = useStyleConfigStore();
+  const { styleConfig, setBuildInStyleConfig, setStyleConfig, isChange } =
+    useStyleConfigStore();
   const isShowSetting = showSettingStore((state) => state.isShowSetting);
   const handleStyleSelect = (styleId: string) => {
     const selectedStyle = defaultStyles.find((style) => style.id === styleId);
     if (selectedStyle) {
-      setStyleConfig(selectedStyle);
+      setBuildInStyleConfig(selectedStyle);
+    }
+  };
+  const resetCurrentStyle = () => {
+    const currentStyleId = styleConfig.id || defaultStyles[0].id;
+    const selectedStyle = defaultStyles.find(
+      (style) => style.id === currentStyleId
+    );
+    if (selectedStyle) {
+      setBuildInStyleConfig(selectedStyle);
     }
   };
 
@@ -128,53 +135,67 @@ export const Configurator = memo(() => {
   return (
     <aside aria-label="样式配置" className="overflow-auto">
       <div className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
+        <Card
+          contentClassName="flex space-x-4"
+          title={
+            <>
               <Palette className="h-4 w-4" />
               样式选择
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Select
-              className="whitespace-normal text-left data-[size=default]:h-auto"
-              onChange={(v) => handleStyleSelect(v)}
-              options={defaultStyles.map((style) => ({
-                label: (
-                  <div className="flex flex-col items-start">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{style.name}</span>
-                      {defaultStyleIds.includes(style.id) && (
-                        <Badge className="text-xs" variant="secondary">
-                          内置
-                        </Badge>
-                      )}
-                    </div>
+            </>
+          }
+        >
+          <Select
+            className="whitespace-normal text-left data-[size=default]:h-auto"
+            onChange={(v) => handleStyleSelect(v)}
+            options={defaultStyles.map((style) => ({
+              label: (
+                <div className="flex flex-col items-start">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{style.name}</span>
+                    {defaultStyleIds.includes(style.id) && (
+                      <Badge className="text-xs" variant="secondary">
+                        内置
+                      </Badge>
+                    )}
                   </div>
-                ),
-                value: style.id,
-              }))}
-              placeholder="选择样式"
-              value={styleConfig?.id}
-            />
-            {/* 样式操作按钮 */}
-            <div className="flex gap-2">
-              {!isBuiltIn && (
-                <Button
-                  disabled={!styleConfig || isBuiltIn}
-                  size="sm"
-                  variant="outline"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
-          </CardContent>
+                </div>
+              ),
+              value: style.id,
+            }))}
+            placeholder="选择样式"
+            value={styleConfig?.id}
+          />
+
+          {/* 样式操作按钮 */}
+          <div className="flex gap-2">
+            {!isBuiltIn && (
+              <Button
+                disabled={!styleConfig || isBuiltIn}
+                size="sm"
+                variant="outline"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
         </Card>
+        <div className="flex gap-4">
+          <Card contentClassName="space-y-4" title="内容设置">
+            <ConfigForm
+              config={styleConfig.content}
+              onConfigChange={handleContentChange}
+            />
+          </Card>
+          <Card contentClassName="space-y-4" title="封面设置">
+            <ConfigForm
+              config={mergeCoverConfig(styleConfig.content, styleConfig.cover)}
+              onConfigChange={handleCoverChange}
+            />
+          </Card>
+        </div>
         {isChange && (
           <Card>
-            <CardContent className="pt-4">
-              {isBuiltIn && (
+            {/* {isBuiltIn && (
                 <div className="mb-4 space-y-2">
                   <Label className="font-medium text-sm">新样式名称</Label>
                   <Input
@@ -183,48 +204,18 @@ export const Configurator = memo(() => {
                     value={newStyleName}
                   />
                 </div>
-              )}
-
-              {/* <div className="flex gap-2">
-              <Button onClick={saveEditing} className="flex-1">
-                <Save className="w-3 h-3 mr-1" />
-                {isBuiltIn ? '保存为新样式' : '保存更改'}
+              )} */}
+            <div className="flex gap-2">
+              {/* <Button className="flex-1" onClick={saveEditing}>
+                  <SaveIcon className="mr-1 h-3 w-3" />
+                  {isBuiltIn ? '保存为新样式' : '保存更改'}
+                </Button> */}
+              <Button onClick={resetCurrentStyle} variant="outline">
+                重置
               </Button>
-              <Button variant="outline" onClick={cancelEditing}>
-                取消
-              </Button>
-            </div> */}
-            </CardContent>
+            </div>
           </Card>
         )}
-
-        <div className="flex gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">封面设置</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ConfigForm
-                config={mergeCoverConfig(
-                  styleConfig.content,
-                  styleConfig.cover
-                )}
-                onConfigChange={handleCoverChange}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">内容设置</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ConfigForm
-                config={styleConfig.content}
-                onConfigChange={handleContentChange}
-              />
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </aside>
   );
