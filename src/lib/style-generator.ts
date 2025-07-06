@@ -6,8 +6,11 @@ import type {
   StyleConfig,
 } from './image-style-config';
 import {
+  FontSize,
+  Horizontal,
   horizontalStyleMap,
   PresetConfigManager,
+  Vertical,
   verticalStyleMap,
 } from './preset-config';
 
@@ -143,19 +146,56 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
   };
 }
 
-// 合并封面配置和内容配置（优化版）
+// 合并封面配置和内容配置
 export function mergeCoverConfig(
   contentConfig: ContentConfig,
   coverConfig: CoverConfig
 ): ContentConfig {
-  return {
-    size: coverConfig.size || contentConfig.size,
-    titleColor: coverConfig.titleColor || contentConfig.titleColor,
-    contentColor: coverConfig.contentColor || contentConfig.contentColor,
-    background: coverConfig.background || contentConfig.background,
-    vertical: coverConfig.vertical || contentConfig.vertical,
-    horizontal: coverConfig.horizontal || contentConfig.horizontal,
-  };
+  const config = {
+    size: coverConfig.size,
+    titleColor: coverConfig.titleColor,
+    contentColor: coverConfig.contentColor,
+    background: coverConfig.background,
+    vertical: coverConfig.vertical,
+    horizontal: coverConfig.horizontal,
+  } as ContentConfig;
+
+  // 如果封面配置没有设置大小，则根据内容配置的大小来设置大小
+  if (!coverConfig.size) {
+    switch (contentConfig.size) {
+      case FontSize.sm:
+        config.size = FontSize.md;
+        break;
+      case FontSize.md:
+        config.size = FontSize.lg;
+        break;
+      case FontSize.lg:
+        config.size = FontSize.xl;
+        break;
+      case FontSize.xl:
+        config.size = FontSize.xl;
+        break;
+      default:
+        config.size = FontSize.md;
+        break;
+    }
+  }
+  if (!coverConfig.titleColor && coverConfig.titleColor !== '') {
+    config.titleColor = contentConfig.titleColor;
+  }
+  if (!coverConfig.contentColor && coverConfig.contentColor !== '') {
+    config.contentColor = contentConfig.contentColor;
+  }
+  if (!coverConfig.background && coverConfig.background !== '') {
+    config.background = contentConfig.background;
+  }
+  if (!coverConfig.vertical) {
+    config.vertical = Vertical.center;
+  }
+  if (!coverConfig.horizontal) {
+    config.horizontal = Horizontal.center;
+  }
+  return config;
 }
 
 // 主要样式生成函数

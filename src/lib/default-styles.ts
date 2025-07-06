@@ -19,11 +19,7 @@ export const defaultStyles: StyleConfig[] = [
       vertical: Vertical.top,
       horizontal: Horizontal.left,
     },
-    cover: {
-      size: FontSize.lg,
-      vertical: Vertical.center,
-      horizontal: Horizontal.center,
-    },
+    cover: {},
   },
   {
     id: 'built-in-simple',
@@ -36,11 +32,7 @@ export const defaultStyles: StyleConfig[] = [
       vertical: Vertical.top,
       horizontal: Horizontal.left,
     },
-    cover: {
-      size: FontSize.lg,
-      vertical: Vertical.center,
-      horizontal: Horizontal.center,
-    },
+    cover: {},
   },
   {
     id: 'built-in-warm',
@@ -53,11 +45,7 @@ export const defaultStyles: StyleConfig[] = [
       vertical: Vertical.top,
       horizontal: Horizontal.left,
     },
-    cover: {
-      size: FontSize.lg,
-      vertical: Vertical.center,
-      horizontal: Horizontal.center,
-    },
+    cover: {},
   },
   {
     id: 'built-in-tech',
@@ -70,38 +58,8 @@ export const defaultStyles: StyleConfig[] = [
       vertical: Vertical.top,
       horizontal: Horizontal.left,
     },
-    cover: {
-      size: FontSize.lg,
-      vertical: Vertical.center,
-      horizontal: Horizontal.center,
-    },
+    cover: {},
   },
 ];
 
 export const defaultStyleIds = defaultStyles.map((style) => style.id);
-
-// 根据ID获取默认风格
-export function getDefaultStyleById(id: string): StyleConfig | undefined {
-  return defaultStyles.find((style) => style.id === id);
-}
-
-// 获取所有默认风格的名称和描述
-export function getDefaultStyleOptions(): Array<{
-  id: string;
-  name: string;
-}> {
-  return defaultStyles.map((style) => ({
-    id: style.id,
-    name: style.name,
-  }));
-}
-
-// 检查是否为内置风格
-export function isBuiltInStyle(id: string): boolean {
-  return defaultStyles.some((style) => style.id === id);
-}
-
-// 获取默认风格配置（用于初始化）
-export function getDefaultStyleConfig(): StyleConfig {
-  return defaultStyles[0]; // 返回简约风格作为默认配置
-}

@@ -25,7 +25,7 @@ const ConfigForm = ({
   config,
   onConfigChange,
 }: {
-  config: ContentConfig;
+  config: Partial<ContentConfig>;
   onConfigChange: (change: Partial<ContentConfig>) => void;
 }) => (
   <>
