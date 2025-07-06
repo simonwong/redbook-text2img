@@ -14,7 +14,6 @@ import {
   BackgroundOptions,
   FontColorOptions,
   FontSizeOptions,
-  getBackgroundCss,
   HorizontalOptions,
   VerticalOptions,
 } from '@/lib/preset-config';
@@ -31,7 +30,7 @@ const ConfigForm = ({
 }) => (
   <>
     <div className="space-y-2">
-      <Label className="font-medium text-sm">大小</Label>
+      <Label className="font-medium text-sm">基准大小</Label>
       <div className="flex gap-2">
         <Select
           onChange={(v) => onConfigChange({ size: v })}
@@ -61,24 +60,11 @@ const ConfigForm = ({
         />
       </div>
     </div>
-
-    {/* 背景设置 */}
     <div className="space-y-2">
-      <Label className="font-medium text-sm">背景</Label>
-      <Select
+      <Label className="font-medium text-sm">背景颜色</Label>
+      <ColorSelect
         onChange={(v) => onConfigChange({ background: v })}
-        options={BackgroundOptions.map((option) => ({
-          label: (
-            <div className="flex items-center gap-2">
-              <div
-                className="h-4 w-4 rounded border"
-                style={{ background: getBackgroundCss(option.value) }}
-              />
-              <span className="text-xs">{option.label}</span>
-            </div>
-          ),
-          value: option.value,
-        }))}
+        options={BackgroundOptions}
         value={config.background}
       />
     </div>

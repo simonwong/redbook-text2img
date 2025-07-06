@@ -6,34 +6,16 @@ import type {
   StyleConfig,
 } from './image-style-config';
 import {
-  getBackgroundCss,
-  getColorCss,
-  getFontSizeCss,
-  getLineHeight,
-  getTypographyScale,
   horizontalStyleMap,
-  type TypographyElement,
+  PresetConfigManager,
   verticalStyleMap,
 } from './preset-config';
 
-// 基于 Typography 系统生成字体样式
-function generateTypographyStyle(
-  element: TypographyElement
-): React.CSSProperties {
-  const scale = getTypographyScale(element);
-  const lineHeight = getLineHeight(element);
-
-  return {
-    fontSize: `${scale}em`,
-    lineHeight: lineHeight.toString(),
-  };
-}
-
 // 生成内容样式（优化版）
 function generateContentStyles(config: ContentConfig): GeneratedStyles {
-  const baseFontSize = getFontSizeCss(config.size);
-  const titleColor = getColorCss(config.titleColor);
-  const contentColor = getColorCss(config.contentColor);
+  const baseFontSize = PresetConfigManager.getFontSizeCss(config.size);
+  const titleColor = PresetConfigManager.getColorCss(config.titleColor);
+  const contentColor = PresetConfigManager.getColorCss(config.contentColor);
 
   // 容器样式 - 使用 rem 单位和现代化的设计
   const containerStyles: React.CSSProperties = {
@@ -41,7 +23,7 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
     minWidth: '300px',
     height: '400px',
     minHeight: '400px',
-    background: getBackgroundCss(config.background),
+    background: PresetConfigManager.getBackgroundCss(config.background),
     borderRadius: '12px',
     overflow: 'hidden',
     fontFamily:
@@ -55,6 +37,7 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
     width: '100%',
     height: '100%',
     // padding: `${2.3}em ${1.9}em`,
+    // TODO: 自定义 padding
     padding: `${1.5}em ${1.5}em`,
     boxSizing: 'border-box',
   };
@@ -62,7 +45,7 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
   const contentStyles: React.CSSProperties = {
     flex: '1',
     overflow: 'hidden',
-    ...generateTypographyStyle('body'),
+    ...PresetConfigManager.getTypographyCss('body'),
     color: contentColor,
     wordBreak: 'break-word',
     display: 'flex',
@@ -77,45 +60,43 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
     innerContainer: innerContainerStyles,
     content: contentStyles,
     h1: {
-      ...generateTypographyStyle('h1'),
+      ...PresetConfigManager.getTypographyCss('h1'),
       fontWeight: '700',
       marginBottom: `${1.54}em`,
       color: titleColor,
-      letterSpacing: '-0.02em',
     },
     h2: {
-      ...generateTypographyStyle('h2'),
+      ...PresetConfigManager.getTypographyCss('h2'),
       fontWeight: '600',
       marginBottom: `${0.92}em`,
       color: titleColor,
-      letterSpacing: '-0.015em',
     },
     h3: {
-      ...generateTypographyStyle('h3'),
+      ...PresetConfigManager.getTypographyCss('h3'),
       fontWeight: '600',
       marginBottom: `${0.77}em`,
       color: titleColor,
     },
     h4: {
-      ...generateTypographyStyle('h4'),
+      ...PresetConfigManager.getTypographyCss('h4'),
       fontWeight: '600',
       marginBottom: `${0.62}em`,
       color: titleColor,
     },
     h5: {
-      ...generateTypographyStyle('h5'),
+      ...PresetConfigManager.getTypographyCss('h5'),
       fontWeight: '600',
       marginBottom: `${0.46}em`,
       color: contentColor,
     },
     h6: {
-      ...generateTypographyStyle('h6'),
+      ...PresetConfigManager.getTypographyCss('h6'),
       fontWeight: '600',
       marginBottom: `${0.46}em`,
       color: contentColor,
     },
     p: {
-      ...generateTypographyStyle('body'),
+      ...PresetConfigManager.getTypographyCss('body'),
       marginBottom: `${0.77}em`,
       color: contentColor,
       wordBreak: 'break-word',
@@ -136,7 +117,7 @@ function generateContentStyles(config: ContentConfig): GeneratedStyles {
     },
     li: {
       marginBottom: `${0.46}em`,
-      ...generateTypographyStyle('body'),
+      ...PresetConfigManager.getTypographyCss('body'),
     },
     pre: {
       marginBottom: `${0.77}em`,

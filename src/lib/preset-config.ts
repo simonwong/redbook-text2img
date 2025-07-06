@@ -1,5 +1,11 @@
 import { TrianglifyGary } from './background-image-constants';
 
+/**
+ * label: 用户看到的文本
+ * value: 内部维护的值，用于关联映射
+ * relValue: 实际的值，用于 css 样式
+ */
+
 // ========== font size ==========
 export const FontSize = {
   sm: 'sm',
@@ -9,29 +15,26 @@ export const FontSize = {
 } as const;
 export type FontSize = (typeof FontSize)[keyof typeof FontSize];
 
-export const fontSizeStyleMap: Record<FontSize, number> = {
-  [FontSize.sm]: 12,
-  [FontSize.md]: 14,
-  [FontSize.lg]: 16,
-  [FontSize.xl]: 18,
-};
-
 export const FontSizeOptions = [
   {
     label: '小号',
     value: FontSize.sm,
+    relValue: 12,
   },
   {
     label: '中号',
     value: FontSize.md,
+    relValue: 14,
   },
   {
     label: '大号',
     value: FontSize.lg,
+    relValue: 16,
   },
   {
     label: '特大号',
     value: FontSize.xl,
+    relValue: 18,
   },
 ];
 
@@ -46,65 +49,53 @@ export const FontColor = {
   purple: 'purple',
   orange: 'orange',
   custom: 'custom',
-} as const;
-export type FontColor = (typeof FontColor)[keyof typeof FontColor];
-
-export const fontColorStyleMap: Record<FontColor, string> = {
-  [FontColor.white]: '#ffffff',
-  [FontColor.black]: '#000000',
-  [FontColor.gray]: '#6b7280',
-  [FontColor.blue]: '#3b82f6',
-  [FontColor.red]: '#ef4444',
-  [FontColor.green]: '#10b981',
-  [FontColor.purple]: '#8b5cf6',
-  [FontColor.orange]: '#f59e0b',
-  [FontColor.custom]: 'custom',
 };
+export type FontColor = (typeof FontColor)[keyof typeof FontColor] | 'string';
 export const FontColorOptions = [
   {
     label: '白色',
     value: FontColor.white,
-    color: '#ffffff',
+    relValue: '#ffffff',
   },
   {
     label: '黑色',
     value: FontColor.black,
-    color: '#000000',
+    relValue: '#000000',
   },
   {
     label: '灰色',
     value: FontColor.gray,
-    color: '#6b7280',
+    relValue: '#6b7280',
   },
   {
     label: '蓝色',
     value: FontColor.blue,
-    color: '#3b82f6',
+    relValue: '#3b82f6',
   },
   {
     label: '红色',
     value: FontColor.red,
-    color: '#ef4444',
+    relValue: '#ef4444',
   },
   {
     label: '绿色',
     value: FontColor.green,
-    color: '#10b981',
+    relValue: '#10b981',
   },
   {
     label: '紫色',
     value: FontColor.purple,
-    color: '#8b5cf6',
+    relValue: '#8b5cf6',
   },
   {
     label: '橙色',
     value: FontColor.orange,
-    color: '#f59e0b',
+    relValue: '#f59e0b',
   },
   {
     label: '自定义',
     value: FontColor.custom,
-    color: '#ffffff',
+    relValue: '#ffffff',
   },
 ];
 
@@ -117,50 +108,51 @@ export const Background = {
   linearGradient2: 'linearGradient2',
   TrianglifyGary: 'TrianglifyGary',
   custom: 'custom',
-} as const;
-export type Background = (typeof Background)[keyof typeof Background];
-
+};
+export type Background =
+  | (typeof Background)[keyof typeof Background]
+  | 'string';
 export const BackgroundOptions = [
   // 纯色背景
   {
     label: '白色',
     value: Background.white,
-    color: '#ffffff',
+    relValue: '#ffffff',
   },
   {
     label: '灰色',
     value: Background.gray,
-    color: '#f8fafc',
+    relValue: '#f8fafc',
   },
   {
     label: '蓝色',
     value: Background.blue,
-    color: '#f1f5f9',
+    relValue: '#f1f5f9',
   },
 
   // 渐变背景
   {
     label: '渐变1',
     value: Background.linearGradient1,
-    color:
+    relValue:
       'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)',
   },
   {
     label: '渐变2',
     value: Background.linearGradient2,
-    color:
+    relValue:
       'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e40af 75%, #3b82f6 100%)',
   },
   // 图片背景（base64编码的简约图案）
   {
     label: '抽象三角形-灰色',
     value: Background.TrianglifyGary,
-    color: TrianglifyGary,
+    relValue: TrianglifyGary,
   },
   {
     label: '自定义',
     value: Background.custom,
-    color: '#ffffff',
+    relValue: '#ffffff',
   },
 ];
 
@@ -225,55 +217,54 @@ export const HorizontalOptions = [
 
 // ========== typography ==========
 
-export const presetTypography = {
-  // 相对于基础字体大小的比例（使用黄金比例和 Tailwind 的标准）
-  scales: {
-    h1: 1.875, // 30px (1.875rem) - 对应 Tailwind text-3xl
-    h2: 1.5, // 24px (1.5rem) - 对应 Tailwind text-2xl
-    h3: 1.25, // 20px (1.25rem) - 对应 Tailwind text-xl
-    h4: 1.125, // 18px (1.125rem) - 对应 Tailwind text-lg
-    h5: 1.0, // 16px (1rem) - 对应 Tailwind text-base
-    h6: 0.875, // 14px (0.875rem) - 对应 Tailwind text-sm
-    body: 1.0, // 16px (1rem) - 基础字体大小
+export const presetModifiers = {
+  body: {
+    fontSize: '1em',
+    lineHeight: 1.6,
   },
-  // 相应的行高比例（基于 Tailwind 的 line-height 系统）
-  lineHeights: {
-    h1: 1.2, // 紧凑的标题行高
-    h2: 1.25,
-    h3: 1.3,
-    h4: 1.4,
-    h5: 1.4,
-    h6: 1.4,
-    body: 1.6, // 舒适的阅读行高
+  h1: {
+    fontSize: '1.875em',
+    lineHeight: 1.2,
+  },
+  h2: {
+    fontSize: '1.5em',
+    lineHeight: 1.2,
+  },
+  h3: {
+    fontSize: '1.25em',
+    lineHeight: 1.3,
+  },
+  h4: {
+    fontSize: '1.125em',
+    lineHeight: 1.4,
+  },
+  h5: {
+    fontSize: '1em',
+    lineHeight: 1.4,
+  },
+  h6: {
+    fontSize: '0.875em',
+    lineHeight: 1.4,
   },
 };
 
-export type TypographyElement = keyof typeof presetTypography.scales;
-
-// 获取实际字体大小的辅助函数
-export function getFontSizeCss(size: FontSize): number {
-  return fontSizeStyleMap[size];
-}
-// 获取实际颜色值的辅助函数
-export function getColorCss(color: FontColor | string): string {
-  return FontColorOptions.find((item) => item.value === color)?.color || color;
-}
-
-export function getBackgroundCss(color: Background | string): string {
-  return BackgroundOptions.find((item) => item.value === color)?.color || color;
-}
-
-// 新增：获取 Typography 比例的辅助函数
-export function getTypographyScale(element: TypographyElement): number {
-  return presetTypography.scales[element];
-}
-
-// 新增：获取行高比例的辅助函数
-export function getLineHeight(element: TypographyElement): number {
-  return presetTypography.lineHeights[element];
-}
-
-// 新增：计算基于基础字体大小的实际字体大小
-export function calculateFontSize(baseSize: number, scale: number): number {
-  return baseSize * scale;
-}
+export const PresetConfigManager = {
+  getFontSizeCss: (size: FontSize): number => {
+    return FontSizeOptions.find((item) => item.value === size)?.relValue || 12;
+  },
+  getColorCss: (color: FontColor): string => {
+    return (
+      FontColorOptions.find((item) => item.value === color)?.relValue || color
+    );
+  },
+  getBackgroundCss: (color: Background): string => {
+    return (
+      BackgroundOptions.find((item) => item.value === color)?.relValue || color
+    );
+  },
+  getTypographyCss: (
+    element: keyof typeof presetModifiers
+  ): React.CSSProperties => {
+    return presetModifiers[element];
+  },
+};

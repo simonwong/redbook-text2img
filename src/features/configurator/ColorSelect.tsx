@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 interface ColorOption extends BaseOptionType {
-  color: string;
+  relValue: string;
 }
 
 export interface ColorSelectProps<OptionType extends ColorOption>
@@ -36,7 +36,7 @@ export const ColorSelect = <OptionType extends ColorOption>({
         className={cn('w-full')}
         onChange={(v) => {
           if (v === 'custom') {
-            onChange?.(currentOption?.color || value || '');
+            onChange?.(currentOption?.relValue || value || '');
             return;
           }
           onChange?.(v);
@@ -51,7 +51,7 @@ export const ColorSelect = <OptionType extends ColorOption>({
                   background:
                     option.value === 'custom' && isCustom
                       ? value
-                      : option.color,
+                      : option.relValue,
                 }}
               />
               <span className="text-xs">{option.label}</span>

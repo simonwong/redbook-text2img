@@ -10,9 +10,9 @@ import type {
 // 内容设置
 export interface ContentConfig {
   size: FontSize;
-  titleColor: FontColor | string;
-  contentColor: FontColor | string;
-  background: Background | string;
+  titleColor: FontColor;
+  contentColor: FontColor;
+  background: Background;
   vertical: Vertical;
   horizontal: Horizontal;
 }
