@@ -46,7 +46,7 @@ export const SEOOptimizedText: React.FC<SEOOptimizedTextProps> = ({
 
         <h2>技术特点</h2>
         <ul>
-          <li>基于 Next.js 15 开发</li>
+          <li>基于 Next.js 16 开发</li>
           <li>支持完整 Markdown 语法</li>
           <li>响应式设计，适配移动端</li>
           <li>纯前端实现，数据安全</li>

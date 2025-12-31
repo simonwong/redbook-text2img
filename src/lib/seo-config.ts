@@ -94,8 +94,8 @@ export const baseMetadata: Metadata = {
   category: 'technology',
 };
 
-// 结构化数据
-export const structuredData = {
+// WebApplication 结构化数据
+export const webAppStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: siteConfig.name,
@@ -103,10 +103,12 @@ export const structuredData = {
   url: siteConfig.url,
   applicationCategory: 'UtilitiesApplication',
   operatingSystem: 'Web Browser',
+  browserRequirements: 'Requires JavaScript. Requires HTML5.',
   offers: {
     '@type': 'Offer',
     price: '0',
     priceCurrency: 'CNY',
+    availability: 'https://schema.org/InStock',
   },
   author: {
     '@type': 'Person',
@@ -138,6 +140,98 @@ export const structuredData = {
     '批量导出',
   ],
 };
+
+// FAQ 结构化数据
+export const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '小红书图片生成器是免费的吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '是的，小红书图片生成器完全免费，无需注册即可使用所有功能。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '支持哪些 Markdown 语法？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '支持完整的 Markdown 语法，包括标题、粗体、斜体、列表、引用、代码块等常用格式。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '生成的图片可以商用吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '可以，生成的图片完全属于您，可自由用于个人或商业用途。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '图片会保存到服务器吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '不会，所有图片生成都在浏览器本地完成，您的内容不会上传到任何服务器，完全保护隐私。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '支持批量导出吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '支持，当内容较长时会自动分页，可以一键批量导出所有图片。',
+      },
+    },
+  ],
+};
+
+// HowTo 结构化数据
+export const howToStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: '如何使用小红书图片生成器',
+  description: '简单三步，快速将 Markdown 文本转换为精美的小红书风格图片',
+  totalTime: 'PT2M',
+  estimatedCost: {
+    '@type': 'MonetaryAmount',
+    currency: 'CNY',
+    value: '0',
+  },
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: '输入内容',
+      text: '在左侧编辑器中输入或粘贴您的 Markdown 文本内容',
+      image: `${siteConfig.url}/og.png`,
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: '选择样式',
+      text: '在右侧配置面板中选择预设样式或自定义背景颜色、字体大小等',
+      image: `${siteConfig.url}/og.png`,
+    },
+    {
+      '@type': 'HowToStep',
+      position: 3,
+      name: '导出图片',
+      text: '点击导出按钮，将生成的图片保存到本地',
+      image: `${siteConfig.url}/og.png`,
+    },
+  ],
+};
+
+// 组合所有结构化数据
+export const structuredData = [
+  webAppStructuredData,
+  faqStructuredData,
+  howToStructuredData,
+];
 
 // 页面特定的metadata生成器
 export function generatePageMetadata(
