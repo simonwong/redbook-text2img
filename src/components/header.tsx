@@ -26,6 +26,9 @@ export const Header = () => {
           </div>
           <nav aria-label="Main Navigation" className="flex items-center gap-3">
             <Button asChild className="text-accent-foreground" variant="link">
+              <Link href="/faq">常见问题</Link>
+            </Button>
+            <Button asChild className="text-accent-foreground" variant="link">
               <Link href="/changelog">更新日志</Link>
             </Button>
             <Button
