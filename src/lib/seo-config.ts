@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { generateFAQStructuredData } from './faq-data';
 
 // 网站基础信息
 export const siteConfig = {
@@ -141,53 +142,8 @@ export const webAppStructuredData = {
   ],
 };
 
-// FAQ 结构化数据
-export const faqStructuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: [
-    {
-      '@type': 'Question',
-      name: '小红书图片生成器是免费的吗？',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: '是的，小红书图片生成器完全免费，无需注册即可使用所有功能。',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '支持哪些 Markdown 语法？',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: '支持基础的 Markdown 语法，包括标题、粗体、斜体、列表、引用等常用格式。',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '生成的图片可以商用吗？',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: '可以，生成的图片完全属于您，可自由用于个人或商业用途。',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '图片会保存到服务器吗？',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: '不会，本工具为纯前端实现，所有图片生成都在浏览器本地完成，不会存储任何用户信息。',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '支持批量导出吗？',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: '支持，当内容较长时会自动分页，可以一键批量导出所有图片。',
-      },
-    },
-  ],
-};
+// FAQ 结构化数据（从 faq-data.ts 生成）
+export const faqStructuredData = generateFAQStructuredData();
 
 // HowTo 结构化数据
 export const howToStructuredData = {
