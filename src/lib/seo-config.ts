@@ -159,7 +159,7 @@ export const faqStructuredData = {
       name: '支持哪些 Markdown 语法？',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: '支持完整的 Markdown 语法，包括标题、粗体、斜体、列表、引用、代码块等常用格式。',
+        text: '支持基础的 Markdown 语法，包括标题、粗体、斜体、列表、引用等常用格式。',
       },
     },
     {
@@ -175,7 +175,7 @@ export const faqStructuredData = {
       name: '图片会保存到服务器吗？',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: '不会，所有图片生成都在浏览器本地完成，您的内容不会上传到任何服务器，完全保护隐私。',
+        text: '不会，本工具为纯前端实现，所有图片生成都在浏览器本地完成，不会存储任何用户信息。',
       },
     },
     {
