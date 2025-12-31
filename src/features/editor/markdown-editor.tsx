@@ -1,18 +1,34 @@
 'use client';
 
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
-import { githubLight } from '@uiw/codemirror-theme-github';
+import { githubLight, githubDark } from '@uiw/codemirror-theme-github';
 import { useMarkdownContentStore } from '@/store/markdownContent';
 
 interface MarkdownEditorProps {
   placeholder?: string;
 }
 
+function useIsDarkMode() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDark(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  return isDark;
+}
+
 export const MarkdownEditor = memo(({ placeholder }: MarkdownEditorProps) => {
   const { content, setContent } = useMarkdownContentStore();
+  const isDarkMode = useIsDarkMode();
 
   const handleChange = useCallback(
     (value: string) => {
@@ -27,7 +43,7 @@ export const MarkdownEditor = memo(({ placeholder }: MarkdownEditorProps) => {
         value={content}
         onChange={handleChange}
         placeholder={placeholder || '在这里输入您的 Markdown 内容...'}
-        theme={githubLight}
+        theme={isDarkMode ? githubDark : githubLight}
         extensions={[
           markdown({ base: markdownLanguage, codeLanguages: languages }),
         ]}
