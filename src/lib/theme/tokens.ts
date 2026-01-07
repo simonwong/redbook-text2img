@@ -67,6 +67,7 @@ export const colors = {
     orange: '#f59e0b',
     pink: '#ec4899',
     cyan: '#06b6d4',
+    gray: '#6b7280',
   },
 } as const;
 

@@ -3,6 +3,7 @@
  * 精心定制的预设主题，每个主题直接定义完整的 FullStyle
  */
 
+import { TrianglifyGary } from './backgroundSet';
 import { colors, gradients, spacing, typography } from './tokens';
 import type { FullStyle, PresetTheme } from './types';
 
@@ -49,6 +50,34 @@ export const presetThemes: PresetTheme[] = [
       },
       code: {
         inline: { background: colors.gray[100], color: colors.accent.purple },
+        block: { background: colors.gray[50], color: colors.gray[800] },
+      },
+      link: { color: colors.accent.blue, underline: false },
+      spacing: baseSpacing,
+    },
+  },
+  {
+    id: 'trianglify-minimalist',
+    name: '三角极简',
+    description: '抽象三角形为背景的极简风格',
+    style: {
+      background: { type: 'image', value: TrianglifyGary },
+      typography: baseTypography,
+      heading: { color: colors.gray[900], fontWeight: typography.fontWeight.semibold },
+      paragraph: { color: colors.gray[700] },
+      emphasis: {
+        bold: { color: colors.gray[900], fontWeight: typography.fontWeight.semibold },
+        italic: { color: colors.gray[600] },
+        highlight: { background: colors.accent.orange, color: colors.white },
+      },
+      list: { color: colors.gray[700], markerColor: colors.gray[400] },
+      blockquote: {
+        background: colors.gray[50],
+        borderColor: colors.gray[300],
+        textColor: colors.gray[600],
+      },
+      code: {
+        inline: { background: colors.gray[100], color: colors.accent.gray },
         block: { background: colors.gray[50], color: colors.gray[800] },
       },
       link: { color: colors.accent.blue, underline: false },
