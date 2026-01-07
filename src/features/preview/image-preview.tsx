@@ -1,8 +1,14 @@
 'use client';
 
-import { memo } from 'react';
+import { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import type { ImageSegment } from '@/lib/markdown-parser';
+import {
+  applyAdjustments,
+  defaultTheme,
+  generateStyles,
+  getThemeById,
+} from '@/lib/theme';
 import { useContentThemeStore } from '@/store/theme';
 
 interface ImagePreviewProps {
@@ -14,8 +20,13 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   segment,
   ref,
 }) => {
-  const { currentThemeId, getGeneratedStyles } = useContentThemeStore();
-  const styles = getGeneratedStyles();
+  const { currentThemeId, adjustments } = useContentThemeStore();
+
+  const styles = useMemo(() => {
+    const theme = getThemeById(currentThemeId) ?? defaultTheme;
+    const adjustedStyle = applyAdjustments(theme.style, adjustments);
+    return generateStyles(adjustedStyle);
+  }, [currentThemeId, adjustments]);
 
   return (
     <div
