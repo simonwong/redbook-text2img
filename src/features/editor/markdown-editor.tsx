@@ -27,7 +27,7 @@ export const MarkdownEditor = memo(({ placeholder }: MarkdownEditorProps) => {
   );
 
   return (
-    <div className={cn("h-full overflow-hidden", isSettingsOpen ? 'w-[200px]' : '')}>
+    <div className={cn("h-full overflow-hidden")}>
       <CodeMirror
         value={content}
         onChange={handleChange}

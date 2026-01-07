@@ -1,16 +1,16 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import {
+  type AdjustedStyle,
+  applyAdjustments,
+  defaultAdjustments,
   defaultTheme,
-  type Density,
-  type FullStyle,
   generateStyles,
   type GeneratedStyles,
   getThemeById,
-  type Mood,
-  resolveThemeConfig,
-  type ThemeConfig,
-  type Tone,
+  type Density,
+  type HeadingAlignment,
+  type StyleAdjustments,
 } from '@/lib/theme';
 
 // ============================================================
@@ -54,20 +54,22 @@ export const useAppThemeStore = create<AppThemeState>()(
 // ============================================================
 
 interface ContentThemeState {
-  // Current selection
+  // Current preset theme ID
   currentThemeId: string;
-  currentConfig: ThemeConfig;
+
+  // User's style adjustments
+  adjustments: StyleAdjustments;
 
   // Actions
   selectPresetTheme: (themeId: string) => void;
-  setTone: (tone: Tone) => void;
-  setMood: (mood: Mood) => void;
   setDensity: (density: Density) => void;
-  setConfig: (config: Partial<ThemeConfig>) => void;
-  resetToPreset: () => void;
+  setFont: (fontId: string) => void;
+  setHeadingAlignment: (alignment: HeadingAlignment) => void;
+  setAdjustments: (adjustments: Partial<StyleAdjustments>) => void;
+  resetAdjustments: () => void;
 
   // Computed
-  getFullStyle: () => FullStyle;
+  getAdjustedStyle: () => AdjustedStyle;
   getGeneratedStyles: () => GeneratedStyles;
 }
 
@@ -76,53 +78,52 @@ export const useContentThemeStore = create<ContentThemeState>()(
     persist(
       (set, get) => ({
         currentThemeId: defaultTheme.id,
-        currentConfig: { ...defaultTheme.config },
+        adjustments: { ...defaultAdjustments },
 
         selectPresetTheme: (themeId: string) => {
           const theme = getThemeById(themeId);
           if (theme) {
-            set({
-              currentThemeId: theme.id,
-              currentConfig: { ...theme.config },
-            });
+            set({ currentThemeId: theme.id });
           }
         },
 
-        setTone: (tone: Tone) =>
-          set((state) => ({
-            currentConfig: { ...state.currentConfig, tone },
-          })),
-
-        setMood: (mood: Mood) =>
-          set((state) => ({
-            currentConfig: { ...state.currentConfig, mood },
-          })),
-
         setDensity: (density: Density) =>
           set((state) => ({
-            currentConfig: { ...state.currentConfig, density },
+            adjustments: { ...state.adjustments, density },
           })),
 
-        setConfig: (config: Partial<ThemeConfig>) =>
+        setFont: (fontId: string) =>
           set((state) => ({
-            currentConfig: { ...state.currentConfig, ...config },
+            adjustments: { ...state.adjustments, fontId },
           })),
 
-        resetToPreset: () => {
-          const { currentThemeId } = get();
-          const theme = getThemeById(currentThemeId) ?? defaultTheme;
-          set({ currentConfig: { ...theme.config } });
+        setHeadingAlignment: (headingAlignment: HeadingAlignment) =>
+          set((state) => ({
+            adjustments: { ...state.adjustments, headingAlignment },
+          })),
+
+        setAdjustments: (adjustments: Partial<StyleAdjustments>) =>
+          set((state) => ({
+            adjustments: { ...state.adjustments, ...adjustments },
+          })),
+
+        resetAdjustments: () => {
+          set({ adjustments: { ...defaultAdjustments } });
         },
 
-        getFullStyle: () => resolveThemeConfig(get().currentConfig),
+        getAdjustedStyle: () => {
+          const { currentThemeId, adjustments } = get();
+          const theme = getThemeById(currentThemeId) ?? defaultTheme;
+          return applyAdjustments(theme.style, adjustments);
+        },
 
-        getGeneratedStyles: () => generateStyles(get().getFullStyle()),
+        getGeneratedStyles: () => generateStyles(get().getAdjustedStyle()),
       }),
       {
         name: 'redbook-content-theme',
         partialize: (state) => ({
           currentThemeId: state.currentThemeId,
-          currentConfig: state.currentConfig,
+          adjustments: state.adjustments,
         }),
       }
     )

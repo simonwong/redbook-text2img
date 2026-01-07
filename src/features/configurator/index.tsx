@@ -7,10 +7,11 @@ import { Select } from '@/components/enhance/select';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
+  defaultAdjustments,
   densityOptions,
-  moodOptions,
+  fontOptions,
+  headingAlignmentOptions,
   presetThemes,
-  toneOptions,
 } from '@/lib/theme';
 import { useContentThemeStore, useSettingsPanelStore } from '@/store/theme';
 
@@ -36,26 +37,24 @@ export const Configurator = memo(() => {
   const { isOpen } = useSettingsPanelStore();
   const {
     currentThemeId,
-    currentConfig,
+    adjustments,
     selectPresetTheme,
-    setTone,
-    setMood,
     setDensity,
-    resetToPreset,
+    setFont,
+    setHeadingAlignment,
+    resetAdjustments,
   } = useContentThemeStore();
 
   if (!isOpen) return null;
 
-  // Check if config has been modified from the preset
-  const currentPreset = presetThemes.find((t) => t.id === currentThemeId);
+  // Check if adjustments have been modified from defaults
   const isModified =
-    currentPreset &&
-    (currentPreset.config.tone !== currentConfig.tone ||
-      currentPreset.config.mood !== currentConfig.mood ||
-      currentPreset.config.density !== currentConfig.density);
+    adjustments.density !== defaultAdjustments.density ||
+    adjustments.fontId !== defaultAdjustments.fontId ||
+    adjustments.headingAlignment !== defaultAdjustments.headingAlignment;
 
   return (
-    <aside aria-label="样式配置" className="overflow-auto">
+    <aside aria-label="样式配置" className="overflow-auto w-[200px] min-w-[200px]">
       <div className="space-y-4">
         {/* Layer 1: Preset Theme Selection */}
         <Card
@@ -79,26 +78,26 @@ export const Configurator = memo(() => {
           />
         </Card>
 
-        {/* Layer 2: Dimension Adjustments */}
+        {/* Style Adjustments */}
         <Card title="风格调整">
           <div className="space-y-4">
             <DimensionSelect
-              label="色调"
-              onChange={(v) => setTone(v as typeof currentConfig.tone)}
-              options={toneOptions}
-              value={currentConfig.tone}
-            />
-            <DimensionSelect
-              label="氛围"
-              onChange={(v) => setMood(v as typeof currentConfig.mood)}
-              options={moodOptions}
-              value={currentConfig.mood}
-            />
-            <DimensionSelect
               label="密度"
-              onChange={(v) => setDensity(v as typeof currentConfig.density)}
+              onChange={(v) => setDensity(v as typeof adjustments.density)}
               options={densityOptions}
-              value={currentConfig.density}
+              value={adjustments.density}
+            />
+            <DimensionSelect
+              label="字体"
+              onChange={setFont}
+              options={fontOptions}
+              value={adjustments.fontId}
+            />
+            <DimensionSelect
+              label="标题对齐"
+              onChange={(v) => setHeadingAlignment(v as typeof adjustments.headingAlignment)}
+              options={headingAlignmentOptions}
+              value={adjustments.headingAlignment}
             />
           </div>
         </Card>
@@ -107,12 +106,12 @@ export const Configurator = memo(() => {
         {isModified && (
           <Button
             className="w-full"
-            onClick={resetToPreset}
+            onClick={resetAdjustments}
             size="sm"
             variant="outline"
           >
             <RotateCcw className="mr-2 h-3 w-3" />
-            重置为预设
+            重置风格调整
           </Button>
         )}
       </div>

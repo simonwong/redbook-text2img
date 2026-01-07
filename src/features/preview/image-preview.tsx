@@ -10,7 +10,7 @@ interface ImagePreviewProps {
   ref: React.Ref<HTMLDivElement>;
 }
 
-const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({
+export const ImagePreview: React.FC<ImagePreviewProps> = ({
   segment,
   ref,
 }) => {
@@ -68,9 +68,3 @@ const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({
   );
 };
 
-export const ImagePreview = memo(
-  ImagePreviewComponent,
-  (prevProps, nextProps) =>
-    prevProps.segment.id === nextProps.segment.id &&
-    prevProps.segment.content === nextProps.segment.content
-);
