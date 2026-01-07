@@ -9,15 +9,13 @@ import { useImageRefs } from '@/features/preview/hooks/use-image-refs';
 import { ImagePreview } from '@/features/preview/image-preview';
 import { parseMarkdownToImages } from '@/lib/markdown-parser';
 import { useMarkdownContentStore } from '@/store/markdownContent';
-import { useShowSettingStore } from '@/store/styleConfig';
+import { useSettingsPanelStore } from '@/store/theme';
 import { useImageExport } from './hooks/use-image-export';
 import './index.css';
 
 export const PreviewCard = () => {
   const [isExporting, setIsExporting] = useState(false);
-  const switchShowSetting = useShowSettingStore(
-    (state) => state.switchShowSetting
-  );
+  const { toggle: toggleSettings } = useSettingsPanelStore();
   const { imageRefs, setImageRef } = useImageRefs();
 
   // 从 zustand store 获取 markdown 内容和重置方法
@@ -61,7 +59,7 @@ export const PreviewCard = () => {
     <Card
       action={[
         <Tooltip content="设置样式" key="setting">
-          <Button onClick={switchShowSetting} variant="outline">
+          <Button onClick={toggleSettings} variant="outline">
             <PaletteIcon />
           </Button>
         </Tooltip>,

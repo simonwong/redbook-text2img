@@ -6,8 +6,7 @@ import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { githubLight, githubDark } from '@uiw/codemirror-theme-github';
 import { useMarkdownContentStore } from '@/store/markdownContent';
-import { useShowSettingStore } from '@/store/styleConfig';
-import { useThemeStore } from '@/store/theme';
+import { useAppThemeStore, useSettingsPanelStore } from '@/store/theme';
 import { cn } from '@/lib/utils';
 
 interface MarkdownEditorProps {
@@ -16,8 +15,8 @@ interface MarkdownEditorProps {
 
 export const MarkdownEditor = memo(({ placeholder }: MarkdownEditorProps) => {
   const { content, setContent } = useMarkdownContentStore();
-  const isShowSetting = useShowSettingStore((state) => state.isShowSetting);
-  const { getEffectiveTheme } = useThemeStore();
+  const { isOpen: isSettingsOpen } = useSettingsPanelStore();
+  const { getEffectiveTheme } = useAppThemeStore();
   const isDarkMode = getEffectiveTheme() === 'dark';
 
   const handleChange = useCallback(
@@ -28,7 +27,7 @@ export const MarkdownEditor = memo(({ placeholder }: MarkdownEditorProps) => {
   );
 
   return (
-    <div className={cn("h-full overflow-hidden", isShowSetting ? 'w-[200px]' : '')}>
+    <div className={cn("h-full overflow-hidden", isSettingsOpen ? 'w-[200px]' : '')}>
       <CodeMirror
         value={content}
         onChange={handleChange}
