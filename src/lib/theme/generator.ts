@@ -1,11 +1,11 @@
 /**
  * Style Generator
- * Converts FullStyle (Layer 3) to React CSSProperties
+ * Converts AdjustedStyle to React CSSProperties
  */
 
 import type React from 'react';
+import type { AdjustedStyle } from './adjustments';
 import { typography } from './tokens';
-import type { FullStyle } from './types';
 
 /** Generated CSS styles for Markdown rendering */
 export interface GeneratedStyles {
@@ -31,11 +31,12 @@ export interface GeneratedStyles {
 }
 
 /**
- * Generate React CSSProperties from FullStyle
+ * Generate React CSSProperties from AdjustedStyle
  */
-export function generateStyles(style: FullStyle): GeneratedStyles {
-  const { baseFontSize, lineHeight, fontFamily } = style.typography;
+export function generateStyles(style: AdjustedStyle): GeneratedStyles {
+  const { baseFontSize, lineHeight } = style.typography;
   const { padding, paragraphGap, headingGap } = style.spacing;
+  const { fontFamily, headingAlignment } = style;
 
   // Background value (handles solid, gradient, image)
   const backgroundValue =
@@ -51,14 +52,14 @@ export function generateStyles(style: FullStyle): GeneratedStyles {
   // Helper for heading styles
   const createHeadingStyle = (
     scale: number,
-    isMainHeading: boolean
+    useHeadingAlignment: boolean
   ): React.CSSProperties => ({
     fontSize: `${scale}em`,
     lineHeight: 1.2,
     fontWeight: style.heading.fontWeight,
     marginBottom: `${headingGap / baseFontSize}em`,
     color: style.heading.color,
-    textAlign: isMainHeading ? 'center' : 'left',
+    textAlign: useHeadingAlignment ? headingAlignment : 'left',
     width: '100%',
   });
 
@@ -100,7 +101,7 @@ export function generateStyles(style: FullStyle): GeneratedStyles {
       alignItems: 'flex-start',
     },
 
-    // Headings: h1-h4 use heading color, centered; h5-h6 use paragraph color
+    // Headings: h1-h4 use heading alignment, h5-h6 always left
     h1: createHeadingStyle(typography.headingScale.h1, true),
     h2: createHeadingStyle(typography.headingScale.h2, true),
     h3: createHeadingStyle(typography.headingScale.h3, true),
