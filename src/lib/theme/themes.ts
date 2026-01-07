@@ -55,7 +55,6 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
   },
-
   {
     id: 'clean-dark',
     name: '暗夜黑',
@@ -143,96 +142,6 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
   },
-
-  {
-    id: 'gradient-nature',
-    name: '自然清新',
-    description: '绿色自然，清新舒适',
-    style: {
-      background: { type: 'gradient', value: gradients.forest },
-      typography: baseTypography,
-      heading: { color: colors.nature.text, fontWeight: typography.fontWeight.medium },
-      paragraph: { color: colors.nature.textSecondary },
-      emphasis: {
-        bold: { color: colors.nature.text, fontWeight: typography.fontWeight.semibold },
-        italic: { color: colors.nature.textSecondary },
-        highlight: { background: colors.nature.accent, color: colors.white },
-      },
-      list: { color: colors.nature.textSecondary, markerColor: colors.nature.accent },
-      blockquote: {
-        background: colors.nature.surface,
-        borderColor: colors.nature.accent,
-        textColor: colors.nature.textSecondary,
-      },
-      code: {
-        inline: { background: colors.nature.muted, color: colors.nature.text },
-        block: { background: colors.nature.surface, color: colors.nature.text },
-      },
-      link: { color: colors.nature.accent, underline: false },
-      spacing: baseSpacing,
-    },
-  },
-
-  // ===== 深色渐变系列 =====
-  {
-    id: 'dark-blue',
-    name: '暗黑科技',
-    description: '深色渐变，科技感',
-    style: {
-      background: { type: 'gradient', value: gradients.darkBlue },
-      typography: baseTypography,
-      heading: { color: colors.white, fontWeight: typography.fontWeight.bold },
-      paragraph: { color: colors.gray[300] },
-      emphasis: {
-        bold: { color: colors.white, fontWeight: typography.fontWeight.bold },
-        italic: { color: colors.gray[400] },
-        highlight: { background: colors.accent.blue, color: colors.white },
-      },
-      list: { color: colors.gray[300], markerColor: colors.accent.blue },
-      blockquote: {
-        background: 'rgba(59, 130, 246, 0.1)',
-        borderColor: colors.accent.blue,
-        textColor: colors.gray[400],
-      },
-      code: {
-        inline: { background: 'rgba(59, 130, 246, 0.2)', color: colors.accent.cyan },
-        block: { background: 'rgba(0, 0, 0, 0.3)', color: colors.gray[200] },
-      },
-      link: { color: colors.accent.cyan, underline: true },
-      spacing: baseSpacing,
-    },
-  },
-
-  {
-    id: 'dark-purple',
-    name: '暗夜紫',
-    description: '神秘紫色渐变',
-    style: {
-      background: { type: 'gradient', value: gradients.darkPurple },
-      typography: baseTypography,
-      heading: { color: colors.white, fontWeight: typography.fontWeight.bold },
-      paragraph: { color: colors.gray[300] },
-      emphasis: {
-        bold: { color: colors.white, fontWeight: typography.fontWeight.bold },
-        italic: { color: colors.gray[400] },
-        highlight: { background: colors.accent.purple, color: colors.white },
-      },
-      list: { color: colors.gray[300], markerColor: colors.accent.purple },
-      blockquote: {
-        background: 'rgba(139, 92, 246, 0.1)',
-        borderColor: colors.accent.purple,
-        textColor: colors.gray[400],
-      },
-      code: {
-        inline: { background: 'rgba(139, 92, 246, 0.2)', color: colors.accent.pink },
-        block: { background: 'rgba(0, 0, 0, 0.3)', color: colors.gray[200] },
-      },
-      link: { color: colors.accent.pink, underline: true },
-      spacing: baseSpacing,
-    },
-  },
-
-  // ===== 场景系列 =====
   {
     id: 'xiaohongshu-pink',
     name: '小红书粉',
@@ -261,36 +170,6 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
   },
-
-  {
-    id: 'business-blue',
-    name: '商务深蓝',
-    description: '专业深蓝，适合商务内容',
-    style: {
-      background: { type: 'solid', value: '#1e3a5f' },
-      typography: baseTypography,
-      heading: { color: colors.white, fontWeight: typography.fontWeight.semibold },
-      paragraph: { color: '#cbd5e1' },
-      emphasis: {
-        bold: { color: colors.white, fontWeight: typography.fontWeight.semibold },
-        italic: { color: '#94a3b8' },
-        highlight: { background: '#3b82f6', color: colors.white },
-      },
-      list: { color: '#cbd5e1', markerColor: '#60a5fa' },
-      blockquote: {
-        background: 'rgba(59, 130, 246, 0.1)',
-        borderColor: '#3b82f6',
-        textColor: '#94a3b8',
-      },
-      code: {
-        inline: { background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd' },
-        block: { background: 'rgba(0, 0, 0, 0.2)', color: '#e2e8f0' },
-      },
-      link: { color: '#60a5fa', underline: false },
-      spacing: baseSpacing,
-    },
-  },
-
   {
     id: 'reading-mode',
     name: '阅读模式',
