@@ -1,12 +1,8 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import {
-  type AdjustedStyle,
-  applyAdjustments,
   defaultAdjustments,
   defaultTheme,
-  generateStyles,
-  type GeneratedStyles,
   getThemeById,
   type Density,
   type HeadingAlignment,
@@ -67,16 +63,12 @@ interface ContentThemeState {
   setHeadingAlignment: (alignment: HeadingAlignment) => void;
   setAdjustments: (adjustments: Partial<StyleAdjustments>) => void;
   resetAdjustments: () => void;
-
-  // Computed
-  getAdjustedStyle: () => AdjustedStyle;
-  getGeneratedStyles: () => GeneratedStyles;
 }
 
 export const useContentThemeStore = create<ContentThemeState>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set) => ({
         currentThemeId: defaultTheme.id,
         adjustments: { ...defaultAdjustments },
 
@@ -110,14 +102,6 @@ export const useContentThemeStore = create<ContentThemeState>()(
         resetAdjustments: () => {
           set({ adjustments: { ...defaultAdjustments } });
         },
-
-        getAdjustedStyle: () => {
-          const { currentThemeId, adjustments } = get();
-          const theme = getThemeById(currentThemeId) ?? defaultTheme;
-          return applyAdjustments(theme.style, adjustments);
-        },
-
-        getGeneratedStyles: () => generateStyles(get().getAdjustedStyle()),
       }),
       {
         name: 'redbook-content-theme',
