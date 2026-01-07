@@ -1,12 +1,12 @@
 'use client';
 
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useThemeStore, type ThemeMode } from '@/store/theme';
+import { useAppThemeStore, type ThemeMode } from '@/store/theme';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/tooltip';
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme } = useAppThemeStore();
 
   const cycleTheme = () => {
     const themes: ThemeMode[] = ['system', 'light', 'dark'];

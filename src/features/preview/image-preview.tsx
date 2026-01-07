@@ -3,8 +3,7 @@
 import { memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import type { ImageSegment } from '@/lib/markdown-parser';
-import { generateStylesFromConfig } from '@/lib/style-generator';
-import { useStyleConfigStore } from '@/store/styleConfig';
+import { useContentThemeStore } from '@/store/theme';
 
 interface ImagePreviewProps {
   segment: ImageSegment;
@@ -15,72 +14,51 @@ const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({
   segment,
   ref,
 }) => {
-  // 使用 segment.isFirstImage 判断是否为首图（封面模式）
-  const isCoverImage = segment.isFirstImage;
-
-  const currentStyleConfig = useStyleConfigStore((state) => state.styleConfig);
-  // 生成样式
-  const styles = generateStylesFromConfig(currentStyleConfig);
-  const currentStyles = isCoverImage
-    ? styles.coverStyles
-    : styles.contentStyles;
+  const { currentThemeId, getGeneratedStyles } = useContentThemeStore();
+  const styles = getGeneratedStyles();
 
   return (
     <div
       className="img-preview"
-      key={`container-${currentStyleConfig.id}-${segment.id}`}
+      key={`container-${currentThemeId}-${segment.id}`}
       ref={ref}
-      style={currentStyles.container}
+      style={styles.container}
     >
-      <div style={currentStyles.innerContainer}>
-        {/* 内容部分 */}
-        <div style={currentStyles.content}>
+      <div style={styles.innerContainer}>
+        <div style={styles.content}>
           <ReactMarkdown
             components={{
-              h1: ({ children }) => (
-                <h1 style={currentStyles.h1}>{children}</h1>
-              ),
-              h2: ({ children }) => (
-                <h2 style={currentStyles.h2}>{children}</h2>
-              ),
-              h3: ({ children }) => (
-                <h3 style={currentStyles.h3}>{children}</h3>
-              ),
-              h4: ({ children }) => (
-                <h4 style={currentStyles.h4}>{children}</h4>
-              ),
-              h5: ({ children }) => (
-                <h5 style={currentStyles.h5}>{children}</h5>
-              ),
-              h6: ({ children }) => (
-                <h6 style={currentStyles.h6}>{children}</h6>
-              ),
-              p: ({ children }) => <p style={currentStyles.p}>{children}</p>,
+              h1: ({ children }) => <h1 style={styles.h1}>{children}</h1>,
+              h2: ({ children }) => <h2 style={styles.h2}>{children}</h2>,
+              h3: ({ children }) => <h3 style={styles.h3}>{children}</h3>,
+              h4: ({ children }) => <h4 style={styles.h4}>{children}</h4>,
+              h5: ({ children }) => <h5 style={styles.h5}>{children}</h5>,
+              h6: ({ children }) => <h6 style={styles.h6}>{children}</h6>,
+              p: ({ children }) => <p style={styles.p}>{children}</p>,
               strong: ({ children }) => (
-                <strong style={currentStyles.strong}>{children}</strong>
+                <strong style={styles.strong}>{children}</strong>
               ),
-              em: ({ children }) => (
-                <em style={currentStyles.em}>{children}</em>
+              em: ({ children }) => <em style={styles.em}>{children}</em>,
+              ul: ({ children }) => <ul style={styles.ul}>{children}</ul>,
+              li: ({ children }) => <li style={styles.li}>{children}</li>,
+              blockquote: ({ children }) => (
+                <blockquote style={styles.blockquote}>{children}</blockquote>
               ),
-              ul: ({ children }) => (
-                <ul style={currentStyles.ul}>{children}</ul>
+              a: ({ children, href }) => (
+                <a href={href} style={styles.a}>
+                  {children}
+                </a>
               ),
-              li: ({ children }) => (
-                <li style={currentStyles.li}>{children}</li>
-              ),
-              pre: ({ children }) => (
-                <pre style={currentStyles.pre}>{children}</pre>
-              ),
+              pre: ({ children }) => <pre style={styles.pre}>{children}</pre>,
               code: ({ className, children }) => {
-                // biome-ignore lint/performance/useTopLevelRegex: explanation
-                const match = /language-(\w+)/.exec(className || '');
-                if (match) {
+                const isCodeBlock = className?.includes('language-');
+                if (isCodeBlock) {
                   return <code>{children}</code>;
                 }
-                return <code style={currentStyles.code}>{children}</code>;
+                return <code style={styles.code}>{children}</code>;
               },
             }}
-            key={`markdown-${currentStyleConfig.id}-${segment.id}`}
+            key={`markdown-${currentThemeId}-${segment.id}`}
           >
             {segment.content}
           </ReactMarkdown>
@@ -92,22 +70,7 @@ const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({
 
 export const ImagePreview = memo(
   ImagePreviewComponent,
-  (prevProps, nextProps) => {
-    if (prevProps.segment.id !== nextProps.segment.id) {
-      return false;
-    }
-    if (prevProps.segment.isFirstImage !== nextProps.segment.isFirstImage) {
-      return false;
-    }
-    if (prevProps.segment.content !== nextProps.segment.content) {
-      return false;
-    }
-    if (prevProps.segment.title !== nextProps.segment.title) {
-      return false;
-    }
-    if (prevProps.segment.type !== nextProps.segment.type) {
-      return false;
-    }
-    return true;
-  }
+  (prevProps, nextProps) =>
+    prevProps.segment.id === nextProps.segment.id &&
+    prevProps.segment.content === nextProps.segment.content
 );
