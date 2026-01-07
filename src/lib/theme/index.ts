@@ -10,6 +10,7 @@
 
 // Types
 export type {
+  CoverStyleOverride,
   Density,
   FullStyle,
   HeadingAlignment,
@@ -45,4 +46,4 @@ export { defaultTheme, getThemeById, getThemeStyle, presetThemes } from './theme
 
 // Generator
 export { generateStyles } from './generator';
-export type { GeneratedStyles } from './generator';
+export type { GeneratedStyles, GenerateStylesOptions } from './generator';

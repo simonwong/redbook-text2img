@@ -5,7 +5,7 @@
 
 import { TrianglifyGary } from './backgroundSet';
 import { colors, gradients, spacing, typography } from './tokens';
-import type { FullStyle, PresetTheme } from './types';
+import type { CoverStyleOverride, FullStyle, PresetTheme } from './types';
 
 // ============================================================
 // 基础样式模板（内部使用）
@@ -20,6 +20,12 @@ const baseSpacing = {
   padding: spacing.padding.normal,
   paragraphGap: spacing.paragraphGap.normal,
   headingGap: spacing.headingGap.normal,
+};
+
+/** 默认封面图样式：垂直水平居中 */
+const defaultCoverStyle: CoverStyleOverride = {
+  contentVerticalAlign: 'center',
+  contentHorizontalAlign: 'center',
 };
 
 // ============================================================
@@ -55,6 +61,7 @@ export const presetThemes: PresetTheme[] = [
       link: { color: colors.accent.blue, underline: false },
       spacing: baseSpacing,
     },
+    coverStyle: defaultCoverStyle,
   },
   {
     id: 'trianglify-minimalist',
@@ -63,54 +70,56 @@ export const presetThemes: PresetTheme[] = [
     style: {
       background: { type: 'image', value: TrianglifyGary },
       typography: baseTypography,
-      heading: { color: colors.gray[900], fontWeight: typography.fontWeight.semibold },
+      heading: { color: colors.gray[800], fontWeight: typography.fontWeight.bold },
       paragraph: { color: colors.gray[700] },
       emphasis: {
-        bold: { color: colors.gray[900], fontWeight: typography.fontWeight.semibold },
+        bold: { color: colors.gray[800], fontWeight: typography.fontWeight.bold },
         italic: { color: colors.gray[600] },
-        highlight: { background: colors.accent.orange, color: colors.white },
+        highlight: { background: colors.accent.blue, color: colors.white },
       },
-      list: { color: colors.gray[700], markerColor: colors.gray[400] },
+      list: { color: colors.gray[700], markerColor: colors.gray[500] },
       blockquote: {
-        background: colors.gray[50],
-        borderColor: colors.gray[300],
+        background: 'rgba(255, 255, 255, 0.7)',
+        borderColor: colors.gray[400],
         textColor: colors.gray[600],
       },
       code: {
-        inline: { background: colors.gray[100], color: colors.accent.gray },
-        block: { background: colors.gray[50], color: colors.gray[800] },
+        inline: { background: 'rgba(255, 255, 255, 0.8)', color: colors.gray[700] },
+        block: { background: 'rgba(255, 255, 255, 0.85)', color: colors.gray[800] },
       },
       link: { color: colors.accent.blue, underline: false },
       spacing: baseSpacing,
     },
+    coverStyle: defaultCoverStyle,
   },
   {
     id: 'clean-dark',
     name: '暗夜黑',
-    description: '深色极简风格',
+    description: '深色极简风格，适合夜间阅读',
     style: {
-      background: { type: 'solid', value: colors.gray[900] },
+      background: { type: 'solid', value: '#18181b' },
       typography: baseTypography,
-      heading: { color: colors.white, fontWeight: typography.fontWeight.semibold },
-      paragraph: { color: colors.gray[300] },
+      heading: { color: '#fafafa', fontWeight: typography.fontWeight.semibold },
+      paragraph: { color: '#a1a1aa' },
       emphasis: {
-        bold: { color: colors.white, fontWeight: typography.fontWeight.semibold },
-        italic: { color: colors.gray[400] },
+        bold: { color: '#fafafa', fontWeight: typography.fontWeight.semibold },
+        italic: { color: '#71717a' },
         highlight: { background: colors.accent.orange, color: colors.white },
       },
-      list: { color: colors.gray[300], markerColor: colors.gray[500] },
+      list: { color: '#a1a1aa', markerColor: '#52525b' },
       blockquote: {
-        background: colors.gray[800],
-        borderColor: colors.gray[600],
-        textColor: colors.gray[400],
+        background: '#27272a',
+        borderColor: '#3f3f46',
+        textColor: '#71717a',
       },
       code: {
-        inline: { background: colors.gray[800], color: colors.accent.cyan },
-        block: { background: colors.gray[800], color: colors.gray[200] },
+        inline: { background: '#27272a', color: colors.accent.cyan },
+        block: { background: '#27272a', color: '#e4e4e7' },
       },
       link: { color: colors.accent.cyan, underline: false },
       spacing: baseSpacing,
     },
+    coverStyle: defaultCoverStyle,
   },
 
   // ===== 渐变系列 =====
@@ -119,28 +128,32 @@ export const presetThemes: PresetTheme[] = [
     name: '暖阳渐变',
     description: '温暖渐变，活力四射',
     style: {
-      background: { type: 'gradient', value: gradients.warmLight },
-      typography: baseTypography,
-      heading: { color: colors.warm.text, fontWeight: typography.fontWeight.bold },
-      paragraph: { color: colors.warm.textSecondary },
-      emphasis: {
-        bold: { color: colors.warm.text, fontWeight: typography.fontWeight.bold },
-        italic: { color: colors.warm.textSecondary },
-        highlight: { background: colors.warm.accent, color: colors.white },
+      background: {
+        type: 'gradient',
+        value: 'linear-gradient(145deg, #fff7ed 0%, #fef3c7 35%, #fde68a 70%, #fcd34d 100%)',
       },
-      list: { color: colors.warm.textSecondary, markerColor: colors.warm.accent },
+      typography: baseTypography,
+      heading: { color: '#92400e', fontWeight: typography.fontWeight.bold },
+      paragraph: { color: '#78350f' },
+      emphasis: {
+        bold: { color: '#92400e', fontWeight: typography.fontWeight.bold },
+        italic: { color: '#a16207' },
+        highlight: { background: '#f59e0b', color: colors.white },
+      },
+      list: { color: '#78350f', markerColor: '#f59e0b' },
       blockquote: {
-        background: colors.warm.surface,
-        borderColor: colors.warm.accent,
-        textColor: colors.warm.textSecondary,
+        background: 'rgba(255, 255, 255, 0.6)',
+        borderColor: '#f59e0b',
+        textColor: '#a16207',
       },
       code: {
-        inline: { background: colors.warm.muted, color: colors.warm.text },
-        block: { background: colors.warm.surface, color: colors.warm.text },
+        inline: { background: 'rgba(255, 255, 255, 0.7)', color: '#92400e' },
+        block: { background: 'rgba(255, 255, 255, 0.6)', color: '#78350f' },
       },
-      link: { color: colors.warm.accent, underline: true },
+      link: { color: '#d97706', underline: true },
       spacing: baseSpacing,
     },
+    coverStyle: defaultCoverStyle,
   },
 
   {
@@ -148,56 +161,64 @@ export const presetThemes: PresetTheme[] = [
     name: '冷调渐变',
     description: '清冷蓝调，知性优雅',
     style: {
-      background: { type: 'gradient', value: gradients.coolLight },
-      typography: baseTypography,
-      heading: { color: colors.cool.text, fontWeight: typography.fontWeight.medium },
-      paragraph: { color: colors.cool.textSecondary },
-      emphasis: {
-        bold: { color: colors.cool.text, fontWeight: typography.fontWeight.semibold },
-        italic: { color: colors.cool.textSecondary },
-        highlight: { background: colors.cool.accent, color: colors.white },
+      background: {
+        type: 'gradient',
+        value: 'linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 35%, #bae6fd 70%, #7dd3fc 100%)',
       },
-      list: { color: colors.cool.textSecondary, markerColor: colors.cool.accent },
+      typography: baseTypography,
+      heading: { color: '#075985', fontWeight: typography.fontWeight.semibold },
+      paragraph: { color: '#0c4a6e' },
+      emphasis: {
+        bold: { color: '#075985', fontWeight: typography.fontWeight.semibold },
+        italic: { color: '#0369a1' },
+        highlight: { background: '#0ea5e9', color: colors.white },
+      },
+      list: { color: '#0c4a6e', markerColor: '#0ea5e9' },
       blockquote: {
-        background: colors.cool.surface,
-        borderColor: colors.cool.accent,
-        textColor: colors.cool.textSecondary,
+        background: 'rgba(255, 255, 255, 0.6)',
+        borderColor: '#0ea5e9',
+        textColor: '#0369a1',
       },
       code: {
-        inline: { background: colors.cool.muted, color: colors.cool.text },
-        block: { background: colors.cool.surface, color: colors.cool.text },
+        inline: { background: 'rgba(255, 255, 255, 0.7)', color: '#075985' },
+        block: { background: 'rgba(255, 255, 255, 0.6)', color: '#0c4a6e' },
       },
-      link: { color: colors.cool.accent, underline: false },
+      link: { color: '#0284c7', underline: false },
       spacing: baseSpacing,
     },
+    coverStyle: defaultCoverStyle,
   },
   {
     id: 'xiaohongshu-pink',
     name: '小红书粉',
     description: '粉色暖调，适合生活分享',
     style: {
-      background: { type: 'gradient', value: gradients.pinkLight },
+      background: {
+        type: 'gradient',
+        value: 'linear-gradient(145deg, #fdf2f8 0%, #fce7f3 35%, #fbcfe8 70%, #f9a8d4 100%)',
+      },
       typography: baseTypography,
       heading: { color: '#9d174d', fontWeight: typography.fontWeight.bold },
       paragraph: { color: '#831843' },
       emphasis: {
         bold: { color: '#9d174d', fontWeight: typography.fontWeight.bold },
         italic: { color: '#be185d' },
-        highlight: { background: colors.accent.pink, color: colors.white },
+        highlight: { background: '#ec4899', color: colors.white },
       },
-      list: { color: '#831843', markerColor: colors.accent.pink },
+      list: { color: '#831843', markerColor: '#ec4899' },
       blockquote: {
-        background: '#fdf2f8',
-        borderColor: colors.accent.pink,
+        background: 'rgba(255, 255, 255, 0.6)',
+        borderColor: '#ec4899',
         textColor: '#9d174d',
       },
       code: {
-        inline: { background: '#fce7f3', color: '#9d174d' },
-        block: { background: '#fdf2f8', color: '#831843' },
+        inline: { background: 'rgba(255, 255, 255, 0.7)', color: '#9d174d' },
+        block: { background: 'rgba(255, 255, 255, 0.6)', color: '#831843' },
       },
-      link: { color: colors.accent.pink, underline: true },
+      link: { color: '#db2777', underline: true },
       spacing: baseSpacing,
     },
+    coverStyle: defaultCoverStyle,
   },
   {
     id: 'reading-mode',
@@ -233,6 +254,41 @@ export const presetThemes: PresetTheme[] = [
         headingGap: spacing.headingGap.spacious,
       },
     },
+    coverStyle: defaultCoverStyle,
+  },
+
+  // ===== 特色系列 =====
+  {
+    id: 'apple-notes',
+    name: 'Apple 备忘录',
+    description: '简洁的苹果备忘录风格',
+    style: {
+      background: { type: 'solid', value: '#fbfbfb' },
+      typography: {
+        baseFontSize: typography.fontSize.normal,
+        lineHeight: 1.65,
+      },
+      heading: { color: '#1d1d1f', fontWeight: typography.fontWeight.semibold },
+      paragraph: { color: '#1d1d1f' },
+      emphasis: {
+        bold: { color: '#1d1d1f', fontWeight: typography.fontWeight.semibold },
+        italic: { color: '#48484a' },
+        highlight: { background: '#ffcc00', color: '#1d1d1f' },
+      },
+      list: { color: '#1d1d1f', markerColor: '#8e8e93' },
+      blockquote: {
+        background: '#f5f5f7',
+        borderColor: '#d1d1d6',
+        textColor: '#48484a',
+      },
+      code: {
+        inline: { background: '#f5f5f7', color: '#1d1d1f' },
+        block: { background: '#f5f5f7', color: '#1d1d1f' },
+      },
+      link: { color: '#007aff', underline: false },
+      spacing: baseSpacing,
+    },
+    coverStyle: defaultCoverStyle,
   },
 ];
 

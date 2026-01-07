@@ -115,10 +115,20 @@ export interface StyleAdjustments {
 // Layer 1: PresetTheme (精心定制的预设主题)
 // ============================================================
 
+/** 封面图特有的样式覆盖 */
+export interface CoverStyleOverride {
+  /** 内容垂直对齐方式 */
+  contentVerticalAlign?: 'top' | 'center' | 'bottom';
+  /** 内容水平对齐方式 */
+  contentHorizontalAlign?: 'left' | 'center' | 'right';
+}
+
 /** Layer 1: Preset theme with complete FullStyle */
 export interface PresetTheme {
   id: string;
   name: string;
   description?: string;
   style: FullStyle; // 直接包含完整样式，不再是 config
+  /** 封面图特有的样式覆盖（继承 style，仅覆盖指定属性） */
+  coverStyle?: CoverStyleOverride;
 }

@@ -6,6 +6,7 @@
 import type React from 'react';
 import type { AdjustedStyle } from './adjustments';
 import { typography } from './tokens';
+import type { CoverStyleOverride } from './types';
 
 /** Generated CSS styles for Markdown rendering */
 export interface GeneratedStyles {
@@ -30,13 +31,57 @@ export interface GeneratedStyles {
   mark: React.CSSProperties;
 }
 
+/** 封面图样式覆盖选项 */
+export interface GenerateStylesOptions {
+  /** 封面图特有的样式覆盖 */
+  coverStyle?: CoverStyleOverride;
+}
+
+/**
+ * 将垂直对齐转换为 CSS justifyContent 值
+ */
+function getJustifyContent(
+  align?: 'top' | 'center' | 'bottom'
+): React.CSSProperties['justifyContent'] {
+  switch (align) {
+    case 'center':
+      return 'center';
+    case 'bottom':
+      return 'flex-end';
+    case 'top':
+    default:
+      return 'flex-start';
+  }
+}
+
+/**
+ * 将水平对齐转换为 CSS alignItems 值
+ */
+function getAlignItems(
+  align?: 'left' | 'center' | 'right'
+): React.CSSProperties['alignItems'] {
+  switch (align) {
+    case 'center':
+      return 'center';
+    case 'right':
+      return 'flex-end';
+    case 'left':
+    default:
+      return 'flex-start';
+  }
+}
+
 /**
  * Generate React CSSProperties from AdjustedStyle
  */
-export function generateStyles(style: AdjustedStyle): GeneratedStyles {
+export function generateStyles(
+  style: AdjustedStyle,
+  options?: GenerateStylesOptions
+): GeneratedStyles {
   const { baseFontSize, lineHeight } = style.typography;
   const { padding, paragraphGap, headingGap } = style.spacing;
   const { fontFamily, headingAlignment } = style;
+  const coverStyle = options?.coverStyle;
 
   // Background value (handles solid, gradient, image)
   const backgroundValue =
@@ -97,8 +142,8 @@ export function generateStyles(style: AdjustedStyle): GeneratedStyles {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
+      justifyContent: getJustifyContent(coverStyle?.contentVerticalAlign),
+      alignItems: getAlignItems(coverStyle?.contentHorizontalAlign),
     },
 
     // Headings: h1-h4 use heading alignment, h5-h6 always left
