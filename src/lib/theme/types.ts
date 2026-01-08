@@ -123,6 +123,20 @@ export interface CoverStyleOverride {
   contentHorizontalAlign?: 'left' | 'center' | 'right';
 }
 
+/** 装饰性顶部导航栏（如 Apple Notes 风格） */
+export interface HeaderBarStyle {
+  /** 图标颜色 */
+  iconColor: string;
+  /** 背景颜色（可以是透明） */
+  background?: string;
+  /** 显示哪些图标 */
+  icons: {
+    backArrow?: boolean;
+    share?: boolean;
+    menu?: boolean;
+  };
+}
+
 /** Layer 1: Preset theme with complete FullStyle */
 export interface PresetTheme {
   id: string;
@@ -131,4 +145,6 @@ export interface PresetTheme {
   style: FullStyle; // 直接包含完整样式，不再是 config
   /** 封面图特有的样式覆盖（继承 style，仅覆盖指定属性） */
   coverStyle?: CoverStyleOverride;
+  /** 装饰性顶部导航栏 */
+  headerBar?: HeaderBarStyle;
 }

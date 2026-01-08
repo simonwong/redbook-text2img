@@ -289,6 +289,14 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
     coverStyle: defaultCoverStyle,
+    headerBar: {
+      iconColor: '#d4a300',
+      icons: {
+        backArrow: true,
+        share: true,
+        menu: true,
+      },
+    },
   },
 ];
 

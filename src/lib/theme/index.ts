@@ -13,6 +13,7 @@ export type {
   CoverStyleOverride,
   Density,
   FullStyle,
+  HeaderBarStyle,
   HeadingAlignment,
   PresetTheme,
   StyleAdjustments,

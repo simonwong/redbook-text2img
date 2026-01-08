@@ -10,6 +10,7 @@ import {
   getThemeById,
 } from '@/lib/theme';
 import { useContentThemeStore } from '@/store/theme';
+import { HeaderBar } from './header-bar';
 
 interface ImagePreviewProps {
   segment: ImageSegment;
@@ -22,12 +23,15 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
 }) => {
   const { currentThemeId, adjustments } = useContentThemeStore();
 
-  const styles = useMemo(() => {
+  const { styles, headerBar } = useMemo(() => {
     const theme = getThemeById(currentThemeId) ?? defaultTheme;
     const adjustedStyle = applyAdjustments(theme.style, adjustments);
     // 如果是封面图（第一张图），使用主题的封面图样式
     const coverStyle = segment.isFirstImage ? theme.coverStyle : undefined;
-    return generateStyles(adjustedStyle, { coverStyle });
+    return {
+      styles: generateStyles(adjustedStyle, { coverStyle }),
+      headerBar: theme.headerBar,
+    };
   }, [currentThemeId, adjustments, segment.isFirstImage]);
 
   return (
@@ -37,7 +41,11 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
       ref={ref}
       style={styles.container}
     >
-      <div style={styles.innerContainer}>
+      {headerBar && <HeaderBar config={headerBar} />}
+      <div style={{
+        ...styles.innerContainer,
+        height: headerBar ? 'calc(100% - 40px)' : '100%',
+      }}>
         <div style={styles.content}>
           <ReactMarkdown
             components={{
