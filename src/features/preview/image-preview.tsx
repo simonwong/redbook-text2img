@@ -37,7 +37,6 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   return (
     <div
       className="img-preview"
-      key={`container-${currentThemeId}-${segment.id}`}
       ref={ref}
       style={styles.container}
     >
@@ -79,7 +78,6 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
                 return <code style={styles.code}>{children}</code>;
               },
             }}
-            key={`markdown-${currentThemeId}-${segment.id}`}
           >
             {segment.content}
           </ReactMarkdown>
@@ -88,4 +86,3 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
     </div>
   );
 };
-
