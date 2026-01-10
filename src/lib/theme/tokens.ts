@@ -77,6 +77,8 @@ export const colors = {
 
 export const gradients = {
   // Light gradients
+  cleanLight:
+    'radial-gradient(ellipse at 75% 85%, rgba(180, 190, 200, 0.12) 0%, transparent 50%), radial-gradient(ellipse at 15% 15%, rgba(160, 175, 190, 0.08) 0%, transparent 45%), linear-gradient(160deg, #ffffff 0%, #fdfdfe 50%, #ffffff 100%)',
   warmLight:
     'linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)',
   coolLight:
@@ -91,6 +93,8 @@ export const gradients = {
     'linear-gradient(135deg, #0f172a 0%, #1e1b4b 25%, #312e81 50%, #4c1d95 75%, #7c3aed 100%)',
   darkGreen:
     'linear-gradient(135deg, #022c22 0%, #064e3b 25%, #065f46 50%, #047857 75%, #10b981 100%)',
+  darkNight:
+    'radial-gradient(ellipse at 30% 20%, rgba(200, 210, 230, 0.1) 0%, transparent 55%), radial-gradient(ellipse at 75% 80%, rgba(180, 190, 210, 0.06) 0%, transparent 50%), linear-gradient(160deg, #15171c 0%, #1c1f26 45%, #181a20 100%)',
 
   // Vibrant gradients
   sunset:

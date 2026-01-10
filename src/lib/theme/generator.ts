@@ -83,16 +83,14 @@ export function generateStyles(
   const { fontFamily, headingAlignment } = style;
   const coverStyle = options?.coverStyle;
 
-  // Background value (handles solid, gradient, image)
-  const backgroundValue =
-    style.background.type === 'image'
-      ? `url(${style.background.value})`
-      : style.background.value;
-
+  // Background style (handles solid, gradient, image)
+  // Use backgroundImage instead of background shorthand to avoid conflicts with backgroundSize/backgroundPosition
   const backgroundStyle: React.CSSProperties =
     style.background.type === 'solid'
       ? { backgroundColor: style.background.value }
-      : { background: backgroundValue };
+      : style.background.type === 'image'
+        ? { backgroundImage: `url(${style.background.value})` }
+        : { backgroundImage: style.background.value };
 
   // Helper for heading styles
   const createHeadingStyle = (
@@ -187,7 +185,7 @@ export function generateStyles(
 
     ul: {
       marginBottom: `${paragraphGap / baseFontSize}em`,
-      paddingLeft: '1.5em',
+      paddingLeft: 0,
       color: style.list.color,
     },
 
