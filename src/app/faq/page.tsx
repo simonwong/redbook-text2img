@@ -45,7 +45,16 @@ const FAQPage = () => {
           >
             GitHub Issues
           </a>{' '}
-          中提出您的问题或建议。
+          中提出，或联系作者{' '}
+          <a
+            className="text-pink-500 underline hover:text-pink-600"
+            href="https://x.com/simonwongio"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            @simonwongio
+          </a>
+          。
         </p>
       </div>
     </div>
