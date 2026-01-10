@@ -4,8 +4,9 @@ import { generateFAQStructuredData } from './faq-data';
 // 网站基础信息
 export const siteConfig = {
   name: '小红书图片生成器',
+  title: '小红书图片生成器 - Markdown转图片，免费在线工具',
   description:
-    '将 Markdown 文本快速转换为精美的小红书风格图片，支持多种样式，一键导出下载。免费在线工具，无需注册。',
+    '免费将 Markdown 文字转成小红书风格图片，多种精美主题模板，支持批量导出高清图。无需注册，打开即用，数据本地处理更安全。',
   url:
     process.env.NEXT_PUBLIC_SITE_URL || 'https://redbook-text2img.vercel.app',
   ogImage: '/og.png',
@@ -32,7 +33,7 @@ export const siteConfig = {
 // 基础SEO metadata
 export const baseMetadata: Metadata = {
   title: {
-    default: siteConfig.name,
+    default: siteConfig.title,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -52,7 +53,7 @@ export const baseMetadata: Metadata = {
     type: 'website',
     locale: 'zh_CN',
     url: siteConfig.url,
-    title: siteConfig.name,
+    title: siteConfig.title,
     description: siteConfig.description,
     siteName: siteConfig.name,
     images: [
@@ -67,7 +68,7 @@ export const baseMetadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: siteConfig.name,
+    title: siteConfig.title,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
     creator: siteConfig.creator,
@@ -127,11 +128,6 @@ export const webAppStructuredData = {
   image: `${siteConfig.url}${siteConfig.ogImage}`,
   screenshot: `${siteConfig.url}${siteConfig.ogImage}`,
   softwareVersion: '1.0.0',
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.8',
-    ratingCount: '156',
-  },
   featureList: [
     'Markdown 转图片',
     '多种样式模板',

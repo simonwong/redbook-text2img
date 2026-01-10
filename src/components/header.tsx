@@ -16,9 +16,9 @@ export const Header = () => {
                   aria-hidden="true"
                   className="h-6 w-6 text-pink-500"
                 />
-                <h1 className="font-bold text-foreground text-xl">
+                <span className="font-bold text-foreground text-xl">
                   小红书图片生成器
-                </h1>
+                </span>
               </div>
             </Link>
             <Badge className="hidden sm:inline-flex" variant="outline">
