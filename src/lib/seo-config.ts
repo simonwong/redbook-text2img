@@ -7,8 +7,7 @@ export const siteConfig = {
   title: '小红书图片生成器 - Markdown转图片，免费在线工具',
   description:
     '免费将 Markdown 文字转成小红书风格图片，多种精美主题模板，支持批量导出高清图。无需注册，打开即用，数据本地处理更安全。',
-  url:
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://redbook-text2img.vercel.app',
+  url: 'https://redbook-text2img.site/',
   ogImage: '/og.png',
   creator: '@simonwong',
   keywords: [

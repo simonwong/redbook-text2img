@@ -2,7 +2,7 @@
 
 免费将 Markdown 文字转成小红书风格图片，多种精美主题模板，支持批量导出高清图。
 
-**在线体验：** [https://redbook-text2img.vercel.app](https://redbook-text2img.vercel.app)
+**在线体验：** [https://redbook-text2img.site/](https://redbook-text2img.site/)
 
 ![screenshot1](./public/screenshot-1.png)
 ![screenshot2](./public/screenshot-2.png)
