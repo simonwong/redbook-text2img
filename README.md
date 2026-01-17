@@ -6,6 +6,7 @@
 
 ![screenshot1](./public/screenshot-1.png)
 ![screenshot2](./public/screenshot-2.png)
+![screenshot2](./public/screenshot-3.png)
 
 ## 功能特点
 
