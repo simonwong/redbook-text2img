@@ -1,4 +1,5 @@
-import { GithubIcon, SparkleIcon } from 'lucide-react';
+import { GithubIcon } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -12,9 +13,12 @@ export const Header = () => {
           <div className="flex flex-1 items-center gap-3">
             <Link aria-label="Home" href="/">
               <div className="flex items-center gap-2">
-                <SparkleIcon
-                  aria-hidden="true"
-                  className="h-6 w-6 text-pink-500"
+                <Image
+                  src="/logo.svg"
+                  alt="Logo"
+                  width={24}
+                  height={24}
+                  className="h-6 w-6"
                 />
                 <span className="font-bold text-foreground text-xl">
                   小红书图片生成器
