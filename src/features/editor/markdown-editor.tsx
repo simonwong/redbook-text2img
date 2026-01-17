@@ -5,8 +5,9 @@ import CodeMirror from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { githubLight, githubDark } from '@uiw/codemirror-theme-github';
+import { useTheme } from 'next-themes';
 import { useMarkdownContentStore } from '@/store/markdownContent';
-import { useAppThemeStore, useSettingsPanelStore } from '@/store/theme';
+import { useSettingsPanelStore } from '@/store/theme';
 import { cn } from '@/lib/utils';
 
 interface MarkdownEditorProps {
@@ -16,8 +17,8 @@ interface MarkdownEditorProps {
 export const MarkdownEditor = memo(({ placeholder }: MarkdownEditorProps) => {
   const { content, setContent } = useMarkdownContentStore();
   const { isOpen: isSettingsOpen } = useSettingsPanelStore();
-  const { getEffectiveTheme } = useAppThemeStore();
-  const isDarkMode = getEffectiveTheme() === 'dark';
+  const { resolvedTheme } = useTheme();
+  const isDarkMode = resolvedTheme === 'dark';
 
   const handleChange = useCallback(
     (value: string) => {

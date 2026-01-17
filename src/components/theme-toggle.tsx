@@ -1,16 +1,24 @@
 'use client';
 
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useAppThemeStore, type ThemeMode } from '@/store/theme';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/tooltip';
 
+type ThemeMode = 'system' | 'light' | 'dark';
+
 export function ThemeToggle() {
-  const { theme, setTheme } = useAppThemeStore();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const cycleTheme = () => {
     const themes: ThemeMode[] = ['system', 'light', 'dark'];
-    const currentIndex = themes.indexOf(theme);
+    const currentIndex = themes.indexOf((theme as ThemeMode) || 'system');
     const nextIndex = (currentIndex + 1) % themes.length;
     setTheme(themes[nextIndex]);
   };
@@ -27,15 +35,25 @@ export function ThemeToggle() {
     dark: '深色模式',
   };
 
-  const Icon = icons[theme];
+  // Wait for hydration
+  if (!mounted) {
+    return (
+      <Button size="icon" variant="outline" aria-label="Theme toggle">
+        <Monitor className="h-4 w-4" />
+      </Button>
+    );
+  }
+
+  const currentTheme = (theme as ThemeMode) || 'system';
+  const Icon = icons[currentTheme];
 
   return (
-    <Tooltip content={labels[theme]}>
+    <Tooltip content={labels[currentTheme]}>
       <Button
         onClick={cycleTheme}
         size="icon"
         variant="outline"
-        aria-label={labels[theme]}
+        aria-label={labels[currentTheme]}
       >
         <Icon className="h-4 w-4" />
       </Button>
