@@ -8,6 +8,37 @@
  * 风格调整 (StyleAdjustments): 配合 Layer 1 的微调选项
  */
 
+export type { AdjustedStyle } from "./adjustments";
+// Adjustments
+export {
+  applyAdjustments,
+  defaultAdjustments,
+  densityOptions,
+  densityPresets,
+  headingAlignmentOptions,
+} from "./adjustments";
+export type { FontPreset } from "./fonts";
+// Fonts
+export {
+  defaultFontId,
+  fontOptions,
+  fontPresets,
+  getFontFamily,
+  getFontPreset,
+} from "./fonts";
+export type { GeneratedStyles, GenerateStylesOptions } from "./generator";
+// Generator
+export { generateStyles } from "./generator";
+
+// Themes
+export {
+  defaultTheme,
+  getThemeById,
+  getThemeStyle,
+  presetThemes,
+} from "./themes";
+// Tokens
+export { colors, gradients, spacing, typography } from "./tokens";
 // Types
 export type {
   CoverStyleOverride,
@@ -17,34 +48,4 @@ export type {
   HeadingAlignment,
   PresetTheme,
   StyleAdjustments,
-} from './types';
-
-// Tokens
-export { colors, gradients, spacing, typography } from './tokens';
-
-// Fonts
-export {
-  defaultFontId,
-  fontOptions,
-  fontPresets,
-  getFontFamily,
-  getFontPreset,
-} from './fonts';
-export type { FontPreset } from './fonts';
-
-// Adjustments
-export {
-  applyAdjustments,
-  defaultAdjustments,
-  densityOptions,
-  densityPresets,
-  headingAlignmentOptions,
-} from './adjustments';
-export type { AdjustedStyle } from './adjustments';
-
-// Themes
-export { defaultTheme, getThemeById, getThemeStyle, presetThemes } from './themes';
-
-// Generator
-export { generateStyles } from './generator';
-export type { GeneratedStyles, GenerateStylesOptions } from './generator';
+} from "./types";

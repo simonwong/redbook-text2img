@@ -1,49 +1,49 @@
-import { GoogleAnalytics } from '@next/third-parties/google';
-import { Analytics } from '@vercel/analytics/next';
-import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import { Header } from '@/components/header';
-import { ThemeProvider } from '@/components/theme-provider';
-import { baseMetadata, structuredData } from '@/lib/seo-config';
-import './globals.css';
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { Analytics } from "@vercel/analytics/next";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Header } from "@/components/header";
+import { ThemeProvider } from "@/components/theme-provider";
+import { baseMetadata, structuredData } from "@/lib/seo-config";
+import "./globals.css";
 
 const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   ...baseMetadata,
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
-    title: '小红书图片生成器',
+    statusBarStyle: "default",
+    title: "小红书图片生成器",
   },
   formatDetection: {
     telephone: false,
   },
   other: {
-    'mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-capable': 'yes',
-    'application-name': '小红书图片生成器',
-    'apple-mobile-web-app-title': '小红书图片生成器',
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "application-name": "小红书图片生成器",
+    "apple-mobile-web-app-title": "小红书图片生成器",
   },
 };
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
   ],
-  colorScheme: 'light dark',
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({
@@ -79,7 +79,7 @@ export default function RootLayout({
           </main>
         </ThemeProvider>
         <Analytics />
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ''} />
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
       </body>
     </html>
   );

@@ -1,18 +1,23 @@
-'use client';
+"use client";
 
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Download, FileText, ImageDownloadIcon, PaintBoardIcon } from '@hugeicons/core-free-icons';
-import { useMemo, useState } from 'react';
-import { Card } from '@/components/easy/card';
-import { Tooltip } from '@/components/tooltip';
-import { Button } from '@/components/ui/button';
-import { useImageRefs } from '@/features/preview/hooks/use-image-refs';
-import { ImagePreview } from '@/features/preview/image-preview';
-import { parseMarkdownToImages } from '@/lib/markdown-parser';
-import { useMarkdownContentStore } from '@/store/markdownContent';
-import { useSettingsPanelStore } from '@/store/theme';
-import { useImageExport } from './hooks/use-image-export';
-import './index.css';
+import {
+  Download,
+  FileText,
+  ImageDownloadIcon,
+  PaintBoardIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { useMemo, useState } from "react";
+import { Card } from "@/components/easy/card";
+import { Tooltip } from "@/components/tooltip";
+import { Button } from "@/components/ui/button";
+import { useImageRefs } from "@/features/preview/hooks/use-image-refs";
+import { ImagePreview } from "@/features/preview/image-preview";
+import { parseMarkdownToImages } from "@/lib/markdown-parser";
+import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useSettingsPanelStore } from "@/store/theme";
+import { useImageExport } from "./hooks/use-image-export";
+import "./index.css";
 
 export const PreviewCard = () => {
   const [isExporting, setIsExporting] = useState(false);
@@ -26,7 +31,7 @@ export const PreviewCard = () => {
   const segments = useMemo(() => parseMarkdownToImages(markdown), [markdown]);
 
   const title = useMemo(() => {
-    return segments.find((segment) => segment.isFirstImage)?.title ?? '';
+    return segments.find((segment) => segment.isFirstImage)?.title ?? "";
   }, [segments]);
 
   const { exportSingleImage, exportAllImages } = useImageExport(title);
@@ -71,11 +76,11 @@ export const PreviewCard = () => {
             onClick={handleExportAll}
             variant="outline"
           >
-            <HugeiconsIcon icon={ImageDownloadIcon} className="h-4 w-4" />
+            <HugeiconsIcon className="h-4 w-4" icon={ImageDownloadIcon} />
           </Button>
         </Tooltip>,
       ]}
-      actionClassName='space-x-2'
+      actionClassName="space-x-2"
       className="gap-3"
       title="图片预览"
     >
@@ -83,7 +88,10 @@ export const PreviewCard = () => {
         {segments.length === 0 ? (
           <div className="flex h-full w-[300px] items-center justify-center text-muted-foreground">
             <div className="text-center">
-              <HugeiconsIcon icon={FileText} className="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
+              <HugeiconsIcon
+                className="mx-auto mb-3 h-12 w-12 text-muted-foreground/50"
+                icon={FileText}
+              />
               <p>请在左侧输入 Markdown 内容</p>
               <p className="mt-1 text-muted-foreground/70 text-sm">
                 使用 ## 二级标题来分割不同的图片
@@ -97,13 +105,13 @@ export const PreviewCard = () => {
                 <div className="absolute top-2 left-0 z-10 flex w-full items-center justify-between gap-4 px-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                   <span />
                   <Button
-                    className="gap-1 !bg-background/95 !text-foreground !border-border backdrop-blur-sm shadow-sm hover:!bg-accent"
+                    className="!bg-background/95 !text-foreground !border-border hover:!bg-accent gap-1 shadow-sm backdrop-blur-sm"
                     disabled={isExporting}
                     onClick={() => handleExportSingle(index)}
                     size="sm"
                     variant="outline"
                   >
-                    <HugeiconsIcon icon={Download} className="h-3 w-3" />
+                    <HugeiconsIcon className="h-3 w-3" icon={Download} />
                     导出
                   </Button>
                 </div>

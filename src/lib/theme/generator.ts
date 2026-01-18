@@ -3,10 +3,10 @@
  * Converts AdjustedStyle to React CSSProperties
  */
 
-import type React from 'react';
-import type { AdjustedStyle } from './adjustments';
-import { typography } from './tokens';
-import type { CoverStyleOverride } from './types';
+import type React from "react";
+import type { AdjustedStyle } from "./adjustments";
+import { typography } from "./tokens";
+import type { CoverStyleOverride } from "./types";
 
 /** Generated CSS styles for Markdown rendering */
 export interface GeneratedStyles {
@@ -41,16 +41,16 @@ export interface GenerateStylesOptions {
  * 将垂直对齐转换为 CSS justifyContent 值
  */
 function getJustifyContent(
-  align?: 'top' | 'center' | 'bottom'
-): React.CSSProperties['justifyContent'] {
+  align?: "top" | "center" | "bottom"
+): React.CSSProperties["justifyContent"] {
   switch (align) {
-    case 'center':
-      return 'center';
-    case 'bottom':
-      return 'flex-end';
-    case 'top':
+    case "center":
+      return "center";
+    case "bottom":
+      return "flex-end";
+    case "top":
     default:
-      return 'flex-start';
+      return "flex-start";
   }
 }
 
@@ -58,16 +58,16 @@ function getJustifyContent(
  * 将水平对齐转换为 CSS alignItems 值
  */
 function getAlignItems(
-  align?: 'left' | 'center' | 'right'
-): React.CSSProperties['alignItems'] {
+  align?: "left" | "center" | "right"
+): React.CSSProperties["alignItems"] {
   switch (align) {
-    case 'center':
-      return 'center';
-    case 'right':
-      return 'flex-end';
-    case 'left':
+    case "center":
+      return "center";
+    case "right":
+      return "flex-end";
+    case "left":
     default:
-      return 'flex-start';
+      return "flex-start";
   }
 }
 
@@ -84,14 +84,15 @@ export function generateStyles(
   const coverStyle = options?.coverStyle;
 
   // 封面标题对齐：优先使用 coverStyle 中的设置,覆盖用户调整
-  const effectiveHeadingAlignment = coverStyle?.headingAlignment ?? headingAlignment;
+  const effectiveHeadingAlignment =
+    coverStyle?.headingAlignment ?? headingAlignment;
 
   // Background style (handles solid, gradient, image)
   // Use backgroundImage instead of background shorthand to avoid conflicts with backgroundSize/backgroundPosition
   const backgroundStyle: React.CSSProperties =
-    style.background.type === 'solid'
+    style.background.type === "solid"
       ? { backgroundColor: style.background.value }
-      : style.background.type === 'image'
+      : style.background.type === "image"
         ? { backgroundImage: `url(${style.background.value})` }
         : { backgroundImage: style.background.value };
 
@@ -105,44 +106,44 @@ export function generateStyles(
     fontWeight: style.heading.fontWeight,
     marginBottom: `${headingGap / baseFontSize}em`,
     color: style.heading.color,
-    textAlign: useHeadingAlignment ? effectiveHeadingAlignment : 'left',
-    width: '100%',
+    textAlign: useHeadingAlignment ? effectiveHeadingAlignment : "left",
+    width: "100%",
   });
 
   return {
     container: {
-      width: '375px',
-      minWidth: '375px',
-      height: '500px',
-      minHeight: '500px',
+      width: "375px",
+      minWidth: "375px",
+      height: "500px",
+      minHeight: "500px",
       ...backgroundStyle,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      borderRadius: '12px',
-      overflow: 'hidden',
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      borderRadius: "12px",
+      overflow: "hidden",
       fontFamily,
-      position: 'relative',
+      position: "relative",
       fontSize: `${baseFontSize}px`,
-      boxSizing: 'border-box',
+      boxSizing: "border-box",
     },
 
     innerContainer: {
-      width: '100%',
-      height: '100%',
+      width: "100%",
+      height: "100%",
       padding: `${padding}px`,
-      boxSizing: 'border-box',
+      boxSizing: "border-box",
     },
 
     content: {
       flex: 1,
-      overflow: 'hidden',
-      fontSize: '1em',
+      overflow: "hidden",
+      fontSize: "1em",
       lineHeight,
       color: style.paragraph.color,
-      wordBreak: 'break-word',
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
+      wordBreak: "break-word",
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
       justifyContent: getJustifyContent(coverStyle?.contentVerticalAlign),
       alignItems: getAlignItems(coverStyle?.contentHorizontalAlign),
     },
@@ -162,11 +163,11 @@ export function generateStyles(
     },
 
     p: {
-      fontSize: '1em',
+      fontSize: "1em",
       lineHeight,
       marginBottom: `${paragraphGap / baseFontSize}em`,
       color: style.paragraph.color,
-      wordBreak: 'break-word',
+      wordBreak: "break-word",
     },
 
     strong: {
@@ -175,15 +176,15 @@ export function generateStyles(
     },
 
     em: {
-      fontStyle: 'italic',
+      fontStyle: "italic",
       color: style.emphasis.italic.color,
     },
 
     mark: {
       backgroundColor: style.emphasis.highlight.background,
       color: style.emphasis.highlight.color,
-      padding: '0.1em 0.3em',
-      borderRadius: '0.2em',
+      padding: "0.1em 0.3em",
+      borderRadius: "0.2em",
     },
 
     ul: {
@@ -194,44 +195,46 @@ export function generateStyles(
 
     li: {
       marginBottom: `${paragraphGap / 2 / baseFontSize}em`,
-      fontSize: '1em',
+      fontSize: "1em",
       lineHeight,
     },
 
     blockquote: {
       marginBottom: `${paragraphGap / baseFontSize}em`,
-      paddingLeft: '1em',
+      paddingLeft: "1em",
       borderLeft: `3px solid ${style.blockquote.borderColor}`,
       backgroundColor: style.blockquote.background,
       color: style.blockquote.textColor,
-      fontStyle: 'italic',
-      ...(style.blockquote.boxShadow && { boxShadow: style.blockquote.boxShadow }),
+      fontStyle: "italic",
+      ...(style.blockquote.boxShadow && {
+        boxShadow: style.blockquote.boxShadow,
+      }),
     },
 
     pre: {
       marginBottom: `${paragraphGap / baseFontSize}em`,
       color: style.code.block.color,
       backgroundColor: style.code.block.background,
-      whiteSpace: 'pre-wrap',
-      fontSize: '0.875em',
+      whiteSpace: "pre-wrap",
+      fontSize: "0.875em",
       lineHeight: 1.5,
-      wordBreak: 'break-word',
-      borderRadius: '0.4em',
-      padding: '0.6em 0.8em',
-      width: '100%',
+      wordBreak: "break-word",
+      borderRadius: "0.4em",
+      padding: "0.6em 0.8em",
+      width: "100%",
     },
 
     code: {
       color: style.code.inline.color,
       backgroundColor: style.code.inline.background,
-      fontSize: '0.875em',
-      padding: '0.15em 0.4em',
-      borderRadius: '0.25em',
+      fontSize: "0.875em",
+      padding: "0.15em 0.4em",
+      borderRadius: "0.25em",
     },
 
     a: {
       color: style.link.color,
-      textDecoration: style.link.underline ? 'underline' : 'none',
+      textDecoration: style.link.underline ? "underline" : "none",
     },
   };
 }

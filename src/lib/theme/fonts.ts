@@ -16,34 +16,37 @@ export interface FontPreset {
 
 export const fontPresets: FontPreset[] = [
   {
-    id: 'system',
-    name: '系统默认',
-    value: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif',
-    description: '跟随系统字体',
+    id: "system",
+    name: "系统默认",
+    value:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif',
+    description: "跟随系统字体",
   },
   {
-    id: 'sans',
-    name: '无衬线',
-    value: '"Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
-    description: '现代简洁风格',
+    id: "sans",
+    name: "无衬线",
+    value:
+      '"Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
+    description: "现代简洁风格",
   },
   {
-    id: 'serif',
-    name: '衬线',
+    id: "serif",
+    name: "衬线",
     value: 'Georgia, "Noto Serif SC", "Source Han Serif SC", "SimSun", serif',
-    description: '传统阅读风格',
+    description: "传统阅读风格",
   },
   {
-    id: 'rounded',
-    name: '圆体',
+    id: "rounded",
+    name: "圆体",
     value: '"SF Pro Rounded", "PingFang SC", "Microsoft YaHei", sans-serif',
-    description: '柔和圆润风格',
+    description: "柔和圆润风格",
   },
   {
-    id: 'mono',
-    name: '等宽',
-    value: '"JetBrains Mono", "Fira Code", "SF Mono", Menlo, "PingFang SC", monospace',
-    description: '代码/技术风格',
+    id: "mono",
+    name: "等宽",
+    value:
+      '"JetBrains Mono", "Fira Code", "SF Mono", Menlo, "PingFang SC", monospace',
+    description: "代码/技术风格",
   },
 ];
 
@@ -68,4 +71,4 @@ export const fontOptions = fontPresets.map((f) => ({
 }));
 
 /** 默认字体 ID */
-export const defaultFontId = 'system';
+export const defaultFontId = "system";

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowReloadHorizontalIcon } from '@hugeicons/core-free-icons';
-import { Card } from '@/components/easy/card';
-import { Button } from '@/components/ui/button';
-import { useMarkdownContentStore } from '@/store/markdownContent';
-import { MarkdownEditor } from './markdown-editor';
+import { ArrowReloadHorizontalIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Card } from "@/components/easy/card";
+import { Button } from "@/components/ui/button";
+import { useMarkdownContentStore } from "@/store/markdownContent";
+import { MarkdownEditor } from "./markdown-editor";
 
 export const EditorCard = () => {
   const { resetContent, isChange } = useMarkdownContentStore();
@@ -15,7 +15,10 @@ export const EditorCard = () => {
       action={
         isChange && (
           <Button onClick={resetContent} size="sm" variant="outline">
-            <HugeiconsIcon icon={ArrowReloadHorizontalIcon} className="h-4 w-4" />
+            <HugeiconsIcon
+              className="h-4 w-4"
+              icon={ArrowReloadHorizontalIcon}
+            />
             重置示例
           </Button>
         )

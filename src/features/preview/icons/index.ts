@@ -1,3 +1,3 @@
-export { ChevronLeftIcon } from './chevron-left';
-export { ShareIcon } from './share';
-export { MenuCircleIcon } from './menu-circle';
+export { ChevronLeftIcon } from "./chevron-left";
+export { MenuCircleIcon } from "./menu-circle";
+export { ShareIcon } from "./share";

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Monitor, Moon02Icon, Sun03Icon } from '@hugeicons/core-free-icons';
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Tooltip } from '@/components/tooltip';
+import { Monitor, Moon02Icon, Sun03Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { Tooltip } from "@/components/tooltip";
+import { Button } from "@/components/ui/button";
 
-type ThemeMode = 'system' | 'light' | 'dark';
+type ThemeMode = "system" | "light" | "dark";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -18,8 +18,8 @@ export function ThemeToggle() {
   }, []);
 
   const cycleTheme = () => {
-    const themes: ThemeMode[] = ['system', 'light', 'dark'];
-    const currentIndex = themes.indexOf((theme as ThemeMode) || 'system');
+    const themes: ThemeMode[] = ["system", "light", "dark"];
+    const currentIndex = themes.indexOf((theme as ThemeMode) || "system");
     const nextIndex = (currentIndex + 1) % themes.length;
     setTheme(themes[nextIndex]);
   };
@@ -31,32 +31,32 @@ export function ThemeToggle() {
   };
 
   const labels = {
-    system: '跟随系统',
-    light: '浅色模式',
-    dark: '深色模式',
+    system: "跟随系统",
+    light: "浅色模式",
+    dark: "深色模式",
   };
 
   // Wait for hydration
   if (!mounted) {
     return (
-      <Button size="icon" variant="outline" aria-label="Theme toggle">
-        <HugeiconsIcon icon={Monitor} className="h-4 w-4" />
+      <Button aria-label="Theme toggle" size="icon" variant="outline">
+        <HugeiconsIcon className="h-4 w-4" icon={Monitor} />
       </Button>
     );
   }
 
-  const currentTheme = (theme as ThemeMode) || 'system';
+  const currentTheme = (theme as ThemeMode) || "system";
   const iconData = icons[currentTheme];
 
   return (
     <Tooltip content={labels[currentTheme]}>
       <Button
+        aria-label={labels[currentTheme]}
         onClick={cycleTheme}
         size="icon"
         variant="outline"
-        aria-label={labels[currentTheme]}
       >
-        <HugeiconsIcon icon={iconData} className="h-4 w-4" />
+        <HugeiconsIcon className="h-4 w-4" icon={iconData} />
       </Button>
     </Tooltip>
   );

@@ -1,6 +1,7 @@
-import React, { PropsWithChildren } from 'react';
-import { Card, CardContent, CardHeader } from './ui/card';
-import { cn } from '@/lib/utils';
+import type React from "react";
+import type { PropsWithChildren } from "react";
+import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader } from "./ui/card";
 
 export interface CardWrapProps {
   title?: string;
@@ -15,12 +16,14 @@ export const CardWrap: React.FC<PropsWithChildren<CardWrapProps>> = ({
   extra,
 }) => {
   return (
-    <Card className={cn('h-full gap-4 py-3', className)}>
-      <CardHeader className="flex items-center justify-between h-8">
+    <Card className={cn("h-full gap-4 py-3", className)}>
+      <CardHeader className="flex h-8 items-center justify-between">
         <h2 className="font-medium text-foreground">{title}</h2>
         <div className="flex gap-2">{extra}</div>
       </CardHeader>
-      <CardContent className="px-4 flex-1 overflow-hidden">{children}</CardContent>
+      <CardContent className="flex-1 overflow-hidden px-4">
+        {children}
+      </CardContent>
     </Card>
   );
 };

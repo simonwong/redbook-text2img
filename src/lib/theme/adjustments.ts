@@ -3,9 +3,14 @@
  * 风格调整模块 - 配合 Layer 1 预设主题的微调
  */
 
-import { defaultFontId, getFontFamily } from './fonts';
-import { spacing, typography } from './tokens';
-import type { Density, FullStyle, HeadingAlignment, StyleAdjustments } from './types';
+import { defaultFontId, getFontFamily } from "./fonts";
+import { spacing, typography } from "./tokens";
+import type {
+  Density,
+  FullStyle,
+  HeadingAlignment,
+  StyleAdjustments,
+} from "./types";
 
 // ============================================================
 // 密度预设
@@ -48,14 +53,17 @@ export const densityPresets: Record<Density, DensityValues> = {
 // ============================================================
 
 export const densityOptions: { value: Density; label: string }[] = [
-  { value: 'compact', label: '紧凑' },
-  { value: 'normal', label: '正常' },
-  { value: 'spacious', label: '宽松' },
+  { value: "compact", label: "紧凑" },
+  { value: "normal", label: "正常" },
+  { value: "spacious", label: "宽松" },
 ];
 
-export const headingAlignmentOptions: { value: HeadingAlignment; label: string }[] = [
-  { value: 'center', label: '居中' },
-  { value: 'left', label: '左对齐' },
+export const headingAlignmentOptions: {
+  value: HeadingAlignment;
+  label: string;
+}[] = [
+  { value: "center", label: "居中" },
+  { value: "left", label: "左对齐" },
 ];
 
 // ============================================================
@@ -63,9 +71,9 @@ export const headingAlignmentOptions: { value: HeadingAlignment; label: string }
 // ============================================================
 
 export const defaultAdjustments: StyleAdjustments = {
-  density: 'normal',
+  density: "normal",
   fontId: defaultFontId,
-  headingAlignment: 'center',
+  headingAlignment: "center",
 };
 
 // ============================================================

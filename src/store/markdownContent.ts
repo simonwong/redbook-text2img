@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 
 interface MarkdownContentState {
   content: string;
@@ -74,7 +74,7 @@ export const useMarkdownContentStore = create<MarkdownContentState>()(
         resetContent: () => set({ content: defaultMarkdown, isChange: false }),
       }),
       {
-        name: 'redbook-markdown-content',
+        name: "redbook-markdown-content",
       }
     )
   )

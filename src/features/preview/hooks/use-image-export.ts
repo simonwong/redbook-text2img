@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import html2canvas from 'html2canvas-pro';
-import { useCallback } from 'react';
+import html2canvas from "html2canvas-pro";
+import { useCallback } from "react";
 
 const generateCanvas = async (element: HTMLElement) => {
   const canvas = await html2canvas(element, {
@@ -16,9 +16,9 @@ const generateCanvas = async (element: HTMLElement) => {
 };
 
 const downloadImageByCanvas = (canvas: HTMLCanvasElement, filename: string) => {
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.download = filename;
-  link.href = canvas.toDataURL('image/png');
+  link.href = canvas.toDataURL("image/png");
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

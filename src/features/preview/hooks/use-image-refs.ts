@@ -1,9 +1,10 @@
-import { useRef } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useRef } from "react";
 
 export const useImageRefs = () => {
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const refSetters = useRef<Record<number, (el: HTMLDivElement | null) => void>>({});
+  const refSetters = useRef<
+    Record<number, (el: HTMLDivElement | null) => void>
+  >({});
 
   const setImageRef = useCallback((idx: number) => {
     if (!refSetters.current[idx]) {

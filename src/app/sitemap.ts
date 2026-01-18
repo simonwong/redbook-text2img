@@ -1,5 +1,5 @@
-import type { MetadataRoute } from 'next';
-import { siteConfig } from '@/lib/seo-config';
+import type { MetadataRoute } from "next";
+import { siteConfig } from "@/lib/seo-config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date();
@@ -8,19 +8,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: siteConfig.url,
       lastModified: currentDate,
-      changeFrequency: 'weekly',
+      changeFrequency: "weekly",
       priority: 1,
     },
     {
       url: `${siteConfig.url}/faq`,
       lastModified: currentDate,
-      changeFrequency: 'monthly',
+      changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${siteConfig.url}/changelog`,
       lastModified: currentDate,
-      changeFrequency: 'monthly',
+      changeFrequency: "monthly",
       priority: 0.8,
     },
   ];

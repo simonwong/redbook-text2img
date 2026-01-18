@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowReloadHorizontalIcon } from '@hugeicons/core-free-icons';
-import { memo } from 'react';
-import { Card } from '@/components/easy/card';
-import { Select } from '@/components/enhance/select';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { ArrowReloadHorizontalIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { memo } from "react";
+import { Card } from "@/components/easy/card";
+import { Select } from "@/components/enhance/select";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   defaultAdjustments,
   densityOptions,
   fontOptions,
   headingAlignmentOptions,
   presetThemes,
-} from '@/lib/theme';
-import { useContentThemeStore, useSettingsPanelStore } from '@/store/theme';
+} from "@/lib/theme";
+import { useContentThemeStore, useSettingsPanelStore } from "@/store/theme";
 
 /** Dimension selector component */
 const DimensionSelect = ({
@@ -30,7 +30,12 @@ const DimensionSelect = ({
 }) => (
   <div className="space-y-2">
     <Label className="font-medium text-sm">{label}</Label>
-    <Select className="w-full" onChange={onChange} options={options} value={value} />
+    <Select
+      className="w-full"
+      onChange={onChange}
+      options={options}
+      value={value}
+    />
   </div>
 );
 
@@ -55,7 +60,10 @@ export const Configurator = memo(() => {
     adjustments.headingAlignment !== defaultAdjustments.headingAlignment;
 
   return (
-    <aside aria-label="样式配置" className="overflow-auto w-[200px] min-w-[200px]">
+    <aside
+      aria-label="样式配置"
+      className="w-[200px] min-w-[200px] overflow-auto"
+    >
       <div className="space-y-4">
         {/* Unified Settings Card */}
         <Card title="设置样式">
@@ -94,7 +102,9 @@ export const Configurator = memo(() => {
             {/* Heading Alignment */}
             <DimensionSelect
               label="标题对齐"
-              onChange={(v) => setHeadingAlignment(v as typeof adjustments.headingAlignment)}
+              onChange={(v) =>
+                setHeadingAlignment(v as typeof adjustments.headingAlignment)
+              }
               options={headingAlignmentOptions}
               value={adjustments.headingAlignment}
             />
@@ -109,7 +119,10 @@ export const Configurator = memo(() => {
             size="sm"
             variant="outline"
           >
-            <HugeiconsIcon icon={ArrowReloadHorizontalIcon} className="mr-2 h-3 w-3" />
+            <HugeiconsIcon
+              className="mr-2 h-3 w-3"
+              icon={ArrowReloadHorizontalIcon}
+            />
             重置风格调整
           </Button>
         )}
@@ -118,4 +131,4 @@ export const Configurator = memo(() => {
   );
 });
 
-Configurator.displayName = 'Configurator';
+Configurator.displayName = "Configurator";

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 interface SEOOptimizedTextProps {
   className?: string;
@@ -18,7 +18,7 @@ export const SEOOptimizedText: React.FC<SEOOptimizedTextProps> = ({
           免费在线工具，无需注册，支持实时预览和批量导出。
         </p>
       </div>
-      <div className={`sr-only ${className || ''}`}>
+      <div className={`sr-only ${className || ""}`}>
         {/* 关键词丰富的内容，为SEO和屏幕阅读器提供更多上下文 */}
         <h2>功能特色</h2>
         <ul>
@@ -59,9 +59,9 @@ export const SEOOptimizedText: React.FC<SEOOptimizedTextProps> = ({
         <h2>关键词</h2>
         <p>
           小红书图片生成器, 小绿书图片生成, 公众号图文图片生成, Markdown转图片,
-          文字转图片工具, 社交媒体配图, 社交媒体图片制作,
-          小红书笔记制作, 图片文字设计, 在线图片制作工具, 免费图片生成器,
-          内容创作工具, 营销图片制作, 朋友圈配图, 微博图片设计
+          文字转图片工具, 社交媒体配图, 社交媒体图片制作, 小红书笔记制作,
+          图片文字设计, 在线图片制作工具, 免费图片生成器, 内容创作工具,
+          营销图片制作, 朋友圈配图, 微博图片设计
         </p>
       </div>
     </>

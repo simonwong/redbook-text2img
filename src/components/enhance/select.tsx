@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import type * as React from 'react';
+import type * as React from "react";
 import {
   Select as BaseSelect,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 export type BaseOptionType = {
   label: React.ReactNode;
@@ -18,8 +18,8 @@ export type BaseOptionType = {
 
 export interface SelectProps<OptionType extends BaseOptionType> {
   options: readonly OptionType[];
-  value?: OptionType['value'] | string;
-  onChange?: (value: OptionType['value'], option: OptionType) => void;
+  value?: OptionType["value"] | string;
+  onChange?: (value: OptionType["value"], option: OptionType) => void;
   placeholder?: string;
   className?: string;
 }

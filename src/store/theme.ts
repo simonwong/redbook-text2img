@@ -1,14 +1,13 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 import {
+  type Density,
   defaultAdjustments,
   defaultTheme,
   getThemeById,
-  type Density,
   type HeadingAlignment,
   type StyleAdjustments,
-} from '@/lib/theme';
-
+} from "@/lib/theme";
 
 // ============================================================
 // Content Theme (Image/Markdown styling)
@@ -69,7 +68,7 @@ export const useContentThemeStore = create<ContentThemeState>()(
         },
       }),
       {
-        name: 'redbook-content-theme',
+        name: "redbook-content-theme",
         partialize: (state) => ({
           currentThemeId: state.currentThemeId,
           adjustments: state.adjustments,

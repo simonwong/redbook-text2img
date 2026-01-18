@@ -1,5 +1,5 @@
-import type React from 'react';
-import type { ReactNode } from 'react';
+import type React from "react";
+import type { ReactNode } from "react";
 import {
   CardAction,
   CardContent,
@@ -8,11 +8,11 @@ import {
   CardHeader,
   CardTitle,
   Card as InternalCard,
-} from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export interface CardProps
-  extends Omit<React.ComponentProps<typeof InternalCard>, 'title'> {
+  extends Omit<React.ComponentProps<typeof InternalCard>, "title"> {
   headerClassName?: string;
   headerProps?: React.ComponentProps<typeof CardHeader>;
   title?: ReactNode;
@@ -88,7 +88,7 @@ export const Card: React.FC<CardProps> = ({
         <CardContent
           {...contentProps}
           className={cn(
-            'overflow-auto',
+            "overflow-auto",
             contentClassName,
             contentProps?.className
           )}

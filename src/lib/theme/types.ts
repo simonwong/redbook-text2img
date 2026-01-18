@@ -13,7 +13,7 @@
 // ============================================================
 
 export interface BackgroundStyle {
-  type: 'solid' | 'gradient' | 'image';
+  type: "solid" | "gradient" | "image";
   value: string;
 }
 
@@ -100,10 +100,10 @@ export interface FullStyle {
 // ============================================================
 
 /** 密度选项 */
-export type Density = 'compact' | 'normal' | 'spacious';
+export type Density = "compact" | "normal" | "spacious";
 
 /** 标题对齐方式 */
-export type HeadingAlignment = 'left' | 'center';
+export type HeadingAlignment = "left" | "center";
 
 /** 风格调整（配合 Layer 1 预设主题） */
 export interface StyleAdjustments {
@@ -119,9 +119,9 @@ export interface StyleAdjustments {
 /** 封面图特有的样式覆盖 */
 export interface CoverStyleOverride {
   /** 内容垂直对齐方式 */
-  contentVerticalAlign?: 'top' | 'center' | 'bottom';
+  contentVerticalAlign?: "top" | "center" | "bottom";
   /** 内容水平对齐方式 */
-  contentHorizontalAlign?: 'left' | 'center' | 'right';
+  contentHorizontalAlign?: "left" | "center" | "right";
   /** 标题对齐方式（优先级高于用户调整） */
   headingAlignment?: HeadingAlignment;
 }

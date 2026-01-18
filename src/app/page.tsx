@@ -1,7 +1,7 @@
-import { SEOOptimizedText } from '@/components/seo-optimized-text';
-import { Configurator } from '@/features/configurator';
-import { EditorCard } from '@/features/editor';
-import { PreviewCard } from '@/features/preview';
+import { SEOOptimizedText } from "@/components/seo-optimized-text";
+import { Configurator } from "@/features/configurator";
+import { EditorCard } from "@/features/editor";
+import { PreviewCard } from "@/features/preview";
 
 const MarkdownToImageApp = () => {
   return (

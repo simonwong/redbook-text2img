@@ -1,10 +1,10 @@
-import { faqData } from '@/lib/faq-data';
-import { generatePageMetadata } from '@/lib/seo-config';
+import { faqData } from "@/lib/faq-data";
+import { generatePageMetadata } from "@/lib/seo-config";
 
 export const metadata = generatePageMetadata(
-  '常见问题',
-  '小红书图片生成器常见问题解答 - 了解如何使用、是否免费、隐私保护等',
-  '/faq'
+  "常见问题",
+  "小红书图片生成器常见问题解答 - 了解如何使用、是否免费、隐私保护等",
+  "/faq"
 );
 
 const FAQPage = () => {
@@ -19,14 +19,13 @@ const FAQPage = () => {
 
       <div className="space-y-6">
         {faqData.map((faq, index) => (
-          <div
-            className="rounded-lg border bg-card p-6 shadow-sm"
-            key={index}
-          >
+          <div className="rounded-lg border bg-card p-6 shadow-sm" key={index}>
             <h2 className="mb-3 font-semibold text-foreground text-lg">
               {faq.question}
             </h2>
-            <p className="leading-relaxed text-muted-foreground">{faq.answer}</p>
+            <p className="text-muted-foreground leading-relaxed">
+              {faq.answer}
+            </p>
           </div>
         ))}
       </div>
@@ -36,7 +35,7 @@ const FAQPage = () => {
           还有其他问题？
         </h2>
         <p className="text-muted-foreground">
-          欢迎在{' '}
+          欢迎在{" "}
           <a
             className="text-pink-500 underline hover:text-pink-600"
             href="https://github.com/simonwong/redbook-text2img/issues"
@@ -44,8 +43,8 @@ const FAQPage = () => {
             target="_blank"
           >
             GitHub Issues
-          </a>{' '}
-          中提出，或联系作者{' '}
+          </a>{" "}
+          中提出，或联系作者{" "}
           <a
             className="text-pink-500 underline hover:text-pink-600"
             href="https://x.com/simonwongio"

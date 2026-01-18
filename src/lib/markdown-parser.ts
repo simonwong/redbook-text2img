@@ -7,17 +7,17 @@ export interface ImageSegment {
   content: string;
   isFirstImage: boolean;
   isCover: boolean;
-  type: 'content' | 'separator';
+  type: "content" | "separator";
 }
 
 // 辅助函数：创建新段落
 const createSegment = (
   segmentId: number,
-  type: 'content' | 'separator'
+  type: "content" | "separator"
 ): ImageSegment => ({
   id: `segment-${segmentId}`,
   title: `图片 ${segmentId}`,
-  content: '',
+  content: "",
   isFirstImage: false,
   isCover: false,
   type,
@@ -25,7 +25,7 @@ const createSegment = (
 
 // 辅助函数：处理段落内容
 const addContentToSegment = (segment: ImageSegment, line: string): void => {
-  if (segment.content === '') {
+  if (segment.content === "") {
     segment.content = line;
   } else {
     segment.content += `\n${line}`;
@@ -42,7 +42,7 @@ const handleSeparator = (
     segments.push(currentSegment);
   }
   const newSegmentId = segmentId + 1;
-  return [createSegment(newSegmentId, 'separator'), newSegmentId];
+  return [createSegment(newSegmentId, "separator"), newSegmentId];
 };
 
 // 辅助函数：处理内容行
@@ -58,7 +58,7 @@ const handleContentLine = (
   }
   if (trimmedLine) {
     const newSegmentId = segmentId + 1;
-    const newSegment = createSegment(newSegmentId, 'content');
+    const newSegment = createSegment(newSegmentId, "content");
     newSegment.content = line;
     return [newSegment, newSegmentId];
   }
@@ -68,7 +68,7 @@ const handleContentLine = (
 // 辅助函数：标记首图并提取标题
 const processSegmentTitles = (segments: ImageSegment[]): void => {
   for (const segment of segments) {
-    const hasH1 = segment.content.trim().startsWith('# ');
+    const hasH1 = segment.content.trim().startsWith("# ");
     segment.isFirstImage = hasH1;
     segment.isCover = hasH1; // 包含 # 一级标题的视为封面
 
@@ -83,7 +83,7 @@ const processSegmentTitles = (segments: ImageSegment[]): void => {
 
 export const parseMarkdownToImages = (markdown: string): ImageSegment[] => {
   const segments: ImageSegment[] = [];
-  const lines = markdown.split('\n');
+  const lines = markdown.split("\n");
 
   let currentSegment: ImageSegment | null = null;
   let segmentId = 0;
