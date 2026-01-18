@@ -23,30 +23,25 @@ export const EditorCard = ({
 }: EditorCardProps) => {
   const { resetContent, isChange } = useMarkdownContentStore();
 
+  const extra = (
+    <>
+      {isMobile && onPreviewClick && (
+        <Button onClick={onPreviewClick} size="sm" variant="outline">
+          <HugeiconsIcon className="h-4 w-4" icon={ViewIcon} />
+          预览
+        </Button>
+      )}
+      {isChange && (
+        <Button onClick={resetContent} size="sm" variant="outline">
+          <HugeiconsIcon className="h-4 w-4" icon={ArrowReloadHorizontalIcon} />
+          重置示例
+        </Button>
+      )}
+    </>
+  );
+
   return (
-    <CardWrap
-      className={className}
-      extra={
-        <div className="flex gap-2">
-          {isMobile && onPreviewClick && (
-            <Button onClick={onPreviewClick} size="sm" variant="outline">
-              <HugeiconsIcon className="h-4 w-4" icon={ViewIcon} />
-              预览
-            </Button>
-          )}
-          {isChange && (
-            <Button onClick={resetContent} size="sm" variant="outline">
-              <HugeiconsIcon
-                className="h-4 w-4"
-                icon={ArrowReloadHorizontalIcon}
-              />
-              重置示例
-            </Button>
-          )}
-        </div>
-      }
-      title="编辑器"
-    >
+    <CardWrap className={className} extra={extra} title="编辑器">
       <MarkdownEditor placeholder="在这里输入您的 Markdown 内容..." />
     </CardWrap>
   );

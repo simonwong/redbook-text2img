@@ -14,11 +14,10 @@ import { useSettingsPanelStore } from "@/store/theme";
 
 export const MobileLayout = () => {
   const { currentView, setCurrentView } = useMobileViewStore();
-  const { isOpen, toggle } = useSettingsPanelStore();
+  const { isOpen, setIsOpen } = useSettingsPanelStore();
 
   return (
     <div className="flex h-full flex-col p-4">
-      {/* 视图切换：预览/编辑 */}
       {currentView === "preview" ? (
         <PreviewCard
           className="flex-1"
@@ -33,15 +32,7 @@ export const MobileLayout = () => {
         />
       )}
 
-      {/* 设置抽屉 */}
-      <Drawer
-        onOpenChange={(open) => {
-          if (!open && isOpen) {
-            toggle();
-          }
-        }}
-        open={isOpen}
-      >
+      <Drawer onOpenChange={setIsOpen} open={isOpen}>
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>设置样式</DrawerTitle>

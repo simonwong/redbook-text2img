@@ -1,20 +1,19 @@
-import type React from "react";
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "./ui/card";
 
 export interface CardWrapProps {
   title?: string;
   className?: string;
-  extra?: React.ReactNode | React.ReactNode[];
+  extra?: ReactNode;
 }
 
-export const CardWrap: React.FC<PropsWithChildren<CardWrapProps>> = ({
+export const CardWrap = ({
   className,
   children,
   title,
   extra,
-}) => {
+}: PropsWithChildren<CardWrapProps>) => {
   return (
     <Card className={cn("h-full gap-4 py-3", className)}>
       <CardHeader className="flex h-8 items-center justify-between">

@@ -85,9 +85,11 @@ export const useContentThemeStore = create<ContentThemeState>()(
 interface SettingsPanelState {
   isOpen: boolean;
   toggle: () => void;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
 export const useSettingsPanelStore = create<SettingsPanelState>()((set) => ({
   isOpen: false,
   toggle: () => set((state) => ({ isOpen: !state.isOpen })),
+  setIsOpen: (isOpen: boolean) => set({ isOpen }),
 }));
