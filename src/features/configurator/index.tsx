@@ -1,6 +1,7 @@
 'use client';
 
-import { RotateCcw } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowReloadHorizontalIcon } from '@hugeicons/core-free-icons';
 import { memo } from 'react';
 import { Card } from '@/components/easy/card';
 import { Select } from '@/components/enhance/select';
@@ -108,7 +109,7 @@ export const Configurator = memo(() => {
             size="sm"
             variant="outline"
           >
-            <RotateCcw className="mr-2 h-3 w-3" />
+            <HugeiconsIcon icon={ArrowReloadHorizontalIcon} className="mr-2 h-3 w-3" />
             重置风格调整
           </Button>
         )}

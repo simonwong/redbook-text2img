@@ -1,9 +1,13 @@
-import { GithubIcon } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ContactIcon, GithubIcon, NewTwitterIcon } from '@hugeicons/core-free-icons';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { ThemeToggle } from './theme-toggle';
+import { XiaohongshuIcon } from './icons/xiaohongshu-icon';
+import { GITHUB_LINK, TWITTER_LINK, XIAO_HONG_SHU_LINK } from '@/lib/contact';
 
 export const Header = () => {
   return (
@@ -36,6 +40,51 @@ export const Header = () => {
             <Button asChild className="text-accent-foreground" variant="link">
               <Link href="/changelog">更新日志</Link>
             </Button>
+
+            {/* 联系作者 Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button size="icon" variant="outline" title="联系作者">
+                  <HugeiconsIcon icon={ContactIcon} className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56">
+                <div className="space-y-2">
+                  <h3 className="font-medium text-sm">联系作者</h3>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={TWITTER_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-accent transition-colors"
+                      title="X (Twitter)"
+                    >
+                      
+                      <HugeiconsIcon icon={NewTwitterIcon} className="h-5 w-5" />
+                    </Link>
+                    <Link
+                      href={GITHUB_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-accent transition-colors"
+                      title="GitHub"
+                    >
+                      <HugeiconsIcon icon={GithubIcon} className="h-5 w-5" />
+                    </Link>
+                    <Link
+                      href={XIAO_HONG_SHU_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-accent transition-colors"
+                      title="小红书"
+                    >
+                      <XiaohongshuIcon className="h-8 w-8 text-red-500" />
+                    </Link>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+
             <ThemeToggle />
             <Button
               asChild
@@ -49,7 +98,7 @@ export const Header = () => {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <GithubIcon aria-hidden="true" className="h-4 w-4" />
+                <HugeiconsIcon icon={GithubIcon} aria-hidden="true" className="h-4 w-4" />
               </Link>
             </Button>
           </nav>

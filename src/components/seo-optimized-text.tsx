@@ -35,6 +35,8 @@ export const SEOOptimizedText: React.FC<SEOOptimizedTextProps> = ({
         <h2>适用场景</h2>
         <ul>
           <li>小红书笔记配图制作</li>
+          <li>小绿书内容图片生成</li>
+          <li>公众号图文配图制作</li>
           <li>社交媒体内容创作</li>
           <li>微信朋友圈图片分享</li>
           <li>微博图片文字设计</li>
@@ -56,7 +58,8 @@ export const SEOOptimizedText: React.FC<SEOOptimizedTextProps> = ({
 
         <h2>关键词</h2>
         <p>
-          小红书图片生成器, Markdown转图片, 文字转图片工具, 社交媒体配图,
+          小红书图片生成器, 小绿书图片生成, 公众号图文图片生成, Markdown转图片,
+          文字转图片工具, 社交媒体配图, 社交媒体图片制作,
           小红书笔记制作, 图片文字设计, 在线图片制作工具, 免费图片生成器,
           内容创作工具, 营销图片制作, 朋友圈配图, 微博图片设计
         </p>

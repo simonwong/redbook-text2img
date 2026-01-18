@@ -1,6 +1,7 @@
 'use client';
 
-import { RotateCcwIcon } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowReloadHorizontalIcon } from '@hugeicons/core-free-icons';
 import { Card } from '@/components/easy/card';
 import { Button } from '@/components/ui/button';
 import { useMarkdownContentStore } from '@/store/markdownContent';
@@ -14,7 +15,7 @@ export const EditorCard = () => {
       action={
         isChange && (
           <Button onClick={resetContent} size="sm" variant="outline">
-            <RotateCcwIcon className="h-4 w-4" />
+            <HugeiconsIcon icon={ArrowReloadHorizontalIcon} className="h-4 w-4" />
             重置示例
           </Button>
         )

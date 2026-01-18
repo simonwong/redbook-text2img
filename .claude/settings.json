@@ -8,7 +8,10 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Skill(superpowers:systematic-debugging)",
-      "Bash(bun run build:*)"
+      "Bash(bun run build:*)",
+      "Skill(superpowers:executing-plans)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm dlx shadcn@latest add:*)"
     ]
   },
   "hooks": {

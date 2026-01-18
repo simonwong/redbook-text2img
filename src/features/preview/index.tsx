@@ -1,6 +1,7 @@
 'use client';
 
-import { Download, FileText, ImageDownIcon, PaletteIcon } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Download, FileText, ImageDownloadIcon, PaintBoardIcon } from '@hugeicons/core-free-icons';
 import { useMemo, useState } from 'react';
 import { Card } from '@/components/easy/card';
 import { Tooltip } from '@/components/tooltip';
@@ -60,7 +61,7 @@ export const PreviewCard = () => {
       action={[
         <Tooltip content="设置样式" key="setting">
           <Button onClick={toggleSettings} variant="outline">
-            <PaletteIcon />
+            <HugeiconsIcon icon={PaintBoardIcon} />
           </Button>
         </Tooltip>,
         <Tooltip content={`导出全部 (${segments.length} 张)`} key="export">
@@ -70,7 +71,7 @@ export const PreviewCard = () => {
             onClick={handleExportAll}
             variant="outline"
           >
-            <ImageDownIcon className="h-4 w-4" />
+            <HugeiconsIcon icon={ImageDownloadIcon} className="h-4 w-4" />
           </Button>
         </Tooltip>,
       ]}
@@ -82,7 +83,7 @@ export const PreviewCard = () => {
         {segments.length === 0 ? (
           <div className="flex h-full w-[300px] items-center justify-center text-muted-foreground">
             <div className="text-center">
-              <FileText className="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
+              <HugeiconsIcon icon={FileText} className="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
               <p>请在左侧输入 Markdown 内容</p>
               <p className="mt-1 text-muted-foreground/70 text-sm">
                 使用 ## 二级标题来分割不同的图片
@@ -102,7 +103,7 @@ export const PreviewCard = () => {
                     size="sm"
                     variant="outline"
                   >
-                    <Download className="h-3 w-3" />
+                    <HugeiconsIcon icon={Download} className="h-3 w-3" />
                     导出
                   </Button>
                 </div>

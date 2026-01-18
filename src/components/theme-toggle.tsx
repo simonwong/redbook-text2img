@@ -1,6 +1,7 @@
 'use client';
 
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Monitor, Moon02Icon, Sun03Icon } from '@hugeicons/core-free-icons';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -25,8 +26,8 @@ export function ThemeToggle() {
 
   const icons = {
     system: Monitor,
-    light: Sun,
-    dark: Moon,
+    light: Sun03Icon,
+    dark: Moon02Icon,
   };
 
   const labels = {
@@ -39,13 +40,13 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <Button size="icon" variant="outline" aria-label="Theme toggle">
-        <Monitor className="h-4 w-4" />
+        <HugeiconsIcon icon={Monitor} className="h-4 w-4" />
       </Button>
     );
   }
 
   const currentTheme = (theme as ThemeMode) || 'system';
-  const Icon = icons[currentTheme];
+  const iconData = icons[currentTheme];
 
   return (
     <Tooltip content={labels[currentTheme]}>
@@ -55,7 +56,7 @@ export function ThemeToggle() {
         variant="outline"
         aria-label={labels[currentTheme]}
       >
-        <Icon className="h-4 w-4" />
+        <HugeiconsIcon icon={iconData} className="h-4 w-4" />
       </Button>
     </Tooltip>
   );

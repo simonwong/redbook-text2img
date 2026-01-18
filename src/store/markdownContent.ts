@@ -8,11 +8,24 @@ interface MarkdownContentState {
   resetContent: () => void;
 }
 
-const defaultMarkdown = `# 欢迎使用小红书图片生成器
+const defaultMarkdown = `# 欢迎使用图片生成器
 
 *@simonwong*
 
 这是一个强大的 Markdown 转图片工具，让您轻松创建精美的社交媒体图片。
+
+**适用于小红书、小绿书、公众号图文等多个平台。**
+
+---
+
+## 封面制作说明
+
+💡 **封面规则**：从第一个 \`# 标题\` 到第一个 \`---\` 分割线之间的内容会作为封面图片，默认**居中显示**。
+
+您可以在封面中添加：
+- 标题文字
+- 作者署名（如 *@yourname*）
+- 简短介绍
 
 ---
 
@@ -36,7 +49,7 @@ const defaultMarkdown = `# 欢迎使用小红书图片生成器
 在左侧编辑器中输入您的 Markdown 内容。
 
 ### 第二步：选择样式
-从右侧面板选择您喜欢的图片样式。
+点击右上角调色板图标，选择您喜欢的图片样式。
 
 ### 第三步：导出图片
 点击导出按钮即可下载生成的图片。
@@ -49,7 +62,7 @@ const defaultMarkdown = `# 欢迎使用小红书图片生成器
 - 支持 **加粗** 和 *斜体* 文字
 - 三级及以下标题会自动加粗显示
 - 支持无序列表，使用 \`-\` 或 \`*\` 开头
-- 第一张图片通常包含 \`# 一级标题\` 作为封面`;
+- 封面内容默认居中，其他图片左对齐`;
 
 export const useMarkdownContentStore = create<MarkdownContentState>()(
   devtools(

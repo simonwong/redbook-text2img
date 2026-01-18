@@ -6,7 +6,7 @@ export const siteConfig = {
   name: '小红书图片生成器',
   title: '小红书图片生成器 - Markdown转图片，免费在线工具',
   description:
-    '免费将 Markdown 文字转成小红书风格图片，多种精美主题模板，支持批量导出高清图。无需注册，打开即用，数据本地处理更安全。',
+    '免费将 Markdown 文字转成小红书、小绿书、公众号图文风格图片，多种精美主题模板，支持批量导出高清图。无需注册，打开即用，数据本地处理更安全。',
   url: 'https://redbook-text2img.site/',
   ogImage: '/og.png',
   creator: '@simonwong',
@@ -26,6 +26,10 @@ export const siteConfig = {
     '内容创作',
     '图片设计',
     '文案配图',
+    '小绿书图片生成',
+    '公众号图文图片生成',
+    '社交媒体图片制作',
+    '文字转图片工具',
   ],
 };
 
