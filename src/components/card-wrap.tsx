@@ -21,7 +21,7 @@ export const CardWrap: React.FC<PropsWithChildren<CardWrapProps>> = ({
         <h2 className="font-medium text-foreground">{title}</h2>
         <div className="flex gap-2">{extra}</div>
       </CardHeader>
-      <CardContent className="flex-1 overflow-hidden px-4">
+      <CardContent className="flex-1 overflow-auto px-4">
         {children}
       </CardContent>
     </Card>

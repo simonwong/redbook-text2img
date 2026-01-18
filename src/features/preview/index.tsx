@@ -8,7 +8,6 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMemo, useState } from "react";
-import { Card } from "@/components/easy/card";
 import { Tooltip } from "@/components/tooltip";
 import { Button } from "@/components/ui/button";
 import { useImageRefs } from "@/features/preview/hooks/use-image-refs";
@@ -18,6 +17,7 @@ import { useMarkdownContentStore } from "@/store/markdownContent";
 import { useSettingsPanelStore } from "@/store/theme";
 import { useImageExport } from "./hooks/use-image-export";
 import "./index.css";
+import { CardWrap } from "@/components/card-wrap";
 
 export const PreviewCard = () => {
   const [isExporting, setIsExporting] = useState(false);
@@ -62,8 +62,9 @@ export const PreviewCard = () => {
   };
 
   return (
-    <Card
-      action={[
+    <CardWrap
+      className="gap-3"
+      extra={[
         <Tooltip content="设置样式" key="setting">
           <Button onClick={toggleSettings} variant="outline">
             <HugeiconsIcon icon={PaintBoardIcon} />
@@ -80,8 +81,6 @@ export const PreviewCard = () => {
           </Button>
         </Tooltip>,
       ]}
-      actionClassName="space-x-2"
-      className="gap-3"
       title="图片预览"
     >
       <div>
@@ -124,6 +123,6 @@ export const PreviewCard = () => {
           </div>
         )}
       </div>
-    </Card>
+    </CardWrap>
   );
 };
