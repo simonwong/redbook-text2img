@@ -5,13 +5,13 @@ This file provides guidance to Agent when working with code in this repository.
 ## Commands
 
 ```bash
-bun dev          # Start development server (http://localhost:3000)
-bun build        # Production build
-bun start        # Start production server
-bun lint         # Lint code
+pnpm dev          # Start development server (http://localhost:3000)
+pnpm build        # Production build
+pnpm start        # Start production server
+pnpm lint         # Lint code
 ```
 
-Always use `bun` instead of `npm` or `pnpm`.
+Always use `pnpm` instead of `npm`.
 
 ## Code Principles (MUST follow strictly)
 
