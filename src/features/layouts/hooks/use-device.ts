@@ -4,15 +4,8 @@ import { useEffect, useState } from "react";
 
 const MOBILE_BREAKPOINT = 768;
 
-const getInitialIsMobile = () => {
-  if (typeof window === "undefined") {
-    return false;
-  }
-  return window.innerWidth < MOBILE_BREAKPOINT;
-};
-
-export const useDevice = () => {
-  const [isMobile, setIsMobile] = useState(getInitialIsMobile);
+export function useDevice() {
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
   useEffect(() => {
     function checkDevice(): void {
@@ -29,6 +22,7 @@ export const useDevice = () => {
 
   return {
     isMobile,
-    isDesktop: !isMobile,
+    isDesktop: isMobile === null ? null : !isMobile,
+    isHydrated: isMobile !== null,
   };
-};
+}
