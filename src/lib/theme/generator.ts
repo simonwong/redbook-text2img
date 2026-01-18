@@ -83,6 +83,9 @@ export function generateStyles(
   const { fontFamily, headingAlignment } = style;
   const coverStyle = options?.coverStyle;
 
+  // 封面标题对齐：优先使用 coverStyle 中的设置,覆盖用户调整
+  const effectiveHeadingAlignment = coverStyle?.headingAlignment ?? headingAlignment;
+
   // Background style (handles solid, gradient, image)
   // Use backgroundImage instead of background shorthand to avoid conflicts with backgroundSize/backgroundPosition
   const backgroundStyle: React.CSSProperties =
@@ -102,7 +105,7 @@ export function generateStyles(
     fontWeight: style.heading.fontWeight,
     marginBottom: `${headingGap / baseFontSize}em`,
     color: style.heading.color,
-    textAlign: useHeadingAlignment ? headingAlignment : 'left',
+    textAlign: useHeadingAlignment ? effectiveHeadingAlignment : 'left',
     width: '100%',
   });
 

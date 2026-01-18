@@ -26,6 +26,7 @@ const baseSpacing = {
 const defaultCoverStyle: CoverStyleOverride = {
   contentVerticalAlign: 'center',
   contentHorizontalAlign: 'center',
+  headingAlignment: 'center',
 };
 
 // ============================================================

@@ -122,6 +122,8 @@ export interface CoverStyleOverride {
   contentVerticalAlign?: 'top' | 'center' | 'bottom';
   /** 内容水平对齐方式 */
   contentHorizontalAlign?: 'left' | 'center' | 'right';
+  /** 标题对齐方式（优先级高于用户调整） */
+  headingAlignment?: HeadingAlignment;
 }
 
 /** 装饰性顶部导航栏（如 Apple Notes 风格） */
