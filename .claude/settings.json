@@ -10,5 +10,18 @@
       "Skill(superpowers:systematic-debugging)",
       "Bash(bun run build:*)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm dlx ultracite fix"
+          }
+        ]
+      }
+    ]
   }
 }

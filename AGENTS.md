@@ -5,10 +5,8 @@ This file provides guidance to Agent when working with code in this repository.
 ## Commands
 
 ```bash
-pnpm dev          # Start development server (http://localhost:3000)
 pnpm build        # Production build
-pnpm start        # Start production server
-pnpm lint         # Lint code
+pnpm lint:fix     # Fix lint errors
 ```
 
 Always use `pnpm` instead of `npm`.
@@ -20,3 +18,7 @@ Always use `pnpm` instead of `npm`.
 - **Single Responsibility**: Each function, component, and file should do one thing well
 - **Minimal Complexity**: Reduce cognitive load by breaking down complex logic
 - **One component per file**: Never put multiple components in one file. SVG icons must also be separate files.
+
+## Test and verify
+
+不要使用 pnpm dev 、pnpm lint:check 等命令验证。
