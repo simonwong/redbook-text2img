@@ -10,6 +10,8 @@ interface MarkdownContentState {
 
 const defaultMarkdown = `# 欢迎使用小红书图片生成器
 
+*@simonwong*
+
 这是一个强大的 Markdown 转图片工具，让您轻松创建精美的社交媒体图片。
 
 ---
