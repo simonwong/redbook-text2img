@@ -2,6 +2,7 @@
 
 import {
   Download,
+  Edit02Icon,
   FileText,
   ImageDownloadIcon,
   PaintBoardIcon,
@@ -19,7 +20,17 @@ import { useImageExport } from "./hooks/use-image-export";
 import "./index.css";
 import { CardWrap } from "@/components/card-wrap";
 
-export const PreviewCard = () => {
+interface PreviewCardProps {
+  isMobile?: boolean;
+  onEditClick?: () => void;
+  className?: string;
+}
+
+export const PreviewCard = ({
+  isMobile,
+  onEditClick,
+  className,
+}: PreviewCardProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const { toggle: toggleSettings } = useSettingsPanelStore();
   const { imageRefs, setImageRef } = useImageRefs();
@@ -61,28 +72,36 @@ export const PreviewCard = () => {
     setIsExporting(false);
   };
 
+  const extraButtons = [
+    ...(isMobile && onEditClick
+      ? [
+          <Tooltip content="编辑" key="edit">
+            <Button onClick={onEditClick} size="sm" variant="outline">
+              <HugeiconsIcon className="h-4 w-4" icon={Edit02Icon} />
+              编辑
+            </Button>
+          </Tooltip>,
+        ]
+      : []),
+    <Tooltip content="设置样式" key="setting">
+      <Button onClick={toggleSettings} variant="outline">
+        <HugeiconsIcon icon={PaintBoardIcon} />
+      </Button>
+    </Tooltip>,
+    <Tooltip content={`导出全部 (${segments.length} 张)`} key="export">
+      <Button
+        className="gap-2"
+        disabled={segments.length === 0 || isExporting}
+        onClick={handleExportAll}
+        variant="outline"
+      >
+        <HugeiconsIcon className="h-4 w-4" icon={ImageDownloadIcon} />
+      </Button>
+    </Tooltip>,
+  ];
+
   return (
-    <CardWrap
-      className="gap-3"
-      extra={[
-        <Tooltip content="设置样式" key="setting">
-          <Button onClick={toggleSettings} variant="outline">
-            <HugeiconsIcon icon={PaintBoardIcon} />
-          </Button>
-        </Tooltip>,
-        <Tooltip content={`导出全部 (${segments.length} 张)`} key="export">
-          <Button
-            className="gap-2"
-            disabled={segments.length === 0 || isExporting}
-            onClick={handleExportAll}
-            variant="outline"
-          >
-            <HugeiconsIcon className="h-4 w-4" icon={ImageDownloadIcon} />
-          </Button>
-        </Tooltip>,
-      ]}
-      title="图片预览"
-    >
+    <CardWrap className={className} extra={extraButtons} title="图片预览">
       <div>
         {segments.length === 0 ? (
           <div className="flex h-full w-[300px] items-center justify-center text-muted-foreground">
