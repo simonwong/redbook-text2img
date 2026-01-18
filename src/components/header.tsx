@@ -28,7 +28,7 @@ export const Header = () => {
                   src="/logo.svg"
                   width={24}
                 />
-                <span className="font-bold text-foreground text-xl">
+                <span className="hidden font-bold text-foreground text-xl sm:inline-flex">
                   小红书图片生成器
                 </span>
               </div>

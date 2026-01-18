@@ -6,7 +6,9 @@ const MOBILE_BREAKPOINT = 768;
 
 export const useDevice = () => {
   // SSR 安全：默认桌面端，客户端挂载后更新
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    window.innerWidth < MOBILE_BREAKPOINT
+  );
 
   useEffect(() => {
     const checkDevice = () => {
