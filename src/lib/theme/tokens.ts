@@ -117,14 +117,14 @@ export const typography = {
   },
 
   fontSize: {
-    compact: 12,
-    normal: 14,
-    spacious: 16,
+    compact: 14,
+    normal: 16,
+    spacious: 19,
   },
 
   lineHeight: {
     compact: 1.5,
-    normal: 1.6,
+    normal: 1.65,
     spacious: 1.8,
   },
 
@@ -137,12 +137,12 @@ export const typography = {
 
   // Heading scale multipliers (relative to base font size)
   headingScale: {
-    h1: 1.875, // 1.875em
-    h2: 1.5,
-    h3: 1.25,
-    h4: 1.125,
-    h5: 1,
-    h6: 0.875,
+    h1: 1.625, // 适配新密度系统 (compact:20px, normal:26px, spacious:32px)
+    h2: 1.25,
+    h3: 1.125,
+    h4: 1,
+    h5: 0.875,
+    h6: 0.75,
   },
 } as const;
 
@@ -158,9 +158,9 @@ export const spacing = {
   },
 
   paragraphGap: {
-    compact: 8,
-    normal: 12,
-    spacious: 16,
+    compact: 12,
+    normal: 20,
+    spacious: 32,
   },
 
   headingGap: {

@@ -56,6 +56,7 @@ export interface BlockquoteStyle {
   background: string;
   borderColor: string;
   textColor: string;
+  boxShadow?: string;
 }
 
 export interface CodeStyle {

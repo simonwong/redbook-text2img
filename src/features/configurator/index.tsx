@@ -1,6 +1,6 @@
 'use client';
 
-import { Palette, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { memo } from 'react';
 import { Card } from '@/components/easy/card';
 import { Select } from '@/components/enhance/select';
@@ -29,7 +29,7 @@ const DimensionSelect = ({
 }) => (
   <div className="space-y-2">
     <Label className="font-medium text-sm">{label}</Label>
-    <Select onChange={onChange} options={options} value={value} />
+    <Select className="w-full" onChange={onChange} options={options} value={value} />
   </div>
 );
 
@@ -56,43 +56,41 @@ export const Configurator = memo(() => {
   return (
     <aside aria-label="样式配置" className="overflow-auto w-[200px] min-w-[200px]">
       <div className="space-y-4">
-        {/* Layer 1: Preset Theme Selection */}
-        <Card
-          contentClassName="space-y-3"
-          title={
-            <div className="flex items-center">
-              <Palette className="mr-2 h-4 w-4" />
-              <span>主题选择</span>
-            </div>
-          }
-        >
-          <Select
-            className="w-full"
-            onChange={selectPresetTheme}
-            options={presetThemes.map((theme) => ({
-              label: theme.name,
-              value: theme.id,
-            }))}
-            placeholder="选择主题"
-            value={currentThemeId}
-          />
-        </Card>
-
-        {/* Style Adjustments */}
-        <Card title="风格调整">
+        {/* Unified Settings Card */}
+        <Card title="设置样式">
           <div className="space-y-4">
+            {/* Theme Selection */}
+            <div className="space-y-2">
+              <Label className="font-medium text-sm">主题</Label>
+              <Select
+                className="w-full"
+                onChange={selectPresetTheme}
+                options={presetThemes.map((theme) => ({
+                  label: theme.name,
+                  value: theme.id,
+                }))}
+                placeholder="选择主题"
+                value={currentThemeId}
+              />
+            </div>
+
+            {/* Density */}
             <DimensionSelect
               label="密度"
               onChange={(v) => setDensity(v as typeof adjustments.density)}
               options={densityOptions}
               value={adjustments.density}
             />
+
+            {/* Font */}
             <DimensionSelect
               label="字体"
               onChange={setFont}
               options={fontOptions}
               value={adjustments.fontId}
             />
+
+            {/* Heading Alignment */}
             <DimensionSelect
               label="标题对齐"
               onChange={(v) => setHeadingAlignment(v as typeof adjustments.headingAlignment)}

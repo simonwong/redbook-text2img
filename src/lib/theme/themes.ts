@@ -130,21 +130,22 @@ export const presetThemes: PresetTheme[] = [
     style: {
       background: {
         type: 'gradient',
-        value: 'linear-gradient(145deg, #fff7ed 0%, #fef3c7 35%, #fde68a 70%, #fcd34d 100%)',
+        value: 'linear-gradient(135deg, #fff7ed 0%, #fef3c7 30%, #fed7aa 60%, #fbbf24 100%)',
       },
       typography: baseTypography,
-      heading: { color: '#92400e', fontWeight: typography.fontWeight.bold },
-      paragraph: { color: '#78350f' },
+      heading: { color: '#78350f', fontWeight: typography.fontWeight.bold },
+      paragraph: { color: '#713f12' },
       emphasis: {
-        bold: { color: '#92400e', fontWeight: typography.fontWeight.bold },
+        bold: { color: '#78350f', fontWeight: typography.fontWeight.bold },
         italic: { color: '#a16207' },
-        highlight: { background: '#f59e0b', color: colors.white },
+        highlight: { background: '#f97316', color: colors.white },
       },
-      list: { color: '#78350f', markerColor: '#f59e0b' },
+      list: { color: '#713f12', markerColor: '#f97316' },
       blockquote: {
-        background: 'rgba(255, 255, 255, 0.6)',
+        background: 'rgba(255, 255, 255, 0.7)',
         borderColor: '#f59e0b',
         textColor: '#a16207',
+        boxShadow: '0 2px 8px rgba(245, 158, 11, 0.1)',
       },
       code: {
         inline: { background: 'rgba(255, 255, 255, 0.7)', color: '#92400e' },
@@ -163,24 +164,25 @@ export const presetThemes: PresetTheme[] = [
     style: {
       background: {
         type: 'gradient',
-        value: 'linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 35%, #bae6fd 70%, #7dd3fc 100%)',
+        value: 'linear-gradient(140deg, #f0f9ff 0%, #dbeafe 30%, #93c5fd 65%, #60a5fa 100%)',
       },
       typography: baseTypography,
-      heading: { color: '#075985', fontWeight: typography.fontWeight.semibold },
-      paragraph: { color: '#0c4a6e' },
+      heading: { color: '#0c4a6e', fontWeight: typography.fontWeight.semibold },
+      paragraph: { color: '#075985' },
       emphasis: {
-        bold: { color: '#075985', fontWeight: typography.fontWeight.semibold },
+        bold: { color: '#0c4a6e', fontWeight: typography.fontWeight.semibold },
         italic: { color: '#0369a1' },
         highlight: { background: '#0ea5e9', color: colors.white },
       },
-      list: { color: '#0c4a6e', markerColor: '#0ea5e9' },
+      list: { color: '#075985', markerColor: '#0ea5e9' },
       blockquote: {
         background: 'rgba(255, 255, 255, 0.6)',
         borderColor: '#0ea5e9',
         textColor: '#0369a1',
+        boxShadow: '0 2px 8px rgba(14, 165, 233, 0.08)',
       },
       code: {
-        inline: { background: 'rgba(255, 255, 255, 0.7)', color: '#075985' },
+        inline: { background: 'rgba(255, 255, 255, 0.8)', color: '#075985' },
         block: { background: 'rgba(255, 255, 255, 0.6)', color: '#0c4a6e' },
       },
       link: { color: '#0284c7', underline: false },
@@ -195,21 +197,22 @@ export const presetThemes: PresetTheme[] = [
     style: {
       background: {
         type: 'gradient',
-        value: 'linear-gradient(145deg, #fdf2f8 0%, #fce7f3 35%, #fbcfe8 70%, #f9a8d4 100%)',
+        value: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #f9a8d4 65%, #f472b6 100%)',
       },
       typography: baseTypography,
-      heading: { color: '#9d174d', fontWeight: typography.fontWeight.bold },
+      heading: { color: '#831843', fontWeight: typography.fontWeight.bold },
       paragraph: { color: '#831843' },
       emphasis: {
-        bold: { color: '#9d174d', fontWeight: typography.fontWeight.bold },
+        bold: { color: '#831843', fontWeight: typography.fontWeight.bold },
         italic: { color: '#be185d' },
         highlight: { background: '#ec4899', color: colors.white },
       },
-      list: { color: '#831843', markerColor: '#ec4899' },
+      list: { color: '#831843', markerColor: '#f472b6' },
       blockquote: {
         background: 'rgba(255, 255, 255, 0.6)',
         borderColor: '#ec4899',
         textColor: '#9d174d',
+        boxShadow: '0 2px 8px rgba(236, 72, 153, 0.12)',
       },
       code: {
         inline: { background: 'rgba(255, 255, 255, 0.7)', color: '#9d174d' },

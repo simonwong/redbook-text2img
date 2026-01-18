@@ -26,13 +26,13 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   const { styles, headerBar } = useMemo(() => {
     const theme = getThemeById(currentThemeId) ?? defaultTheme;
     const adjustedStyle = applyAdjustments(theme.style, adjustments);
-    // 如果是封面图（第一张图），使用主题的封面图样式
-    const coverStyle = segment.isFirstImage ? theme.coverStyle : undefined;
+    // 如果是封面图（包含 # 一级标题），使用主题的封面图样式，忽略用户的标题对齐设置
+    const coverStyle = segment.isCover ? theme.coverStyle : undefined;
     return {
       styles: generateStyles(adjustedStyle, { coverStyle }),
       headerBar: theme.headerBar,
     };
-  }, [currentThemeId, adjustments, segment.isFirstImage]);
+  }, [currentThemeId, adjustments, segment.isCover]);
 
   return (
     <div

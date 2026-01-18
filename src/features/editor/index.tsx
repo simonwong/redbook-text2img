@@ -20,7 +20,7 @@ export const EditorCard = () => {
         )
       }
       className="flex-1 gap-3"
-      title="Markdown 编辑器"
+      title="编辑器"
     >
       <MarkdownEditor placeholder="在这里输入您的 Markdown 内容..." />
     </Card>

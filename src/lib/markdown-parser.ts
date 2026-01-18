@@ -6,6 +6,7 @@ export interface ImageSegment {
   title: string;
   content: string;
   isFirstImage: boolean;
+  isCover: boolean;
   type: 'content' | 'separator';
 }
 
@@ -18,6 +19,7 @@ const createSegment = (
   title: `图片 ${segmentId}`,
   content: '',
   isFirstImage: false,
+  isCover: false,
   type,
 });
 
@@ -68,6 +70,7 @@ const processSegmentTitles = (segments: ImageSegment[]): void => {
   for (const segment of segments) {
     const hasH1 = segment.content.trim().startsWith('# ');
     segment.isFirstImage = hasH1;
+    segment.isCover = hasH1; // 包含 # 一级标题的视为封面
 
     if (hasH1) {
       const h1Match = segment.content.match(H1_PATTERN);

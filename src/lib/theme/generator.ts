@@ -108,10 +108,10 @@ export function generateStyles(
 
   return {
     container: {
-      width: '300px',
-      minWidth: '300px',
-      height: '400px',
-      minHeight: '400px',
+      width: '375px',
+      minWidth: '375px',
+      height: '500px',
+      minHeight: '500px',
       ...backgroundStyle,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
@@ -202,6 +202,7 @@ export function generateStyles(
       backgroundColor: style.blockquote.background,
       color: style.blockquote.textColor,
       fontStyle: 'italic',
+      ...(style.blockquote.boxShadow && { boxShadow: style.blockquote.boxShadow }),
     },
 
     pre: {
