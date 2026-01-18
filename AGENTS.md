@@ -21,45 +21,43 @@ Always use `pnpm` instead of `npm`.
 
 ## Test and verify
 
-不要使用 pnpm dev 、pnpm lint:check 等命令验证。
+**禁止使用以下命令验证代码：**
+
+- `pnpm dev` - 不要启动开发服务器验证
+- `pnpm lint:check` - 不要运行 lint 检查
+- `pnpm lint:fix` - 不要运行 lint 修复
+
+**允许使用：**
+
+- `pnpm build` - 可以运行构建验证
 
 ## 项目结构
 
 ```
 src/
 ├── app/                    # Next.js App Router 页面
-├── components/             # 通用组件
-│   ├── icons/             # 自定义 SVG 图标组件
-│   ├── ui/                # UI 基础组件（按钮、选择器等）
-│   ├── header.tsx         # 顶部导航栏
-│   ├── theme-toggle.tsx   # 主题切换组件
-│   └── seo-optimized-text.tsx  # SEO 优化的隐藏文本
-├── features/              # 功能模块
-│   ├── editor/            # Markdown 编辑器
-│   ├── preview/           # 图片预览和导出
-│   └── configurator/      # 样式配置面板
+├── components/             # 通用组件（含 icons/ 和 ui/ 子目录）
+├── features/              # 功能模块（editor、preview、configurator）
 ├── lib/                   # 工具函数和配置
-│   ├── seo-config.ts      # SEO 配置（关键词、结构化数据）
-│   ├── theme.ts           # 主题配置
-│   └── markdown-parser.ts # Markdown 解析器
 └── store/                 # Zustand 状态管理
-    ├── markdownContent.ts # Markdown 内容状态
-    └── theme.ts           # 主题状态
 ```
 
 ## 核心组件说明
 
 ### 编辑器 (features/editor)
+
 - `MarkdownEditor`: Markdown 文本编辑器
 - 支持实时预览
 - 内容持久化到 localStorage
 
 ### 预览 (features/preview)
+
 - `ImagePreview`: 图片预览组件
 - `useImageExport`: 图片导出 Hook
 - 支持单张/批量导出 PNG
 
 ### 配置器 (features/configurator)
+
 - 主题选择
 - 字体、密度、对齐方式调整
 - 样式实时应用
