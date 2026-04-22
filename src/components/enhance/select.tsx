@@ -31,8 +31,8 @@ export const Select = <OptionType extends BaseOptionType>({
   placeholder,
   className,
 }: SelectProps<OptionType>) => {
-  const handleValueChange = (selectedValue: string) => {
-    if (!onChange) {
+  const handleValueChange = (selectedValue: string | null) => {
+    if (!onChange || selectedValue === null) {
       return;
     }
     const selectedOption = options.find(

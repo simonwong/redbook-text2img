@@ -38,19 +38,17 @@ export const Header = () => {
             </Badge>
           </div>
           <nav aria-label="Main Navigation" className="flex items-center gap-3">
-            <Button asChild className="text-accent-foreground" variant="link">
-              <Link href="/faq">常见问题</Link>
+            <Button className="text-accent-foreground" variant="link" nativeButton={false} render={<Link href="/faq" />}>
+              常见问题
             </Button>
-            <Button asChild className="text-accent-foreground" variant="link">
-              <Link href="/changelog">更新日志</Link>
+            <Button className="text-accent-foreground" variant="link" nativeButton={false} render={<Link href="/changelog" />}>
+              更新日志
             </Button>
 
             {/* 联系作者 Popover */}
             <Popover>
-              <PopoverTrigger asChild>
-                <Button size="icon" title="联系作者" variant="outline">
+              <PopoverTrigger render={<Button size="icon" title="联系作者" variant="outline" />}>
                   <HugeiconsIcon className="h-4 w-4" icon={ContactIcon} />
-                </Button>
               </PopoverTrigger>
               <PopoverContent className="w-56">
                 <div className="space-y-2">
@@ -93,23 +91,22 @@ export const Header = () => {
 
             <ThemeToggle />
             <Button
-              asChild
               size="icon"
               title="GitHub Repository"
               variant="outline"
-            >
-              <Link
+              nativeButton={false}
+              render={<Link
                 aria-label="GitHub"
                 href="https://github.com/simonwong/redbook-text2img"
                 rel="noopener noreferrer"
                 target="_blank"
-              >
-                <HugeiconsIcon
-                  aria-hidden="true"
-                  className="h-4 w-4"
-                  icon={GithubIcon}
-                />
-              </Link>
+              />}
+            >
+              <HugeiconsIcon
+                aria-hidden="true"
+                className="h-4 w-4"
+                icon={GithubIcon}
+              />
             </Button>
           </nav>
         </div>

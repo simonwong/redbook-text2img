@@ -1,5 +1,4 @@
-import type React from "react";
-import type { PropsWithChildren } from "react";
+import { isValidElement, type PropsWithChildren, type ReactNode } from "react";
 import {
   Tooltip as TooltipBase,
   TooltipContent,
@@ -7,16 +6,20 @@ import {
 } from "./ui/tooltip";
 
 export interface TooltipProps {
-  content?: React.ReactNode;
+  content?: ReactNode;
 }
 
-export const Tooltip: React.FC<PropsWithChildren<TooltipProps>> = ({
+export const Tooltip = ({
   children,
   content,
-}) => {
+}: PropsWithChildren<TooltipProps>) => {
   return (
     <TooltipBase>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      {isValidElement(children) ? (
+        <TooltipTrigger render={children} />
+      ) : (
+        <TooltipTrigger>{children}</TooltipTrigger>
+      )}
       <TooltipContent>{content}</TooltipContent>
     </TooltipBase>
   );

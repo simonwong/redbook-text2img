@@ -1,11 +1,15 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { baseMetadata, structuredData } from "@/lib/seo-config";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,7 +56,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning className={cn("font-sans", inter.variable)}>
       <head>
         {structuredData.map((data, index) => (
           <script
@@ -73,10 +77,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} flex h-screen max-h-screen flex-col bg-background`}
       >
         <ThemeProvider>
-          <Header />
-          <main className="flex-1 overflow-y-auto" id="main-content">
-            {children}
-          </main>
+          <TooltipProvider>
+            <Header />
+            <main className="flex-1 overflow-y-auto" id="main-content">
+              {children}
+            </main>
+          </TooltipProvider>
         </ThemeProvider>
         <Analytics />
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
