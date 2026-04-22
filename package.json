@@ -12,6 +12,7 @@
     "@base-ui/react": "^1.4.1",
     "@codemirror/lang-markdown": "^6.5.0",
     "@codemirror/language-data": "^6.5.2",
+    "@codemirror/view": "6.41.1",
     "@hugeicons/core-free-icons": "^4.1.1",
     "@hugeicons/react": "^1.1.6",
     "@next/third-parties": "^16.2.4",

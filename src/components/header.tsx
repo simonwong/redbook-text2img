@@ -9,15 +9,14 @@ import Link from "next/link";
 import { GITHUB_LINK, TWITTER_LINK, XIAO_HONG_SHU_LINK } from "@/lib/contact";
 import { XiaohongshuIcon } from "./icons/xiaohongshu-icon";
 import { ThemeToggle } from "./theme-toggle";
-import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export const Header = () => {
   return (
     <header className="sticky top-0 z-10 border border-b bg-background">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center gap-4">
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="flex h-12 items-center gap-4">
           <div className="flex flex-1 items-center gap-3">
             <Link aria-label="Home" href="/">
               <div className="flex items-center gap-2">
@@ -33,22 +32,33 @@ export const Header = () => {
                 </span>
               </div>
             </Link>
-            <Badge className="hidden sm:inline-flex" variant="outline">
-              Markdown 转图片
-            </Badge>
           </div>
           <nav aria-label="Main Navigation" className="flex items-center gap-3">
-            <Button className="text-accent-foreground" variant="link" nativeButton={false} render={<Link href="/faq" />}>
+            <Button
+              className="text-accent-foreground"
+              nativeButton={false}
+              render={<Link href="/faq" />}
+              variant="link"
+            >
               常见问题
             </Button>
-            <Button className="text-accent-foreground" variant="link" nativeButton={false} render={<Link href="/changelog" />}>
+            <Button
+              className="text-accent-foreground"
+              nativeButton={false}
+              render={<Link href="/changelog" />}
+              variant="link"
+            >
               更新日志
             </Button>
 
             {/* 联系作者 Popover */}
             <Popover>
-              <PopoverTrigger render={<Button size="icon" title="联系作者" variant="outline" />}>
-                  <HugeiconsIcon className="h-4 w-4" icon={ContactIcon} />
+              <PopoverTrigger
+                render={
+                  <Button size="icon" title="联系作者" variant="outline" />
+                }
+              >
+                <HugeiconsIcon className="h-4 w-4" icon={ContactIcon} />
               </PopoverTrigger>
               <PopoverContent className="w-56">
                 <div className="space-y-2">
@@ -91,16 +101,18 @@ export const Header = () => {
 
             <ThemeToggle />
             <Button
+              nativeButton={false}
+              render={
+                <Link
+                  aria-label="GitHub"
+                  href="https://github.com/simonwong/redbook-text2img"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                />
+              }
               size="icon"
               title="GitHub Repository"
               variant="outline"
-              nativeButton={false}
-              render={<Link
-                aria-label="GitHub"
-                href="https://github.com/simonwong/redbook-text2img"
-                rel="noopener noreferrer"
-                target="_blank"
-              />}
             >
               <HugeiconsIcon
                 aria-hidden="true"

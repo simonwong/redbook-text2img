@@ -1,48 +1,33 @@
 "use client";
 
-import {
-  ArrowReloadHorizontalIcon,
-  ViewIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { CardWrap } from "@/components/card-wrap";
-import { Button } from "@/components/ui/button";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import type { EditorView } from "@codemirror/view";
+import { useCallback, useState } from "react";
+import { cn } from "@/lib/utils";
+import { EditorToolbar } from "./editor-toolbar";
 import { MarkdownEditor } from "./markdown-editor";
+import { useCursorSegment } from "./use-cursor-segment";
 
 interface EditorCardProps {
+  className?: string;
   isMobile?: boolean;
   onPreviewClick?: () => void;
-  className?: string;
 }
 
-export const EditorCard = ({
-  isMobile,
-  onPreviewClick,
-  className,
-}: EditorCardProps) => {
-  const { resetContent, isChange } = useMarkdownContentStore();
+export const EditorCard = ({ className }: EditorCardProps) => {
+  const [editorView, setEditorView] = useState<EditorView | null>(null);
 
-  const extra = (
-    <>
-      {isMobile && onPreviewClick && (
-        <Button onClick={onPreviewClick} size="sm" variant="outline">
-          <HugeiconsIcon className="h-4 w-4" icon={ViewIcon} />
-          预览
-        </Button>
-      )}
-      {isChange && (
-        <Button onClick={resetContent} size="sm" variant="outline">
-          <HugeiconsIcon className="h-4 w-4" icon={ArrowReloadHorizontalIcon} />
-          重置示例
-        </Button>
-      )}
-    </>
-  );
+  useCursorSegment(editorView);
+
+  const handleEditorViewReady = useCallback((view: EditorView) => {
+    setEditorView(view);
+  }, []);
 
   return (
-    <CardWrap className={className} extra={extra} title="编辑器">
-      <MarkdownEditor placeholder="在这里输入您的 Markdown 内容..." />
-    </CardWrap>
+    <div className={cn("flex h-full flex-col", className)}>
+      <EditorToolbar editorView={editorView} />
+      <div className="flex-1 overflow-hidden">
+        <MarkdownEditor onEditorViewReady={handleEditorViewReady} />
+      </div>
+    </div>
   );
 };

@@ -25,6 +25,9 @@ importers:
       '@codemirror/language-data':
         specifier: ^6.5.2
         version: 6.5.2
+      '@codemirror/view':
+        specifier: 6.41.1
+        version: 6.41.1
       '@hugeicons/core-free-icons':
         specifier: ^4.1.1
         version: 4.1.1

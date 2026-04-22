@@ -2,41 +2,17 @@
 
 import { ArrowReloadHorizontalIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Card } from "@/components/easy/card";
 import { Select } from "@/components/enhance/select";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   defaultAdjustments,
   densityOptions,
   fontOptions,
   headingAlignmentOptions,
-  presetThemes,
 } from "@/lib/theme";
 import { useContentThemeStore } from "@/store/theme";
-
-/** Dimension selector component */
-const DimensionSelect = ({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (value: string) => void;
-}) => (
-  <div className="space-y-2">
-    <Label className="font-medium text-sm">{label}</Label>
-    <Select
-      className="w-full"
-      onChange={onChange}
-      options={options}
-      value={value}
-    />
-  </div>
-);
+import { ThemeGrid } from "./theme-grid";
 
 export const ConfiguratorContent = () => {
   const {
@@ -49,7 +25,6 @@ export const ConfiguratorContent = () => {
     resetAdjustments,
   } = useContentThemeStore();
 
-  // Check if adjustments have been modified from defaults
   const isModified =
     adjustments.density !== defaultAdjustments.density ||
     adjustments.fontId !== defaultAdjustments.fontId ||
@@ -57,66 +32,55 @@ export const ConfiguratorContent = () => {
 
   return (
     <div className="space-y-4">
-      {/* Unified Settings Card */}
-      <Card title="设置样式">
-        <div className="space-y-4">
-          {/* Theme Selection */}
-          <div className="space-y-2">
-            <Label className="font-medium text-sm">主题</Label>
-            <Select
-              className="w-full"
-              onChange={selectPresetTheme}
-              options={presetThemes.map((theme) => ({
-                label: theme.name,
-                value: theme.id,
-              }))}
-              placeholder="选择主题"
-              value={currentThemeId}
-            />
-          </div>
+      <div className="space-y-2">
+        <Label className="font-medium text-xs">主题</Label>
+        <ThemeGrid
+          currentThemeId={currentThemeId}
+          onSelect={selectPresetTheme}
+        />
+      </div>
 
-          {/* Density */}
-          <DimensionSelect
-            label="密度"
-            onChange={(v) => setDensity(v as typeof adjustments.density)}
-            options={densityOptions}
-            value={adjustments.density}
-          />
-
-          {/* Font */}
-          <DimensionSelect
-            label="字体"
-            onChange={setFont}
-            options={fontOptions}
-            value={adjustments.fontId}
-          />
-
-          {/* Heading Alignment */}
-          <DimensionSelect
-            label="标题对齐"
-            onChange={(v) =>
-              setHeadingAlignment(v as typeof adjustments.headingAlignment)
-            }
-            options={headingAlignmentOptions}
-            value={adjustments.headingAlignment}
-          />
-        </div>
-      </Card>
-
-      {/* Reset button (only show when modified) */}
-      {isModified && (
-        <Button
+      <div className="space-y-2">
+        <Label className="font-medium text-xs">密度</Label>
+        <SegmentedControl
           className="w-full"
+          onChange={(v) => setDensity(v as typeof adjustments.density)}
+          options={densityOptions}
+          value={adjustments.density}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="font-medium text-xs">字体</Label>
+        <Select
+          className="w-full"
+          onChange={setFont}
+          options={fontOptions}
+          value={adjustments.fontId}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="font-medium text-xs">标题对齐</Label>
+        <SegmentedControl
+          className="w-full"
+          onChange={(v) =>
+            setHeadingAlignment(v as typeof adjustments.headingAlignment)
+          }
+          options={headingAlignmentOptions}
+          value={adjustments.headingAlignment}
+        />
+      </div>
+
+      {isModified && (
+        <button
+          className="flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-muted-foreground text-xs transition-colors hover:bg-accent hover:text-foreground"
           onClick={resetAdjustments}
-          size="sm"
-          variant="outline"
+          type="button"
         >
-          <HugeiconsIcon
-            className="mr-2 h-3 w-3"
-            icon={ArrowReloadHorizontalIcon}
-          />
-          重置风格调整
-        </Button>
+          <HugeiconsIcon className="h-3 w-3" icon={ArrowReloadHorizontalIcon} />
+          重置风格
+        </button>
       )}
     </div>
   );

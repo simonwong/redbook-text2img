@@ -14,7 +14,7 @@ import { HeaderBar } from "./header-bar";
 
 interface ImagePreviewProps {
   segment: ImageSegment;
-  ref: React.Ref<HTMLDivElement>;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 export const ImagePreview: React.FC<ImagePreviewProps> = ({ segment, ref }) => {
