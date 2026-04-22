@@ -17,11 +17,11 @@ export type BaseOptionType = {
 };
 
 export interface SelectProps<OptionType extends BaseOptionType> {
-  options: readonly OptionType[];
-  value?: OptionType["value"] | string;
-  onChange?: (value: OptionType["value"], option: OptionType) => void;
-  placeholder?: string;
   className?: string;
+  onChange?: (value: OptionType["value"], option: OptionType) => void;
+  options: readonly OptionType[];
+  placeholder?: string;
+  value?: OptionType["value"] | string;
 }
 
 export const Select = <OptionType extends BaseOptionType>({
