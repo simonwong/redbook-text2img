@@ -4,10 +4,10 @@ This file provides guidance to Agent when working with code in this repository.
 
 ## Commands
 
-```bash
-pnpm build        # Production build
-pnpm lint:fix     # Fix lint errors
-```
+- `pnpm build` - 可以运行构建验证
+- `pnpm dev` - 禁止 启动开发服务器验证
+- `pnpm lint:check` - 禁止 lint 检查，使用 `pnpm exec ultracite check [files...]` 检查指定文件
+- `pnpm lint:fix` - 禁止 lint 修复，使用 `pnpm exec ultracite check [files...]` 修复指定文件
 
 Always use `pnpm` instead of `npm`.
 
@@ -18,18 +18,6 @@ Always use `pnpm` instead of `npm`.
 - **Single Responsibility**: Each function, component, and file should do one thing well
 - **Minimal Complexity**: Reduce cognitive load by breaking down complex logic
 - **One component per file**: Never put multiple components in one file. SVG icons must also be separate files.
-
-## Test and verify
-
-**禁止使用以下命令验证代码：**
-
-- `pnpm dev` - 不要启动开发服务器验证
-- `pnpm lint:check` - 不要运行 lint 检查
-- `pnpm lint:fix` - 不要运行 lint 修复
-
-**允许使用：**
-
-- `pnpm build` - 可以运行构建验证
 
 ## 项目结构
 
