@@ -46,7 +46,12 @@ export const Select = <OptionType extends BaseOptionType>({
   return (
     <BaseSelect onValueChange={handleValueChange} value={value}>
       <SelectTrigger className={className}>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={placeholder}>
+          {(selectedValue: string | null) => {
+            const option = options.find((o) => o.value === selectedValue);
+            return option?.label ?? placeholder;
+          }}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (
