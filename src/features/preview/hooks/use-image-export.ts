@@ -34,19 +34,7 @@ export function useImageExport(title: string) {
     [title]
   );
 
-  const exportAllImages = useCallback(
-    async (elements: HTMLElement[]) => {
-      for (const [index, element] of elements.entries()) {
-        // biome-ignore lint/nursery/noAwaitInLoop: allow
-        const canvas = await generateCanvas(element);
-        downloadImageByCanvas(canvas, `${title}-${index + 1}.png`);
-      }
-    },
-    [title]
-  );
-
   return {
     exportSingleImage,
-    exportAllImages,
   };
 }

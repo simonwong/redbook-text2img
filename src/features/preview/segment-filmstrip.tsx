@@ -2,12 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import type { ImageSegment } from "@/lib/markdown-parser";
-import {
-  applyAdjustments,
-  defaultTheme,
-  generateStyles,
-  getThemeById,
-} from "@/lib/theme";
+import { defaultTheme, getThemeById } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { useContentThemeStore } from "@/store/theme";
 
@@ -17,19 +12,34 @@ interface SegmentFilmstripProps {
   segments: ImageSegment[];
 }
 
+function getBackgroundCss(bg: {
+  type: string;
+  value: string;
+}): React.CSSProperties {
+  if (bg.type === "gradient") {
+    return { background: bg.value };
+  }
+  if (bg.type === "image") {
+    return { backgroundImage: `url(${bg.value})`, backgroundSize: "cover" };
+  }
+  return { backgroundColor: bg.value };
+}
+
 export const SegmentFilmstrip = ({
   segments,
   activeIndex,
   onSelect,
 }: SegmentFilmstripProps) => {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const { currentThemeId, adjustments } = useContentThemeStore();
+  const { currentThemeId } = useContentThemeStore();
 
-  const containerStyle = useMemo(() => {
+  const thumbnailStyle = useMemo(() => {
     const theme = getThemeById(currentThemeId) ?? defaultTheme;
-    const adjustedStyle = applyAdjustments(theme.style, adjustments);
-    return generateStyles(adjustedStyle, {}).container;
-  }, [currentThemeId, adjustments]);
+    return {
+      ...getBackgroundCss(theme.style.background),
+      color: theme.style.heading.color,
+    };
+  }, [currentThemeId]);
 
   useEffect(() => {
     const activeItem = itemRefs.current[activeIndex];
@@ -65,18 +75,13 @@ export const SegmentFilmstrip = ({
           style={{
             width: 48,
             height: 64,
-            background: containerStyle.background as string,
+            ...thumbnailStyle,
             borderRadius: 6,
           }}
           type="button"
         >
           <div className="flex h-full items-center justify-center">
-            <span
-              className="font-medium text-[10px]"
-              style={{ color: containerStyle.color as string }}
-            >
-              {index + 1}
-            </span>
+            <span className="font-medium text-[10px]">{index + 1}</span>
           </div>
         </button>
       ))}

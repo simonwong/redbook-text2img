@@ -123,21 +123,17 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
   if (segments.length === 0) {
     return (
       <div className={`flex h-full items-center justify-center ${className}`}>
-        <div className="text-center">
-          <div className="mx-auto mb-6 flex h-[500px] w-[375px] items-center justify-center rounded-xl border-2 border-muted-foreground/20 border-dashed">
-            <div className="flex flex-col items-center gap-3 px-8">
-              <HugeiconsIcon
-                className="h-10 w-10 text-muted-foreground/30"
-                icon={FileText}
-              />
-              <p className="text-muted-foreground/60 text-sm">
-                在左侧输入 Markdown
-              </p>
-              <p className="text-muted-foreground/40 text-xs">
-                使用 --- 分割不同图片
-              </p>
-            </div>
-          </div>
+        <div className="flex h-[500px] w-[375px] flex-col items-center justify-center gap-3 rounded-xl border-2 border-muted-foreground/20 border-dashed px-8">
+          <HugeiconsIcon
+            className="h-10 w-10 text-muted-foreground/30"
+            icon={FileText}
+          />
+          <p className="text-muted-foreground/60 text-sm">
+            在左侧输入 Markdown
+          </p>
+          <p className="text-muted-foreground/40 text-xs">
+            使用 --- 分割不同图片
+          </p>
         </div>
       </div>
     );

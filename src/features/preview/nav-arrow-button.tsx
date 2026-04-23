@@ -1,5 +1,6 @@
 import { ArrowLeft02Icon, ArrowRight02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Button } from "@/components/ui/button";
 
 interface NavArrowButtonProps {
   direction: "left" | "right";
@@ -15,14 +16,15 @@ export const NavArrowButton = ({
   const icon = direction === "left" ? ArrowLeft02Icon : ArrowRight02Icon;
 
   return (
-    <button
+    <Button
       aria-label={direction === "left" ? "上一张" : "下一张"}
-      className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-all hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+      className="rounded-full"
       disabled={disabled}
       onClick={onClick}
-      type="button"
+      size="icon-sm"
+      variant="ghost"
     >
       <HugeiconsIcon className="h-4 w-4" icon={icon} />
-    </button>
+    </Button>
   );
 };

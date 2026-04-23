@@ -34,6 +34,7 @@ function computeSegmentIndex(doc: string, cursorPos: number): number {
 
 export function useCursorSegment(editorView: EditorView | null) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const prevIdxRef = useRef(-1);
   const setActiveSegmentIndex = usePreviewNavigationStore(
     (s) => s.setActiveSegmentIndex
   );
@@ -43,7 +44,7 @@ export function useCursorSegment(editorView: EditorView | null) {
       return;
     }
 
-    const handleKeyUp = () => {
+    const syncSegment = () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
@@ -51,23 +52,22 @@ export function useCursorSegment(editorView: EditorView | null) {
         const cursorPos = editorView.state.selection.main.head;
         const doc = editorView.state.doc.toString();
         const idx = computeSegmentIndex(doc, cursorPos);
-        setActiveSegmentIndex(idx);
+        if (idx !== prevIdxRef.current) {
+          prevIdxRef.current = idx;
+          setActiveSegmentIndex(idx);
+        }
       }, 150);
     };
 
-    const handleClick = () => {
-      handleKeyUp();
-    };
-
-    editorView.dom.addEventListener("keyup", handleKeyUp);
-    editorView.dom.addEventListener("click", handleClick);
+    editorView.dom.addEventListener("keyup", syncSegment);
+    editorView.dom.addEventListener("click", syncSegment);
 
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
-      editorView.dom.removeEventListener("keyup", handleKeyUp);
-      editorView.dom.removeEventListener("click", handleClick);
+      editorView.dom.removeEventListener("keyup", syncSegment);
+      editorView.dom.removeEventListener("click", syncSegment);
     };
   }, [editorView, setActiveSegmentIndex]);
 }

@@ -14,12 +14,18 @@ export const usePreviewNavigationStore = create<PreviewNavigationState>(
     activeSegmentIndex: 0,
     segmentCount: 0,
     setActiveSegmentIndex: (index) => {
-      const { segmentCount } = get();
+      const { segmentCount, activeSegmentIndex } = get();
+      if (index === activeSegmentIndex) {
+        return;
+      }
       if (index >= 0 && index < segmentCount) {
         set({ activeSegmentIndex: index });
       }
     },
     setSegmentCount: (count) => {
+      if (count === get().segmentCount) {
+        return;
+      }
       set((state) => ({
         segmentCount: count,
         activeSegmentIndex: Math.min(

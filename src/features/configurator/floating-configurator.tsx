@@ -26,11 +26,12 @@ export const FloatingConfigurator = () => {
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    setTimeout(() => {
+    const timerId = setTimeout(() => {
       document.addEventListener("click", handleClickOutside);
     }, 0);
 
     return () => {
+      clearTimeout(timerId);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("click", handleClickOutside);
     };

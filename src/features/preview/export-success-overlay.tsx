@@ -2,7 +2,7 @@
 
 import { Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ExportSuccessOverlayProps {
   onDone: () => void;
@@ -15,18 +15,16 @@ export const ExportSuccessOverlay = ({
 }: ExportSuccessOverlayProps) => {
   const [show, setShow] = useState(false);
 
-  const stableOnDone = useCallback(onDone, [onDone]);
-
   useEffect(() => {
     if (visible) {
       setShow(true);
       const timer = setTimeout(() => {
         setShow(false);
-        stableOnDone();
+        onDone();
       }, 1200);
       return () => clearTimeout(timer);
     }
-  }, [visible, stableOnDone]);
+  }, [visible, onDone]);
 
   if (!show) {
     return null;
