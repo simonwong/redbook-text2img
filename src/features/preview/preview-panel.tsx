@@ -162,13 +162,13 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
           />
         </div>
 
-        <div className="group relative">
+        <div className="group relative rounded-lg shadow-md ring-1 ring-black/5 dark:shadow-none dark:ring-white/10">
           <ExportSuccessOverlay
             onDone={clearExportSuccess}
             visible={exportSuccess}
           />
           {activeSegment && (
-            <div className="transition-opacity duration-200">
+            <div className="overflow-hidden rounded-lg transition-opacity duration-200">
               <ImagePreview ref={imageRef} segment={activeSegment} />
             </div>
           )}
