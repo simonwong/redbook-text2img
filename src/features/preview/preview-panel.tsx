@@ -141,17 +141,13 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
 
   return (
     <div
-      className={`flex h-full flex-col items-center justify-center gap-3 ${className}`}
+      className={`flex h-full flex-col items-center justify-center gap-1.5 sm:gap-3 ${className}`}
     >
       <ExportProgressBar
         current={exportProgress.current}
         isExporting={isExporting && exportProgress.total > 0}
         total={exportProgress.total}
       />
-
-      <div className="text-muted-foreground text-xs">
-        {activeSegmentIndex + 1} / {segments.length}
-      </div>
 
       <div className="flex items-center gap-3">
         <div className="hidden sm:block">

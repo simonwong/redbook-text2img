@@ -57,7 +57,7 @@ export const SegmentFilmstrip = ({
   }
 
   return (
-    <div className="scrollbar-none flex gap-2 overflow-x-auto px-2 py-2">
+    <div className="scrollbar-none flex gap-1.5 overflow-x-auto px-2 py-1 sm:gap-2 sm:py-2">
       {segments.map((segment, index) => (
         <button
           aria-label={`第 ${index + 1} 张图片`}
