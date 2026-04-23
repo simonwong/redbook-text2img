@@ -62,7 +62,7 @@ export const SegmentFilmstrip = ({
         <button
           aria-label={`第 ${index + 1} 张图片`}
           className={cn(
-            "relative flex-shrink-0 overflow-hidden rounded-md border-2 transition-all",
+            "relative h-12 w-9 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all sm:h-16 sm:w-12",
             index === activeIndex
               ? "border-primary shadow-sm"
               : "border-transparent opacity-60 hover:opacity-90"
@@ -72,12 +72,7 @@ export const SegmentFilmstrip = ({
           ref={(el) => {
             itemRefs.current[index] = el;
           }}
-          style={{
-            width: 48,
-            height: 64,
-            ...thumbnailStyle,
-            borderRadius: 6,
-          }}
+          style={thumbnailStyle}
           type="button"
         >
           <div className="flex h-full items-center justify-center">

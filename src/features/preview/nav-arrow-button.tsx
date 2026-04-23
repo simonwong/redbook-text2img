@@ -18,13 +18,13 @@ export const NavArrowButton = ({
   return (
     <Button
       aria-label={direction === "left" ? "上一张" : "下一张"}
-      className="rounded-full"
+      className="h-10 w-10 rounded-full"
       disabled={disabled}
       onClick={onClick}
-      size="icon-sm"
-      variant="ghost"
+      size="icon"
+      variant="outline"
     >
-      <HugeiconsIcon className="h-4 w-4" icon={icon} />
+      <HugeiconsIcon className="h-5 w-5" icon={icon} />
     </Button>
   );
 };

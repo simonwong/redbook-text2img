@@ -154,11 +154,13 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
       </div>
 
       <div className="flex items-center gap-3">
-        <NavArrowButton
-          direction="left"
-          disabled={activeSegmentIndex === 0}
-          onClick={goPrev}
-        />
+        <div className="hidden sm:block">
+          <NavArrowButton
+            direction="left"
+            disabled={activeSegmentIndex === 0}
+            onClick={goPrev}
+          />
+        </div>
 
         <div className="group relative">
           <ExportSuccessOverlay
@@ -172,11 +174,13 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
           )}
         </div>
 
-        <NavArrowButton
-          direction="right"
-          disabled={activeSegmentIndex === segments.length - 1}
-          onClick={goNext}
-        />
+        <div className="hidden sm:block">
+          <NavArrowButton
+            direction="right"
+            disabled={activeSegmentIndex === segments.length - 1}
+            onClick={goNext}
+          />
+        </div>
       </div>
 
       <SegmentFilmstrip

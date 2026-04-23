@@ -20,7 +20,11 @@ export const FloatingConfigurator = () => {
     };
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+      const target = e.target as Element;
+      if (panelRef.current && !panelRef.current.contains(target)) {
+        if (target.closest?.('[data-slot="select-content"]')) {
+          return;
+        }
         setIsOpen(false);
       }
     };
