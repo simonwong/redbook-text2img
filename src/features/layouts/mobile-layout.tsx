@@ -32,7 +32,7 @@ export const MobileLayout = () => {
       </button>
 
       <Drawer onOpenChange={setPreviewOpen} open={previewOpen}>
-        <DrawerContent className="h-[85vh]">
+        <DrawerContent className="min-h-[85vh]">
           <DrawerHeader>
             <DrawerTitle>图片预览</DrawerTitle>
           </DrawerHeader>
@@ -47,7 +47,7 @@ export const MobileLayout = () => {
           <DrawerHeader>
             <DrawerTitle>设置样式</DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-8">
+          <div className="overflow-auto px-4 pb-8">
             <ConfiguratorContent />
           </div>
         </DrawerContent>

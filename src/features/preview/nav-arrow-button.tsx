@@ -1,4 +1,4 @@
-import { ArrowLeft02Icon, ArrowRight02Icon } from "@hugeicons/core-free-icons";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +13,7 @@ export const NavArrowButton = ({
   onClick,
   disabled,
 }: NavArrowButtonProps) => {
-  const icon = direction === "left" ? ArrowLeft02Icon : ArrowRight02Icon;
+  const icon = direction === "left" ? ArrowLeft01Icon : ArrowRight01Icon;
 
   return (
     <Button

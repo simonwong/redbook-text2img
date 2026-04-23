@@ -15,6 +15,7 @@ import { NavArrowButton } from "./nav-arrow-button";
 import { PreviewActionBar } from "./preview-action-bar";
 import { SegmentFilmstrip } from "./segment-filmstrip";
 import "./index.css";
+import { cn } from "@/lib/utils";
 
 interface PreviewPanelProps {
   className?: string;
@@ -141,7 +142,10 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
 
   return (
     <div
-      className={`flex h-full flex-col items-center justify-center gap-1.5 sm:gap-3 ${className}`}
+      className={cn(
+        "flex h-full flex-col items-center justify-center gap-3",
+        className
+      )}
     >
       <ExportProgressBar
         current={exportProgress.current}
