@@ -62,7 +62,7 @@ export const SegmentFilmstrip = ({
         <button
           aria-label={`第 ${index + 1} 张图片`}
           className={cn(
-            "relative h-12 w-9 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all sm:h-16 sm:w-12",
+            "relative size-7 flex-shrink-0 overflow-hidden rounded border-2 transition-all sm:h-16 sm:w-12 sm:rounded-md",
             index === activeIndex
               ? "border-primary shadow-sm"
               : "border-transparent opacity-60 hover:opacity-90"
