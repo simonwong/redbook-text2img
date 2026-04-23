@@ -1,6 +1,6 @@
 "use client";
 
-import { ViewIcon } from "@hugeicons/core-free-icons";
+import { Album02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 import {
@@ -28,7 +28,7 @@ export const MobileLayout = () => {
         onClick={() => setPreviewOpen(true)}
         type="button"
       >
-        <HugeiconsIcon className="h-5 w-5" icon={ViewIcon} />
+        <HugeiconsIcon className="h-5 w-5" icon={Album02Icon} />
       </button>
 
       <Drawer onOpenChange={setPreviewOpen} open={previewOpen}>
