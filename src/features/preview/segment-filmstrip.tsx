@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { ImageSegment } from "@/lib/markdown-parser";
+import {
+  applyAdjustments,
+  defaultTheme,
+  generateStyles,
+  getThemeById,
+} from "@/lib/theme";
 import { cn } from "@/lib/utils";
-import { ImagePreview } from "./image-preview";
+import { useContentThemeStore } from "@/store/theme";
 
 interface SegmentFilmstripProps {
   activeIndex: number;
@@ -16,8 +22,14 @@ export const SegmentFilmstrip = ({
   activeIndex,
   onSelect,
 }: SegmentFilmstripProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const { currentThemeId, adjustments } = useContentThemeStore();
+
+  const containerStyle = useMemo(() => {
+    const theme = getThemeById(currentThemeId) ?? defaultTheme;
+    const adjustedStyle = applyAdjustments(theme.style, adjustments);
+    return generateStyles(adjustedStyle, {}).container;
+  }, [currentThemeId, adjustments]);
 
   useEffect(() => {
     const activeItem = itemRefs.current[activeIndex];
@@ -35,12 +47,10 @@ export const SegmentFilmstrip = ({
   }
 
   return (
-    <div
-      className="scrollbar-none flex gap-2 overflow-x-auto px-2 py-2"
-      ref={containerRef}
-    >
+    <div className="scrollbar-none flex gap-2 overflow-x-auto px-2 py-2">
       {segments.map((segment, index) => (
         <button
+          aria-label={`第 ${index + 1} 张图片`}
           className={cn(
             "relative flex-shrink-0 overflow-hidden rounded-md border-2 transition-all",
             index === activeIndex
@@ -52,19 +62,21 @@ export const SegmentFilmstrip = ({
           ref={(el) => {
             itemRefs.current[index] = el;
           }}
-          style={{ width: 48, height: 64 }}
+          style={{
+            width: 48,
+            height: 64,
+            background: containerStyle.background as string,
+            borderRadius: 6,
+          }}
           type="button"
         >
-          <div
-            className="pointer-events-none origin-top-left"
-            style={{
-              width: 375,
-              height: 500,
-              transform: "scale(0.128)",
-              transformOrigin: "top left",
-            }}
-          >
-            <ImagePreview segment={segment} />
+          <div className="flex h-full items-center justify-center">
+            <span
+              className="font-medium text-[10px]"
+              style={{ color: containerStyle.color as string }}
+            >
+              {index + 1}
+            </span>
           </div>
         </button>
       ))}

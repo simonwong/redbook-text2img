@@ -8,14 +8,24 @@ function computeSegmentIndex(doc: string, cursorPos: number): number {
   const lines = doc.split("\n");
   let charCount = 0;
   let segmentIndex = 0;
+  let hasContentSinceLastSep = false;
 
   for (const line of lines) {
     if (charCount >= cursorPos) {
       break;
     }
-    if (line.trim().match(SEPARATOR_PATTERN)) {
-      segmentIndex++;
+
+    const trimmed = line.trim();
+
+    if (trimmed.match(SEPARATOR_PATTERN)) {
+      if (hasContentSinceLastSep) {
+        segmentIndex++;
+        hasContentSinceLastSep = false;
+      }
+    } else if (trimmed) {
+      hasContentSinceLastSep = true;
     }
+
     charCount += line.length + 1;
   }
 

@@ -9,8 +9,6 @@ import { useCursorSegment } from "./use-cursor-segment";
 
 interface EditorCardProps {
   className?: string;
-  isMobile?: boolean;
-  onPreviewClick?: () => void;
 }
 
 export const EditorCard = ({ className }: EditorCardProps) => {

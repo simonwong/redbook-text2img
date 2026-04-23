@@ -16,6 +16,7 @@ export const NavArrowButton = ({
 
   return (
     <button
+      aria-label={direction === "left" ? "上一张" : "下一张"}
       className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-all hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
       disabled={disabled}
       onClick={onClick}

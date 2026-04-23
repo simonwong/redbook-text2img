@@ -37,7 +37,7 @@ export const MobileLayout = () => {
             <DrawerTitle>图片预览</DrawerTitle>
           </DrawerHeader>
           <div className="flex-1 overflow-auto px-4 pb-4">
-            <PreviewCard isMobile />
+            <PreviewCard />
           </div>
         </DrawerContent>
       </Drawer>

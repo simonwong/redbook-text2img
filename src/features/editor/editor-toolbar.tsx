@@ -13,8 +13,7 @@ import {
   TextBoldIcon,
   TextItalicIcon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
-import { Tooltip } from "@/components/tooltip";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 import {
   insertHeading,
@@ -25,30 +24,12 @@ import {
   toggleItalic,
   toggleList,
 } from "./markdown-commands";
+import { ToolbarButton } from "./toolbar-button";
+import { ToolbarSeparator } from "./toolbar-separator";
 
 interface EditorToolbarProps {
   editorView: EditorView | null;
 }
-
-interface ToolbarButtonProps {
-  icon: IconSvgElement;
-  label: string;
-  onClick: () => void;
-}
-
-const ToolbarButton = ({ icon, label, onClick }: ToolbarButtonProps) => (
-  <Tooltip content={label}>
-    <button
-      className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95"
-      onClick={onClick}
-      type="button"
-    >
-      <HugeiconsIcon className="h-3.5 w-3.5" icon={icon} />
-    </button>
-  </Tooltip>
-);
-
-const ToolbarSeparator = () => <div className="mx-0.5 h-4 w-px bg-border" />;
 
 export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
   const { resetContent, isChange } = useMarkdownContentStore();

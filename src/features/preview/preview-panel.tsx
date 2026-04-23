@@ -7,7 +7,8 @@ import { parseMarkdownToImages } from "@/lib/markdown-parser";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 import { usePreviewNavigationStore } from "@/store/preview-navigation";
 import { useSettingsPanelStore } from "@/store/theme";
-import { ExportProgressBar, ExportSuccessOverlay } from "./export-feedback";
+import { ExportProgressBar } from "./export-progress-bar";
+import { ExportSuccessOverlay } from "./export-success-overlay";
 import { useImageExport } from "./hooks/use-image-export";
 import { ImagePreview } from "./image-preview";
 import { NavArrowButton } from "./nav-arrow-button";
@@ -48,6 +49,7 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
     total: 0,
   });
   const { exportSingleImage } = useImageExport(title);
+  const clearExportSuccess = useCallback(() => setExportSuccess(false), []);
 
   const handleExportCurrent = useCallback(async () => {
     const element = imageRef.current;
@@ -61,37 +63,46 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
   }, [activeSegmentIndex, exportSingleImage]);
 
   const handleExportAll = useCallback(async () => {
+    const savedIndex = activeSegmentIndex;
     setIsExporting(true);
-    const tempContainer = document.createElement("div");
-    tempContainer.style.position = "absolute";
-    tempContainer.style.left = "-9999px";
-    document.body.appendChild(tempContainer);
 
-    // We need to render all segments temporarily for export
-    // For now, just export the visible one if we can't get all refs
-    // This is a simplified approach - we export each segment one by one
-    // by switching the active index
     const total = segments.length;
     for (let i = 0; i < total; i++) {
       setExportProgress({ current: i + 1, total });
       setActiveSegmentIndex(i);
-      // Wait for re-render
-      await new Promise((r) => setTimeout(r, 200));
+      // Wait for React to re-render with new segment
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve());
+        });
+      });
       const el = imageRef.current;
       if (el) {
         await exportSingleImage(el, i);
       }
     }
-    document.body.removeChild(tempContainer);
+
+    setActiveSegmentIndex(savedIndex);
     setIsExporting(false);
     setExportProgress({ current: 0, total: 0 });
     setExportSuccess(true);
-  }, [segments.length, exportSingleImage, setActiveSegmentIndex]);
+  }, [
+    activeSegmentIndex,
+    segments.length,
+    exportSingleImage,
+    setActiveSegmentIndex,
+  ]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA") {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.getAttribute("role") === "textbox" ||
+        target.isContentEditable ||
+        target.closest(".cm-editor")
+      ) {
         return;
       }
       if (e.key === "ArrowLeft") {
@@ -155,7 +166,7 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
 
         <div className="group relative">
           <ExportSuccessOverlay
-            onDone={() => setExportSuccess(false)}
+            onDone={clearExportSuccess}
             visible={exportSuccess}
           />
           {activeSegment && (
