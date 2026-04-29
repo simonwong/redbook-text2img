@@ -113,8 +113,8 @@ export const presetThemes: PresetTheme[] = [
   },
   {
     id: "clean-dark",
-    name: "暗夜黑",
-    description: "深邃墨色，微妙极光氛围，适合夜间阅读",
+    name: "墨夜极光",
+    description: "深邃墨色配紫蓝极光，沉静而有呼吸感",
     style: {
       background: { type: "gradient", value: gradients.darkNight },
       typography: baseTypography,
@@ -148,8 +148,8 @@ export const presetThemes: PresetTheme[] = [
   // ===== 渐变系列 =====
   {
     id: "gradient-warm",
-    name: "暖阳渐变",
-    description: "蜜光奶油，温柔包裹的午后阳光",
+    name: "蜜光暖阳",
+    description: "奶油蜜桃光晕，温柔包裹的午后阳光",
     style: {
       background: { type: "gradient", value: gradients.warmSun },
       typography: baseTypography,
@@ -179,8 +179,8 @@ export const presetThemes: PresetTheme[] = [
 
   {
     id: "gradient-cool",
-    name: "冷调渐变",
-    description: "云雾蓝调，雾蓝薰衣草交织的清晨",
+    name: "晨雾微光",
+    description: "雾蓝与薰衣草交织，清晨薄雾的清雅微光",
     style: {
       background: { type: "gradient", value: gradients.coolMist },
       typography: baseTypography,
@@ -209,8 +209,8 @@ export const presetThemes: PresetTheme[] = [
   },
   {
     id: "xiaohongshu-pink",
-    name: "小红书粉",
-    description: "樱花奶霜，蜜桃粉与奶油白的温柔交融",
+    name: "樱花奶霜",
+    description: "蜜桃粉与奶油白交融，奶霜质感的温柔粉调",
     style: {
       background: { type: "gradient", value: gradients.cherryCream },
       typography: baseTypography,

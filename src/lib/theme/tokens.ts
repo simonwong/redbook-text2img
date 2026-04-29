@@ -87,13 +87,13 @@ export const gradients = {
     "linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #fef3ec 50%, #fff7ed 75%, #fffbeb 100%)",
 
   // Mesh gradients (multi-radial + linear) - 现代 Apple/Linear/Stripe 风格
-  /** 暖阳渐变：奶油 + 蜜桃 + 杏色，四点光晕模拟蜜光 */
+  /** 蜜光暖阳：奶油 + 蜜桃 + 杏色，四点光晕模拟蜜光 */
   warmSun:
     "radial-gradient(ellipse at 88% 12%, #ffe7c2 0%, transparent 55%), radial-gradient(ellipse at 12% 88%, #ffd2b0 0%, transparent 52%), radial-gradient(ellipse at 95% 95%, #f7b07a 0%, transparent 48%), linear-gradient(150deg, #fffaf2 0%, #fff1de 35%, #ffe1c4 70%, #fbcfa8 100%)",
-  /** 冷调渐变：奶蓝 + 雾蓝 + 淡薰衣草，云雾感 */
+  /** 晨雾微光：奶蓝 + 雾蓝 + 淡薰衣草，云雾感 */
   coolMist:
     "radial-gradient(ellipse at 12% 8%, #eaf2ff 0%, transparent 55%), radial-gradient(ellipse at 92% 92%, #d6e3f3 0%, transparent 52%), radial-gradient(ellipse at 96% 6%, #e1ddff 0%, transparent 48%), linear-gradient(155deg, #f5f9fd 0%, #ebf2fb 35%, #d8e4f3 70%, #b6cee6 100%)",
-  /** 小红书粉：奶油 + 樱花粉 + 蜜桃粉，奶霜质感 */
+  /** 樱花奶霜：奶油 + 樱花粉 + 蜜桃粉，奶霜质感 */
   cherryCream:
     "radial-gradient(ellipse at 5% 5%, #fff0f3 0%, transparent 55%), radial-gradient(ellipse at 95% 100%, #ffd6c2 0%, transparent 52%), radial-gradient(ellipse at 100% 5%, #ffdfeb 0%, transparent 48%), linear-gradient(150deg, #fff6f6 0%, #ffe7eb 35%, #fbcfd9 70%, #f6acbe 100%)",
 
@@ -104,7 +104,7 @@ export const gradients = {
     "linear-gradient(135deg, #0f172a 0%, #1e1b4b 25%, #312e81 50%, #4c1d95 75%, #7c3aed 100%)",
   darkGreen:
     "linear-gradient(135deg, #022c22 0%, #064e3b 25%, #065f46 50%, #047857 75%, #10b981 100%)",
-  /** 暗夜黑：深邃墨色 + 微妙极光（紫蓝晕染） */
+  /** 墨夜极光：深邃墨色 + 微妙极光（紫蓝晕染） */
   darkNight:
     "radial-gradient(ellipse at 80% 12%, rgba(124, 102, 196, 0.22) 0%, transparent 55%), radial-gradient(ellipse at 18% 88%, rgba(82, 132, 196, 0.16) 0%, transparent 52%), radial-gradient(ellipse at 95% 92%, rgba(168, 116, 220, 0.1) 0%, transparent 45%), linear-gradient(165deg, #0a0c14 0%, #14161f 50%, #0d0f18 100%)",
 
