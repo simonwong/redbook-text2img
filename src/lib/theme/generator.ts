@@ -231,6 +231,8 @@ export function generateStyles(
       fontSize: "0.875em",
       padding: "0.15em 0.4em",
       borderRadius: "0.25em",
+      display: "inline-block",
+      lineHeight: "inherit",
     },
 
     a: {
