@@ -24,6 +24,7 @@ import {
   toggleItalic,
   toggleList,
 } from "./markdown-commands";
+import { TemplatePicker } from "./template-picker";
 import { ToolbarButton } from "./toolbar-button";
 import { ToolbarSeparator } from "./toolbar-separator";
 
@@ -91,6 +92,8 @@ export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
           label="分割线 ---"
           onClick={() => exec(insertHorizontalRule)}
         />
+        <ToolbarSeparator />
+        <TemplatePicker />
       </div>
 
       <div className="flex items-center gap-2">
