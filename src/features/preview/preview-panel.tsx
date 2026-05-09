@@ -3,7 +3,14 @@
 import { FileText } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import JSZip from "jszip";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { parseMarkdownToImages } from "@/lib/markdown-parser";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 import { usePreviewNavigationStore } from "@/store/preview-navigation";
@@ -17,6 +24,31 @@ import { PreviewActionBar } from "./preview-action-bar";
 import { SegmentFilmstrip } from "./segment-filmstrip";
 import "./index.css";
 import { cn } from "@/lib/utils";
+
+const PREVIEW_WIDTH = 375;
+
+function usePreviewScale(containerRef: React.RefObject<HTMLDivElement | null>) {
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) {
+      return;
+    }
+
+    const observer = new ResizeObserver(([entry]) => {
+      const availableWidth = entry.contentRect.width;
+      setScale(
+        availableWidth < PREVIEW_WIDTH ? availableWidth / PREVIEW_WIDTH : 1
+      );
+    });
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [containerRef]);
+
+  return scale;
+}
 
 interface PreviewPanelProps {
   className?: string;
@@ -44,6 +76,8 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
   }, [segments.length, setSegmentCount]);
 
   const imageRef = useRef<HTMLDivElement>(null);
+  const scaleContainerRef = useRef<HTMLDivElement>(null);
+  const scale = usePreviewScale(scaleContainerRef);
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
   const [exportProgress, setExportProgress] = useState({
@@ -163,7 +197,7 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
         total={exportProgress.total}
       />
 
-      <div className="flex items-center gap-3">
+      <div className="flex w-full items-center justify-center gap-3">
         <div className="hidden sm:block">
           <NavArrowButton
             direction="left"
@@ -172,16 +206,27 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
           />
         </div>
 
-        <div className="group relative rounded-lg shadow-md ring-1 ring-black/5 dark:shadow-none dark:ring-white/10">
-          <ExportSuccessOverlay
-            onDone={clearExportSuccess}
-            visible={exportSuccess}
-          />
-          {activeSegment && (
-            <div className="overflow-hidden rounded-lg transition-opacity duration-200">
-              <ImagePreview ref={imageRef} segment={activeSegment} />
-            </div>
-          )}
+        <div
+          className="w-full min-w-0 max-w-[375px] overflow-hidden"
+          ref={scaleContainerRef}
+        >
+          <div
+            className="group relative origin-top-left rounded-lg shadow-md ring-1 ring-black/5 dark:shadow-none dark:ring-white/10"
+            style={{
+              transform: scale < 1 ? `scale(${scale})` : undefined,
+              height: scale < 1 ? `${500 * scale}px` : undefined,
+            }}
+          >
+            <ExportSuccessOverlay
+              onDone={clearExportSuccess}
+              visible={exportSuccess}
+            />
+            {activeSegment && (
+              <div className="overflow-hidden rounded-lg transition-opacity duration-200">
+                <ImagePreview ref={imageRef} segment={activeSegment} />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="hidden sm:block">

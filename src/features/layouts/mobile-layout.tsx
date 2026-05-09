@@ -34,9 +34,9 @@ export const MobileLayout = () => {
       <Drawer onOpenChange={setPreviewOpen} open={previewOpen}>
         <DrawerContent className="min-h-[85vh]">
           <DrawerHeader>
-            <DrawerTitle>图片预览</DrawerTitle>
+            <DrawerTitle className="sr-only">图片预览</DrawerTitle>
           </DrawerHeader>
-          <div className="flex-1 overflow-auto px-4 pb-4">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden pb-4">
             <PreviewCard />
           </div>
         </DrawerContent>
