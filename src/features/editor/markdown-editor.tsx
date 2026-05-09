@@ -2,7 +2,7 @@
 
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
-import type { EditorView } from "@codemirror/view";
+import { EditorView } from "@codemirror/view";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import CodeMirror from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
@@ -45,6 +45,7 @@ export const MarkdownEditor = memo(
           className="h-full text-sm [&_.cm-content]:font-mono [&_.cm-content]:leading-relaxed [&_.cm-editor]:h-full [&_.cm-editor]:bg-transparent [&_.cm-scroller]:overflow-auto"
           extensions={[
             markdown({ base: markdownLanguage, codeLanguages: languages }),
+            EditorView.lineWrapping,
           ]}
           onChange={handleChange}
           onCreateEditor={handleCreateEditor}
