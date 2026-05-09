@@ -49,7 +49,8 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
     current: 0,
     total: 0,
   });
-  const { exportSingleImage } = useImageExport(title);
+  const { exportSingleImage, generateImageBlob, downloadZip } =
+    useImageExport(title);
   const clearExportSuccess = useCallback(() => setExportSuccess(false), []);
 
   const handleExportCurrent = useCallback(async () => {
@@ -68,10 +69,11 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
     setIsExporting(true);
 
     const total = segments.length;
+    const blobs: Blob[] = [];
+
     for (let i = 0; i < total; i++) {
       setExportProgress({ current: i + 1, total });
       setActiveSegmentIndex(i);
-      // Wait for React to re-render with new segment
       await new Promise<void>((resolve) => {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => resolve());
@@ -79,9 +81,12 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
       });
       const el = imageRef.current;
       if (el) {
-        await exportSingleImage(el, i);
+        const blob = await generateImageBlob(el);
+        blobs.push(blob);
       }
     }
+
+    await downloadZip(blobs);
 
     setActiveSegmentIndex(savedIndex);
     setIsExporting(false);
@@ -90,7 +95,8 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
   }, [
     activeSegmentIndex,
     segments.length,
-    exportSingleImage,
+    generateImageBlob,
+    downloadZip,
     setActiveSegmentIndex,
   ]);
 

@@ -34,7 +34,7 @@ export const PreviewActionBar = ({
         导出
       </Button>
     </Tooltip>
-    <Tooltip content={`导出全部 (${segmentCount} 张)`}>
+    <Tooltip content={`打包下载全部 (${segmentCount} 张)`}>
       <Button
         disabled={segmentCount === 0 || isExporting}
         onClick={onExportAll}
@@ -42,7 +42,7 @@ export const PreviewActionBar = ({
         variant="outline"
       >
         <HugeiconsIcon className="h-3.5 w-3.5" icon={ImageDownloadIcon} />
-        全部
+        ZIP
       </Button>
     </Tooltip>
     <Tooltip content="设置样式">
