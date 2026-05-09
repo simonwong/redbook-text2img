@@ -73,5 +73,4 @@ import { IconName } from '@hugeicons/core-free-icons';
 
 ## 任务执行
 
-- 任务执行过程不必确认，每完成一阶段任务自动 commit 并继续下一个任务
-- 所有任务执行完成后使用 agent `code-simplifier` 来优化代码
+- 任务执行过程不必确认，每完成一阶段任务，先使用 `/simplifier` 检查代码，修复完成后自动 commit 并继续下一个任务
