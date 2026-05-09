@@ -42,7 +42,7 @@ export const PreviewActionBar = ({
         variant="outline"
       >
         <HugeiconsIcon className="h-3.5 w-3.5" icon={ImageDownloadIcon} />
-        ZIP
+        全部
       </Button>
     </Tooltip>
     <Tooltip content="设置样式">

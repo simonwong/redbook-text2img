@@ -24,7 +24,10 @@ export const TemplatePicker = () => {
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <Tooltip content="模板">
-        <PopoverTrigger className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95">
+        <PopoverTrigger
+          aria-label="模板"
+          className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95"
+        >
           <HugeiconsIcon className="h-3.5 w-3.5" icon={NoteIcon} />
         </PopoverTrigger>
       </Tooltip>

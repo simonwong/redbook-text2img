@@ -136,7 +136,6 @@ export function generateStyles(
 
     content: {
       flex: 1,
-      overflow: "hidden",
       fontSize: "1em",
       lineHeight,
       color: style.paragraph.color,
@@ -200,12 +199,14 @@ export function generateStyles(
     },
 
     blockquote: {
+      width: "100%",
       marginBottom: `${paragraphGap / baseFontSize}em`,
       paddingLeft: "1em",
       borderLeft: `3px solid ${style.blockquote.borderColor}`,
       backgroundColor: style.blockquote.background,
       color: style.blockquote.textColor,
       fontStyle: "italic",
+      boxSizing: "border-box",
       ...(style.blockquote.boxShadow && {
         boxShadow: style.blockquote.boxShadow,
       }),

@@ -2,6 +2,7 @@
 
 import { FileText } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import JSZip from "jszip";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { parseMarkdownToImages } from "@/lib/markdown-parser";
 import { useMarkdownContentStore } from "@/store/markdownContent";
@@ -68,33 +69,36 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
     const savedIndex = activeSegmentIndex;
     setIsExporting(true);
 
-    const total = segments.length;
-    const blobs: Blob[] = [];
+    try {
+      const total = segments.length;
+      const zip = new JSZip();
 
-    for (let i = 0; i < total; i++) {
-      setExportProgress({ current: i + 1, total });
-      setActiveSegmentIndex(i);
-      await new Promise<void>((resolve) => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => resolve());
+      for (let i = 0; i < total; i++) {
+        setExportProgress({ current: i + 1, total });
+        setActiveSegmentIndex(i);
+        await new Promise<void>((resolve) => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => resolve());
+          });
         });
-      });
-      const el = imageRef.current;
-      if (el) {
-        const blob = await generateImageBlob(el);
-        blobs.push(blob);
+        const el = imageRef.current;
+        if (el) {
+          const blob = await generateImageBlob(el);
+          zip.file(`${title}-${i + 1}.png`, blob);
+        }
       }
+
+      await downloadZip(zip);
+      setExportSuccess(true);
+    } finally {
+      setActiveSegmentIndex(savedIndex);
+      setIsExporting(false);
+      setExportProgress({ current: 0, total: 0 });
     }
-
-    await downloadZip(blobs);
-
-    setActiveSegmentIndex(savedIndex);
-    setIsExporting(false);
-    setExportProgress({ current: 0, total: 0 });
-    setExportSuccess(true);
   }, [
     activeSegmentIndex,
     segments.length,
+    title,
     generateImageBlob,
     downloadZip,
     setActiveSegmentIndex,
