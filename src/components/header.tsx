@@ -6,7 +6,12 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import Link from "next/link";
-import { GITHUB_LINK, TWITTER_LINK, XIAO_HONG_SHU_LINK } from "@/lib/contact";
+import {
+  GITHUB_LINK,
+  PERSONAL_SITE_LINK,
+  TWITTER_LINK,
+  XIAO_HONG_SHU_LINK,
+} from "@/lib/contact";
 import { XiaohongshuIcon } from "./icons/xiaohongshu-icon";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
@@ -60,9 +65,20 @@ export const Header = () => {
               >
                 <HugeiconsIcon className="h-4 w-4" icon={ContactIcon} />
               </PopoverTrigger>
-              <PopoverContent className="w-56">
-                <div className="space-y-2">
-                  <h3 className="font-medium text-sm">联系作者</h3>
+              <PopoverContent className="w-64">
+                <div className="space-y-3">
+                  <p className="text-sm">
+                    <span>嗨，我是 Simon，一名独立开发者。这是我的</span>
+                    <Link
+                      className="mx-0.5 font-medium text-primary underline underline-offset-4"
+                      href={PERSONAL_SITE_LINK}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      个人网站
+                    </Link>
+                    <span>，你还可以在下面的地方找到我：</span>
+                  </p>
                   <div className="flex items-center gap-3">
                     <Link
                       className="flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-accent"
