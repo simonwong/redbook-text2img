@@ -69,7 +69,6 @@ export default function RootLayout({
             type="application/ld+json"
           />
         ))}
-        <link as="image" href="/og.png" rel="preload" type="image/png" />
         <link href="/icon-512.png" rel="apple-touch-icon" sizes="512x512" />
         <link href="/icon-192.png" rel="apple-touch-icon" sizes="192x192" />
       </head>

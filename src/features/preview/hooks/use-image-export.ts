@@ -1,10 +1,10 @@
 "use client";
 
-import html2canvas from "html2canvas-pro";
 import type JSZip from "jszip";
 import { useCallback } from "react";
 
 const generateCanvas = async (element: HTMLElement) => {
+  const { default: html2canvas } = await import("html2canvas-pro");
   const canvas = await html2canvas(element, {
     allowTaint: true,
     backgroundColor: null,

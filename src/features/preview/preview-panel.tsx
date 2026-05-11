@@ -2,7 +2,6 @@
 
 import { FileText } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import JSZip from "jszip";
 import {
   useCallback,
   useEffect,
@@ -104,6 +103,7 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
     setIsExporting(true);
 
     try {
+      const { default: JSZip } = await import("jszip");
       const total = segments.length;
       const zip = new JSZip();
 

@@ -1,11 +1,26 @@
 "use client";
 
 import type { EditorView } from "@codemirror/view";
+import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 import { EditorToolbar } from "./editor-toolbar";
-import { MarkdownEditor } from "./markdown-editor";
 import { useCursorSegment } from "./use-cursor-segment";
+
+const MarkdownEditor = dynamic(
+  () =>
+    import("./markdown-editor").then((mod) => ({
+      default: mod.MarkdownEditor,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center text-muted-foreground/60 text-sm">
+        编辑器加载中...
+      </div>
+    ),
+  }
+);
 
 interface EditorCardProps {
   className?: string;
