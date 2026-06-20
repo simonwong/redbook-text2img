@@ -5,7 +5,13 @@
 
 import { TrianglifyGary } from "./backgroundSet";
 import { colors, gradients, spacing, typography } from "./tokens";
-import type { CoverStyleOverride, FullStyle, PresetTheme } from "./types";
+import type {
+  CoverStyleOverride,
+  CustomThemeRecord,
+  FullStyle,
+  PresetTheme,
+  ResolvedTheme,
+} from "./types";
 
 // ============================================================
 // 基础样式模板（内部使用）
@@ -331,3 +337,72 @@ export const defaultTheme = presetThemes[0];
 /** Get theme style by ID, with fallback to default */
 export const getThemeStyle = (id: string): FullStyle =>
   getThemeById(id)?.style ?? defaultTheme.style;
+
+export const getBasePresetThemeId = (
+  themeId: string,
+  customThemes: CustomThemeRecord[]
+): string => {
+  const presetTheme = getThemeById(themeId);
+  if (presetTheme) {
+    return presetTheme.id;
+  }
+
+  return (
+    customThemes.find((theme) => theme.id === themeId)?.basePresetThemeId ??
+    defaultTheme.id
+  );
+};
+
+export const getResolvedThemeById = (
+  id: string,
+  customThemes: CustomThemeRecord[]
+): ResolvedTheme | undefined => {
+  const presetTheme = getThemeById(id);
+
+  if (presetTheme) {
+    return {
+      ...presetTheme,
+      source: "preset",
+      basePresetThemeId: presetTheme.id,
+    };
+  }
+
+  const customTheme = customThemes.find((theme) => theme.id === id);
+  if (!customTheme) {
+    return;
+  }
+
+  const baseTheme = getThemeById(customTheme.basePresetThemeId) ?? defaultTheme;
+
+  return {
+    ...baseTheme,
+    id: customTheme.id,
+    name: customTheme.name,
+    style: {
+      ...baseTheme.style,
+      background: customTheme.backgroundImageDataUrl
+        ? {
+            type: "image",
+            value: customTheme.backgroundImageDataUrl,
+          }
+        : baseTheme.style.background,
+    },
+    source: "custom",
+    basePresetThemeId: baseTheme.id,
+  };
+};
+
+export const getAllResolvedThemes = (
+  customThemes: CustomThemeRecord[]
+): ResolvedTheme[] => [
+  ...customThemes
+    .slice()
+    .sort((left, right) => right.createdAt - left.createdAt)
+    .map((theme) => getResolvedThemeById(theme.id, customThemes))
+    .filter((theme): theme is ResolvedTheme => Boolean(theme)),
+  ...presetThemes.map((theme) => ({
+    ...theme,
+    source: "preset" as const,
+    basePresetThemeId: theme.id,
+  })),
+];

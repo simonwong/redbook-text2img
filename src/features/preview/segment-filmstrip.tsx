@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import type { ImageSegment } from "@/lib/markdown-parser";
-import { defaultTheme, getThemeById } from "@/lib/theme";
+import { defaultTheme } from "@/lib/theme";
+import { getResolvedThemeById } from "@/lib/theme/themes";
 import { cn } from "@/lib/utils";
 import { useContentThemeStore } from "@/store/theme";
 
@@ -31,15 +32,16 @@ export const SegmentFilmstrip = ({
   onSelect,
 }: SegmentFilmstripProps) => {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const { currentThemeId } = useContentThemeStore();
+  const { currentThemeId, customThemes } = useContentThemeStore();
 
   const thumbnailStyle = useMemo(() => {
-    const theme = getThemeById(currentThemeId) ?? defaultTheme;
+    const theme =
+      getResolvedThemeById(currentThemeId, customThemes) ?? defaultTheme;
     return {
       ...getBackgroundCss(theme.style.background),
       color: theme.style.heading.color,
     };
-  }, [currentThemeId]);
+  }, [currentThemeId, customThemes]);
 
   useEffect(() => {
     const activeItem = itemRefs.current[activeIndex];

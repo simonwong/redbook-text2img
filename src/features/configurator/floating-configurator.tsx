@@ -29,7 +29,7 @@ export const FloatingConfigurator = () => {
   }
 
   return (
-    <div className="fade-in slide-in-from-bottom-2 fixed top-14 right-6 z-30 w-[240px] animate-in duration-200">
+    <div className="fade-in slide-in-from-bottom-2 fixed top-14 right-6 z-30 w-[280px] animate-in duration-200">
       <div className="max-h-[calc(100vh-5rem)] overflow-y-auto rounded-xl border border-border bg-background/95 p-4 shadow-lg backdrop-blur-md">
         <div className="mb-3 flex items-center justify-between">
           <span className="font-medium text-sm">样式设置</span>

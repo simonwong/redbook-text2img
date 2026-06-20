@@ -12,13 +12,19 @@ import {
   headingAlignmentOptions,
 } from "@/lib/theme";
 import { useContentThemeStore } from "@/store/theme";
+import { CustomThemeCropper } from "./custom-theme-cropper";
 import { ThemeGrid } from "./theme-grid";
 
 export const ConfiguratorContent = () => {
   const {
     currentThemeId,
+    customThemes,
+    themeError,
+    selectTheme,
+    startCustomThemeUpload,
+    deleteCustomTheme,
+    clearThemeError,
     adjustments,
-    selectPresetTheme,
     setDensity,
     setFont,
     setHeadingAlignment,
@@ -36,7 +42,12 @@ export const ConfiguratorContent = () => {
         <Label className="font-medium text-xs">主题</Label>
         <ThemeGrid
           currentThemeId={currentThemeId}
-          onSelect={selectPresetTheme}
+          customThemes={customThemes}
+          onClearError={clearThemeError}
+          onDeleteCustomTheme={deleteCustomTheme}
+          onSelect={selectTheme}
+          onStartUpload={startCustomThemeUpload}
+          themeError={themeError}
         />
       </div>
 
@@ -82,6 +93,8 @@ export const ConfiguratorContent = () => {
           重置风格
         </button>
       )}
+
+      <CustomThemeCropper />
     </div>
   );
 };

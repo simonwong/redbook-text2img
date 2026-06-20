@@ -3,25 +3,22 @@
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import type { ImageSegment } from "@/lib/markdown-parser";
-import {
-  applyAdjustments,
-  defaultTheme,
-  generateStyles,
-  getThemeById,
-} from "@/lib/theme";
+import { applyAdjustments, defaultTheme, generateStyles } from "@/lib/theme";
+import { getResolvedThemeById } from "@/lib/theme/themes";
 import { useContentThemeStore } from "@/store/theme";
 import { HeaderBar } from "./header-bar";
 
 interface ImagePreviewProps {
-  segment: ImageSegment;
   ref?: React.Ref<HTMLDivElement>;
+  segment: ImageSegment;
 }
 
 export const ImagePreview: React.FC<ImagePreviewProps> = ({ segment, ref }) => {
-  const { currentThemeId, adjustments } = useContentThemeStore();
+  const { currentThemeId, customThemes, adjustments } = useContentThemeStore();
 
   const { styles, headerBar } = useMemo(() => {
-    const theme = getThemeById(currentThemeId) ?? defaultTheme;
+    const theme =
+      getResolvedThemeById(currentThemeId, customThemes) ?? defaultTheme;
     const adjustedStyle = applyAdjustments(theme.style, adjustments);
     // 如果是封面图（包含 # 一级标题），使用主题的封面图样式，忽略用户的标题对齐设置
     const coverStyle = segment.isCover ? theme.coverStyle : undefined;
@@ -29,7 +26,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ segment, ref }) => {
       styles: generateStyles(adjustedStyle, { coverStyle }),
       headerBar: theme.headerBar,
     };
-  }, [currentThemeId, adjustments, segment.isCover]);
+  }, [adjustments, currentThemeId, customThemes, segment.isCover]);
 
   return (
     <div className="img-preview" ref={ref} style={styles.container}>
