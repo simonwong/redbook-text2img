@@ -74,3 +74,17 @@ import { IconName } from '@hugeicons/core-free-icons';
 ## 任务执行
 
 - 任务执行过程不必确认，每完成一阶段任务，先使用 `/simplifier` 检查代码，修复完成后自动 commit 并继续下一个任务
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in this repo's GitHub Issues via the `gh` CLI; external PRs are not a triage surface. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles map 1:1 to label strings of the same name. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root, created lazily by `/domain-modeling`. See `docs/agents/domain.md`.
