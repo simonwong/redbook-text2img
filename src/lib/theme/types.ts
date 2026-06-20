@@ -38,11 +38,11 @@ export interface EmphasisStyle {
     color: string;
     fontWeight: number;
   };
-  italic: {
-    color: string;
-  };
   highlight: {
     background: string;
+    color: string;
+  };
+  italic: {
     color: string;
   };
 }
@@ -55,16 +55,16 @@ export interface ListStyle {
 export interface BlockquoteStyle {
   background: string;
   borderColor: string;
-  textColor: string;
   boxShadow?: string;
+  textColor: string;
 }
 
 export interface CodeStyle {
-  inline: {
+  block: {
     background: string;
     color: string;
   };
-  block: {
+  inline: {
     background: string;
     color: string;
   };
@@ -76,23 +76,23 @@ export interface LinkStyle {
 }
 
 export interface SpacingStyle {
+  headingGap: number;
   padding: number;
   paragraphGap: number;
-  headingGap: number;
 }
 
 /** Layer 2: Complete style configuration for Markdown rendering */
 export interface FullStyle {
   background: BackgroundStyle;
-  typography: TypographyStyle;
-  heading: HeadingStyle;
-  paragraph: ParagraphStyle;
-  emphasis: EmphasisStyle;
-  list: ListStyle;
   blockquote: BlockquoteStyle;
   code: CodeStyle;
+  emphasis: EmphasisStyle;
+  heading: HeadingStyle;
   link: LinkStyle;
+  list: ListStyle;
+  paragraph: ParagraphStyle;
   spacing: SpacingStyle;
+  typography: TypographyStyle;
 }
 
 // ============================================================
@@ -118,20 +118,20 @@ export interface StyleAdjustments {
 
 /** 封面图特有的样式覆盖 */
 export interface CoverStyleOverride {
-  /** 内容垂直对齐方式 */
-  contentVerticalAlign?: "top" | "center" | "bottom";
   /** 内容水平对齐方式 */
   contentHorizontalAlign?: "left" | "center" | "right";
+  /** 内容垂直对齐方式 */
+  contentVerticalAlign?: "top" | "center" | "bottom";
   /** 标题对齐方式（优先级高于用户调整） */
   headingAlignment?: HeadingAlignment;
 }
 
 /** 装饰性顶部导航栏（如 Apple Notes 风格） */
 export interface HeaderBarStyle {
-  /** 图标颜色 */
-  iconColor: string;
   /** 背景颜色（可以是透明） */
   background?: string;
+  /** 图标颜色 */
+  iconColor: string;
   /** 显示哪些图标 */
   icons: {
     backArrow?: boolean;
@@ -142,12 +142,42 @@ export interface HeaderBarStyle {
 
 /** Layer 1: Preset theme with complete FullStyle */
 export interface PresetTheme {
-  id: string;
-  name: string;
-  description?: string;
-  style: FullStyle; // 直接包含完整样式，不再是 config
   /** 封面图特有的样式覆盖（继承 style，仅覆盖指定属性） */
   coverStyle?: CoverStyleOverride;
+  description?: string;
   /** 装饰性顶部导航栏 */
   headerBar?: HeaderBarStyle;
+  id: string;
+  name: string;
+  style: FullStyle; // 直接包含完整样式，不再是 config
+}
+
+export interface CustomThemeCrop {
+  scale: number;
+  sourceHeight: number;
+  sourceWidth: number;
+  x: number;
+  y: number;
+}
+
+export interface CustomThemeRecord {
+  backgroundImageDataUrl?: string;
+  basePresetThemeId: string;
+  createdAt: number;
+  crop: CustomThemeCrop;
+  id: string;
+  imageStorageKey: string;
+  name: string;
+}
+
+export interface PendingCustomThemeUpload {
+  basePresetThemeId: string;
+  crop: CustomThemeCrop;
+  imageDataUrl: string;
+  themeName: string;
+}
+
+export interface ResolvedTheme extends PresetTheme {
+  basePresetThemeId: string;
+  source: "preset" | "custom";
 }
