@@ -22,7 +22,7 @@ import { NavArrowButton } from "./nav-arrow-button";
 import { PreviewActionBar } from "./preview-action-bar";
 import { SegmentFilmstrip } from "./segment-filmstrip";
 import "./index.css";
-import { cn } from "@/lib/utils";
+import { cn, sanitizeFilename } from "@/lib/utils";
 
 const PREVIEW_WIDTH = 375;
 
@@ -66,7 +66,7 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
 
   const segments = useMemo(() => parseMarkdownToImages(markdown), [markdown]);
   const title = useMemo(
-    () => segments.find((s) => s.isFirstImage)?.title ?? "",
+    () => sanitizeFilename(segments.find((s) => s.isFirstImage)?.title ?? ""),
     [segments]
   );
 
@@ -93,9 +93,14 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
       return;
     }
     setIsExporting(true);
-    await exportSingleImage(element, activeSegmentIndex);
-    setIsExporting(false);
-    setExportSuccess(true);
+    try {
+      await exportSingleImage(element, activeSegmentIndex);
+      setExportSuccess(true);
+    } catch (error) {
+      console.error("导出图片失败", error);
+    } finally {
+      setIsExporting(false);
+    }
   }, [activeSegmentIndex, exportSingleImage]);
 
   const handleExportAll = useCallback(async () => {
@@ -124,6 +129,8 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
 
       await downloadZip(zip);
       setExportSuccess(true);
+    } catch (error) {
+      console.error("批量导出失败", error);
     } finally {
       setActiveSegmentIndex(savedIndex);
       setIsExporting(false);
@@ -163,7 +170,8 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [goNext, goPrev]);
 
-  const activeSegment = segments[activeSegmentIndex];
+  const clampedIndex = Math.min(activeSegmentIndex, segments.length - 1);
+  const activeSegment = segments[clampedIndex];
 
   if (segments.length === 0) {
     return (
@@ -201,7 +209,7 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
         <div className="hidden sm:block">
           <NavArrowButton
             direction="left"
-            disabled={activeSegmentIndex === 0}
+            disabled={clampedIndex === 0}
             onClick={goPrev}
           />
         </div>
@@ -232,14 +240,14 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
         <div className="hidden sm:block">
           <NavArrowButton
             direction="right"
-            disabled={activeSegmentIndex === segments.length - 1}
+            disabled={clampedIndex === segments.length - 1}
             onClick={goNext}
           />
         </div>
       </div>
 
       <SegmentFilmstrip
-        activeIndex={activeSegmentIndex}
+        activeIndex={clampedIndex}
         onSelect={setActiveSegmentIndex}
         segments={segments}
       />

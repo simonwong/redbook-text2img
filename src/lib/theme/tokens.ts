@@ -149,7 +149,7 @@ export const typography = {
 
   // Heading scale multipliers (relative to base font size)
   headingScale: {
-    h1: 1.625, // 适配新密度系统 (compact:20px, normal:26px, spacious:32px)
+    h1: 1.625, // ×base 实际渲染: compact 22.75px / normal 26px / spacious 30.875px
     h2: 1.25,
     h3: 1.125,
     h4: 1,

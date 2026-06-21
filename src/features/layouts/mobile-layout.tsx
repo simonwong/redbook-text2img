@@ -21,10 +21,11 @@ export const MobileLayout = () => {
 
   return (
     <div className="flex h-full flex-col">
-      <EditorCard className="flex-1" />
+      <EditorCard className="flex-1 [&_.cm-scroller]:pb-16" />
 
       <button
-        className="fixed right-4 bottom-4 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95"
+        aria-label="预览图片"
+        className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+1rem)] z-20 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95"
         onClick={() => setPreviewOpen(true)}
         type="button"
       >
@@ -36,7 +37,7 @@ export const MobileLayout = () => {
           <DrawerHeader>
             <DrawerTitle className="sr-only">图片预览</DrawerTitle>
           </DrawerHeader>
-          <div className="flex-1 overflow-y-auto overflow-x-hidden pb-4">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden pb-[max(1rem,env(safe-area-inset-bottom))]">
             <PreviewCard />
           </div>
         </DrawerContent>
@@ -47,7 +48,7 @@ export const MobileLayout = () => {
           <DrawerHeader>
             <DrawerTitle>设置样式</DrawerTitle>
           </DrawerHeader>
-          <div className="overflow-auto px-4 pb-8">
+          <div className="overflow-auto px-4 pb-[max(2rem,env(safe-area-inset-bottom))]">
             <ConfiguratorContent />
           </div>
         </DrawerContent>

@@ -46,7 +46,12 @@ export const PreviewActionBar = ({
       </Button>
     </Tooltip>
     <Tooltip content="设置样式">
-      <Button onClick={onToggleSettings} size="sm" variant="outline">
+      <Button
+        aria-label="设置样式"
+        onClick={onToggleSettings}
+        size="sm"
+        variant="outline"
+      >
         <HugeiconsIcon className="h-3.5 w-3.5" icon={PaintBoardIcon} />
       </Button>
     </Tooltip>

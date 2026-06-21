@@ -5,13 +5,7 @@ const MarkdownToImageApp = () => (
   <>
     <SEOOptimizedText />
     <div className="h-full max-h-full">
-      <div
-        aria-label="Markdown 图片生成器"
-        className="h-full max-h-full"
-        role="application"
-      >
-        <Layout />
-      </div>
+      <Layout />
     </div>
   </>
 );

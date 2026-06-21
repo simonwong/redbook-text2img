@@ -61,6 +61,7 @@ export const SegmentFilmstrip = ({
       {segments.map((segment, index) => (
         <button
           aria-label={`第 ${index + 1} 张图片`}
+          aria-pressed={index === activeIndex}
           className={cn(
             "relative size-12 flex-shrink-0 overflow-hidden rounded border-2 transition-all sm:h-16 sm:w-12 sm:rounded-md",
             index === activeIndex

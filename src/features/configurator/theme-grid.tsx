@@ -24,6 +24,7 @@ export const ThemeGrid = ({ currentThemeId, onSelect }: ThemeGridProps) => (
   <div className="grid grid-cols-2 gap-2">
     {presetThemes.map((theme) => (
       <button
+        aria-pressed={theme.id === currentThemeId}
         className={cn(
           "group relative flex h-20 flex-col items-center justify-end overflow-hidden rounded-lg border-2 p-2 transition-all",
           theme.id === currentThemeId

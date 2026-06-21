@@ -36,7 +36,7 @@ export default function manifest(): MetadataRoute.Manifest {
     screenshots: [
       {
         src: "/screenshot-1.png",
-        sizes: "2806x1696",
+        sizes: "2540x1608",
         type: "image/png",
         form_factor: "wide",
         label: "小红书图片生成器界面截图",

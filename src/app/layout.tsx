@@ -1,7 +1,7 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,17 +9,7 @@ import { baseMetadata, structuredData } from "@/lib/seo-config";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   ...baseMetadata,
@@ -56,7 +46,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning className={cn("font-sans", inter.variable)}>
+    <html
+      className={cn("font-sans", inter.variable)}
+      lang="zh-CN"
+      suppressHydrationWarning
+    >
       <head>
         {structuredData.map((data, index) => (
           <script
@@ -70,11 +64,8 @@ export default function RootLayout({
           />
         ))}
         <link href="/icon-512.png" rel="apple-touch-icon" sizes="512x512" />
-        <link href="/icon-192.png" rel="apple-touch-icon" sizes="192x192" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} flex h-screen max-h-screen flex-col bg-background`}
-      >
+      <body className="flex h-dvh max-h-dvh flex-col bg-background">
         <ThemeProvider>
           <TooltipProvider>
             <Header />

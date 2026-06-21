@@ -23,6 +23,7 @@ export const SegmentedControl = ({
   <div className={cn("inline-flex rounded-lg bg-muted p-0.5", className)}>
     {options.map((option) => (
       <button
+        aria-pressed={option.value === value}
         className={cn(
           "rounded-md px-3 py-1 font-medium text-xs transition-all",
           option.value === value

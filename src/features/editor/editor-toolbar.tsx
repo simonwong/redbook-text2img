@@ -1,8 +1,10 @@
 "use client";
 
+import { undo } from "@codemirror/commands";
 import type { EditorView } from "@codemirror/view";
 import {
   ArrowReloadHorizontalIcon,
+  ArrowTurnBackwardIcon,
   Heading01Icon,
   Heading02Icon,
   Heading03Icon,
@@ -93,6 +95,11 @@ export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
           onClick={() => exec(insertHorizontalRule)}
         />
         <ToolbarSeparator />
+        <ToolbarButton
+          icon={ArrowTurnBackwardIcon}
+          label="撤销"
+          onClick={() => exec(undo)}
+        />
         <TemplatePicker />
       </div>
 
