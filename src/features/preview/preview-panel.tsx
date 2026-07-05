@@ -16,9 +16,11 @@ import { usePreviewNavigationStore } from "@/store/preview-navigation";
 import { useSettingsPanelStore } from "@/store/theme";
 import { ExportProgressBar } from "./export-progress-bar";
 import { ExportSuccessOverlay } from "./export-success-overlay";
+import { useContentOverflow } from "./hooks/use-content-overflow";
 import { useImageExport } from "./hooks/use-image-export";
 import { ImagePreview } from "./image-preview";
 import { NavArrowButton } from "./nav-arrow-button";
+import { OverflowWarning } from "./overflow-warning";
 import { PreviewActionBar } from "./preview-action-bar";
 import { SegmentFilmstrip } from "./segment-filmstrip";
 import "./index.css";
@@ -75,6 +77,7 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
   }, [segments.length, setSegmentCount]);
 
   const imageRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const scaleContainerRef = useRef<HTMLDivElement>(null);
   const scale = usePreviewScale(scaleContainerRef);
   const [isExporting, setIsExporting] = useState(false);
@@ -172,6 +175,10 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
 
   const clampedIndex = Math.min(activeSegmentIndex, segments.length - 1);
   const activeSegment = segments[clampedIndex];
+  const isOverflowing = useContentOverflow(
+    contentRef,
+    activeSegment?.content ?? ""
+  );
 
   if (segments.length === 0) {
     return (
@@ -231,7 +238,11 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
             />
             {activeSegment && (
               <div className="overflow-hidden rounded-lg transition-opacity duration-200">
-                <ImagePreview ref={imageRef} segment={activeSegment} />
+                <ImagePreview
+                  contentRef={contentRef}
+                  ref={imageRef}
+                  segment={activeSegment}
+                />
               </div>
             )}
           </div>
@@ -245,6 +256,8 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
           />
         </div>
       </div>
+
+      {isOverflowing && <OverflowWarning />}
 
       <SegmentFilmstrip
         activeIndex={clampedIndex}

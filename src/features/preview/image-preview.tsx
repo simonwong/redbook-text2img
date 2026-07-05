@@ -13,11 +13,16 @@ import { useContentThemeStore } from "@/store/theme";
 import { HeaderBar } from "./header-bar";
 
 interface ImagePreviewProps {
-  segment: ImageSegment;
+  contentRef?: React.Ref<HTMLDivElement>;
   ref?: React.Ref<HTMLDivElement>;
+  segment: ImageSegment;
 }
 
-export const ImagePreview: React.FC<ImagePreviewProps> = ({ segment, ref }) => {
+export const ImagePreview: React.FC<ImagePreviewProps> = ({
+  contentRef,
+  ref,
+  segment,
+}) => {
   const { currentThemeId, adjustments } = useContentThemeStore();
 
   const { styles, headerBar } = useMemo(() => {
@@ -40,7 +45,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ segment, ref }) => {
           height: headerBar ? "calc(100% - 40px)" : "100%",
         }}
       >
-        <div style={styles.content}>
+        <div ref={contentRef} style={styles.content}>
           <ReactMarkdown
             components={{
               h1: ({ children }) => <h1 style={styles.h1}>{children}</h1>,
