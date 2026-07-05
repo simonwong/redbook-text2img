@@ -9,21 +9,25 @@ import {
   generateStyles,
   getThemeById,
 } from "@/lib/theme";
-import { useContentThemeStore } from "@/store/theme";
+import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
+import { CardWatermark } from "./card-watermark";
 import { HeaderBar } from "./header-bar";
 
 interface ImagePreviewProps {
   contentRef?: React.Ref<HTMLDivElement>;
+  pageNumber: { current: number; total: number };
   ref?: React.Ref<HTMLDivElement>;
   segment: ImageSegment;
 }
 
 export const ImagePreview: React.FC<ImagePreviewProps> = ({
   contentRef,
+  pageNumber,
   ref,
   segment,
 }) => {
   const { currentThemeId, adjustments } = useContentThemeStore();
+  const { signature, showPageNumber } = useWatermarkStore();
 
   const { styles, headerBar } = useMemo(() => {
     const theme = getThemeById(currentThemeId) ?? defaultTheme;
@@ -39,6 +43,10 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
       headerBar: theme.headerBar,
     };
   }, [currentThemeId, adjustments, segment.isCover]);
+
+  // 页码只在非封面页显示（封面为第 1 张，计数含封面）；署名在所有卡片显示
+  const watermarkPage =
+    showPageNumber && !segment.isCover ? pageNumber : undefined;
 
   return (
     <div className="img-preview" ref={ref} style={styles.container}>
@@ -94,6 +102,11 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
             {segment.content}
           </ReactMarkdown>
         </div>
+        <CardWatermark
+          pageNumber={watermarkPage}
+          signature={signature.trim()}
+          style={styles.footer}
+        />
       </div>
     </div>
   );

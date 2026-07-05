@@ -240,6 +240,10 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
               <div className="overflow-hidden rounded-lg transition-opacity duration-200">
                 <ImagePreview
                   contentRef={contentRef}
+                  pageNumber={{
+                    current: clampedIndex + 1,
+                    total: segments.length,
+                  }}
                   ref={imageRef}
                   segment={activeSegment}
                 />

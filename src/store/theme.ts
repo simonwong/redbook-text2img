@@ -79,6 +79,44 @@ export const useContentThemeStore = create<ContentThemeState>()(
 );
 
 // ============================================================
+// Watermark (署名/页码，卡片附属内容，独立于主题风格)
+// ============================================================
+
+interface WatermarkState {
+  // 署名水印文本（如 @你的小红书名，空串不显示）
+  signature: string;
+
+  // 是否在非封面页显示页码
+  showPageNumber: boolean;
+
+  // Actions
+  setSignature: (signature: string) => void;
+  setShowPageNumber: (showPageNumber: boolean) => void;
+}
+
+export const useWatermarkStore = create<WatermarkState>()(
+  devtools(
+    persist(
+      (set) => ({
+        signature: "",
+        showPageNumber: true,
+
+        setSignature: (signature: string) => set({ signature }),
+
+        setShowPageNumber: (showPageNumber: boolean) => set({ showPageNumber }),
+      }),
+      {
+        name: "redbook-watermark",
+        partialize: (state) => ({
+          signature: state.signature,
+          showPageNumber: state.showPageNumber,
+        }),
+      }
+    )
+  )
+);
+
+// ============================================================
 // Settings Panel Visibility
 // ============================================================
 

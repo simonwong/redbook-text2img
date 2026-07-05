@@ -29,6 +29,8 @@ export interface GeneratedStyles {
   blockquote: React.CSSProperties;
   a: React.CSSProperties;
   mark: React.CSSProperties;
+  /** 卡片底部水印（署名 + 页码），随主题次要色派生 */
+  footer: React.CSSProperties;
   /** 标题装饰（内层 span 用），仅在主题配置了 heading.decoration 时存在 */
   headingInner?: React.CSSProperties;
 }
@@ -164,17 +166,19 @@ export function generateStyles(
       height: "100%",
       padding: `${padding}px`,
       boxSizing: "border-box",
+      display: "flex",
+      flexDirection: "column",
     },
 
     content: {
       flex: 1,
+      minHeight: 0,
       fontSize: "1em",
       lineHeight,
       color: style.paragraph.color,
       wordBreak: "break-word",
       display: "flex",
       flexDirection: "column",
-      height: "100%",
       justifyContent: getJustifyContent(coverStyle?.contentVerticalAlign),
       alignItems: getAlignItems(coverStyle?.contentHorizontalAlign),
       letterSpacing: letterSpacing.body,
@@ -271,6 +275,11 @@ export function generateStyles(
     a: {
       color: style.link.color,
       textDecoration: style.link.underline ? "underline" : "none",
+    },
+
+    // 卡片底部水印颜色 token（布局在 CardWatermark 组件内）：主题斜体次要色，8 主题皆可读
+    footer: {
+      color: style.emphasis.italic.color,
     },
 
     // 标题装饰仅作用于展示级标题 h1–h2（由 image-preview 包裹内层 span）

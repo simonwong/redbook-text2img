@@ -3,6 +3,7 @@
 import { ArrowReloadHorizontalIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Select } from "@/components/enhance/select";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
@@ -11,8 +12,13 @@ import {
   fontOptions,
   headingAlignmentOptions,
 } from "@/lib/theme";
-import { useContentThemeStore } from "@/store/theme";
+import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
 import { ThemeGrid } from "./theme-grid";
+
+const pageNumberOptions = [
+  { value: "show", label: "显示" },
+  { value: "hide", label: "隐藏" },
+];
 
 export const ConfiguratorContent = () => {
   const {
@@ -24,6 +30,8 @@ export const ConfiguratorContent = () => {
     setHeadingAlignment,
     resetAdjustments,
   } = useContentThemeStore();
+  const { signature, showPageNumber, setSignature, setShowPageNumber } =
+    useWatermarkStore();
 
   const isModified =
     adjustments.density !== defaultAdjustments.density ||
@@ -69,6 +77,25 @@ export const ConfiguratorContent = () => {
           }
           options={headingAlignmentOptions}
           value={adjustments.headingAlignment}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="font-medium text-xs">署名</Label>
+        <Input
+          onChange={(e) => setSignature(e.target.value)}
+          placeholder="@你的小红书名"
+          value={signature}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="font-medium text-xs">页码</Label>
+        <SegmentedControl
+          className="w-full"
+          onChange={(v) => setShowPageNumber(v === "show")}
+          options={pageNumberOptions}
+          value={showPageNumber ? "show" : "hide"}
         />
       </div>
 
