@@ -136,6 +136,8 @@ export type HeadingAlignment = "left" | "center";
 
 /** 风格调整（配合 Layer 1 预设主题） */
 export interface StyleAdjustments {
+  /** 自定义强调色（hex）；undefined = 跟随主题原色 */
+  accentColor?: string;
   density: Density;
   fontId: string; // 字体预设 ID
   headingAlignment: HeadingAlignment;

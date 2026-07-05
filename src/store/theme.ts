@@ -25,6 +25,7 @@ interface ContentThemeState {
   setDensity: (density: Density) => void;
   setFont: (fontId: string) => void;
   setHeadingAlignment: (alignment: HeadingAlignment) => void;
+  setAccentColor: (accentColor: string | undefined) => void;
   setAdjustments: (adjustments: Partial<StyleAdjustments>) => void;
   resetAdjustments: () => void;
 }
@@ -56,6 +57,11 @@ export const useContentThemeStore = create<ContentThemeState>()(
         setHeadingAlignment: (headingAlignment: HeadingAlignment) =>
           set((state) => ({
             adjustments: { ...state.adjustments, headingAlignment },
+          })),
+
+        setAccentColor: (accentColor: string | undefined) =>
+          set((state) => ({
+            adjustments: { ...state.adjustments, accentColor },
           })),
 
         setAdjustments: (adjustments: Partial<StyleAdjustments>) =>

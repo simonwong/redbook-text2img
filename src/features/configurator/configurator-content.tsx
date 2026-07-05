@@ -13,6 +13,7 @@ import {
   headingAlignmentOptions,
 } from "@/lib/theme";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
+import { AccentColorPicker } from "./accent-color-picker";
 import { ThemeGrid } from "./theme-grid";
 
 const pageNumberOptions = [
@@ -28,6 +29,7 @@ export const ConfiguratorContent = () => {
     setDensity,
     setFont,
     setHeadingAlignment,
+    setAccentColor,
     resetAdjustments,
   } = useContentThemeStore();
   const { signature, showPageNumber, setSignature, setShowPageNumber } =
@@ -36,7 +38,8 @@ export const ConfiguratorContent = () => {
   const isModified =
     adjustments.density !== defaultAdjustments.density ||
     adjustments.fontId !== defaultAdjustments.fontId ||
-    adjustments.headingAlignment !== defaultAdjustments.headingAlignment;
+    adjustments.headingAlignment !== defaultAdjustments.headingAlignment ||
+    adjustments.accentColor !== defaultAdjustments.accentColor;
 
   return (
     <div className="space-y-4">
@@ -77,6 +80,14 @@ export const ConfiguratorContent = () => {
           }
           options={headingAlignmentOptions}
           value={adjustments.headingAlignment}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="font-medium text-xs">强调色</Label>
+        <AccentColorPicker
+          onChange={setAccentColor}
+          value={adjustments.accentColor}
         />
       </div>
 

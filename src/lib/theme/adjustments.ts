@@ -3,6 +3,7 @@
  * 风格调整模块 - 配合 Layer 1 预设主题的微调
  */
 
+import { applyAccentOverride } from "./accent";
 import { defaultFontId, getFontFamily, resolveFontId } from "./fonts";
 import { spacing, typography } from "./tokens";
 import type {
@@ -72,6 +73,8 @@ export const headingAlignmentOptions: {
 // ============================================================
 
 export const defaultAdjustments: StyleAdjustments = {
+  // 显式声明：默认无强调色覆盖（跟随主题）
+  accentColor: undefined,
   density: "normal",
   fontId: defaultFontId,
   headingAlignment: "center",
@@ -100,9 +103,13 @@ export function applyAdjustments(
     resolveFontId(adjustments.fontId, typeset?.fontId)
   );
   const baseFontSize = density.baseFontSize * (typeset?.bodyScale ?? 1);
+  // 强调色覆盖（accent 属风格调整）：未设置时不调用，主题原色逐像素不变
+  const styledBase = adjustments.accentColor
+    ? applyAccentOverride(baseStyle, adjustments.accentColor)
+    : baseStyle;
 
   return {
-    ...baseStyle,
+    ...styledBase,
     typography: {
       baseFontSize,
       lineHeight: density.lineHeight,
