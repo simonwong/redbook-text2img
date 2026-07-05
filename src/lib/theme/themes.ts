@@ -22,11 +22,12 @@ const baseSpacing = {
   headingGap: spacing.headingGap.normal,
 };
 
-/** 默认封面图样式：垂直水平居中 */
+/** 默认封面图样式：垂直水平居中，标题放大 25% 强化海报感 */
 const defaultCoverStyle: CoverStyleOverride = {
   contentVerticalAlign: "center",
   contentHorizontalAlign: "center",
   headingAlignment: "center",
+  headingScale: 1.25,
 };
 
 // ============================================================

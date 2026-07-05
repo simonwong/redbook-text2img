@@ -153,6 +153,8 @@ export interface CoverStyleOverride {
   contentHorizontalAlign?: "left" | "center" | "right";
   /** 标题对齐方式（优先级高于用户调整） */
   headingAlignment?: HeadingAlignment;
+  /** 封面 h1 额外字号乘数（叠加于 typeset.headingScale 之上，仅作用于 h1） */
+  headingScale?: number;
 }
 
 /**

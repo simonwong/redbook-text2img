@@ -119,6 +119,9 @@ export function generateStyles(
   const effectiveHeadingAlignment =
     coverStyle?.headingAlignment ?? headingAlignment;
 
+  // 封面 h1 额外放大乘数：仅封面（coverStyle 存在）时生效，只作用于 h1
+  const coverHeadingScale = coverStyle?.headingScale ?? 1;
+
   // Background style (handles solid, gradient, image)
   // Use backgroundImage instead of background shorthand to avoid conflicts with backgroundSize/backgroundPosition
   const backgroundStyle: React.CSSProperties =
@@ -133,9 +136,10 @@ export function generateStyles(
   const createHeadingStyle = (
     scale: number,
     useHeadingAlignment: boolean,
-    isDisplay = false
+    isDisplay = false,
+    extraScale = 1
   ): React.CSSProperties => ({
-    fontSize: `${scale * (isDisplay ? headingScale : 1)}em`,
+    fontSize: `${scale * (isDisplay ? headingScale : 1) * extraScale}em`,
     lineHeight: 1.2,
     fontWeight: style.heading.fontWeight,
     marginBottom: `${headingGap / baseFontSize}em`,
@@ -196,7 +200,12 @@ export function generateStyles(
     },
 
     // Headings: h1-h4 use heading alignment, h5-h6 always left
-    h1: createHeadingStyle(typography.headingScale.h1, true, true),
+    h1: createHeadingStyle(
+      typography.headingScale.h1,
+      true,
+      true,
+      coverHeadingScale
+    ),
     h2: createHeadingStyle(typography.headingScale.h2, true, true),
     h3: createHeadingStyle(typography.headingScale.h3, true, true),
     h4: createHeadingStyle(typography.headingScale.h4, true),
