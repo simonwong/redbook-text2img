@@ -23,8 +23,19 @@ export interface TypographyStyle {
   // fontFamily 由 StyleAdjustments 动态生成，不在 FullStyle 中
 }
 
+/**
+ * 标题装饰变体（作用于 h1–h2 内层 span，跟随文字宽度）
+ * 仅使用 html2canvas-pro 可导出的属性：linear-gradient / padding
+ * - underline：文字宽度的粗下划线（linear-gradient 底部铺色）
+ * - highlight：荧光笔衬底（linear-gradient 只染文字后半高）
+ */
+export type HeadingDecoration =
+  | { color: string; kind: "underline"; thickness?: string }
+  | { color: string; kind: "highlight" };
+
 export interface HeadingStyle {
   color: string;
+  decoration?: HeadingDecoration;
   fontWeight: number; // 400-900
   // alignment 由 StyleAdjustments 控制
 }

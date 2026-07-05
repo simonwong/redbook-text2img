@@ -52,8 +52,16 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
         <div ref={contentRef} style={styles.content}>
           <ReactMarkdown
             components={{
-              h1: ({ children }) => <h1 style={styles.h1}>{children}</h1>,
-              h2: ({ children }) => <h2 style={styles.h2}>{children}</h2>,
+              h1: ({ children }) => (
+                <h1 style={styles.h1}>
+                  <span style={styles.headingInner}>{children}</span>
+                </h1>
+              ),
+              h2: ({ children }) => (
+                <h2 style={styles.h2}>
+                  <span style={styles.headingInner}>{children}</span>
+                </h2>
+              ),
               h3: ({ children }) => <h3 style={styles.h3}>{children}</h3>,
               h4: ({ children }) => <h4 style={styles.h4}>{children}</h4>,
               h5: ({ children }) => <h5 style={styles.h5}>{children}</h5>,

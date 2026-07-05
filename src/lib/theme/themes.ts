@@ -45,6 +45,11 @@ export const presetThemes: PresetTheme[] = [
       heading: {
         color: colors.gray[900],
         fontWeight: typography.fontWeight.semibold,
+        decoration: {
+          kind: "underline",
+          color: colors.accent.orange,
+          thickness: "0.12em",
+        },
       },
       paragraph: { color: colors.gray[700] },
       emphasis: {
@@ -80,6 +85,11 @@ export const presetThemes: PresetTheme[] = [
       heading: {
         color: colors.gray[800],
         fontWeight: typography.fontWeight.bold,
+        decoration: {
+          kind: "underline",
+          color: colors.gray[800],
+          thickness: "0.22em",
+        },
       },
       paragraph: { color: colors.gray[700] },
       emphasis: {
@@ -124,7 +134,15 @@ export const presetThemes: PresetTheme[] = [
     style: {
       background: { type: "gradient", value: gradients.darkNight },
       typography: baseTypography,
-      heading: { color: "#f5f5f7", fontWeight: typography.fontWeight.semibold },
+      heading: {
+        color: "#f5f5f7",
+        fontWeight: typography.fontWeight.semibold,
+        decoration: {
+          kind: "underline",
+          color: "#a78bfa",
+          thickness: "0.16em",
+        },
+      },
       paragraph: { color: "#cdd0d8" },
       emphasis: {
         bold: { color: "#f5f5f7", fontWeight: typography.fontWeight.semibold },
@@ -163,7 +181,11 @@ export const presetThemes: PresetTheme[] = [
     style: {
       background: { type: "gradient", value: gradients.warmSun },
       typography: baseTypography,
-      heading: { color: "#5b2a0a", fontWeight: typography.fontWeight.bold },
+      heading: {
+        color: "#5b2a0a",
+        fontWeight: typography.fontWeight.bold,
+        decoration: { kind: "highlight", color: "#ffb163" },
+      },
       paragraph: { color: "#7a3e16" },
       emphasis: {
         bold: { color: "#5b2a0a", fontWeight: typography.fontWeight.bold },
@@ -233,7 +255,11 @@ export const presetThemes: PresetTheme[] = [
     style: {
       background: { type: "gradient", value: gradients.cherryCream },
       typography: baseTypography,
-      heading: { color: "#6e1530", fontWeight: typography.fontWeight.bold },
+      heading: {
+        color: "#6e1530",
+        fontWeight: typography.fontWeight.bold,
+        decoration: { kind: "highlight", color: "#ff9dbe" },
+      },
       paragraph: { color: "#86283f" },
       emphasis: {
         bold: { color: "#6e1530", fontWeight: typography.fontWeight.bold },

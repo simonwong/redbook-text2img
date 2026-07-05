@@ -6,7 +6,7 @@
 import type React from "react";
 import type { AdjustedStyle } from "./adjustments";
 import { typography } from "./tokens";
-import type { CoverStyleOverride } from "./types";
+import type { CoverStyleOverride, HeadingDecoration } from "./types";
 
 /** Generated CSS styles for Markdown rendering */
 export interface GeneratedStyles {
@@ -29,6 +29,8 @@ export interface GeneratedStyles {
   blockquote: React.CSSProperties;
   a: React.CSSProperties;
   mark: React.CSSProperties;
+  /** 标题装饰（内层 span 用），仅在主题配置了 heading.decoration 时存在 */
+  headingInner?: React.CSSProperties;
 }
 
 /** 封面图样式覆盖选项 */
@@ -69,6 +71,33 @@ function getAlignItems(
     default:
       return "flex-start";
   }
+}
+
+/**
+ * 将标题装饰转换为内层 span 的 CSSProperties
+ * 装饰跟随文字宽度（span 为 inline），居中/左对齐均随文字。
+ * 装饰边界为 h1–h2（比 isDisplay 的 h1–h3 收窄一级：h3 尺寸接近正文，装饰过吵）。
+ * 仅 html2canvas-pro 可导出的属性：linear-gradient / padding。
+ */
+function createHeadingDecoration(
+  decoration?: HeadingDecoration
+): React.CSSProperties | undefined {
+  if (!decoration) {
+    return;
+  }
+  if (decoration.kind === "underline") {
+    return {
+      backgroundImage: `linear-gradient(${decoration.color}, ${decoration.color})`,
+      backgroundRepeat: "no-repeat",
+      backgroundSize: `100% ${decoration.thickness ?? "0.14em"}`,
+      backgroundPosition: "0 100%",
+      paddingBottom: "0.06em",
+    };
+  }
+  return {
+    backgroundImage: `linear-gradient(180deg, transparent 55%, ${decoration.color} 55%, ${decoration.color} 92%, transparent 92%)`,
+    padding: "0 0.08em",
+  };
 }
 
 /**
@@ -243,5 +272,8 @@ export function generateStyles(
       color: style.link.color,
       textDecoration: style.link.underline ? "underline" : "none",
     },
+
+    // 标题装饰仅作用于展示级标题 h1–h2（由 image-preview 包裹内层 span）
+    headingInner: createHeadingDecoration(style.heading.decoration),
   };
 }
