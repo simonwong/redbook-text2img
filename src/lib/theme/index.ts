@@ -28,7 +28,7 @@ export {
 } from "./fonts";
 export type { GeneratedStyles, GenerateStylesOptions } from "./generator";
 // Generator
-export { generateStyles } from "./generator";
+export { createHeadingDecoration, generateStyles } from "./generator";
 
 // Themes
 export {

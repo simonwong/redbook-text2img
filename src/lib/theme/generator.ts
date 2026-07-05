@@ -81,7 +81,7 @@ function getAlignItems(
  * 装饰边界为 h1–h2（比 isDisplay 的 h1–h3 收窄一级：h3 尺寸接近正文，装饰过吵）。
  * 仅 html2canvas-pro 可导出的属性：linear-gradient / padding。
  */
-function createHeadingDecoration(
+export function createHeadingDecoration(
   decoration?: HeadingDecoration
 ): React.CSSProperties | undefined {
   if (!decoration) {
