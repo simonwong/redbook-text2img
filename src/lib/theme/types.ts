@@ -92,6 +92,22 @@ export interface SpacingStyle {
   headingGap: number;
 }
 
+/**
+ * 卡片浮层（surface）：内容浮在圆角卡片上，背景四周露出（封面与内容页一致生效）。
+ * 无此字段时文字直接铺在整卡背景上（默认行为，逐像素不变）。
+ * 仅使用 html2canvas-pro 可导出属性：solid/rgba 背景、borderRadius、boxShadow；禁 backdrop-filter。
+ */
+export interface SurfaceStyle {
+  /** 浮层卡背景（建议 rgba 半透明白，如 rgba(255,255,255,0.88)） */
+  background: string;
+  /** 卡片圆角（px） */
+  borderRadius: number;
+  /** 卡片投影（柔和阴影，强化浮层层次） */
+  boxShadow?: string;
+  /** 卡片四周留白 = container padding（px），露出背景边缘 */
+  margin: number;
+}
+
 /** Layer 2: Complete style configuration for Markdown rendering */
 export interface FullStyle {
   background: BackgroundStyle;
@@ -104,6 +120,8 @@ export interface FullStyle {
   code: CodeStyle;
   link: LinkStyle;
   spacing: SpacingStyle;
+  /** 内容卡浮层布局变体（可选） */
+  surface?: SurfaceStyle;
 }
 
 // ============================================================

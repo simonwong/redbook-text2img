@@ -101,23 +101,31 @@ export const presetThemes: PresetTheme[] = [
         highlight: { background: colors.accent.blue, color: colors.white },
       },
       list: { color: colors.gray[700], markerColor: colors.gray[500] },
+      // 浮卡上不再需要半透明压背景，改用浅灰保持层次
       blockquote: {
-        background: "rgba(255, 255, 255, 0.7)",
+        background: colors.gray[100],
         borderColor: colors.gray[400],
         textColor: colors.gray[600],
       },
       code: {
         inline: {
-          background: "rgba(255, 255, 255, 0.8)",
+          background: colors.gray[100],
           color: colors.gray[700],
         },
         block: {
-          background: "rgba(255, 255, 255, 0.85)",
+          background: colors.gray[50],
           color: colors.gray[800],
         },
       },
       link: { color: colors.accent.blue, underline: false },
       spacing: baseSpacing,
+      // 卡片浮层：三角背景四周露出，文字浮在半透明白卡上（提升可读性）
+      surface: {
+        background: "rgba(255, 255, 255, 0.88)",
+        borderRadius: 16,
+        margin: 16,
+        boxShadow: "0 6px 24px rgba(31, 41, 55, 0.14)",
+      },
     },
     coverStyle: defaultCoverStyle,
     // 极简海报感：Inter 无衬线 + 放大标题 + 紧字距
