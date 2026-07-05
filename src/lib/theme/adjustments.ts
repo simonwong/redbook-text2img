@@ -3,13 +3,14 @@
  * 风格调整模块 - 配合 Layer 1 预设主题的微调
  */
 
-import { defaultFontId, getFontFamily } from "./fonts";
+import { defaultFontId, getFontFamily, resolveFontId } from "./fonts";
 import { spacing, typography } from "./tokens";
 import type {
   Density,
   FullStyle,
   HeadingAlignment,
   StyleAdjustments,
+  TypesetStyle,
 } from "./types";
 
 // ============================================================
@@ -82,19 +83,28 @@ export const defaultAdjustments: StyleAdjustments = {
 
 /**
  * 将风格调整应用到基础样式上
- * 返回最终的 FullStyle（带有 fontFamily 和调整后的间距）
+ * 返回最终的 FullStyle（带有 fontFamily、调整后的间距，以及主题排版个性）
+ *
+ * typeset 是乘数/叠加，作用于密度之上，不覆盖密度逻辑：
+ * - fontFamily：用户 auto 时用 typeset.fontId，否则用户选择优先
+ * - baseFontSize：密度 baseFontSize × typeset.bodyScale
+ * - headingScale / letterSpacing：交给 generator 消费
  */
 export function applyAdjustments(
   baseStyle: FullStyle,
-  adjustments: StyleAdjustments
-): FullStyle & { fontFamily: string; headingAlignment: HeadingAlignment } {
+  adjustments: StyleAdjustments,
+  typeset?: TypesetStyle
+): AdjustedStyle {
   const density = densityPresets[adjustments.density];
-  const fontFamily = getFontFamily(adjustments.fontId);
+  const fontFamily = getFontFamily(
+    resolveFontId(adjustments.fontId, typeset?.fontId)
+  );
+  const baseFontSize = density.baseFontSize * (typeset?.bodyScale ?? 1);
 
   return {
     ...baseStyle,
     typography: {
-      baseFontSize: density.baseFontSize,
+      baseFontSize,
       lineHeight: density.lineHeight,
     },
     spacing: {
@@ -104,8 +114,15 @@ export function applyAdjustments(
     },
     fontFamily,
     headingAlignment: adjustments.headingAlignment,
+    headingScale: typeset?.headingScale ?? 1,
+    letterSpacing: typeset?.letterSpacing ?? {},
   };
 }
 
 /** 应用调整后的完整样式类型 */
-export type AdjustedStyle = ReturnType<typeof applyAdjustments>;
+export type AdjustedStyle = FullStyle & {
+  fontFamily: string;
+  headingAlignment: HeadingAlignment;
+  headingScale: number;
+  letterSpacing: NonNullable<TypesetStyle["letterSpacing"]>;
+};

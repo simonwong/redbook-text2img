@@ -110,6 +110,12 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
     coverStyle: defaultCoverStyle,
+    // 极简海报感：Inter 无衬线 + 放大标题 + 紧字距
+    typeset: {
+      fontId: "sans",
+      headingScale: 1.2,
+      letterSpacing: { heading: "-0.02em" },
+    },
   },
   {
     id: "clean-dark",
@@ -143,6 +149,10 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
     coverStyle: defaultCoverStyle,
+    // 冷静克制：标题宽字距
+    typeset: {
+      letterSpacing: { heading: "0.05em" },
+    },
   },
 
   // ===== 渐变系列 =====
@@ -175,6 +185,11 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
     coverStyle: defaultCoverStyle,
+    // 温暖亲和：圆体 + 略放大标题
+    typeset: {
+      fontId: "rounded",
+      headingScale: 1.1,
+    },
   },
 
   {
@@ -206,6 +221,10 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
     coverStyle: defaultCoverStyle,
+    // 清晨薄雾的书卷气：楷体
+    typeset: {
+      fontId: "kai",
+    },
   },
   {
     id: "xiaohongshu-pink",
@@ -236,6 +255,11 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
     coverStyle: defaultCoverStyle,
+    // 奶霜甜感：圆体 + 标题稍大
+    typeset: {
+      fontId: "rounded",
+      headingScale: 1.1,
+    },
   },
   {
     id: "reading-mode",
@@ -272,6 +296,11 @@ export const presetThemes: PresetTheme[] = [
       },
     },
     coverStyle: defaultCoverStyle,
+    // 长文阅读：衬线护眼 + 正文稍大
+    typeset: {
+      fontId: "serif",
+      bodyScale: 1.05,
+    },
   },
 
   // ===== 特色系列 =====

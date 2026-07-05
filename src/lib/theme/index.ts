@@ -48,4 +48,5 @@ export type {
   HeadingAlignment,
   PresetTheme,
   StyleAdjustments,
+  TypesetStyle,
 } from "./types";

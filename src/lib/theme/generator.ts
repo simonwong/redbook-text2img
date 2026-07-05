@@ -80,7 +80,7 @@ export function generateStyles(
 ): GeneratedStyles {
   const { baseFontSize, lineHeight } = style.typography;
   const { padding, paragraphGap, headingGap } = style.spacing;
-  const { fontFamily, headingAlignment } = style;
+  const { fontFamily, headingAlignment, headingScale, letterSpacing } = style;
   const coverStyle = options?.coverStyle;
 
   // 封面标题对齐：优先使用 coverStyle 中的设置,覆盖用户调整
@@ -97,16 +97,19 @@ export function generateStyles(
         : { backgroundImage: style.background.value };
 
   // Helper for heading styles
+  // isDisplay: h1–h3 为展示级标题，应用主题 typeset 的 headingScale 与 heading 字间距
   const createHeadingStyle = (
     scale: number,
-    useHeadingAlignment: boolean
+    useHeadingAlignment: boolean,
+    isDisplay = false
   ): React.CSSProperties => ({
-    fontSize: `${scale}em`,
+    fontSize: `${scale * (isDisplay ? headingScale : 1)}em`,
     lineHeight: 1.2,
     fontWeight: style.heading.fontWeight,
     marginBottom: `${headingGap / baseFontSize}em`,
     color: style.heading.color,
     textAlign: useHeadingAlignment ? effectiveHeadingAlignment : "left",
+    letterSpacing: isDisplay ? letterSpacing.heading : undefined,
     width: "100%",
   });
 
@@ -145,12 +148,13 @@ export function generateStyles(
       height: "100%",
       justifyContent: getJustifyContent(coverStyle?.contentVerticalAlign),
       alignItems: getAlignItems(coverStyle?.contentHorizontalAlign),
+      letterSpacing: letterSpacing.body,
     },
 
     // Headings: h1-h4 use heading alignment, h5-h6 always left
-    h1: createHeadingStyle(typography.headingScale.h1, true),
-    h2: createHeadingStyle(typography.headingScale.h2, true),
-    h3: createHeadingStyle(typography.headingScale.h3, true),
+    h1: createHeadingStyle(typography.headingScale.h1, true, true),
+    h2: createHeadingStyle(typography.headingScale.h2, true, true),
+    h3: createHeadingStyle(typography.headingScale.h3, true, true),
     h4: createHeadingStyle(typography.headingScale.h4, true),
     h5: {
       ...createHeadingStyle(typography.headingScale.h5, false),

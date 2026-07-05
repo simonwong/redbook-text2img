@@ -126,6 +126,21 @@ export interface CoverStyleOverride {
   headingAlignment?: HeadingAlignment;
 }
 
+/**
+ * 每主题排版个性（typeset）
+ * 叠加在用户"密度"与"字体"选择之上，均为乘数/叠加，不与密度打架。
+ */
+export interface TypesetStyle {
+  /** 主题默认字体（引用 fonts.ts 预设 id）；用户字体为 auto 时生效 */
+  fontId?: string;
+  /** 在 tokens.headingScale 基础上对 h1–h3 字号的乘数（如 1.15 放大标题） */
+  headingScale?: number;
+  /** 字间距（CSS 值） */
+  letterSpacing?: { heading?: string; body?: string };
+  /** 正文字号乘数（乘在密度 baseFontSize 上） */
+  bodyScale?: number;
+}
+
 /** 装饰性顶部导航栏（如 Apple Notes 风格） */
 export interface HeaderBarStyle {
   /** 图标颜色 */
@@ -150,4 +165,6 @@ export interface PresetTheme {
   coverStyle?: CoverStyleOverride;
   /** 装饰性顶部导航栏 */
   headerBar?: HeaderBarStyle;
+  /** 每主题排版个性（字体/标题字号/字间距/正文字号） */
+  typeset?: TypesetStyle;
 }
