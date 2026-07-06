@@ -222,7 +222,7 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
         </div>
 
         <div
-          className="w-full min-w-0 max-w-[375px] overflow-hidden"
+          className="relative w-full min-w-0 max-w-[375px] overflow-hidden"
           ref={scaleContainerRef}
         >
           <div
@@ -250,6 +250,12 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
               </div>
             )}
           </div>
+          {/* 溢出警告挂在未缩放的外框（scale 元素之外），避免随预览缩放变形，也绝不进导出元素 */}
+          {isOverflowing && (
+            <div className="absolute inset-x-2 bottom-2 z-10">
+              <OverflowWarning />
+            </div>
+          )}
         </div>
 
         <div className="hidden sm:block">
@@ -260,8 +266,6 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
           />
         </div>
       </div>
-
-      {isOverflowing && <OverflowWarning />}
 
       <SegmentFilmstrip
         activeIndex={clampedIndex}

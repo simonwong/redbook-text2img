@@ -1,3 +1,3 @@
 "use client";
 
-export { FloatingConfigurator as Configurator } from "./floating-configurator";
+export { ConfiguratorPanel } from "./configurator-panel";

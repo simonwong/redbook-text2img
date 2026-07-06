@@ -46,7 +46,7 @@ export const MobileLayout = () => {
       <Drawer onOpenChange={setSettingsOpen} open={settingsOpen}>
         <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle>设置样式</DrawerTitle>
+            <DrawerTitle>样式设置</DrawerTitle>
           </DrawerHeader>
           <div className="overflow-auto px-4 pb-[max(2rem,env(safe-area-inset-bottom))]">
             <ConfiguratorContent />
