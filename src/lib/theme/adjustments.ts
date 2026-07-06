@@ -26,28 +26,20 @@ interface DensityValues {
   headingGap: number;
 }
 
+const densityValues = (d: Density): DensityValues => ({
+  baseFontSize: typography.fontSize[d],
+  lineHeight: typography.lineHeight[d],
+  padding: spacing.padding[d],
+  paragraphGap: spacing.paragraphGap[d],
+  headingGap: spacing.headingGap[d],
+});
+
 export const densityPresets: Record<Density, DensityValues> = {
-  compact: {
-    baseFontSize: typography.fontSize.compact,
-    lineHeight: typography.lineHeight.compact,
-    padding: spacing.padding.compact,
-    paragraphGap: spacing.paragraphGap.compact,
-    headingGap: spacing.headingGap.compact,
-  },
-  normal: {
-    baseFontSize: typography.fontSize.normal,
-    lineHeight: typography.lineHeight.normal,
-    padding: spacing.padding.normal,
-    paragraphGap: spacing.paragraphGap.normal,
-    headingGap: spacing.headingGap.normal,
-  },
-  spacious: {
-    baseFontSize: typography.fontSize.spacious,
-    lineHeight: typography.lineHeight.spacious,
-    padding: spacing.padding.spacious,
-    paragraphGap: spacing.paragraphGap.spacious,
-    headingGap: spacing.headingGap.spacious,
-  },
+  compact: densityValues("compact"),
+  snug: densityValues("snug"),
+  normal: densityValues("normal"),
+  relaxed: densityValues("relaxed"),
+  spacious: densityValues("spacious"),
 };
 
 // ============================================================
@@ -56,7 +48,9 @@ export const densityPresets: Record<Density, DensityValues> = {
 
 export const densityOptions: { value: Density; label: string }[] = [
   { value: "compact", label: "紧凑" },
+  { value: "snug", label: "较紧" },
   { value: "normal", label: "正常" },
+  { value: "relaxed", label: "较松" },
   { value: "spacious", label: "宽松" },
 ];
 

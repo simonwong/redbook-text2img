@@ -129,7 +129,7 @@ export interface FullStyle {
 // ============================================================
 
 /** 密度选项 */
-export type Density = "compact" | "normal" | "spacious";
+export type Density = "compact" | "snug" | "normal" | "relaxed" | "spacious";
 
 /** 标题对齐方式 */
 export type HeadingAlignment = "left" | "center";
