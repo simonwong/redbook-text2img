@@ -25,12 +25,14 @@ export interface TypographyStyle {
 
 /**
  * 标题装饰变体（作用于 h1–h2 内层 span，跟随文字宽度）
- * 仅使用 html2canvas-pro 可导出的属性：linear-gradient / padding
+ * 仅使用 html2canvas-pro 可导出的属性：linear-gradient / padding / 内联 SVG data-URI 背景图
  * - underline：文字宽度的粗下划线（linear-gradient 底部铺色）
+ * - wavy：文字宽度的波浪下划线（repeat-x 平铺内联 SVG data-URI）
  * - highlight：荧光笔衬底（linear-gradient 只染文字后半高）
  */
 export type HeadingDecoration =
   | { color: string; kind: "underline"; thickness?: string }
+  | { color: string; kind: "wavy" }
   | { color: string; kind: "highlight" };
 
 export interface HeadingStyle {
@@ -134,6 +136,13 @@ export type Density = "compact" | "snug" | "normal" | "relaxed" | "spacious";
 /** 标题对齐方式 */
 export type HeadingAlignment = "left" | "center";
 
+/** 标题装饰用户选项；"none" = 强制无装饰，undefined = 跟随主题默认 */
+export type HeadingDecorationChoice =
+  | "none"
+  | "underline"
+  | "wavy"
+  | "highlight";
+
 /** 风格调整（配合 Layer 1 预设主题） */
 export interface StyleAdjustments {
   /** 自定义强调色（hex）；undefined = 跟随主题原色 */
@@ -141,6 +150,8 @@ export interface StyleAdjustments {
   density: Density;
   fontId: string; // 字体预设 ID
   headingAlignment: HeadingAlignment;
+  /** 标题装饰覆盖；undefined = 跟随主题原装饰 */
+  headingDecoration?: HeadingDecorationChoice;
 }
 
 // ============================================================

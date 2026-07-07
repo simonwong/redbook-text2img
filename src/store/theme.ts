@@ -6,6 +6,7 @@ import {
   defaultTheme,
   getThemeById,
   type HeadingAlignment,
+  type HeadingDecorationChoice,
   type StyleAdjustments,
 } from "@/lib/theme";
 
@@ -26,6 +27,7 @@ interface ContentThemeState {
   setFont: (fontId: string) => void;
   setHeadingAlignment: (alignment: HeadingAlignment) => void;
   setAccentColor: (accentColor: string | undefined) => void;
+  setHeadingDecoration: (choice: HeadingDecorationChoice | undefined) => void;
   setAdjustments: (adjustments: Partial<StyleAdjustments>) => void;
   resetAdjustments: () => void;
 }
@@ -62,6 +64,11 @@ export const useContentThemeStore = create<ContentThemeState>()(
         setAccentColor: (accentColor: string | undefined) =>
           set((state) => ({
             adjustments: { ...state.adjustments, accentColor },
+          })),
+
+        setHeadingDecoration: (choice: HeadingDecorationChoice | undefined) =>
+          set((state) => ({
+            adjustments: { ...state.adjustments, headingDecoration: choice },
           })),
 
         setAdjustments: (adjustments: Partial<StyleAdjustments>) =>

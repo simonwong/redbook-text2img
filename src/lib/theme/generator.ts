@@ -79,7 +79,7 @@ function getAlignItems(
  * 将标题装饰转换为内层 span 的 CSSProperties
  * 装饰跟随文字宽度（span 为 inline），居中/左对齐均随文字。
  * 装饰边界为 h1–h2（比 isDisplay 的 h1–h3 收窄一级：h3 尺寸接近正文，装饰过吵）。
- * 仅 html2canvas-pro 可导出的属性：linear-gradient / padding。
+ * 仅 html2canvas-pro 可导出的属性：linear-gradient / padding / 内联 SVG data-URI 背景图。
  */
 export function createHeadingDecoration(
   decoration?: HeadingDecoration
@@ -94,6 +94,17 @@ export function createHeadingDecoration(
       backgroundSize: `100% ${decoration.thickness ?? "0.14em"}`,
       backgroundPosition: "0 100%",
       paddingBottom: "0.06em",
+    };
+  }
+  if (decoration.kind === "wavy") {
+    // 内联 SVG data-URI（一个正弦周期），em 尺寸让波浪随字号缩放
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='12' height='6' viewBox='0 0 12 6'><path d='M0 3 Q3 0 6 3 T12 3' fill='none' stroke='${decoration.color}' stroke-width='1.4'/></svg>`;
+    return {
+      backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
+      backgroundRepeat: "repeat-x",
+      backgroundPosition: "0 100%",
+      backgroundSize: "0.7em 0.35em",
+      paddingBottom: "0.12em",
     };
   }
   return {

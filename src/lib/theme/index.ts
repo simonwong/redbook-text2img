@@ -46,6 +46,7 @@ export type {
   FullStyle,
   HeaderBarStyle,
   HeadingAlignment,
+  HeadingDecorationChoice,
   PresetTheme,
   StyleAdjustments,
   TypesetStyle,

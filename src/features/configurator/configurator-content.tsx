@@ -10,6 +10,7 @@ import {
   defaultAdjustments,
   densityOptions,
   fontOptions,
+  type HeadingDecorationChoice,
   headingAlignmentOptions,
 } from "@/lib/theme";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
@@ -21,6 +22,17 @@ const pageNumberOptions = [
   { value: "hide", label: "隐藏" },
 ];
 
+const headingDecorationOptions: {
+  value: "theme" | HeadingDecorationChoice;
+  label: string;
+}[] = [
+  { value: "theme", label: "跟随主题" },
+  { value: "none", label: "无" },
+  { value: "underline", label: "下划线" },
+  { value: "wavy", label: "波浪线" },
+  { value: "highlight", label: "荧光笔" },
+];
+
 export const ConfiguratorContent = () => {
   const {
     currentThemeId,
@@ -30,6 +42,7 @@ export const ConfiguratorContent = () => {
     setFont,
     setHeadingAlignment,
     setAccentColor,
+    setHeadingDecoration,
     resetAdjustments,
   } = useContentThemeStore();
   const { signature, showPageNumber, setSignature, setShowPageNumber } =
@@ -39,7 +52,8 @@ export const ConfiguratorContent = () => {
     adjustments.density !== defaultAdjustments.density ||
     adjustments.fontId !== defaultAdjustments.fontId ||
     adjustments.headingAlignment !== defaultAdjustments.headingAlignment ||
-    adjustments.accentColor !== defaultAdjustments.accentColor;
+    adjustments.accentColor !== defaultAdjustments.accentColor ||
+    adjustments.headingDecoration !== defaultAdjustments.headingDecoration;
 
   return (
     <div className="space-y-4">
@@ -80,6 +94,18 @@ export const ConfiguratorContent = () => {
           }
           options={headingAlignmentOptions}
           value={adjustments.headingAlignment}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="font-medium text-xs">标题装饰</Label>
+        <Select
+          className="w-full"
+          onChange={(v) =>
+            setHeadingDecoration(v === "theme" ? undefined : v)
+          }
+          options={headingDecorationOptions}
+          value={adjustments.headingDecoration ?? "theme"}
         />
       </div>
 

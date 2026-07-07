@@ -5,7 +5,7 @@
  */
 
 import { colors } from "./tokens";
-import type { FullStyle, HeadingStyle } from "./types";
+import type { FullStyle, HeadingDecoration, HeadingStyle } from "./types";
 
 type Rgb = [number, number, number];
 
@@ -42,12 +42,33 @@ function luminance([r, g, b]: Rgb): number {
 }
 
 /**
+ * 按装饰类型从基色派生标题装饰对象（集中化颜色派生，避免散落）。
+ * - underline / wavy：line 色 = 基色
+ * - highlight：衬底 = 基色向白混合 60%（浅色荧光笔更耐看）
+ */
+export function deriveDecoration(
+  kind: HeadingDecoration["kind"],
+  baseColor: string
+): HeadingDecoration {
+  if (kind === "highlight") {
+    return {
+      kind: "highlight",
+      color: rgbToHex(...mix(hexToRgb(baseColor), WHITE, 0.6)),
+    };
+  }
+  if (kind === "wavy") {
+    return { kind: "wavy", color: baseColor };
+  }
+  return { kind: "underline", color: baseColor };
+}
+
+/**
  * 用 accent 覆盖 FullStyle 的强调语义色，返回新对象（不改动入参）。
  * 派生规则：
  * - highlight 背景 = accent；文字按亮度 >0.6 用深色 #1f2937，否则用白
  * - list.markerColor / blockquote.borderColor = accent
  * - link.color = accent 向黑混合 15%（加深，保持可读）
- * - heading.decoration: underline = accent；highlight 衬底 = accent 向白混合 60%
+ * - heading.decoration: 保留原装饰类型，颜色按 deriveDecoration 从 accent 派生
  */
 export function applyAccentOverride(
   style: FullStyle,
@@ -56,16 +77,16 @@ export function applyAccentOverride(
   const rgb = hexToRgb(accent);
   const highlightText = luminance(rgb) > 0.6 ? colors.gray[800] : colors.white;
   const linkColor = rgbToHex(...mix(rgb, BLACK, 0.15));
-  const backing = rgbToHex(...mix(rgb, WHITE, 0.6));
 
   const decoration = style.heading.decoration;
   const heading: HeadingStyle = decoration
     ? {
         ...style.heading,
-        decoration:
-          decoration.kind === "highlight"
-            ? { ...decoration, color: backing }
-            : { ...decoration, color: accent },
+        // 保留原装饰额外字段（如 underline 的 thickness），仅按类型从 accent 重着色 → 行为不变
+        decoration: {
+          ...decoration,
+          ...deriveDecoration(decoration.kind, accent),
+        },
       }
     : style.heading;
 
