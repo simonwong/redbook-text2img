@@ -61,22 +61,16 @@ export const AccentColorPicker = ({
         />
       </label>
 
-      {/* 跟随主题（清除强调色）：斜杠圆点，无覆盖时高亮 */}
-      <button
-        aria-label="跟随主题"
-        aria-pressed={!value}
-        className={cn(
-          "relative h-6 w-6 overflow-hidden rounded-full bg-background transition-all",
-          value
-            ? "ring-1 ring-border hover:ring-foreground/40"
-            : "ring-2 ring-primary"
-        )}
-        onClick={() => onChange(undefined)}
-        title="跟随主题"
-        type="button"
-      >
-        <span className="absolute top-1/2 left-0 h-px w-full -translate-y-1/2 -rotate-45 bg-red-400" />
-      </button>
+      {/* 已选强调色时提供清除入口：文字按钮，语义自明，回到主题默认色 */}
+      {value && (
+        <button
+          className="h-6 rounded-md px-1.5 text-muted-foreground text-xs transition-colors hover:text-foreground"
+          onClick={() => onChange(undefined)}
+          type="button"
+        >
+          跟随主题
+        </button>
+      )}
     </div>
   );
 };
