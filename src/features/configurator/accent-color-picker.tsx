@@ -17,8 +17,7 @@ const RAINBOW =
   "conic-gradient(from 0deg, #ff4d4d, #ffd24d, #4dff88, #4dd2ff, #4d6bff, #c44dff, #ff4d4d)";
 
 interface AccentColorPickerProps {
-  /** undefined 表示清除（跟随主题） */
-  onChange: (color: string | undefined) => void;
+  onChange: (color: string) => void;
   value: string | undefined;
 }
 
@@ -60,17 +59,6 @@ export const AccentColorPicker = ({
           value={value ?? colors.accent.purple}
         />
       </label>
-
-      {/* 已选强调色时提供清除入口：文字按钮，语义自明，回到主题默认色 */}
-      {value && (
-        <button
-          className="h-6 rounded-md px-1.5 text-muted-foreground text-xs transition-colors hover:text-foreground"
-          onClick={() => onChange(undefined)}
-          type="button"
-        >
-          跟随主题
-        </button>
-      )}
     </div>
   );
 };
