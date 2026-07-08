@@ -7,6 +7,12 @@
 import { colors } from "./tokens";
 import type { FullStyle, HeadingDecoration, HeadingStyle } from "./types";
 
+/**
+ * 透明强调色哨兵：accentColor 取此值 = 去掉标题装饰（强调色专用于标题下划线）。
+ * 区别于 undefined（跟随主题原色）：这是"明确不要强调装饰"。
+ */
+export const ACCENT_NONE = "transparent";
+
 type Rgb = [number, number, number];
 
 const WHITE: Rgb = [255, 255, 255];

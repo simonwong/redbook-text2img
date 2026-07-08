@@ -8,6 +8,8 @@
  * 风格调整 (StyleAdjustments): 配合 Layer 1 的微调选项
  */
 
+// Accent
+export { ACCENT_NONE } from "./accent";
 export type { AdjustedStyle } from "./adjustments";
 // Adjustments
 export {

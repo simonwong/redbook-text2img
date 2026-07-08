@@ -53,6 +53,7 @@ export const PreviewActionBar = ({
         variant="outline"
       >
         <HugeiconsIcon className="h-3.5 w-3.5" icon={PaintBoardIcon} />
+        主题
       </Button>
     </Tooltip>
   </div>

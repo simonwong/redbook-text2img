@@ -26,11 +26,11 @@ const headingDecorationOptions: {
   value: "theme" | HeadingDecorationChoice;
   label: string;
 }[] = [
-  { value: "theme", label: "跟随主题" },
+  { value: "theme", label: "默认" },
   { value: "none", label: "无" },
-  { value: "underline", label: "下划线" },
-  { value: "wavy", label: "波浪线" },
-  { value: "highlight", label: "荧光笔" },
+  { value: "underline", label: "直线" },
+  { value: "wavy", label: "波浪" },
+  { value: "highlight", label: "高亮" },
 ];
 
 export const ConfiguratorContent = () => {
@@ -99,10 +99,12 @@ export const ConfiguratorContent = () => {
 
       <div className="space-y-2">
         <Label className="font-medium text-xs">标题装饰</Label>
-        <Select
+        <SegmentedControl
           className="w-full"
           onChange={(v) =>
-            setHeadingDecoration(v === "theme" ? undefined : v)
+            setHeadingDecoration(
+              v === "theme" ? undefined : (v as HeadingDecorationChoice)
+            )
           }
           options={headingDecorationOptions}
           value={adjustments.headingDecoration ?? "theme"}

@@ -3,7 +3,7 @@
  * 风格调整模块 - 配合 Layer 1 预设主题的微调
  */
 
-import { applyAccentOverride, deriveDecoration } from "./accent";
+import { ACCENT_NONE, applyAccentOverride, deriveDecoration } from "./accent";
 import { defaultFontId, getFontFamily, resolveFontId } from "./fonts";
 import { spacing, typography } from "./tokens";
 import type {
@@ -99,29 +99,33 @@ export function applyAdjustments(
     resolveFontId(adjustments.fontId, typeset?.fontId)
   );
   const baseFontSize = density.baseFontSize * (typeset?.bodyScale ?? 1);
-  // 强调色覆盖（accent 属风格调整）：未设置时不调用，主题原色逐像素不变
-  const styledBase = adjustments.accentColor
-    ? applyAccentOverride(baseStyle, adjustments.accentColor)
+  // 强调色三态：undefined=跟随主题原色；ACCENT_NONE(透明)=去掉标题装饰；其余=自定义色覆盖。
+  // 只有自定义色才过 applyAccentOverride（透明/未设置都保持主题原语义色，逐像素不变）。
+  const customAccent =
+    adjustments.accentColor && adjustments.accentColor !== ACCENT_NONE
+      ? adjustments.accentColor
+      : undefined;
+  const styledBase = customAccent
+    ? applyAccentOverride(baseStyle, customAccent)
     : baseStyle;
 
-  // 标题装饰覆盖（在 accent 之后）：undefined=跟随主题；none=去掉；其余按选项从
-  // accent（若有）或主题标题色派生。不可变展开，不原地改。
+  // 有效标题装饰：用户"标题装饰"选择优先；否则透明强调色去掉装饰；否则跟随主题。
+  let decoration = styledBase.heading.decoration;
+  if (adjustments.headingDecoration !== undefined) {
+    decoration =
+      adjustments.headingDecoration === "none"
+        ? undefined
+        : deriveDecoration(
+            adjustments.headingDecoration,
+            customAccent ?? baseStyle.heading.color
+          );
+  } else if (adjustments.accentColor === ACCENT_NONE) {
+    decoration = undefined;
+  }
   const decorated =
-    adjustments.headingDecoration === undefined
+    decoration === styledBase.heading.decoration
       ? styledBase
-      : {
-          ...styledBase,
-          heading: {
-            ...styledBase.heading,
-            decoration:
-              adjustments.headingDecoration === "none"
-                ? undefined
-                : deriveDecoration(
-                    adjustments.headingDecoration,
-                    adjustments.accentColor ?? baseStyle.heading.color
-                  ),
-          },
-        };
+      : { ...styledBase, heading: { ...styledBase.heading, decoration } };
 
   return {
     ...decorated,
