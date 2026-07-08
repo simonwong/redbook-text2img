@@ -120,9 +120,10 @@ export const presetThemes: PresetTheme[] = [
       },
       link: { color: colors.accent.blue, underline: false },
       spacing: baseSpacing,
-      // 卡片浮层：三角背景四周露出，文字浮在半透明白卡上（提升可读性）
+      // 卡片浮层：三角背景四周露出 + 白卡半透明让三角隐隐透过文字区（背景透出来，
+      // 又保留深灰文字可读性）
       surface: {
-        background: "rgba(255, 255, 255, 0.88)",
+        background: "rgba(255, 255, 255, 0.35)",
         borderRadius: 16,
         margin: 16,
         boxShadow: "0 6px 24px rgba(31, 41, 55, 0.14)",
