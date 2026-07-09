@@ -109,9 +109,14 @@ export function applyAdjustments(
     ? applyAccentOverride(baseStyle, customAccent)
     : baseStyle;
 
-  // 有效标题装饰：用户"标题装饰"选择优先；否则透明强调色去掉装饰；否则跟随主题。
+  // 有效标题装饰的优先级：
+  // 1. 透明强调色 = 去掉装饰的总开关（强调色是装饰的颜色，透明=不可见=无装饰），优先于装饰类型；
+  // 2. 用户"标题装饰"选择（类型 + 用强调色/主题色着色）；
+  // 3. 跟随主题。
   let decoration = styledBase.heading.decoration;
-  if (adjustments.headingDecoration !== undefined) {
+  if (adjustments.accentColor === ACCENT_NONE) {
+    decoration = undefined;
+  } else if (adjustments.headingDecoration !== undefined) {
     decoration =
       adjustments.headingDecoration === "none"
         ? undefined
@@ -119,8 +124,6 @@ export function applyAdjustments(
             adjustments.headingDecoration,
             customAccent ?? baseStyle.heading.color
           );
-  } else if (adjustments.accentColor === ACCENT_NONE) {
-    decoration = undefined;
   }
   const decorated =
     decoration === styledBase.heading.decoration
