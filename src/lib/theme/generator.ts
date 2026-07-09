@@ -97,14 +97,15 @@ export function createHeadingDecoration(
     };
   }
   if (decoration.kind === "wavy") {
-    // 内联 SVG data-URI（一个正弦周期），em 尺寸让波浪随字号缩放
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='12' height='6' viewBox='0 0 12 6'><path d='M0 3 Q3 0 6 3 T12 3' fill='none' stroke='${decoration.color}' stroke-width='1.4'/></svg>`;
+    // 手绘感波浪：正弦基线 + feTurbulence 位移让线条不规整（像随手画的）。
+    // 整条铺满文字宽度（非平铺），避免位移在平铺接缝处断裂。
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='10' viewBox='0 0 120 10'><defs><filter id='hd' x='-2%' y='-80%' width='104%' height='260%'><feTurbulence type='fractalNoise' baseFrequency='0.02 0.05' numOctaves='1' seed='11' result='t'/><feDisplacementMap in='SourceGraphic' in2='t' scale='3' xChannelSelector='R' yChannelSelector='G'/></filter></defs><path d='M3 5 Q9 2.6 15 5 T27 5 T39 5 T51 5 T63 5 T75 5 T87 5 T99 5 T111 5 T117 5' fill='none' stroke='${decoration.color}' stroke-width='1.7' stroke-linecap='round' filter='url(#hd)'/></svg>`;
     return {
       backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
-      backgroundRepeat: "repeat-x",
+      backgroundRepeat: "no-repeat",
       backgroundPosition: "0 100%",
-      backgroundSize: "0.7em 0.35em",
-      paddingBottom: "0.12em",
+      backgroundSize: "100% 0.55em",
+      paddingBottom: "0.16em",
     };
   }
   return {
