@@ -10,6 +10,7 @@ import type {
   Density,
   FullStyle,
   HeadingAlignment,
+  PresetTheme,
   StyleAdjustments,
   TypesetStyle,
 } from "./types";
@@ -75,6 +76,14 @@ export const defaultAdjustments: StyleAdjustments = {
   // 显式声明：默认不覆盖标题装饰（跟随主题）
   headingDecoration: undefined,
 };
+
+/**
+ * 解析某主题的默认风格调整：全局默认叠加该主题声明的 defaults。
+ * 切换主题 / 重置风格时用它把 adjustments 回落到"该主题的默认配置"。
+ */
+export function resolveThemeDefaults(theme?: PresetTheme): StyleAdjustments {
+  return { ...defaultAdjustments, ...theme?.defaults };
+}
 
 // ============================================================
 // 调整应用函数

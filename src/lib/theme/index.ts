@@ -18,6 +18,7 @@ export {
   densityOptions,
   densityPresets,
   headingAlignmentOptions,
+  resolveThemeDefaults,
 } from "./adjustments";
 export type { FontPreset } from "./fonts";
 // Fonts

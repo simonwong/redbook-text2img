@@ -2,11 +2,11 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import {
   type Density,
-  defaultAdjustments,
   defaultTheme,
   getThemeById,
   type HeadingAlignment,
   type HeadingDecorationChoice,
+  resolveThemeDefaults,
   type StyleAdjustments,
 } from "@/lib/theme";
 
@@ -37,12 +37,16 @@ export const useContentThemeStore = create<ContentThemeState>()(
     persist(
       (set) => ({
         currentThemeId: defaultTheme.id,
-        adjustments: { ...defaultAdjustments },
+        adjustments: resolveThemeDefaults(defaultTheme),
 
+        // 切换主题：把风格调整重置为新主题的默认配置（密度/对齐等随主题联动）
         selectPresetTheme: (themeId: string) => {
           const theme = getThemeById(themeId);
           if (theme) {
-            set({ currentThemeId: theme.id });
+            set({
+              currentThemeId: theme.id,
+              adjustments: resolveThemeDefaults(theme),
+            });
           }
         },
 
@@ -76,8 +80,13 @@ export const useContentThemeStore = create<ContentThemeState>()(
             adjustments: { ...state.adjustments, ...adjustments },
           })),
 
+        // 重置风格：回落到当前主题的默认配置（而非全局默认）
         resetAdjustments: () => {
-          set({ adjustments: { ...defaultAdjustments } });
+          set((state) => ({
+            adjustments: resolveThemeDefaults(
+              getThemeById(state.currentThemeId)
+            ),
+          }));
         },
       }),
       {

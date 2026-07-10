@@ -222,6 +222,8 @@ export const presetThemes: PresetTheme[] = [
       fontId: "rounded",
       headingScale: 1.1,
     },
+    // 温柔包裹感：更松的密度留出呼吸
+    defaults: { density: "relaxed" },
   },
 
   {
@@ -257,6 +259,8 @@ export const presetThemes: PresetTheme[] = [
     typeset: {
       fontId: "kai",
     },
+    // 清雅微光：更松的密度更显清透
+    defaults: { density: "relaxed" },
   },
   {
     id: "xiaohongshu-pink",
@@ -337,6 +341,8 @@ export const presetThemes: PresetTheme[] = [
       fontId: "serif",
       bodyScale: 1.05,
     },
+    // 舒适阅读：最松密度 + 正文页标题左对齐（长文更自然）
+    defaults: { density: "spacious", headingAlignment: "left" },
   },
 
   // ===== 特色系列 =====
@@ -379,6 +385,8 @@ export const presetThemes: PresetTheme[] = [
         menu: true,
       },
     },
+    // 备忘录记录感：略紧密度 + 标题左对齐
+    defaults: { density: "snug", headingAlignment: "left" },
   },
 ];
 

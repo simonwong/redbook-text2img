@@ -211,4 +211,9 @@ export interface PresetTheme {
   headerBar?: HeaderBarStyle;
   /** 每主题排版个性（字体/标题字号/字间距/正文字号） */
   typeset?: TypesetStyle;
+  /**
+   * 该主题的默认风格调整（仅声明与全局默认不同的项）。
+   * 切换到此主题时 adjustments 会重置为此默认；未声明的项回落全局默认。
+   */
+  defaults?: Partial<StyleAdjustments>;
 }

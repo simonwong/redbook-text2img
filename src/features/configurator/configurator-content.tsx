@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
-  defaultAdjustments,
   densityOptions,
   fontOptions,
+  getThemeById,
   type HeadingDecorationChoice,
   headingAlignmentOptions,
+  resolveThemeDefaults,
 } from "@/lib/theme";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
 import { AccentColorPicker } from "./accent-color-picker";
@@ -48,12 +49,14 @@ export const ConfiguratorContent = () => {
   const { signature, showPageNumber, setSignature, setShowPageNumber } =
     useWatermarkStore();
 
+  // 是否偏离"当前主题的默认配置"（重置按钮回落到该默认，而非全局默认）
+  const themeDefaults = resolveThemeDefaults(getThemeById(currentThemeId));
   const isModified =
-    adjustments.density !== defaultAdjustments.density ||
-    adjustments.fontId !== defaultAdjustments.fontId ||
-    adjustments.headingAlignment !== defaultAdjustments.headingAlignment ||
-    adjustments.accentColor !== defaultAdjustments.accentColor ||
-    adjustments.headingDecoration !== defaultAdjustments.headingDecoration;
+    adjustments.density !== themeDefaults.density ||
+    adjustments.fontId !== themeDefaults.fontId ||
+    adjustments.headingAlignment !== themeDefaults.headingAlignment ||
+    adjustments.accentColor !== themeDefaults.accentColor ||
+    adjustments.headingDecoration !== themeDefaults.headingDecoration;
 
   return (
     <div className="space-y-4">
