@@ -100,22 +100,19 @@ export const useContentThemeStore = create<ContentThemeState>()(
             currentThemeId?: string;
             adjustments?: Partial<StyleAdjustments>;
           };
-          const themeId = legacy.currentThemeId ?? defaultTheme.id;
-          const themeDefaults = resolveThemeDefaults(
-            getThemeById(themeId) ?? defaultTheme
-          );
+          // 主题 id 失效时连 id 一起回落默认主题，保证 id 与 defaults 一致；
+          // 缺失的 headingDecoration 由 spread 自然回落主题精修 kind（JSON 不存 undefined 键）
+          const theme =
+            getThemeById(legacy.currentThemeId ?? "") ?? defaultTheme;
           const adjustments: StyleAdjustments = {
-            ...themeDefaults,
+            ...resolveThemeDefaults(theme),
             ...legacy.adjustments,
-            headingDecoration:
-              legacy.adjustments?.headingDecoration ??
-              themeDefaults.headingDecoration,
           };
           if (adjustments.accentColor === "transparent") {
             adjustments.headingDecoration = "none";
             adjustments.accentColor = undefined;
           }
-          return { currentThemeId: themeId, adjustments };
+          return { currentThemeId: theme.id, adjustments };
         },
         partialize: (state) => ({
           currentThemeId: state.currentThemeId,
