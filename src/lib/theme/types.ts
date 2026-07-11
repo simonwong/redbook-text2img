@@ -136,7 +136,7 @@ export type Density = "compact" | "snug" | "normal" | "relaxed" | "spacious";
 /** 标题对齐方式 */
 export type HeadingAlignment = "left" | "center";
 
-/** 标题装饰用户选项；"none" = 强制无装饰，undefined = 跟随主题默认 */
+/** 标题装饰用户选项（四值封闭集合，每个取值都有明确含义） */
 export type HeadingDecorationChoice =
   | "none"
   | "underline"
@@ -150,8 +150,8 @@ export interface StyleAdjustments {
   density: Density;
   fontId: string; // 字体预设 ID
   headingAlignment: HeadingAlignment;
-  /** 标题装饰覆盖；undefined = 跟随主题原装饰 */
-  headingDecoration?: HeadingDecorationChoice;
+  /** 标题装饰类型（四值封闭集合，无跟随主题的哨兵语义） */
+  headingDecoration: HeadingDecorationChoice;
 }
 
 // ============================================================

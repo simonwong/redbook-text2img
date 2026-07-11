@@ -27,7 +27,7 @@ interface ContentThemeState {
   setFont: (fontId: string) => void;
   setHeadingAlignment: (alignment: HeadingAlignment) => void;
   setAccentColor: (accentColor: string | undefined) => void;
-  setHeadingDecoration: (choice: HeadingDecorationChoice | undefined) => void;
+  setHeadingDecoration: (choice: HeadingDecorationChoice) => void;
   setAdjustments: (adjustments: Partial<StyleAdjustments>) => void;
   resetAdjustments: () => void;
 }
@@ -70,7 +70,7 @@ export const useContentThemeStore = create<ContentThemeState>()(
             adjustments: { ...state.adjustments, accentColor },
           })),
 
-        setHeadingDecoration: (choice: HeadingDecorationChoice | undefined) =>
+        setHeadingDecoration: (choice: HeadingDecorationChoice) =>
           set((state) => ({
             adjustments: { ...state.adjustments, headingDecoration: choice },
           })),
@@ -91,6 +91,32 @@ export const useContentThemeStore = create<ContentThemeState>()(
       }),
       {
         name: "redbook-content-theme",
+        version: 1,
+        // v0 → v1：标题装饰从"可选/跟随主题"改为必填四值。
+        // - 旧数据缺 headingDecoration → 按持久化主题的精修 kind 解析（主题失效回落默认主题）；
+        // - 旧数据 accentColor 为 transparent（已移除的哨兵）→ 置装饰为 "none" 且清空强调色。
+        migrate: (persisted) => {
+          const legacy = persisted as {
+            currentThemeId?: string;
+            adjustments?: Partial<StyleAdjustments>;
+          };
+          const themeId = legacy.currentThemeId ?? defaultTheme.id;
+          const themeDefaults = resolveThemeDefaults(
+            getThemeById(themeId) ?? defaultTheme
+          );
+          const adjustments: StyleAdjustments = {
+            ...themeDefaults,
+            ...legacy.adjustments,
+            headingDecoration:
+              legacy.adjustments?.headingDecoration ??
+              themeDefaults.headingDecoration,
+          };
+          if (adjustments.accentColor === "transparent") {
+            adjustments.headingDecoration = "none";
+            adjustments.accentColor = undefined;
+          }
+          return { currentThemeId: themeId, adjustments };
+        },
         partialize: (state) => ({
           currentThemeId: state.currentThemeId,
           adjustments: state.adjustments,

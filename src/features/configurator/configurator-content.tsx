@@ -24,10 +24,9 @@ const pageNumberOptions = [
 ];
 
 const headingDecorationOptions: {
-  value: "theme" | HeadingDecorationChoice;
+  value: HeadingDecorationChoice;
   label: string;
 }[] = [
-  { value: "theme", label: "默认" },
   { value: "none", label: "无" },
   { value: "underline", label: "直线" },
   { value: "wavy", label: "波浪" },
@@ -104,13 +103,9 @@ export const ConfiguratorContent = () => {
         <Label className="font-medium text-xs">标题装饰</Label>
         <SegmentedControl
           className="w-full"
-          onChange={(v) =>
-            setHeadingDecoration(
-              v === "theme" ? undefined : (v as HeadingDecorationChoice)
-            )
-          }
+          onChange={(v) => setHeadingDecoration(v as HeadingDecorationChoice)}
           options={headingDecorationOptions}
-          value={adjustments.headingDecoration ?? "theme"}
+          value={adjustments.headingDecoration}
         />
       </div>
 

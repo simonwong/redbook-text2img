@@ -1,6 +1,6 @@
 "use client";
 
-import { ACCENT_NONE, colors } from "@/lib/theme";
+import { colors } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 /** 推荐强调色：玫红 / 橙 / 绿 / 蓝 / 紫 / 珊瑚红（4 个复用 tokens.colors.accent） */
@@ -59,23 +59,6 @@ export const AccentColorPicker = ({
           value={value?.startsWith("#") ? value : colors.accent.purple}
         />
       </label>
-
-      {/* 透明：去掉标题下划线（强调色专用于标题装饰，透明即无装饰） */}
-      <button
-        aria-label="透明（去掉标题装饰）"
-        aria-pressed={active === ACCENT_NONE}
-        className={cn(
-          "relative h-6 w-6 overflow-hidden rounded-full bg-background transition-all",
-          active === ACCENT_NONE
-            ? "ring-2 ring-foreground"
-            : "ring-1 ring-black/10 hover:ring-foreground/40"
-        )}
-        onClick={() => onChange(ACCENT_NONE)}
-        title="透明（去掉标题装饰）"
-        type="button"
-      >
-        <span className="absolute top-1/2 left-0 h-px w-full -translate-y-1/2 -rotate-45 bg-red-400" />
-      </button>
     </div>
   );
 };

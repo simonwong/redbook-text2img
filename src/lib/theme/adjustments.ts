@@ -3,13 +3,14 @@
  * 风格调整模块 - 配合 Layer 1 预设主题的微调
  */
 
-import { ACCENT_NONE, applyAccentOverride, deriveDecoration } from "./accent";
+import { applyAccentOverride, deriveDecoration } from "./accent";
 import { defaultFontId, getFontFamily, resolveFontId } from "./fonts";
 import { spacing, typography } from "./tokens";
 import type {
   Density,
   FullStyle,
   HeadingAlignment,
+  HeadingDecoration,
   PresetTheme,
   StyleAdjustments,
   TypesetStyle,
@@ -73,16 +74,23 @@ export const defaultAdjustments: StyleAdjustments = {
   density: "normal",
   fontId: defaultFontId,
   headingAlignment: "center",
-  // 显式声明：默认不覆盖标题装饰（跟随主题）
-  headingDecoration: undefined,
+  // 无主题时的兜底：无装饰
+  headingDecoration: "none",
 };
 
 /**
  * 解析某主题的默认风格调整：全局默认叠加该主题声明的 defaults。
  * 切换主题 / 重置风格时用它把 adjustments 回落到"该主题的默认配置"。
+ *
+ * 标题装饰的初始落点从主题精修装饰的 kind 推导（无精修装饰 → "none"）；
+ * 主题 defaults 仍可显式声明覆盖该落点（放在推导之后 spread）。
  */
 export function resolveThemeDefaults(theme?: PresetTheme): StyleAdjustments {
-  return { ...defaultAdjustments, ...theme?.defaults };
+  return {
+    ...defaultAdjustments,
+    headingDecoration: theme?.style.heading.decoration?.kind ?? "none",
+    ...theme?.defaults,
+  };
 }
 
 // ============================================================
@@ -108,31 +116,29 @@ export function applyAdjustments(
     resolveFontId(adjustments.fontId, typeset?.fontId)
   );
   const baseFontSize = density.baseFontSize * (typeset?.bodyScale ?? 1);
-  // 强调色三态：undefined=跟随主题原色；ACCENT_NONE(透明)=去掉标题装饰；其余=自定义色覆盖。
-  // 只有自定义色才过 applyAccentOverride（透明/未设置都保持主题原语义色，逐像素不变）。
-  const customAccent =
-    adjustments.accentColor && adjustments.accentColor !== ACCENT_NONE
-      ? adjustments.accentColor
-      : undefined;
+  // 强调色两态：undefined=跟随主题原色；其余=自定义色覆盖。
+  // 只有自定义色才过 applyAccentOverride（未设置时保持主题原语义色，逐像素不变）。
+  const customAccent = adjustments.accentColor || undefined;
   const styledBase = customAccent
     ? applyAccentOverride(baseStyle, customAccent)
     : baseStyle;
 
-  // 有效标题装饰的优先级：
-  // 1. 透明强调色 = 去掉装饰的总开关（强调色是装饰的颜色，透明=不可见=无装饰），优先于装饰类型；
-  // 2. 用户"标题装饰"选择（类型 + 用强调色/主题色着色）；
-  // 3. 跟随主题。
-  let decoration = styledBase.heading.decoration;
-  if (adjustments.accentColor === ACCENT_NONE) {
+  // 有效标题装饰（kind 一致性规则）：
+  // - "none" → 无装饰；
+  // - 所选类型 === 主题精修装饰类型 → 用精修装饰对象（保留定制颜色/粗细；
+  //   有自定义强调色时 applyAccentOverride 已按强调色重着色并保留粗细）；
+  // - 所选类型 ≠ 主题精修类型 → 从基色（强调色 ?? 主题标题色）统一派生。
+  const themeKind = baseStyle.heading.decoration?.kind;
+  let decoration: HeadingDecoration | undefined;
+  if (adjustments.headingDecoration === "none") {
     decoration = undefined;
-  } else if (adjustments.headingDecoration !== undefined) {
-    decoration =
-      adjustments.headingDecoration === "none"
-        ? undefined
-        : deriveDecoration(
-            adjustments.headingDecoration,
-            customAccent ?? baseStyle.heading.color
-          );
+  } else if (adjustments.headingDecoration === themeKind) {
+    decoration = styledBase.heading.decoration;
+  } else {
+    decoration = deriveDecoration(
+      adjustments.headingDecoration,
+      customAccent ?? baseStyle.heading.color
+    );
   }
   const decorated =
     decoration === styledBase.heading.decoration
