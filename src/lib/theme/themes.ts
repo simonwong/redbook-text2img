@@ -129,13 +129,16 @@ export const presetThemes: PresetTheme[] = [
         boxShadow: "0 6px 24px rgba(31, 41, 55, 0.14)",
       },
     },
-    coverStyle: defaultCoverStyle,
+    // 封面 h1 已有 typeset 1.2 放大，再叠 1.25 会挤爆卡宽，收敛到 1.1
+    coverStyle: { ...defaultCoverStyle, headingScale: 1.1 },
     // 极简海报感：Inter 无衬线 + 放大标题 + 紧字距
     typeset: {
       fontId: "sans",
       headingScale: 1.2,
       letterSpacing: { heading: "-0.02em" },
     },
+    // 浮层卡片吃掉上下 32px 高度，默认略紧一档补回可用空间
+    defaults: { density: "snug" },
   },
   {
     id: "clean-dark",
@@ -216,14 +219,13 @@ export const presetThemes: PresetTheme[] = [
       link: { color: "#c2570f", underline: false },
       spacing: baseSpacing,
     },
-    coverStyle: defaultCoverStyle,
+    // 封面 h1 已有 typeset 1.1 放大，再叠 1.25 常见标题会换行，收敛到 1.15
+    coverStyle: { ...defaultCoverStyle, headingScale: 1.15 },
     // 温暖亲和：圆体 + 略放大标题
     typeset: {
       fontId: "rounded",
       headingScale: 1.1,
     },
-    // 温柔包裹感：更松的密度留出呼吸
-    defaults: { density: "relaxed" },
   },
 
   {
@@ -259,8 +261,6 @@ export const presetThemes: PresetTheme[] = [
     typeset: {
       fontId: "kai",
     },
-    // 清雅微光：更松的密度更显清透
-    defaults: { density: "relaxed" },
   },
   {
     id: "xiaohongshu-pink",
@@ -294,7 +294,8 @@ export const presetThemes: PresetTheme[] = [
       link: { color: "#c83768", underline: false },
       spacing: baseSpacing,
     },
-    coverStyle: defaultCoverStyle,
+    // 封面 h1 已有 typeset 1.1 放大，再叠 1.25 常见标题会换行，收敛到 1.15
+    coverStyle: { ...defaultCoverStyle, headingScale: 1.15 },
     // 奶霜甜感：圆体 + 标题稍大
     typeset: {
       fontId: "rounded",
@@ -307,10 +308,7 @@ export const presetThemes: PresetTheme[] = [
     description: "护眼米色，舒适阅读",
     style: {
       background: { type: "solid", value: "#fefcf3" },
-      typography: {
-        baseFontSize: typography.fontSize.spacious,
-        lineHeight: typography.lineHeight.spacious,
-      },
+      typography: baseTypography,
       heading: { color: "#44403c", fontWeight: typography.fontWeight.medium },
       paragraph: { color: "#57534e" },
       emphasis: {
@@ -329,11 +327,7 @@ export const presetThemes: PresetTheme[] = [
         block: { background: "#faf5eb", color: "#57534e" },
       },
       link: { color: "#b45309", underline: true },
-      spacing: {
-        padding: spacing.padding.spacious,
-        paragraphGap: spacing.paragraphGap.spacious,
-        headingGap: spacing.headingGap.spacious,
-      },
+      spacing: baseSpacing,
     },
     coverStyle: defaultCoverStyle,
     // 长文阅读：衬线护眼 + 正文稍大
@@ -341,8 +335,8 @@ export const presetThemes: PresetTheme[] = [
       fontId: "serif",
       bodyScale: 1.05,
     },
-    // 舒适阅读：最松密度 + 正文页标题左对齐（长文更自然）
-    defaults: { density: "spacious", headingAlignment: "left" },
+    // 阅读靠版心节奏而非留白，密度用正常档；正文页标题左对齐（长文更自然）
+    defaults: { headingAlignment: "left" },
   },
 
   // ===== 特色系列 =====

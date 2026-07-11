@@ -97,15 +97,16 @@ export function createHeadingDecoration(
     };
   }
   if (decoration.kind === "wavy") {
-    // 手绘感波浪：正弦基线 + feTurbulence 位移让线条不规整（像随手画的）。
-    // 整条铺满文字宽度（非平铺），避免位移在平铺接缝处断裂。
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='10' viewBox='0 0 120 10'><defs><filter id='hd' x='-2%' y='-80%' width='104%' height='260%'><feTurbulence type='fractalNoise' baseFrequency='0.02 0.05' numOctaves='1' seed='11' result='t'/><feDisplacementMap in='SourceGraphic' in2='t' scale='3' xChannelSelector='R' yChannelSelector='G'/></filter></defs><path d='M3 5 Q9 2.6 15 5 T27 5 T39 5 T51 5 T63 5 T75 5 T87 5 T99 5 T111 5 T117 5' fill='none' stroke='${decoration.color}' stroke-width='1.7' stroke-linecap='round' filter='url(#hd)'/></svg>`;
+    // 手绘感波浪：单元内两个振幅微差的周期（首尾同高同斜率）repeat-x 无缝平铺，
+    // 波长恒定为 0.56em、不随标题长度拉伸，整条线落在字底之下（不压字）。
+    // width/height 必须显式声明：html2canvas-pro 按内在尺寸栅格化背景 SVG
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='28' height='8' viewBox='0 0 28 8' preserveAspectRatio='none'><path d='M0 4 Q3.5 1.6 7 4 Q10.5 6.4 14 4.3 Q17.5 2.1 21 3.8 Q24.5 6.4 28 4' fill='none' stroke='${decoration.color}' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
     return {
       backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
-      backgroundRepeat: "no-repeat",
+      backgroundRepeat: "repeat-x",
       backgroundPosition: "0 100%",
-      backgroundSize: "100% 0.55em",
-      paddingBottom: "0.16em",
+      backgroundSize: "1.12em 0.32em",
+      paddingBottom: "0.25em",
     };
   }
   return {
@@ -158,6 +159,8 @@ export function generateStyles(
     color: style.heading.color,
     textAlign: useHeadingAlignment ? effectiveHeadingAlignment : "left",
     letterSpacing: isDisplay ? letterSpacing.heading : undefined,
+    // 长标题换行时两行字数均衡（避免"8+1"式孤字尾行）
+    textWrap: "balance",
     width: "100%",
   });
 
