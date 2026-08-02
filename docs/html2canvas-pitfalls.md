@@ -69,3 +69,33 @@ await new Promise<void>((resolve) => {
 ```
 
 **注意**：这个方案在绝大多数场景下可用，但理论上不保证 React 的 commit 已经完成。如果未来遇到截图内容不对的情况，可以考虑使用 `react-dom` 的 `flushSync` 强制同步渲染。
+
+## 6. 渐变里用 `transparent` 淡出，导出后背景发灰发脏
+
+**现象**：带 mesh 渐变的模板（蜜光暖阳、晨雾微光、樱花奶霜、墨夜极光、清新白）浏览器里是正常的暖色/冷色光晕，导出 PNG 后整片背景变成灰褐色。
+
+**原因**：`transparent` 等价于 `rgba(0, 0, 0, 0)`，是"**透明的黑**"。CSS 渐变按**预乘 alpha** 插值，黑色分量不参与，所以浏览器渲染正常；但导出走 html2canvas-pro → Canvas2D 渐变，Canvas2D 按**非预乘** sRGB 插值，RGB 会一路被拉向黑色，中间色因此发灰。
+
+这不是 html2canvas-pro 的 bug —— 它忠实地把 `rgba(0,0,0,0)` 传给了 `addColorStop`。裸 Chrome canvas 做同样的事得到的像素与导出结果逐字节一致，换库或升级都绕不开。
+
+**解决方案**：渐变里**跨区间淡出**的色标必须写成相邻颜色的 alpha 0 版本，不要用 `transparent`。
+
+```ts
+// ✗ 导出后发灰
+"radial-gradient(ellipse at 88% 12%, #ffe7c2 0%, transparent 55%)"
+// ✓ 两种插值空间下一致
+"radial-gradient(ellipse at 88% 12%, #ffe7c2 0%, rgba(255, 231, 194, 0) 55%)"
+```
+
+**例外**：**硬色标**里的 `transparent` 是安全的 —— 两侧位置相同时不存在跨 alpha 的插值区间。`generator.ts` 的 highlight 标题装饰就是这种写法，实测导出 Δ=0，不需要改：
+
+```ts
+// 安全：55%→55%、92%→92% 位置重合，没有渐变区间
+`linear-gradient(180deg, transparent 55%, ${color} 55%, ${color} 92%, transparent 92%)`
+```
+
+但这依赖两侧百分比**严格相等**；一旦把任何一侧改成淡入淡出，就会重新触发上面的问题。
+
+**验证方式**：Playwright 截元素图作 ground truth，与 html2canvas-pro 导出结果逐像素比对通道差。修复前 warmSun 最大通道差 93，修复后 5。
+
+**文件位置**：`src/lib/theme/tokens.ts`（`gradients`）、`src/lib/theme/generator.ts:113`（硬色标例外）

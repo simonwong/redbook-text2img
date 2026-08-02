@@ -76,10 +76,14 @@ export const colors = {
 // ============================================================
 
 /**
- * 渐变的淡出色标必须写成"同色 alpha 0"（如 rgba(255, 231, 194, 0)），禁止用
- * `transparent`。`transparent` 等价于 rgba(0, 0, 0, 0)，CSS 按预乘 alpha 插值所以
- * 浏览器里看不出问题，但导出走的 canvas 渐变按非预乘插值，RGB 会一路拉向黑色，
- * 导出图背景发灰发脏。
+ * 渐变里**跨区间淡出**的色标必须写成"同色 alpha 0"（如 rgba(255, 231, 194, 0)），
+ * 不要用 `transparent`。`transparent` 等价于 rgba(0, 0, 0, 0)，CSS 按预乘 alpha
+ * 插值所以浏览器里看不出问题，但导出走的 canvas 渐变按非预乘插值，RGB 会一路拉向
+ * 黑色，导出图背景发灰发脏。
+ *
+ * 例外：硬色标（两侧位置相同，如 `transparent 55%, color 55%`）没有插值区间，用
+ * `transparent` 是安全的 —— generator.ts 的 highlight 标题装饰即为此种。
+ * 详见 docs/html2canvas-pitfalls.md 第 6 条。
  */
 export const gradients = {
   // Light gradients
