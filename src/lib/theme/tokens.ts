@@ -75,10 +75,16 @@ export const colors = {
 // Gradients
 // ============================================================
 
+/**
+ * 渐变的淡出色标必须写成"同色 alpha 0"（如 rgba(255, 231, 194, 0)），禁止用
+ * `transparent`。`transparent` 等价于 rgba(0, 0, 0, 0)，CSS 按预乘 alpha 插值所以
+ * 浏览器里看不出问题，但导出走的 canvas 渐变按非预乘插值，RGB 会一路拉向黑色，
+ * 导出图背景发灰发脏。
+ */
 export const gradients = {
   // Light gradients
   cleanLight:
-    "radial-gradient(ellipse at 75% 85%, rgba(180, 190, 200, 0.12) 0%, transparent 50%), radial-gradient(ellipse at 15% 15%, rgba(160, 175, 190, 0.08) 0%, transparent 45%), linear-gradient(160deg, #ffffff 0%, #fdfdfe 50%, #ffffff 100%)",
+    "radial-gradient(ellipse at 75% 85%, rgba(180, 190, 200, 0.12) 0%, rgba(180, 190, 200, 0) 50%), radial-gradient(ellipse at 15% 15%, rgba(160, 175, 190, 0.08) 0%, rgba(160, 175, 190, 0) 45%), linear-gradient(160deg, #ffffff 0%, #fdfdfe 50%, #ffffff 100%)",
   warmLight:
     "linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)",
   coolLight:
@@ -89,13 +95,13 @@ export const gradients = {
   // Mesh gradients (multi-radial + linear) - 现代 Apple/Linear/Stripe 风格
   /** 蜜光暖阳：奶油 + 蜜桃 + 杏色，四点光晕模拟蜜光 */
   warmSun:
-    "radial-gradient(ellipse at 88% 12%, #ffe7c2 0%, transparent 55%), radial-gradient(ellipse at 12% 88%, #ffd2b0 0%, transparent 52%), radial-gradient(ellipse at 95% 95%, #f7b07a 0%, transparent 48%), linear-gradient(150deg, #fffaf2 0%, #fff1de 35%, #ffe1c4 70%, #fbcfa8 100%)",
+    "radial-gradient(ellipse at 88% 12%, #ffe7c2 0%, rgba(255, 231, 194, 0) 55%), radial-gradient(ellipse at 12% 88%, #ffd2b0 0%, rgba(255, 210, 176, 0) 52%), radial-gradient(ellipse at 95% 95%, #f7b07a 0%, rgba(247, 176, 122, 0) 48%), linear-gradient(150deg, #fffaf2 0%, #fff1de 35%, #ffe1c4 70%, #fbcfa8 100%)",
   /** 晨雾微光：奶蓝 + 雾蓝 + 淡薰衣草，云雾感 */
   coolMist:
-    "radial-gradient(ellipse at 12% 8%, #eaf2ff 0%, transparent 55%), radial-gradient(ellipse at 92% 92%, #d6e3f3 0%, transparent 52%), radial-gradient(ellipse at 96% 6%, #e1ddff 0%, transparent 48%), linear-gradient(155deg, #f5f9fd 0%, #ebf2fb 35%, #d8e4f3 70%, #b6cee6 100%)",
+    "radial-gradient(ellipse at 12% 8%, #eaf2ff 0%, rgba(234, 242, 255, 0) 55%), radial-gradient(ellipse at 92% 92%, #d6e3f3 0%, rgba(214, 227, 243, 0) 52%), radial-gradient(ellipse at 96% 6%, #e1ddff 0%, rgba(225, 221, 255, 0) 48%), linear-gradient(155deg, #f5f9fd 0%, #ebf2fb 35%, #d8e4f3 70%, #b6cee6 100%)",
   /** 樱花奶霜：奶油 + 樱花粉 + 蜜桃粉，奶霜质感 */
   cherryCream:
-    "radial-gradient(ellipse at 5% 5%, #fff0f3 0%, transparent 55%), radial-gradient(ellipse at 95% 100%, #ffd6c2 0%, transparent 52%), radial-gradient(ellipse at 100% 5%, #ffdfeb 0%, transparent 48%), linear-gradient(150deg, #fff6f6 0%, #ffe7eb 35%, #fbcfd9 70%, #f6acbe 100%)",
+    "radial-gradient(ellipse at 5% 5%, #fff0f3 0%, rgba(255, 240, 243, 0) 55%), radial-gradient(ellipse at 95% 100%, #ffd6c2 0%, rgba(255, 214, 194, 0) 52%), radial-gradient(ellipse at 100% 5%, #ffdfeb 0%, rgba(255, 223, 235, 0) 48%), linear-gradient(150deg, #fff6f6 0%, #ffe7eb 35%, #fbcfd9 70%, #f6acbe 100%)",
 
   // Dark gradients
   darkBlue:
@@ -106,7 +112,7 @@ export const gradients = {
     "linear-gradient(135deg, #022c22 0%, #064e3b 25%, #065f46 50%, #047857 75%, #10b981 100%)",
   /** 墨夜极光：深邃墨色 + 微妙极光（紫蓝晕染） */
   darkNight:
-    "radial-gradient(ellipse at 80% 12%, rgba(124, 102, 196, 0.22) 0%, transparent 55%), radial-gradient(ellipse at 18% 88%, rgba(82, 132, 196, 0.16) 0%, transparent 52%), radial-gradient(ellipse at 95% 92%, rgba(168, 116, 220, 0.1) 0%, transparent 45%), linear-gradient(165deg, #0a0c14 0%, #14161f 50%, #0d0f18 100%)",
+    "radial-gradient(ellipse at 80% 12%, rgba(124, 102, 196, 0.22) 0%, rgba(124, 102, 196, 0) 55%), radial-gradient(ellipse at 18% 88%, rgba(82, 132, 196, 0.16) 0%, rgba(82, 132, 196, 0) 52%), radial-gradient(ellipse at 95% 92%, rgba(168, 116, 220, 0.1) 0%, rgba(168, 116, 220, 0) 45%), linear-gradient(165deg, #0a0c14 0%, #14161f 50%, #0d0f18 100%)",
 
   // Vibrant gradients
   sunset:
