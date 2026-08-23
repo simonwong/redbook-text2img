@@ -1,0 +1,50 @@
+# Product
+
+<!-- impeccable:product-schema 1 -->
+
+## Platform
+
+web
+
+## Users
+
+主要用户是需要把 Markdown 笔记快速制作成小红书等社交媒体配图的中文内容创作者。样式配置优先服务新手，也需允许熟悉工具的用户做明确、可预期的微调。
+
+## Product Purpose
+
+把 Markdown 文本实时转换为可预览、可分页、可批量导出的高清 PNG 图片。用户无需注册，应能在约 10–20 秒内选定主题并完成基础样式调整。
+
+## Positioning
+
+通过 Markdown 写作、主题预设、实时分页预览和本地图片导出，把内容编辑与社交媒体配图制作放在同一工作流内。
+
+## Operating Context
+
+用户在同一界面编辑 Markdown、预览分页图片、选择主题、调整样式，并导出当前图片或全部图片。桌面使用右侧设置栏；移动端使用底部抽屉。桌面是优化重点，移动端保持同等功能。
+
+## Capabilities and Constraints
+
+- 支持常用 Markdown 语法、实时预览、自动分页、单张与批量 PNG 导出。
+- 内容和配置保存在浏览器本地；图片处理不上传服务器。
+- 样式设置不折叠。设置结构必须准确表达每项控制的对象和影响范围。
+- 保留主题快速选择与用户微调的双层模型。主题提供完整默认风格；用户配置提供有限、可预期的覆盖。
+- 导出样式必须兼容 `html2canvas-pro` 的实际渲染能力。
+
+## Brand Commitments
+
+产品名为“小红书图片生成器”。界面使用简洁、直接的中文工具文案；强调打开即用、免费、无需注册和本地处理。
+
+## Evidence on Hand
+
+- 产品说明与功能事实：`README.md`
+- 当前桌面界面与主题设置截图：`public/screenshot-1.png`、`public/screenshot-2.png`、`public/screenshot-3.png`
+- 当前主题、排版和导出约束：`src/lib/theme/`、`docs/html2canvas-pitfalls.md`
+- 不得虚构用户研究、转化数据、客户案例或性能指标。
+
+## Product Principles
+
+- 先选主题，再做少量高价值微调。
+- 控件名称和分组必须说明实际作用域，避免让用户猜测。
+- 每次调整立即反映在真实图片预览中。
+- 新手无需理解排版术语也能得到稳定结果。
+- 桌面与移动端保持相同配置语义。
