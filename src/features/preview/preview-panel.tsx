@@ -53,9 +53,13 @@ function usePreviewScale(containerRef: React.RefObject<HTMLDivElement | null>) {
 
 interface PreviewPanelProps {
   className?: string;
+  onOpenSettings?: () => void;
 }
 
-export const PreviewPanel = ({ className }: PreviewPanelProps) => {
+export const PreviewPanel = ({
+  className,
+  onOpenSettings,
+}: PreviewPanelProps) => {
   const { content: markdown } = useMarkdownContentStore();
   const { toggle: toggleSettings } = useSettingsPanelStore();
   const {
@@ -277,7 +281,7 @@ export const PreviewPanel = ({ className }: PreviewPanelProps) => {
         isExporting={isExporting}
         onExportAll={handleExportAll}
         onExportCurrent={handleExportCurrent}
-        onToggleSettings={toggleSettings}
+        onToggleSettings={onOpenSettings ?? toggleSettings}
         segmentCount={segments.length}
       />
     </div>

@@ -42,9 +42,7 @@ const densityValues = (d: Density): DensityValues => ({
 
 export const densityPresets: Record<Density, DensityValues> = {
   compact: densityValues("compact"),
-  snug: densityValues("snug"),
-  normal: densityValues("normal"),
-  relaxed: densityValues("relaxed"),
+  balanced: densityValues("balanced"),
   spacious: densityValues("spacious"),
 };
 
@@ -65,7 +63,7 @@ export const defaultAdjustments: StyleAdjustments = {
   contentSurface: "none",
   coverLayout: "center-poster",
   decorationColor: "#111827",
-  density: "normal",
+  density: "balanced",
   fontId: defaultFontId,
   // 无主题时的兜底：无装饰
   headingDecoration: "none",

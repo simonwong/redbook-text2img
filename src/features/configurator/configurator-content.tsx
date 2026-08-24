@@ -3,7 +3,6 @@
 import { ArrowReloadHorizontalIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { CSSProperties } from "react";
-import { Select } from "@/components/enhance/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
@@ -17,6 +16,8 @@ import { ConfigurationField } from "./configuration-field";
 import { ContentSurfacePicker } from "./content-surface-picker";
 import { CoverLayoutPicker } from "./cover-layout-picker";
 import { DecorationColorPicker } from "./decoration-color-picker";
+import { FontPicker } from "./font-picker";
+import { SettingsSection } from "./settings-section";
 import { ThemeGrid } from "./theme-grid";
 
 const pageNumberOptions = [
@@ -46,11 +47,9 @@ const bodyHeadingSizeLabels: Record<
   string
 > = { large: "大", medium: "中", small: "小" };
 const densityLabels: Record<StyleConfiguration["density"], string> = {
+  balanced: "均衡",
   compact: "紧凑",
-  normal: "正常",
-  relaxed: "较松",
-  snug: "较紧",
-  spacious: "宽松",
+  spacious: "舒展",
 };
 const headingDecorationLabels: Record<
   StyleConfiguration["headingDecoration"],
@@ -63,12 +62,9 @@ const headingDecorationLabels: Record<
 };
 const fontLabels: Record<string, string> = {
   auto: "跟随主题",
-  kai: "楷体",
   mono: "等宽",
-  rounded: "圆体",
   sans: "无衬线",
   serif: "衬线",
-  system: "系统默认",
 };
 
 const bodyHeadingAlignmentOptions = optionValues.bodyHeadingAlignment.map(
@@ -101,8 +97,19 @@ const fieldLabelIds = {
   coverLayout: "cover-layout-label",
   decorationColor: "decoration-color-label",
   density: "density-label",
+  font: "font-label",
   headingDecoration: "heading-decoration-label",
   pageNumber: "page-number-label",
+  signature: "signature-label",
+} as const;
+
+const sectionHeadingIds = {
+  background: "background-section-heading",
+  bodyHeading: "body-heading-section-heading",
+  cardMark: "card-mark-section-heading",
+  cover: "cover-section-heading",
+  theme: "theme-section-heading",
+  typography: "typography-section-heading",
 } as const;
 
 export const ConfiguratorContent = () => {
@@ -125,7 +132,7 @@ export const ConfiguratorContent = () => {
   const { signature, showPageNumber, setSignature, setShowPageNumber } =
     useWatermarkStore();
 
-  const { configuration, isModified, overridden } = styleSystem.read({
+  const { configuration, isModified, overridden, theme } = styleSystem.read({
     currentThemeId,
     overrides,
   });
@@ -177,17 +184,15 @@ export const ConfiguratorContent = () => {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <Label className="font-medium text-xs">主题</Label>
+      <SettingsSection headingId={sectionHeadingIds.theme} title="主题">
         <ThemeGrid
           currentThemeId={currentThemeId}
+          labelledBy={sectionHeadingIds.theme}
           onSelect={selectPresetTheme}
         />
-      </div>
+      </SettingsSection>
 
-      <section className="space-y-3 border-t pt-4">
-        <h3 className="font-semibold text-sm">画布</h3>
-
+      <SettingsSection headingId={sectionHeadingIds.background} title="背景">
         <ConfigurationField
           isModified={overridden.background}
           label="背景方案"
@@ -215,34 +220,45 @@ export const ConfiguratorContent = () => {
             value={configuration.contentSurface}
           />
         </ConfigurationField>
-      </section>
+      </SettingsSection>
 
-      <div className="space-y-2">
-        <Label className="font-medium text-xs" id={fieldLabelIds.density}>
-          密度
-        </Label>
-        <SegmentedControl
-          className="w-full"
-          labelledBy={fieldLabelIds.density}
-          onChange={(v) => setDensity(v as typeof configuration.density)}
-          options={densityOptions}
-          value={configuration.density}
-        />
-      </div>
+      <SettingsSection headingId={sectionHeadingIds.typography} title="排版">
+        <ConfigurationField
+          isModified={overridden.density}
+          label="密度"
+          labelId={fieldLabelIds.density}
+          onReset={() => resetConfigurationField("density")}
+        >
+          <SegmentedControl
+            className="w-full"
+            labelledBy={fieldLabelIds.density}
+            onChange={(value) =>
+              setDensity(value as typeof configuration.density)
+            }
+            options={densityOptions}
+            value={configuration.density}
+          />
+        </ConfigurationField>
 
-      <div className="space-y-2">
-        <Label className="font-medium text-xs">字体</Label>
-        <Select
-          className="w-full"
-          onChange={setFont}
-          options={fontOptions}
-          value={configuration.fontId}
-        />
-      </div>
+        <ConfigurationField
+          isModified={overridden.fontId}
+          label="字体"
+          labelId={fieldLabelIds.font}
+          onReset={() => resetConfigurationField("fontId")}
+        >
+          <FontPicker
+            labelledBy={fieldLabelIds.font}
+            onChange={setFont}
+            options={fontOptions}
+            value={configuration.fontId}
+          />
+        </ConfigurationField>
+      </SettingsSection>
 
-      <section className="space-y-3 border-t pt-4">
-        <h3 className="font-semibold text-sm">正文标题</h3>
-
+      <SettingsSection
+        headingId={sectionHeadingIds.bodyHeading}
+        title="正文标题"
+      >
         <ConfigurationField
           isModified={overridden.bodyHeadingAlignment}
           label="正文标题对齐"
@@ -318,10 +334,9 @@ export const ConfiguratorContent = () => {
             value={configuration.decorationColor}
           />
         </ConfigurationField>
-      </section>
+      </SettingsSection>
 
-      <section className="space-y-3 border-t pt-4">
-        <h3 className="font-semibold text-sm">封面</h3>
+      <SettingsSection headingId={sectionHeadingIds.cover} title="封面">
         <ConfigurationField
           isModified={overridden.coverLayout}
           label="封面版式"
@@ -334,40 +349,53 @@ export const ConfiguratorContent = () => {
             value={configuration.coverLayout}
           />
         </ConfigurationField>
-      </section>
-
-      <div className="space-y-2">
-        <Label className="font-medium text-xs">署名</Label>
-        <Input
-          onChange={(e) => setSignature(e.target.value)}
-          placeholder="@你的小红书名"
-          value={signature}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label className="font-medium text-xs" id={fieldLabelIds.pageNumber}>
-          页码
-        </Label>
-        <SegmentedControl
-          className="w-full"
-          labelledBy={fieldLabelIds.pageNumber}
-          onChange={(v) => setShowPageNumber(v === "show")}
-          options={pageNumberOptions}
-          value={showPageNumber ? "show" : "hide"}
-        />
-      </div>
+      </SettingsSection>
 
       {isModified && (
         <button
-          className="flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-muted-foreground text-xs transition-colors hover:bg-accent hover:text-foreground"
+          className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg px-3 text-muted-foreground text-xs transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={resetConfiguration}
           type="button"
         >
-          <HugeiconsIcon className="h-3 w-3" icon={ArrowReloadHorizontalIcon} />
-          重置风格
+          <HugeiconsIcon
+            className="h-3.5 w-3.5"
+            icon={ArrowReloadHorizontalIcon}
+          />
+          恢复“{theme.name}”主题配置
         </button>
       )}
+
+      <SettingsSection headingId={sectionHeadingIds.cardMark} title="卡片标记">
+        <div className="space-y-2">
+          <Label
+            className="font-medium text-xs"
+            htmlFor="card-signature"
+            id={fieldLabelIds.signature}
+          >
+            署名
+          </Label>
+          <Input
+            className="h-11"
+            id="card-signature"
+            onChange={(event) => setSignature(event.target.value)}
+            placeholder="@你的小红书名"
+            value={signature}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="font-medium text-xs" id={fieldLabelIds.pageNumber}>
+            正文页码
+          </Label>
+          <SegmentedControl
+            className="w-full"
+            labelledBy={fieldLabelIds.pageNumber}
+            onChange={(value) => setShowPageNumber(value === "show")}
+            options={pageNumberOptions}
+            value={showPageNumber ? "show" : "hide"}
+          />
+        </div>
+      </SettingsSection>
     </div>
   );
 };

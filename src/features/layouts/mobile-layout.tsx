@@ -1,8 +1,9 @@
 "use client";
 
-import { Album02Icon } from "@hugeicons/core-free-icons";
+import { Album02Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useState } from "react";
+import { type AnimationEvent, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerContent,
@@ -17,8 +18,26 @@ import { useSettingsPanelStore } from "@/store/theme";
 
 export const MobileLayout = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [settingsPending, setSettingsPending] = useState(false);
   const { isOpen: settingsOpen, setIsOpen: setSettingsOpen } =
     useSettingsPanelStore();
+
+  const handlePreviewAnimationEnd = (event: AnimationEvent<HTMLDivElement>) => {
+    if (
+      event.target !== event.currentTarget ||
+      previewOpen ||
+      !settingsPending
+    ) {
+      return;
+    }
+    setSettingsPending(false);
+    setSettingsOpen(true);
+  };
+
+  const handleOpenSettings = () => {
+    setSettingsPending(true);
+    setPreviewOpen(false);
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -34,7 +53,10 @@ export const MobileLayout = () => {
       </button>
 
       <Drawer onOpenChange={setPreviewOpen} open={previewOpen}>
-        <DrawerContent className="min-h-[85vh]">
+        <DrawerContent
+          className="min-h-[85vh]"
+          onAnimationEnd={handlePreviewAnimationEnd}
+        >
           <DrawerHeader>
             <DrawerTitle className="sr-only">图片预览</DrawerTitle>
             <DrawerDescription className="sr-only">
@@ -42,18 +64,30 @@ export const MobileLayout = () => {
             </DrawerDescription>
           </DrawerHeader>
           <div className="flex-1 overflow-y-auto overflow-x-hidden pb-[max(1rem,env(safe-area-inset-bottom))]">
-            <PreviewCard />
+            <PreviewCard onOpenSettings={handleOpenSettings} />
           </div>
         </DrawerContent>
       </Drawer>
 
       <Drawer onOpenChange={setSettingsOpen} open={settingsOpen}>
         <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>样式设置</DrawerTitle>
-            <DrawerDescription className="sr-only">
-              选择主题并调整图片样式
-            </DrawerDescription>
+          <DrawerHeader className="flex-row items-center justify-between text-left">
+            <div>
+              <DrawerTitle>样式设置</DrawerTitle>
+              <DrawerDescription className="sr-only">
+                选择主题并调整图片样式
+              </DrawerDescription>
+            </div>
+            <Button
+              aria-label="关闭样式设置"
+              autoFocus
+              className="size-11"
+              onClick={() => setSettingsOpen(false)}
+              size="icon"
+              variant="ghost"
+            >
+              <HugeiconsIcon icon={Cancel01Icon} />
+            </Button>
           </DrawerHeader>
           <div className="overflow-auto px-4 pb-[max(2rem,env(safe-area-inset-bottom))]">
             <ConfiguratorContent />

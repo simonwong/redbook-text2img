@@ -44,7 +44,7 @@ const configurationOptions = {
   bodyHeadingSize: ["small", "medium", "large"],
   contentSurface: ["none", "floating-card", "notebook"],
   coverLayout: ["center-poster", "top-left", "bottom-left"],
-  density: ["compact", "snug", "normal", "relaxed", "spacious"],
+  density: ["compact", "balanced", "spacious"],
   fontId: [AUTO_FONT_ID, ...fontPresets.map(({ id }) => id)],
   headingDecoration: ["none", "underline", "wavy", "highlight"],
 } satisfies StyleConfigurationOptions;
@@ -101,7 +101,6 @@ const diffConfiguration = (
 const getThemeConfiguration = (themeId: string): StyleConfiguration =>
   resolveThemeDefaults(getThemeById(themeId) ?? defaultTheme);
 
-const densities = new Set<string>(configurationOptions.density);
 const bodyHeadingAlignments = new Set<string>(
   configurationOptions.bodyHeadingAlignment
 );
@@ -115,6 +114,19 @@ const fontIds = new Set<string>(configurationOptions.fontId);
 const headingDecorations = new Set<string>(
   configurationOptions.headingDecoration
 );
+const legacyDensities: Record<string, StyleConfiguration["density"]> = {
+  balanced: "balanced",
+  compact: "compact",
+  snug: "compact",
+  normal: "balanced",
+  relaxed: "spacious",
+  spacious: "spacious",
+};
+const legacyFontIds: Record<string, string> = {
+  kai: "serif",
+  rounded: "sans",
+  system: "sans",
+};
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -144,6 +156,19 @@ const sanitizeBackground = (
   }
 };
 
+const sanitizeDensity = (
+  value: unknown
+): StyleConfiguration["density"] | undefined =>
+  typeof value === "string" ? legacyDensities[value] : undefined;
+
+const sanitizeFontId = (value: unknown): string | undefined => {
+  if (typeof value !== "string") {
+    return;
+  }
+  const fontId = legacyFontIds[value] ?? value;
+  return fontIds.has(fontId) ? fontId : undefined;
+};
+
 const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
   if (!isRecord(value)) {
     return {};
@@ -153,6 +178,8 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
     value.bodyHeadingAlignment ?? value.headingAlignment;
   const decorationColor = value.decorationColor ?? value.accentColor;
   const background = sanitizeBackground(value.background);
+  const density = sanitizeDensity(value.density);
+  const fontId = sanitizeFontId(value.fontId);
 
   return {
     ...(background ? { background } : {}),
@@ -187,12 +214,8 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
     hexColorPattern.test(decorationColor)
       ? { decorationColor }
       : {}),
-    ...(typeof value.density === "string" && densities.has(value.density)
-      ? { density: value.density as StyleConfiguration["density"] }
-      : {}),
-    ...(typeof value.fontId === "string" && fontIds.has(value.fontId)
-      ? { fontId: value.fontId }
-      : {}),
+    ...(density ? { density } : {}),
+    ...(fontId ? { fontId } : {}),
     ...(typeof value.headingDecoration === "string" &&
     headingDecorations.has(value.headingDecoration)
       ? {

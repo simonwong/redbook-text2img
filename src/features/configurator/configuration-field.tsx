@@ -22,18 +22,18 @@ export const ConfigurationField = ({
   onReset,
 }: ConfigurationFieldProps) => (
   <div className="space-y-2">
-    <div className="flex min-h-8 items-center justify-between gap-2">
+    <div className="flex min-h-11 items-center justify-between gap-2">
       <span className="font-medium text-xs" id={labelId}>
         {label}
       </span>
       {isModified && (
         <button
           aria-label={`${label}已调整，恢复主题值`}
-          className="-my-1 flex min-h-8 items-center gap-1 rounded-md px-2 text-primary text-xs hover:bg-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex min-h-11 items-center gap-1 rounded-md px-2 text-primary text-xs hover:bg-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={onReset}
           type="button"
         >
-          <span>已调整 · 恢复</span>
+          <span>已调整 · 恢复主题值</span>
           <HugeiconsIcon
             className="size-3.5"
             icon={ArrowReloadHorizontalIcon}

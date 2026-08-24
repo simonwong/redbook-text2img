@@ -5,11 +5,17 @@ import { useDevice } from "./hooks/use-device";
 import { MobileLayout } from "./mobile-layout";
 
 export function Layout(): React.ReactElement | null {
-  const { isMobile, isHydrated } = useDevice();
+  const { isHydrated, mode } = useDevice();
 
   if (!isHydrated) {
     return null;
   }
 
-  return isMobile ? <MobileLayout /> : <DesktopLayout />;
+  return mode === "mobile" ? (
+    <MobileLayout />
+  ) : (
+    <DesktopLayout
+      settingsPresentation={mode === "wide" ? "inline" : "overlay"}
+    />
+  );
 }

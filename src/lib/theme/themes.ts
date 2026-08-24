@@ -11,14 +11,14 @@ import type { CoverStyleOverride, FullStyle, PresetTheme } from "./types";
 // ============================================================
 
 const baseTypography = {
-  baseFontSize: typography.fontSize.normal,
-  lineHeight: typography.lineHeight.normal,
+  baseFontSize: typography.fontSize.balanced,
+  lineHeight: typography.lineHeight.balanced,
 };
 
 const baseSpacing = {
-  padding: spacing.padding.normal,
-  paragraphGap: spacing.paragraphGap.normal,
-  headingGap: spacing.headingGap.normal,
+  padding: spacing.padding.balanced,
+  paragraphGap: spacing.paragraphGap.balanced,
+  headingGap: spacing.headingGap.balanced,
 };
 
 /** 默认封面图样式：垂直水平居中，标题放大 25% 强化海报感 */
@@ -137,7 +137,7 @@ export const presetThemes: PresetTheme[] = [
       letterSpacing: { heading: "-0.02em" },
     },
     // 浮层卡片吃掉上下 32px 高度，默认略紧一档补回可用空间
-    defaults: { density: "snug" },
+    defaults: { density: "compact" },
   },
   {
     id: "clean-dark",
@@ -220,9 +220,9 @@ export const presetThemes: PresetTheme[] = [
     },
     // 封面 h1 已有 typeset 1.1 放大，再叠 1.25 常见标题会换行，收敛到 1.15
     coverStyle: { ...defaultCoverStyle, headingScale: 1.15 },
-    // 温暖亲和：圆体 + 略放大标题
+    // 温暖亲和：可靠中文无衬线 + 略放大标题
     typeset: {
-      fontId: "rounded",
+      fontId: "sans",
       headingScale: 1.1,
     },
   },
@@ -256,9 +256,9 @@ export const presetThemes: PresetTheme[] = [
       spacing: baseSpacing,
     },
     coverStyle: defaultCoverStyle,
-    // 清晨薄雾的书卷气：楷体
+    // 清晨薄雾的书卷气：可靠中文衬线回退
     typeset: {
-      fontId: "kai",
+      fontId: "serif",
     },
   },
   {
@@ -295,9 +295,9 @@ export const presetThemes: PresetTheme[] = [
     },
     // 封面 h1 已有 typeset 1.1 放大，再叠 1.25 常见标题会换行，收敛到 1.15
     coverStyle: { ...defaultCoverStyle, headingScale: 1.15 },
-    // 奶霜甜感：圆体 + 标题稍大
+    // 奶霜甜感：可靠中文无衬线 + 标题稍大
     typeset: {
-      fontId: "rounded",
+      fontId: "sans",
       headingScale: 1.1,
     },
   },
@@ -346,7 +346,7 @@ export const presetThemes: PresetTheme[] = [
     style: {
       background: { type: "solid", value: "#fbfbfb" },
       typography: {
-        baseFontSize: typography.fontSize.normal,
+        baseFontSize: typography.fontSize.balanced,
         lineHeight: 1.65,
       },
       heading: { color: "#1d1d1f", fontWeight: typography.fontWeight.semibold },
@@ -379,7 +379,7 @@ export const presetThemes: PresetTheme[] = [
       },
     },
     // 备忘录记录感：略紧密度 + 标题左对齐
-    defaults: { bodyHeadingAlignment: "left", density: "snug" },
+    defaults: { bodyHeadingAlignment: "left", density: "compact" },
   },
 ];
 

@@ -65,8 +65,8 @@ describe("Style System Interface", () => {
       bodyHeadingSize: ["small", "medium", "large"],
       contentSurface: ["none", "floating-card", "notebook"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
-      density: ["compact", "snug", "normal", "relaxed", "spacious"],
-      fontId: ["auto", "system", "sans", "serif", "kai", "rounded", "mono"],
+      density: ["compact", "balanced", "spacious"],
+      fontId: ["auto", "sans", "serif", "mono"],
       headingDecoration: ["none", "underline", "wavy", "highlight"],
     });
   });
@@ -144,7 +144,7 @@ describe("Style System Interface", () => {
         contentSurface: "none",
         coverLayout: "center-poster",
         decorationColor: "#f59e0b",
-        density: "normal",
+        density: "balanced",
         fontId: "serif",
         headingDecoration: "underline",
       },
@@ -316,6 +316,34 @@ describe("Style System Interface", () => {
     });
   });
 
+  it.each([
+    ["compact", "compact"],
+    ["snug", "compact"],
+    ["normal", "balanced"],
+    ["relaxed", "spacious"],
+    ["spacious", "spacious"],
+  ] as const)("把旧密度 %s 迁移到三档密度 %s", (legacy, expected) => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "clean-light",
+      overrides: { density: legacy },
+    });
+
+    expect(styleSystem.read(state).configuration.density).toBe(expected);
+  });
+
+  it.each([
+    ["system", "sans"],
+    ["rounded", "sans"],
+    ["kai", "serif"],
+  ] as const)("把旧字体 %s 迁移到可靠字体 %s", (legacy, expected) => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "clean-light",
+      overrides: { fontId: legacy },
+    });
+
+    expect(styleSystem.read(state).configuration.fontId).toBe(expected);
+  });
+
   it("迁移旧版 transparent 强调色语义", () => {
     expect(
       styleSystem.hydrate({
@@ -359,7 +387,7 @@ describe("Style System Interface", () => {
 
     expect(
       styleSystem.transition(modified, {
-        patch: { density: "normal" },
+        patch: { density: "balanced" },
         type: "update-configuration",
       }).overrides
     ).toEqual({});
@@ -426,7 +454,7 @@ describe("Style System Interface", () => {
         contentSurface: "none",
         coverLayout: "center-poster",
         decorationColor: "#44403c",
-        density: "normal",
+        density: "balanced",
         fontId: "auto",
         headingDecoration: "none",
       },
@@ -497,7 +525,7 @@ describe("Style System Interface", () => {
         contentSurface: "none",
         coverLayout: "center-poster",
         decorationColor: "#44403c",
-        density: "normal",
+        density: "balanced",
         fontId: "auto",
         headingDecoration: "none",
       },

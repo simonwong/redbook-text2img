@@ -10,6 +10,7 @@ import { ThemeThumbnail } from "./theme-thumbnail";
 
 interface ThemeGridProps {
   currentThemeId: string;
+  labelledBy: string;
   onSelect: (themeId: string) => void;
 }
 
@@ -36,8 +37,15 @@ function getThemeBackground(styles: RenderStyle): React.CSSProperties {
   };
 }
 
-export const ThemeGrid = ({ currentThemeId, onSelect }: ThemeGridProps) => (
-  <div className="grid grid-cols-2 gap-2">
+export const ThemeGrid = ({
+  currentThemeId,
+  labelledBy,
+  onSelect,
+}: ThemeGridProps) => (
+  <fieldset
+    aria-labelledby={labelledBy}
+    className="m-0 grid grid-cols-2 gap-2 border-0 p-0"
+  >
     {themePreviews.map(({ styles, theme }) => (
       <button
         aria-pressed={theme.id === currentThemeId}
@@ -55,5 +63,5 @@ export const ThemeGrid = ({ currentThemeId, onSelect }: ThemeGridProps) => (
         <ThemeThumbnail styles={styles} theme={theme} />
       </button>
     ))}
-  </div>
+  </fieldset>
 );

@@ -2,15 +2,19 @@ import { ConfiguratorPanel } from "@/features/configurator";
 import { EditorCard } from "@/features/editor";
 import { PreviewCard } from "@/features/preview";
 
-export const DesktopLayout = () => (
+interface DesktopLayoutProps {
+  settingsPresentation: "inline" | "overlay";
+}
+
+export const DesktopLayout = ({ settingsPresentation }: DesktopLayoutProps) => (
   <div className="mx-auto flex h-full max-w-7xl px-6">
     <div className="min-w-[400px] max-w-[640px] flex-1">
       <EditorCard className="h-full" />
     </div>
     <div className="h-full w-px bg-border" />
-    <div className="flex-1">
+    <div className="min-w-0 flex-1">
       <PreviewCard className="h-full" />
     </div>
-    <ConfiguratorPanel />
+    <ConfiguratorPanel presentation={settingsPresentation} />
   </div>
 );
