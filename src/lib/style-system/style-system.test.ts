@@ -66,7 +66,7 @@ describe("Style System Interface", () => {
       contentSurface: ["none", "floating-card", "notebook"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "balanced", "spacious"],
-      fontId: ["auto", "sans", "serif", "mono"],
+      fontId: ["auto", "sans", "serif"],
       headingDecoration: ["none", "underline", "wavy", "highlight"],
     });
   });
@@ -335,6 +335,7 @@ describe("Style System Interface", () => {
     ["system", "sans"],
     ["rounded", "sans"],
     ["kai", "serif"],
+    ["mono", "sans"],
   ] as const)("把旧字体 %s 迁移到可靠字体 %s", (legacy, expected) => {
     const state = styleSystem.hydrate({
       currentThemeId: "clean-light",
@@ -342,6 +343,16 @@ describe("Style System Interface", () => {
     });
 
     expect(styleSystem.read(state).configuration.fontId).toBe(expected);
+  });
+
+  it("丢弃会命中对象原型的非法密度", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "clean-light",
+      overrides: { density: "__proto__" },
+    });
+
+    expect(styleSystem.read(state).configuration.density).toBe("balanced");
+    expect(state.overrides).toEqual({});
   });
 
   it("迁移旧版 transparent 强调色语义", () => {

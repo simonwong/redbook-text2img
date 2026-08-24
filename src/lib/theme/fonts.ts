@@ -31,13 +31,6 @@ export const fontPresets: FontPreset[] = [
     value: 'Georgia, "Noto Serif SC", "Source Han Serif SC", "SimSun", serif',
     description: "传统阅读风格",
   },
-  {
-    id: "mono",
-    name: "等宽",
-    value:
-      '"JetBrains Mono", "Fira Code", "SF Mono", Menlo, "PingFang SC", monospace',
-    description: "代码/技术风格",
-  },
 ];
 
 // ============================================================

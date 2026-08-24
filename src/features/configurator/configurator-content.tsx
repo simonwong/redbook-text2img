@@ -62,7 +62,6 @@ const headingDecorationLabels: Record<
 };
 const fontLabels: Record<string, string> = {
   auto: "跟随主题",
-  mono: "等宽",
   sans: "无衬线",
   serif: "衬线",
 };

@@ -30,20 +30,25 @@ export const SegmentedControl = ({
     )}
   >
     {options.map((option) => (
-      <button
-        aria-pressed={option.value === value}
+      <label
         className={cn(
-          "min-h-11 flex-1 rounded-md px-2 font-medium text-xs transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+          "flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-2 font-medium text-xs transition-all has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-inset",
           option.value === value
             ? "bg-background text-foreground shadow-sm"
             : "text-muted-foreground hover:text-foreground"
         )}
         key={option.value}
-        onClick={() => onChange(option.value)}
-        type="button"
       >
-        {option.label}
-      </button>
+        <input
+          checked={option.value === value}
+          className="sr-only"
+          name={labelledBy}
+          onChange={() => onChange(option.value)}
+          type="radio"
+          value={option.value}
+        />
+        <span>{option.label}</span>
+      </label>
     ))}
   </fieldset>
 );

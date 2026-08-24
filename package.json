@@ -6,6 +6,7 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "lint:check": "ultracite check",
     "lint:fix": "ultracite fix"
   },
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.0",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.3.1",
     "@tailwindcss/typography": "^0.5.20",
     "@types/node": "^26.0.0",

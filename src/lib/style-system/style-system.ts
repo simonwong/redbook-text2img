@@ -114,19 +114,20 @@ const fontIds = new Set<string>(configurationOptions.fontId);
 const headingDecorations = new Set<string>(
   configurationOptions.headingDecoration
 );
-const legacyDensities: Record<string, StyleConfiguration["density"]> = {
-  balanced: "balanced",
-  compact: "compact",
-  snug: "compact",
-  normal: "balanced",
-  relaxed: "spacious",
-  spacious: "spacious",
-};
-const legacyFontIds: Record<string, string> = {
-  kai: "serif",
-  rounded: "sans",
-  system: "sans",
-};
+const legacyDensities = new Map<string, StyleConfiguration["density"]>([
+  ["balanced", "balanced"],
+  ["compact", "compact"],
+  ["snug", "compact"],
+  ["normal", "balanced"],
+  ["relaxed", "spacious"],
+  ["spacious", "spacious"],
+]);
+const legacyFontIds = new Map<string, string>([
+  ["kai", "serif"],
+  ["mono", "sans"],
+  ["rounded", "sans"],
+  ["system", "sans"],
+]);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -159,13 +160,13 @@ const sanitizeBackground = (
 const sanitizeDensity = (
   value: unknown
 ): StyleConfiguration["density"] | undefined =>
-  typeof value === "string" ? legacyDensities[value] : undefined;
+  typeof value === "string" ? legacyDensities.get(value) : undefined;
 
 const sanitizeFontId = (value: unknown): string | undefined => {
   if (typeof value !== "string") {
     return;
   }
-  const fontId = legacyFontIds[value] ?? value;
+  const fontId = legacyFontIds.get(value) ?? value;
   return fontIds.has(fontId) ? fontId : undefined;
 };
 

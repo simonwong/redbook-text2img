@@ -47,21 +47,26 @@ export const ThemeGrid = ({
     className="m-0 grid grid-cols-2 gap-2 border-0 p-0"
   >
     {themePreviews.map(({ styles, theme }) => (
-      <button
-        aria-pressed={theme.id === currentThemeId}
+      <label
         className={cn(
-          "group relative h-24 overflow-hidden rounded-lg border-2 text-left transition-all",
+          "group relative h-24 cursor-pointer overflow-hidden rounded-lg border-2 text-left transition-all has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
           theme.id === currentThemeId
             ? "border-primary shadow-sm"
             : "border-transparent hover:border-muted-foreground/30"
         )}
         key={theme.id}
-        onClick={() => onSelect(theme.id)}
         style={getThemeBackground(styles)}
-        type="button"
       >
+        <input
+          checked={theme.id === currentThemeId}
+          className="sr-only"
+          name="theme"
+          onChange={() => onSelect(theme.id)}
+          type="radio"
+          value={theme.id}
+        />
         <ThemeThumbnail styles={styles} theme={theme} />
-      </button>
+      </label>
     ))}
   </fieldset>
 );

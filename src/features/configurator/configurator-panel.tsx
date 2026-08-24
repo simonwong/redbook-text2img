@@ -3,15 +3,9 @@
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
 import { useSettingsPanelStore } from "@/store/theme";
 import { ConfiguratorContent } from "./configurator-content";
+import { SettingsDrawer } from "./settings-drawer";
 
 interface ConfiguratorPanelProps {
   presentation: "inline" | "overlay";
@@ -22,31 +16,11 @@ export const ConfiguratorPanel = ({ presentation }: ConfiguratorPanelProps) => {
 
   if (presentation === "overlay") {
     return (
-      <Drawer direction="right" onOpenChange={setIsOpen} open={isOpen}>
-        <DrawerContent className="w-[min(380px,calc(100vw-1rem))]">
-          <DrawerHeader className="flex-row items-center justify-between">
-            <div>
-              <DrawerTitle>样式设置</DrawerTitle>
-              <DrawerDescription className="sr-only">
-                选择主题并调整图片样式
-              </DrawerDescription>
-            </div>
-            <Button
-              aria-label="关闭样式设置"
-              autoFocus
-              className="size-11"
-              onClick={() => setIsOpen(false)}
-              size="icon"
-              variant="ghost"
-            >
-              <HugeiconsIcon icon={Cancel01Icon} />
-            </Button>
-          </DrawerHeader>
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
-            <ConfiguratorContent />
-          </div>
-        </DrawerContent>
-      </Drawer>
+      <SettingsDrawer
+        direction="right"
+        onOpenChange={setIsOpen}
+        open={isOpen}
+      />
     );
   }
 

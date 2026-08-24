@@ -118,7 +118,7 @@ export const useContentThemeStore = create<ContentThemeState>()(
       },
       {
         name: "redbook-content-theme",
-        version: 5,
+        version: 6,
         migrate: styleSystem.hydrate,
         merge: (persisted, current) => ({
           ...current,

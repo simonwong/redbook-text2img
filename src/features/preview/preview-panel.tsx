@@ -53,11 +53,13 @@ function usePreviewScale(containerRef: React.RefObject<HTMLDivElement | null>) {
 
 interface PreviewPanelProps {
   className?: string;
+  closeDrawerOnOpenSettings?: boolean;
   onOpenSettings?: () => void;
 }
 
 export const PreviewPanel = ({
   className,
+  closeDrawerOnOpenSettings,
   onOpenSettings,
 }: PreviewPanelProps) => {
   const { content: markdown } = useMarkdownContentStore();
@@ -278,6 +280,7 @@ export const PreviewPanel = ({
       />
 
       <PreviewActionBar
+        closeDrawerOnSettings={closeDrawerOnOpenSettings}
         isExporting={isExporting}
         onExportAll={handleExportAll}
         onExportCurrent={handleExportCurrent}

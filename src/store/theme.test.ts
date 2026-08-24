@@ -58,7 +58,7 @@ describe("content theme store", () => {
         currentThemeId: "clean-light",
         overrides: { density: "compact" },
       },
-      version: 5,
+      version: 6,
     });
   });
 
@@ -75,7 +75,7 @@ describe("content theme store", () => {
           contentSurface: "floating-card",
         },
       },
-      version: 5,
+      version: 6,
     });
   });
 
@@ -176,6 +176,26 @@ describe("content theme store", () => {
 
     expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual({
       density: "compact",
+      fontId: "sans",
+    });
+  });
+
+  it("刷新时把 v5 等宽字体迁移为无衬线", async () => {
+    storage.setItem(
+      "redbook-content-theme",
+      JSON.stringify({
+        state: {
+          currentThemeId: "clean-light",
+          overrides: { fontId: "mono" },
+        },
+        version: 5,
+      })
+    );
+    vi.resetModules();
+
+    const reloadedStores = await import("./theme");
+
+    expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual({
       fontId: "sans",
     });
   });
