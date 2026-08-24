@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import type { ImageSegment } from "@/lib/markdown-parser";
-import { defaultTheme, getThemeById } from "@/lib/theme";
+import { styleSystem } from "@/lib/style-system/style-system";
 import { cn } from "@/lib/utils";
 import { useContentThemeStore } from "@/store/theme";
 
@@ -12,34 +12,26 @@ interface SegmentFilmstripProps {
   segments: ImageSegment[];
 }
 
-function getBackgroundCss(bg: {
-  type: string;
-  value: string;
-}): React.CSSProperties {
-  if (bg.type === "gradient") {
-    return { background: bg.value };
-  }
-  if (bg.type === "image") {
-    return { backgroundImage: `url(${bg.value})`, backgroundSize: "cover" };
-  }
-  return { backgroundColor: bg.value };
-}
-
 export const SegmentFilmstrip = ({
   segments,
   activeIndex,
   onSelect,
 }: SegmentFilmstripProps) => {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const { currentThemeId } = useContentThemeStore();
+  const { currentThemeId, adjustments } = useContentThemeStore();
 
   const thumbnailStyle = useMemo(() => {
-    const theme = getThemeById(currentThemeId) ?? defaultTheme;
+    const { styles } = styleSystem.resolve(
+      { adjustments, currentThemeId },
+      { page: "body" }
+    );
     return {
-      ...getBackgroundCss(theme.style.background),
-      color: theme.style.heading.color,
+      backgroundColor: styles.container.backgroundColor,
+      backgroundImage: styles.container.backgroundImage,
+      backgroundSize: styles.container.backgroundSize,
+      color: styles.h1.color,
     };
-  }, [currentThemeId]);
+  }, [adjustments, currentThemeId]);
 
   useEffect(() => {
     const activeItem = itemRefs.current[activeIndex];

@@ -1,7 +1,10 @@
 "use client";
 
-import { presetThemes } from "@/lib/theme";
-import type { PresetTheme } from "@/lib/theme/types";
+import {
+  type RenderStyle,
+  styleSystem,
+  type ThemeCatalogItem,
+} from "@/lib/style-system/style-system";
 import { cn } from "@/lib/utils";
 import { ThemeThumbnail } from "./theme-thumbnail";
 
@@ -10,20 +13,32 @@ interface ThemeGridProps {
   onSelect: (themeId: string) => void;
 }
 
-function getThemeBackground(theme: PresetTheme): React.CSSProperties {
-  const bg = theme.style.background;
-  if (bg.type === "gradient") {
-    return { background: bg.value };
-  }
-  if (bg.type === "image") {
-    return { backgroundImage: `url(${bg.value})`, backgroundSize: "cover" };
-  }
-  return { backgroundColor: bg.value };
+interface ThemePreview {
+  styles: RenderStyle;
+  theme: ThemeCatalogItem;
+}
+
+const themePreviews: readonly ThemePreview[] = styleSystem
+  .catalog()
+  .map((theme) => ({
+    styles: styleSystem.resolve(
+      styleSystem.hydrate({ currentThemeId: theme.id }),
+      { page: "body" }
+    ).styles,
+    theme,
+  }));
+
+function getThemeBackground(styles: RenderStyle): React.CSSProperties {
+  return {
+    backgroundColor: styles.container.backgroundColor,
+    backgroundImage: styles.container.backgroundImage,
+    backgroundSize: styles.container.backgroundSize,
+  };
 }
 
 export const ThemeGrid = ({ currentThemeId, onSelect }: ThemeGridProps) => (
   <div className="grid grid-cols-2 gap-2">
-    {presetThemes.map((theme) => (
+    {themePreviews.map(({ styles, theme }) => (
       <button
         aria-pressed={theme.id === currentThemeId}
         className={cn(
@@ -34,10 +49,10 @@ export const ThemeGrid = ({ currentThemeId, onSelect }: ThemeGridProps) => (
         )}
         key={theme.id}
         onClick={() => onSelect(theme.id)}
-        style={getThemeBackground(theme)}
+        style={getThemeBackground(styles)}
         type="button"
       >
-        <ThemeThumbnail theme={theme} />
+        <ThemeThumbnail styles={styles} theme={theme} />
       </button>
     ))}
   </div>

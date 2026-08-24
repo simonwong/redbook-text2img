@@ -1,93 +1,102 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import {
-  type Density,
-  defaultTheme,
-  getThemeById,
-  type HeadingAlignment,
-  type HeadingDecorationChoice,
-  resolveThemeDefaults,
-  type StyleAdjustments,
-} from "@/lib/theme";
+  type StyleConfiguration,
+  styleSystem,
+} from "@/lib/style-system/style-system";
 
 // ============================================================
 // Content Theme (Image/Markdown styling)
 // ============================================================
 
 interface ContentThemeState {
-  // Current preset theme ID
+  adjustments: StyleConfiguration;
   currentThemeId: string;
-
-  // User's style adjustments
-  adjustments: StyleAdjustments;
-
-  // Actions
-  selectPresetTheme: (themeId: string) => void;
-  setDensity: (density: Density) => void;
-  setFont: (fontId: string) => void;
-  setHeadingAlignment: (alignment: HeadingAlignment) => void;
-  setAccentColor: (accentColor: string | undefined) => void;
-  setHeadingDecoration: (choice: HeadingDecorationChoice) => void;
-  setAdjustments: (adjustments: Partial<StyleAdjustments>) => void;
   resetAdjustments: () => void;
+  selectPresetTheme: (themeId: string) => void;
+  setAccentColor: (accentColor: string | undefined) => void;
+  setAdjustments: (adjustments: Partial<StyleConfiguration>) => void;
+  setDensity: (density: StyleConfiguration["density"]) => void;
+  setFont: (fontId: string) => void;
+  setHeadingAlignment: (
+    alignment: StyleConfiguration["headingAlignment"]
+  ) => void;
+  setHeadingDecoration: (
+    choice: StyleConfiguration["headingDecoration"]
+  ) => void;
 }
+
+const initialStyleState = styleSystem.hydrate(undefined);
 
 export const useContentThemeStore = create<ContentThemeState>()(
   devtools(
     persist(
       (set) => ({
-        currentThemeId: defaultTheme.id,
-        adjustments: resolveThemeDefaults(defaultTheme),
+        ...initialStyleState,
 
         // 切换主题：把风格调整重置为新主题的默认配置（密度/对齐等随主题联动）
-        selectPresetTheme: (themeId: string) => {
-          const theme = getThemeById(themeId);
-          if (theme) {
-            set({
-              currentThemeId: theme.id,
-              adjustments: resolveThemeDefaults(theme),
-            });
-          }
-        },
+        selectPresetTheme: (themeId: string) =>
+          set((state) =>
+            styleSystem.transition(state, { themeId, type: "select-theme" })
+          ),
 
-        setDensity: (density: Density) =>
-          set((state) => ({
-            adjustments: { ...state.adjustments, density },
-          })),
+        setDensity: (density: StyleConfiguration["density"]) =>
+          set((state) =>
+            styleSystem.transition(state, {
+              patch: { density },
+              type: "update-configuration",
+            })
+          ),
 
         setFont: (fontId: string) =>
-          set((state) => ({
-            adjustments: { ...state.adjustments, fontId },
-          })),
+          set((state) =>
+            styleSystem.transition(state, {
+              patch: { fontId },
+              type: "update-configuration",
+            })
+          ),
 
-        setHeadingAlignment: (headingAlignment: HeadingAlignment) =>
-          set((state) => ({
-            adjustments: { ...state.adjustments, headingAlignment },
-          })),
+        setHeadingAlignment: (
+          headingAlignment: StyleConfiguration["headingAlignment"]
+        ) =>
+          set((state) =>
+            styleSystem.transition(state, {
+              patch: { headingAlignment },
+              type: "update-configuration",
+            })
+          ),
 
         setAccentColor: (accentColor: string | undefined) =>
-          set((state) => ({
-            adjustments: { ...state.adjustments, accentColor },
-          })),
+          set((state) =>
+            styleSystem.transition(state, {
+              patch: { accentColor },
+              type: "update-configuration",
+            })
+          ),
 
-        setHeadingDecoration: (choice: HeadingDecorationChoice) =>
-          set((state) => ({
-            adjustments: { ...state.adjustments, headingDecoration: choice },
-          })),
+        setHeadingDecoration: (
+          headingDecoration: StyleConfiguration["headingDecoration"]
+        ) =>
+          set((state) =>
+            styleSystem.transition(state, {
+              patch: { headingDecoration },
+              type: "update-configuration",
+            })
+          ),
 
-        setAdjustments: (adjustments: Partial<StyleAdjustments>) =>
-          set((state) => ({
-            adjustments: { ...state.adjustments, ...adjustments },
-          })),
+        setAdjustments: (adjustments: Partial<StyleConfiguration>) =>
+          set((state) =>
+            styleSystem.transition(state, {
+              patch: adjustments,
+              type: "update-configuration",
+            })
+          ),
 
         // 重置风格：回落到当前主题的默认配置（而非全局默认）
-        resetAdjustments: () => {
-          set((state) => ({
-            adjustments: resolveThemeDefaults(
-              getThemeById(state.currentThemeId)
-            ),
-          }));
-        },
+        resetAdjustments: () =>
+          set((state) =>
+            styleSystem.transition(state, { type: "reset-configuration" })
+          ),
       }),
       {
         name: "redbook-content-theme",
@@ -95,25 +104,7 @@ export const useContentThemeStore = create<ContentThemeState>()(
         // v0 → v1：标题装饰从"可选/跟随主题"改为必填四值。
         // - 旧数据缺 headingDecoration → 按持久化主题的精修 kind 解析（主题失效回落默认主题）；
         // - 旧数据 accentColor 为 transparent（已移除的哨兵）→ 置装饰为 "none" 且清空强调色。
-        migrate: (persisted) => {
-          const legacy = persisted as {
-            currentThemeId?: string;
-            adjustments?: Partial<StyleAdjustments>;
-          };
-          // 主题 id 失效时连 id 一起回落默认主题，保证 id 与 defaults 一致；
-          // 缺失的 headingDecoration 由 spread 自然回落主题精修 kind（JSON 不存 undefined 键）
-          const theme =
-            getThemeById(legacy.currentThemeId ?? "") ?? defaultTheme;
-          const adjustments: StyleAdjustments = {
-            ...resolveThemeDefaults(theme),
-            ...legacy.adjustments,
-          };
-          if (adjustments.accentColor === "transparent") {
-            adjustments.headingDecoration = "none";
-            adjustments.accentColor = undefined;
-          }
-          return { currentThemeId: theme.id, adjustments };
-        },
+        migrate: styleSystem.hydrate,
         partialize: (state) => ({
           currentThemeId: state.currentThemeId,
           adjustments: state.adjustments,
@@ -128,15 +119,10 @@ export const useContentThemeStore = create<ContentThemeState>()(
 // ============================================================
 
 interface WatermarkState {
-  // 署名水印文本（如 @你的小红书名，空串不显示）
-  signature: string;
-
-  // 是否在非封面页显示页码
-  showPageNumber: boolean;
-
-  // Actions
-  setSignature: (signature: string) => void;
   setShowPageNumber: (showPageNumber: boolean) => void;
+  setSignature: (signature: string) => void;
+  showPageNumber: boolean;
+  signature: string;
 }
 
 export const useWatermarkStore = create<WatermarkState>()(
@@ -167,8 +153,8 @@ export const useWatermarkStore = create<WatermarkState>()(
 
 interface SettingsPanelState {
   isOpen: boolean;
-  toggle: () => void;
   setIsOpen: (isOpen: boolean) => void;
+  toggle: () => void;
 }
 
 export const useSettingsPanelStore = create<SettingsPanelState>()((set) => ({

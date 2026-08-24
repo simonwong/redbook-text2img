@@ -3,12 +3,7 @@
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import type { ImageSegment } from "@/lib/markdown-parser";
-import {
-  applyAdjustments,
-  defaultTheme,
-  generateStyles,
-  getThemeById,
-} from "@/lib/theme";
+import { styleSystem } from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
 import { CardWatermark } from "./card-watermark";
 import { HeaderBar } from "./header-bar";
@@ -29,20 +24,14 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   const { currentThemeId, adjustments } = useContentThemeStore();
   const { signature, showPageNumber } = useWatermarkStore();
 
-  const { styles, headerBar } = useMemo(() => {
-    const theme = getThemeById(currentThemeId) ?? defaultTheme;
-    const adjustedStyle = applyAdjustments(
-      theme.style,
-      adjustments,
-      theme.typeset
-    );
-    // 如果是封面图（包含 # 一级标题），使用主题的封面图样式，忽略用户的标题对齐设置
-    const coverStyle = segment.isCover ? theme.coverStyle : undefined;
-    return {
-      styles: generateStyles(adjustedStyle, { coverStyle }),
-      headerBar: theme.headerBar,
-    };
-  }, [currentThemeId, adjustments, segment.isCover]);
+  const { styles, headerBar } = useMemo(
+    () =>
+      styleSystem.resolve(
+        { adjustments, currentThemeId },
+        { page: segment.isCover ? "cover" : "body" }
+      ),
+    [currentThemeId, adjustments, segment.isCover]
+  );
 
   // 页码只在非封面页显示（封面为第 1 张，计数含封面）；署名在所有卡片显示
   const watermarkPage =
