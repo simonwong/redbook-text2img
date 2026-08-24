@@ -2,6 +2,7 @@ import { applyAdjustments, resolveThemeDefaults } from "../theme/adjustments";
 import { AUTO_FONT_ID, fontPresets } from "../theme/fonts";
 import { generateStyles } from "../theme/generator";
 import { defaultTheme, getThemeById, presetThemes } from "../theme/themes";
+import type { CoverStyleOverride } from "../theme/types";
 import type {
   RenderContext,
   ResolvedStyle,
@@ -43,17 +44,26 @@ const diffConfiguration = (
     -readonly [Field in keyof StyleConfiguration]?: StyleConfiguration[Field];
   } = {};
 
-  if (configuration.accentColor !== themeConfiguration.accentColor) {
-    overrides.accentColor = configuration.accentColor;
+  if (
+    configuration.bodyHeadingAlignment !==
+    themeConfiguration.bodyHeadingAlignment
+  ) {
+    overrides.bodyHeadingAlignment = configuration.bodyHeadingAlignment;
+  }
+  if (configuration.bodyHeadingSize !== themeConfiguration.bodyHeadingSize) {
+    overrides.bodyHeadingSize = configuration.bodyHeadingSize;
+  }
+  if (configuration.coverLayout !== themeConfiguration.coverLayout) {
+    overrides.coverLayout = configuration.coverLayout;
+  }
+  if (configuration.decorationColor !== themeConfiguration.decorationColor) {
+    overrides.decorationColor = configuration.decorationColor;
   }
   if (configuration.density !== themeConfiguration.density) {
     overrides.density = configuration.density;
   }
   if (configuration.fontId !== themeConfiguration.fontId) {
     overrides.fontId = configuration.fontId;
-  }
-  if (configuration.headingAlignment !== themeConfiguration.headingAlignment) {
-    overrides.headingAlignment = configuration.headingAlignment;
   }
   if (
     configuration.headingDecoration !== themeConfiguration.headingDecoration
@@ -68,8 +78,10 @@ const getThemeConfiguration = (themeId: string): StyleConfiguration =>
   resolveThemeDefaults(getThemeById(themeId) ?? defaultTheme);
 
 const densities = new Set(["compact", "snug", "normal", "relaxed", "spacious"]);
+const bodyHeadingAlignments = new Set(["left", "center"]);
+const bodyHeadingSizes = new Set(["small", "medium", "large"]);
+const coverLayouts = new Set(["center-poster", "top-left", "bottom-left"]);
 const fontIds = new Set([AUTO_FONT_ID, ...fontPresets.map(({ id }) => id)]);
-const headingAlignments = new Set(["left", "center"]);
 const headingDecorations = new Set(["none", "underline", "wavy", "highlight"]);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -80,23 +92,40 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
     return {};
   }
 
+  const bodyHeadingAlignment =
+    value.bodyHeadingAlignment ?? value.headingAlignment;
+  const decorationColor = value.decorationColor ?? value.accentColor;
+
   return {
-    ...(typeof value.accentColor === "string" &&
-    hexColorPattern.test(value.accentColor)
-      ? { accentColor: value.accentColor }
+    ...(typeof bodyHeadingAlignment === "string" &&
+    bodyHeadingAlignments.has(bodyHeadingAlignment)
+      ? {
+          bodyHeadingAlignment:
+            bodyHeadingAlignment as StyleConfiguration["bodyHeadingAlignment"],
+        }
+      : {}),
+    ...(typeof value.bodyHeadingSize === "string" &&
+    bodyHeadingSizes.has(value.bodyHeadingSize)
+      ? {
+          bodyHeadingSize:
+            value.bodyHeadingSize as StyleConfiguration["bodyHeadingSize"],
+        }
+      : {}),
+    ...(typeof value.coverLayout === "string" &&
+    coverLayouts.has(value.coverLayout)
+      ? {
+          coverLayout: value.coverLayout as StyleConfiguration["coverLayout"],
+        }
+      : {}),
+    ...(typeof decorationColor === "string" &&
+    hexColorPattern.test(decorationColor)
+      ? { decorationColor }
       : {}),
     ...(typeof value.density === "string" && densities.has(value.density)
       ? { density: value.density as StyleConfiguration["density"] }
       : {}),
     ...(typeof value.fontId === "string" && fontIds.has(value.fontId)
       ? { fontId: value.fontId }
-      : {}),
-    ...(typeof value.headingAlignment === "string" &&
-    headingAlignments.has(value.headingAlignment)
-      ? {
-          headingAlignment:
-            value.headingAlignment as StyleConfiguration["headingAlignment"],
-        }
       : {}),
     ...(typeof value.headingDecoration === "string" &&
     headingDecorations.has(value.headingDecoration)
@@ -124,11 +153,12 @@ const hydrate = (persisted: unknown): StyleSystemState => {
 
   if (
     isRecord(persistedConfiguration) &&
-    persistedConfiguration.accentColor === "transparent"
+    (persistedConfiguration.decorationColor === "transparent" ||
+      persistedConfiguration.accentColor === "transparent")
   ) {
     const migratedConfiguration: StyleConfiguration = {
       ...configuration,
-      accentColor: undefined,
+      decorationColor: themeConfiguration.decorationColor,
       headingDecoration: "none",
     };
     return {
@@ -210,10 +240,12 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
     configuration,
     isModified: Object.keys(state.overrides).length > 0,
     overridden: {
-      accentColor: "accentColor" in state.overrides,
+      bodyHeadingAlignment: "bodyHeadingAlignment" in state.overrides,
+      bodyHeadingSize: "bodyHeadingSize" in state.overrides,
+      coverLayout: "coverLayout" in state.overrides,
+      decorationColor: "decorationColor" in state.overrides,
       density: "density" in state.overrides,
       fontId: "fontId" in state.overrides,
-      headingAlignment: "headingAlignment" in state.overrides,
       headingDecoration: "headingDecoration" in state.overrides,
     },
     theme: {
@@ -236,12 +268,27 @@ const resolve = (
     configuration,
     theme.typeset
   );
+  const coverLayout: CoverStyleOverride =
+    configuration.coverLayout === "center-poster"
+      ? {
+          contentHorizontalAlign: "center",
+          contentVerticalAlign: "center",
+          headingAlignment: "center",
+        }
+      : {
+          contentHorizontalAlign: "left",
+          contentVerticalAlign:
+            configuration.coverLayout === "top-left" ? "top" : "bottom",
+          headingAlignment: "left",
+        };
 
   return {
     headerBar: theme.headerBar,
     styles: generateStyles(
       adjustedStyle,
-      context.page === "cover" ? { coverStyle: theme.coverStyle } : undefined
+      context.page === "cover"
+        ? { coverStyle: { ...theme.coverStyle, ...coverLayout } }
+        : undefined
     ),
     theme: {
       description: theme.description,

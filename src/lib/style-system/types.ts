@@ -1,15 +1,19 @@
 import type { GeneratedStyles } from "../theme/generator";
 import type {
+  BodyHeadingSize,
+  CoverLayout,
   Density,
   HeadingAlignment,
   HeadingDecorationChoice,
 } from "../theme/types";
 
 export interface StyleConfiguration {
-  readonly accentColor?: string;
+  readonly bodyHeadingAlignment: HeadingAlignment;
+  readonly bodyHeadingSize: BodyHeadingSize;
+  readonly coverLayout: CoverLayout;
+  readonly decorationColor: string;
   readonly density: Density;
   readonly fontId: string;
-  readonly headingAlignment: HeadingAlignment;
   readonly headingDecoration: HeadingDecorationChoice;
 }
 

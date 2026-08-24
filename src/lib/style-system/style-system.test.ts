@@ -1,5 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { styleSystem } from "./style-system";
+import { type StyleConfiguration, styleSystem } from "./style-system";
+
+const highlightColorPattern = /#[\da-f]{6}(?= 55%)/i;
+
+const relativeLuminance = (hex: string): number => {
+  const channels = [1, 3, 5].map((start) => {
+    const channel = Number.parseInt(hex.slice(start, start + 2), 16) / 255;
+    return channel <= 0.040_45
+      ? channel / 12.92
+      : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+};
+
+const contrastRatio = (first: string, second: string): number => {
+  const lighter = Math.max(relativeLuminance(first), relativeLuminance(second));
+  const darker = Math.min(relativeLuminance(first), relativeLuminance(second));
+  return (lighter + 0.05) / (darker + 0.05);
+};
+
+const headingOverrideCases = [
+  ["bodyHeadingAlignment", "left"],
+  ["bodyHeadingSize", "large"],
+  ["headingDecoration", "wavy"],
+  ["decorationColor", "#e64f7a"],
+] as const;
 
 describe("Style System Interface", () => {
   it("列出 8 个稳定的内置主题", () => {
@@ -13,6 +38,21 @@ describe("Style System Interface", () => {
       "reading-mode",
       "apple-notes",
     ]);
+  });
+
+  it("公开语义准确的正文标题与封面配置", () => {
+    const configuration = styleSystem.read(styleSystem.hydrate(undefined))
+      .configuration as unknown as Record<string, unknown>;
+
+    expect(configuration).toMatchObject({
+      bodyHeadingAlignment: "center",
+      bodyHeadingSize: "medium",
+      coverLayout: "center-poster",
+      decorationColor: "#f59e0b",
+      headingDecoration: "underline",
+    });
+    expect(configuration).not.toHaveProperty("accentColor");
+    expect(configuration).not.toHaveProperty("headingAlignment");
   });
 
   it("从空持久化数据恢复默认主题状态", () => {
@@ -36,10 +76,12 @@ describe("Style System Interface", () => {
     }).toEqual({
       density: "compact",
       overridden: {
-        accentColor: false,
+        bodyHeadingAlignment: false,
+        bodyHeadingSize: false,
+        coverLayout: false,
+        decorationColor: false,
         density: true,
         fontId: false,
-        headingAlignment: false,
         headingDecoration: false,
       },
       overrides: { density: "compact" },
@@ -61,14 +103,32 @@ describe("Style System Interface", () => {
       overrides: reset.overrides,
     }).toEqual({
       configuration: {
-        accentColor: undefined,
+        bodyHeadingAlignment: "center",
+        bodyHeadingSize: "medium",
+        coverLayout: "center-poster",
+        decorationColor: "#f59e0b",
         density: "normal",
         fontId: "serif",
-        headingAlignment: "center",
         headingDecoration: "underline",
       },
       overrides: { fontId: "serif" },
     });
+  });
+
+  it.each(
+    headingOverrideCases
+  )("标题字段 %s 可识别并单项恢复", (field, value) => {
+    const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { [field]: value } as Partial<StyleConfiguration>,
+      type: "update-configuration",
+    });
+    const reset = styleSystem.transition(modified, {
+      field,
+      type: "reset-field",
+    });
+
+    expect(styleSystem.read(modified).overridden[field]).toBe(true);
+    expect(styleSystem.read(reset).overridden[field]).toBe(false);
   });
 
   it("未知主题回落到默认主题", () => {
@@ -84,6 +144,10 @@ describe("Style System Interface", () => {
         currentThemeId: "removed-theme",
         overrides: {
           accentColor: "javascript:alert(1)",
+          bodyHeadingAlignment: "right",
+          bodyHeadingSize: "huge",
+          coverLayout: "freeform",
+          decorationColor: "currentColor",
           density: "cramped",
           fontId: "missing-font",
           headingAlignment: "right",
@@ -126,6 +190,29 @@ describe("Style System Interface", () => {
     });
   });
 
+  it("把旧强调色迁移为仅作用于标题的装饰颜色", () => {
+    const original = styleSystem.resolve(styleSystem.hydrate(undefined), {
+      page: "body",
+    }).styles;
+    const migrated = styleSystem.hydrate({
+      currentThemeId: "clean-light",
+      overrides: { accentColor: "#e64f7a" },
+    });
+    const styles = styleSystem.resolve(migrated, { page: "body" }).styles;
+
+    expect({
+      blockquote: styles.blockquote,
+      link: styles.a,
+      markdownHighlight: styles.mark,
+      overrides: migrated.overrides,
+    }).toEqual({
+      blockquote: original.blockquote,
+      link: original.a,
+      markdownHighlight: original.mark,
+      overrides: { decorationColor: "#e64f7a" },
+    });
+  });
+
   it("设置回主题默认值时删除对应覆盖", () => {
     const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
       patch: { density: "compact" },
@@ -162,10 +249,12 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
-        accentColor: undefined,
+        bodyHeadingAlignment: "left",
+        bodyHeadingSize: "medium",
+        coverLayout: "center-poster",
+        decorationColor: "#44403c",
         density: "compact",
         fontId: "auto",
-        headingAlignment: "left",
         headingDecoration: "none",
       },
       state: {
@@ -191,10 +280,12 @@ describe("Style System Interface", () => {
       state: selected,
     }).toEqual({
       configuration: {
-        accentColor: undefined,
+        bodyHeadingAlignment: "left",
+        bodyHeadingSize: "medium",
+        coverLayout: "center-poster",
+        decorationColor: "#44403c",
         density: "normal",
         fontId: "auto",
-        headingAlignment: "left",
         headingDecoration: "none",
       },
       state: {
@@ -226,10 +317,12 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
-        accentColor: undefined,
+        bodyHeadingAlignment: "center",
+        bodyHeadingSize: "medium",
+        coverLayout: "center-poster",
+        decorationColor: "#f59e0b",
         density: "compact",
         fontId: "auto",
-        headingAlignment: "center",
         headingDecoration: "underline",
       },
       state: {
@@ -254,10 +347,12 @@ describe("Style System Interface", () => {
       state: reset,
     }).toEqual({
       configuration: {
-        accentColor: undefined,
+        bodyHeadingAlignment: "left",
+        bodyHeadingSize: "medium",
+        coverLayout: "center-poster",
+        decorationColor: "#44403c",
         density: "normal",
         fontId: "auto",
-        headingAlignment: "left",
         headingDecoration: "none",
       },
       state: { currentThemeId: "reading-mode", overrides: {} },
@@ -299,6 +394,153 @@ describe("Style System Interface", () => {
       coverHeadingSize: "2.03125em",
       coverVerticalAlign: "center",
     });
+  });
+
+  it.each([
+    ["small", "1.421875em"],
+    ["medium", "1.625em"],
+    ["large", "1.828125em"],
+  ] as const)("正文标题大小 %s 只改变正文", (bodyHeadingSize, fontSize) => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { bodyHeadingSize },
+      type: "update-configuration",
+    });
+
+    expect({
+      body: styleSystem.resolve(state, { page: "body" }).styles.h1.fontSize,
+      cover: styleSystem.resolve(state, { page: "cover" }).styles.h1.fontSize,
+    }).toEqual({ body: fontSize, cover: "2.03125em" });
+  });
+
+  it("正文标题对齐不改变封面对齐", () => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { bodyHeadingAlignment: "left" },
+      type: "update-configuration",
+    });
+
+    expect({
+      body: styleSystem.resolve(state, { page: "body" }).styles.h1.textAlign,
+      cover: styleSystem.resolve(state, { page: "cover" }).styles.h1.textAlign,
+    }).toEqual({ body: "left", cover: "center" });
+  });
+
+  it.each([
+    ["center-poster", "center", "center", "center"],
+    ["top-left", "flex-start", "flex-start", "left"],
+    ["bottom-left", "flex-end", "flex-start", "left"],
+  ] as const)("封面版式 %s 不改变正文标题对齐", (coverLayout, vertical, horizontal, coverHeadingAlignment) => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { coverLayout },
+      type: "update-configuration",
+    });
+    const body = styleSystem.resolve(state, { page: "body" }).styles;
+    const cover = styleSystem.resolve(state, { page: "cover" }).styles;
+
+    expect({
+      bodyHeadingAlignment: body.h1.textAlign,
+      coverHeadingAlignment: cover.h1.textAlign,
+      horizontal: cover.content.alignItems,
+      vertical: cover.content.justifyContent,
+    }).toEqual({
+      bodyHeadingAlignment: "center",
+      coverHeadingAlignment,
+      horizontal,
+      vertical,
+    });
+  });
+
+  it("装饰颜色不改变 Markdown 语义色", () => {
+    const original = styleSystem.resolve(styleSystem.hydrate(undefined), {
+      page: "body",
+    }).styles;
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { decorationColor: "#e64f7a" },
+      type: "update-configuration",
+    });
+    const changed = styleSystem.resolve(state, { page: "body" }).styles;
+
+    expect({
+      blockquote: changed.blockquote,
+      decorationChanged:
+        changed.headingInner?.backgroundImage !==
+        original.headingInner?.backgroundImage,
+      link: changed.a,
+      list: changed.ul,
+      markdownHighlight: changed.mark,
+    }).toEqual({
+      blockquote: original.blockquote,
+      decorationChanged: true,
+      link: original.a,
+      list: original.ul,
+      markdownHighlight: original.mark,
+    });
+  });
+
+  it.each([
+    ["none", undefined],
+    ["underline", "linear-gradient("],
+    ["wavy", "data:image/svg+xml"],
+    ["highlight", "linear-gradient(180deg"],
+  ] as const)("标题装饰 %s 生成稳定渲染样式", (headingDecoration, marker) => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { headingDecoration },
+      type: "update-configuration",
+    });
+    const headingInner = styleSystem.resolve(state, { page: "body" }).styles
+      .headingInner;
+
+    if (marker === undefined) {
+      expect(headingInner).toBeUndefined();
+    } else {
+      expect(String(headingInner?.backgroundImage)).toContain(marker);
+    }
+  });
+
+  it("高亮装饰保持标题文字对比度", () => {
+    const state = styleSystem.transition(
+      styleSystem.hydrate({ currentThemeId: "clean-dark" }),
+      {
+        patch: {
+          decorationColor: "#fefefe",
+          headingDecoration: "highlight",
+        },
+        type: "update-configuration",
+      }
+    );
+    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+    const decorationColor = String(styles.headingInner?.backgroundImage).match(
+      highlightColorPattern
+    )?.[0];
+
+    expect(decorationColor).toBeDefined();
+    expect(
+      contrastRatio(String(styles.h1.color), decorationColor ?? "")
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(styles.headingInner).toMatchObject({
+      boxDecorationBreak: "clone",
+      WebkitBoxDecorationBreak: "clone",
+    });
+  });
+
+  it.each(
+    styleSystem.catalog()
+  )("主题 $id 的高亮装饰保持文字对比度", (theme) => {
+    const state = styleSystem.transition(
+      styleSystem.hydrate({ currentThemeId: theme.id }),
+      {
+        patch: { headingDecoration: "highlight" },
+        type: "update-configuration",
+      }
+    );
+    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+    const decorationColor = String(styles.headingInner?.backgroundImage).match(
+      highlightColorPattern
+    )?.[0];
+
+    expect(decorationColor).toBeDefined();
+    expect(
+      contrastRatio(String(styles.h1.color), decorationColor ?? "")
+    ).toBeGreaterThanOrEqual(4.5);
   });
 
   it.each(styleSystem.catalog())("解析内置主题 $id", (theme) => {

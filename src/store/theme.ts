@@ -15,12 +15,14 @@ interface ContentThemeState extends StyleSystemState {
   resetConfiguration: () => void;
   resetConfigurationField: (field: keyof StyleConfiguration) => void;
   selectPresetTheme: (themeId: string) => void;
-  setAccentColor: (accentColor: string | undefined) => void;
+  setBodyHeadingAlignment: (
+    alignment: StyleConfiguration["bodyHeadingAlignment"]
+  ) => void;
+  setBodyHeadingSize: (size: StyleConfiguration["bodyHeadingSize"]) => void;
+  setCoverLayout: (layout: StyleConfiguration["coverLayout"]) => void;
+  setDecorationColor: (color: string) => void;
   setDensity: (density: StyleConfiguration["density"]) => void;
   setFont: (fontId: string) => void;
-  setHeadingAlignment: (
-    alignment: StyleConfiguration["headingAlignment"]
-  ) => void;
   setHeadingDecoration: (
     choice: StyleConfiguration["headingDecoration"]
   ) => void;
@@ -69,12 +71,19 @@ export const useContentThemeStore = create<ContentThemeState>()(
 
           setFont: (fontId: string) => updateConfiguration({ fontId }),
 
-          setHeadingAlignment: (
-            headingAlignment: StyleConfiguration["headingAlignment"]
-          ) => updateConfiguration({ headingAlignment }),
+          setBodyHeadingAlignment: (
+            bodyHeadingAlignment: StyleConfiguration["bodyHeadingAlignment"]
+          ) => updateConfiguration({ bodyHeadingAlignment }),
 
-          setAccentColor: (accentColor: string | undefined) =>
-            updateConfiguration({ accentColor }),
+          setBodyHeadingSize: (
+            bodyHeadingSize: StyleConfiguration["bodyHeadingSize"]
+          ) => updateConfiguration({ bodyHeadingSize }),
+
+          setCoverLayout: (coverLayout: StyleConfiguration["coverLayout"]) =>
+            updateConfiguration({ coverLayout }),
+
+          setDecorationColor: (decorationColor: string) =>
+            updateConfiguration({ decorationColor }),
 
           setHeadingDecoration: (
             headingDecoration: StyleConfiguration["headingDecoration"]
@@ -98,7 +107,7 @@ export const useContentThemeStore = create<ContentThemeState>()(
       },
       {
         name: "redbook-content-theme",
-        version: 2,
+        version: 3,
         migrate: styleSystem.hydrate,
         merge: (persisted, current) => ({
           ...current,

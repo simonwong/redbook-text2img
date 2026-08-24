@@ -8,13 +8,16 @@ import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { styleSystem } from "@/lib/style-system/style-system";
 import {
+  bodyHeadingAlignmentOptions,
+  bodyHeadingSizeOptions,
   densityOptions,
   fontOptions,
   type HeadingDecorationChoice,
-  headingAlignmentOptions,
 } from "@/lib/theme";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
-import { AccentColorPicker } from "./accent-color-picker";
+import { ConfigurationField } from "./configuration-field";
+import { CoverLayoutPicker } from "./cover-layout-picker";
+import { DecorationColorPicker } from "./decoration-color-picker";
 import { ThemeGrid } from "./theme-grid";
 
 const pageNumberOptions = [
@@ -37,17 +40,20 @@ export const ConfiguratorContent = () => {
     currentThemeId,
     overrides,
     selectPresetTheme,
+    setBodyHeadingAlignment,
+    setBodyHeadingSize,
+    setCoverLayout,
+    setDecorationColor,
     setDensity,
     setFont,
-    setHeadingAlignment,
-    setAccentColor,
     setHeadingDecoration,
     resetConfiguration,
+    resetConfigurationField,
   } = useContentThemeStore();
   const { signature, showPageNumber, setSignature, setShowPageNumber } =
     useWatermarkStore();
 
-  const { configuration, isModified } = styleSystem.read({
+  const { configuration, isModified, overridden } = styleSystem.read({
     currentThemeId,
     overrides,
   });
@@ -82,35 +88,89 @@ export const ConfiguratorContent = () => {
         />
       </div>
 
-      <div className="space-y-2">
-        <Label className="font-medium text-xs">标题对齐</Label>
-        <SegmentedControl
-          className="w-full"
-          onChange={(v) =>
-            setHeadingAlignment(v as typeof configuration.headingAlignment)
+      <section className="space-y-3 border-t pt-4">
+        <h3 className="font-semibold text-sm">正文标题</h3>
+
+        <ConfigurationField
+          isModified={overridden.bodyHeadingAlignment}
+          label="正文标题对齐"
+          onReset={() => resetConfigurationField("bodyHeadingAlignment")}
+        >
+          <SegmentedControl
+            className="w-full"
+            onChange={(value) =>
+              setBodyHeadingAlignment(
+                value as typeof configuration.bodyHeadingAlignment
+              )
+            }
+            options={bodyHeadingAlignmentOptions}
+            value={configuration.bodyHeadingAlignment}
+          />
+        </ConfigurationField>
+
+        <ConfigurationField
+          isModified={overridden.bodyHeadingSize}
+          label="正文标题大小"
+          onReset={() => resetConfigurationField("bodyHeadingSize")}
+        >
+          <SegmentedControl
+            className="w-full"
+            onChange={(value) =>
+              setBodyHeadingSize(value as typeof configuration.bodyHeadingSize)
+            }
+            options={bodyHeadingSizeOptions}
+            value={configuration.bodyHeadingSize}
+          />
+        </ConfigurationField>
+
+        <ConfigurationField
+          isModified={overridden.headingDecoration}
+          label="标题装饰"
+          onReset={() => resetConfigurationField("headingDecoration")}
+        >
+          <SegmentedControl
+            className="w-full"
+            onChange={(value) =>
+              setHeadingDecoration(value as HeadingDecorationChoice)
+            }
+            options={headingDecorationOptions}
+            value={configuration.headingDecoration}
+          />
+        </ConfigurationField>
+
+        <ConfigurationField
+          description={
+            configuration.headingDecoration === "none"
+              ? "选择标题装饰后可设置颜色"
+              : undefined
           }
-          options={headingAlignmentOptions}
-          value={configuration.headingAlignment}
-        />
-      </div>
+          descriptionId="decoration-color-status"
+          isModified={overridden.decorationColor}
+          label="装饰颜色"
+          onReset={() => resetConfigurationField("decorationColor")}
+        >
+          <DecorationColorPicker
+            descriptionId="decoration-color-status"
+            disabled={configuration.headingDecoration === "none"}
+            onChange={setDecorationColor}
+            value={configuration.decorationColor}
+          />
+        </ConfigurationField>
+      </section>
 
-      <div className="space-y-2">
-        <Label className="font-medium text-xs">标题装饰</Label>
-        <SegmentedControl
-          className="w-full"
-          onChange={(v) => setHeadingDecoration(v as HeadingDecorationChoice)}
-          options={headingDecorationOptions}
-          value={configuration.headingDecoration}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label className="font-medium text-xs">强调色</Label>
-        <AccentColorPicker
-          onChange={setAccentColor}
-          value={configuration.accentColor}
-        />
-      </div>
+      <section className="space-y-3 border-t pt-4">
+        <h3 className="font-semibold text-sm">封面</h3>
+        <ConfigurationField
+          isModified={overridden.coverLayout}
+          label="封面版式"
+          onReset={() => resetConfigurationField("coverLayout")}
+        >
+          <CoverLayoutPicker
+            onChange={setCoverLayout}
+            value={configuration.coverLayout}
+          />
+        </ConfigurationField>
+      </section>
 
       <div className="space-y-2">
         <Label className="font-medium text-xs">署名</Label>

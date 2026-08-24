@@ -6,6 +6,7 @@ import { useState } from "react";
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
@@ -36,6 +37,9 @@ export const MobileLayout = () => {
         <DrawerContent className="min-h-[85vh]">
           <DrawerHeader>
             <DrawerTitle className="sr-only">图片预览</DrawerTitle>
+            <DrawerDescription className="sr-only">
+              预览并导出分页图片
+            </DrawerDescription>
           </DrawerHeader>
           <div className="flex-1 overflow-y-auto overflow-x-hidden pb-[max(1rem,env(safe-area-inset-bottom))]">
             <PreviewCard />
@@ -47,6 +51,9 @@ export const MobileLayout = () => {
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>样式设置</DrawerTitle>
+            <DrawerDescription className="sr-only">
+              选择主题并调整图片样式
+            </DrawerDescription>
           </DrawerHeader>
           <div className="overflow-auto px-4 pb-[max(2rem,env(safe-area-inset-bottom))]">
             <ConfiguratorContent />

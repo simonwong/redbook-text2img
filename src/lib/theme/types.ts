@@ -1,15 +1,12 @@
 /**
  * Theme System Type Definitions
  *
- * Two-layer architecture:
- * - Layer 1: PresetTheme (精心定制的预设主题，直接包含 FullStyle)
- * - Layer 2: FullStyle (底层完整样式定义)
- *
- * 风格调整 (StyleAdjustments): 配合 Layer 1 的微调选项
+ * Style Foundation internal types.
+ * The public Style System Interface lives in src/lib/style-system.
  */
 
 // ============================================================
-// Layer 2: FullStyle (底层完整样式定义)
+// Style Foundation
 // ============================================================
 
 export interface BackgroundStyle {
@@ -51,11 +48,11 @@ export interface EmphasisStyle {
     color: string;
     fontWeight: number;
   };
-  italic: {
-    color: string;
-  };
   highlight: {
     background: string;
+    color: string;
+  };
+  italic: {
     color: string;
   };
 }
@@ -68,16 +65,16 @@ export interface ListStyle {
 export interface BlockquoteStyle {
   background: string;
   borderColor: string;
-  textColor: string;
   boxShadow?: string;
+  textColor: string;
 }
 
 export interface CodeStyle {
-  inline: {
+  block: {
     background: string;
     color: string;
   };
-  block: {
+  inline: {
     background: string;
     color: string;
   };
@@ -89,9 +86,9 @@ export interface LinkStyle {
 }
 
 export interface SpacingStyle {
+  headingGap: number;
   padding: number;
   paragraphGap: number;
-  headingGap: number;
 }
 
 /**
@@ -110,24 +107,24 @@ export interface SurfaceStyle {
   margin: number;
 }
 
-/** Layer 2: Complete style configuration for Markdown rendering */
+/** Complete internal style definition for Markdown rendering */
 export interface FullStyle {
   background: BackgroundStyle;
-  typography: TypographyStyle;
-  heading: HeadingStyle;
-  paragraph: ParagraphStyle;
-  emphasis: EmphasisStyle;
-  list: ListStyle;
   blockquote: BlockquoteStyle;
   code: CodeStyle;
+  emphasis: EmphasisStyle;
+  heading: HeadingStyle;
   link: LinkStyle;
+  list: ListStyle;
+  paragraph: ParagraphStyle;
   spacing: SpacingStyle;
   /** 内容卡浮层布局变体（可选） */
   surface?: SurfaceStyle;
+  typography: TypographyStyle;
 }
 
 // ============================================================
-// 风格调整 (StyleAdjustments) - 配合 Layer 1
+// Resolved style configuration
 // ============================================================
 
 /** 密度选项 */
@@ -136,6 +133,10 @@ export type Density = "compact" | "snug" | "normal" | "relaxed" | "spacious";
 /** 标题对齐方式 */
 export type HeadingAlignment = "left" | "center";
 
+export type BodyHeadingSize = "small" | "medium" | "large";
+
+export type CoverLayout = "center-poster" | "top-left" | "bottom-left";
+
 /** 标题装饰用户选项（四值封闭集合，每个取值都有明确含义） */
 export type HeadingDecorationChoice =
   | "none"
@@ -143,27 +144,29 @@ export type HeadingDecorationChoice =
   | "wavy"
   | "highlight";
 
-/** 风格调整（配合 Layer 1 预设主题） */
+/** Internal shape matching the resolved public style configuration */
 export interface StyleAdjustments {
-  /** 自定义强调色（hex）；undefined = 跟随主题原色 */
-  accentColor?: string;
+  bodyHeadingAlignment: HeadingAlignment;
+  bodyHeadingSize: BodyHeadingSize;
+  coverLayout: CoverLayout;
+  /** 标题装饰颜色（hex） */
+  decorationColor: string;
   density: Density;
   fontId: string; // 字体预设 ID
-  headingAlignment: HeadingAlignment;
   /** 标题装饰类型（四值封闭集合，无跟随主题的哨兵语义） */
   headingDecoration: HeadingDecorationChoice;
 }
 
 // ============================================================
-// Layer 1: PresetTheme (精心定制的预设主题)
+// Built-in themes
 // ============================================================
 
 /** 封面图特有的样式覆盖 */
 export interface CoverStyleOverride {
-  /** 内容垂直对齐方式 */
-  contentVerticalAlign?: "top" | "center" | "bottom";
   /** 内容水平对齐方式 */
   contentHorizontalAlign?: "left" | "center" | "right";
+  /** 内容垂直对齐方式 */
+  contentVerticalAlign?: "top" | "center" | "bottom";
   /** 标题对齐方式（优先级高于用户调整） */
   headingAlignment?: HeadingAlignment;
   /** 封面 h1 额外字号乘数（叠加于 typeset.headingScale 之上，仅作用于 h1） */
@@ -175,22 +178,22 @@ export interface CoverStyleOverride {
  * 叠加在用户"密度"与"字体"选择之上，均为乘数/叠加，不与密度打架。
  */
 export interface TypesetStyle {
+  /** 正文字号乘数（乘在密度 baseFontSize 上） */
+  bodyScale?: number;
   /** 主题默认字体（引用 fonts.ts 预设 id）；用户字体为 auto 时生效 */
   fontId?: string;
   /** 在 tokens.headingScale 基础上对 h1–h3 字号的乘数（如 1.15 放大标题） */
   headingScale?: number;
   /** 字间距（CSS 值） */
   letterSpacing?: { heading?: string; body?: string };
-  /** 正文字号乘数（乘在密度 baseFontSize 上） */
-  bodyScale?: number;
 }
 
 /** 装饰性顶部导航栏（如 Apple Notes 风格） */
 export interface HeaderBarStyle {
-  /** 图标颜色 */
-  iconColor: string;
   /** 背景颜色（可以是透明） */
   background?: string;
+  /** 图标颜色 */
+  iconColor: string;
   /** 显示哪些图标 */
   icons: {
     backArrow?: boolean;
@@ -199,21 +202,21 @@ export interface HeaderBarStyle {
   };
 }
 
-/** Layer 1: Preset theme with complete FullStyle */
+/** Built-in theme with complete foundation style and configuration defaults */
 export interface PresetTheme {
-  id: string;
-  name: string;
-  description?: string;
-  style: FullStyle; // 直接包含完整样式，不再是 config
   /** 封面图特有的样式覆盖（继承 style，仅覆盖指定属性） */
   coverStyle?: CoverStyleOverride;
-  /** 装饰性顶部导航栏 */
-  headerBar?: HeaderBarStyle;
-  /** 每主题排版个性（字体/标题字号/字间距/正文字号） */
-  typeset?: TypesetStyle;
   /**
    * 该主题的默认风格调整（仅声明与全局默认不同的项）。
    * 切换到此主题时 adjustments 会重置为此默认；未声明的项回落全局默认。
    */
   defaults?: Partial<StyleAdjustments>;
+  description?: string;
+  /** 装饰性顶部导航栏 */
+  headerBar?: HeaderBarStyle;
+  id: string;
+  name: string;
+  style: FullStyle; // 直接包含完整样式，不再是 config
+  /** 每主题排版个性（字体/标题字号/字间距/正文字号） */
+  typeset?: TypesetStyle;
 }

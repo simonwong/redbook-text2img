@@ -1,6 +1,5 @@
 /**
- * Layer 1: Preset Themes
- * 精心定制的预设主题，每个主题直接定义完整的 FullStyle
+ * Built-in theme definitions.
  */
 
 import { TrianglifyGary } from "./backgroundSet";
@@ -336,7 +335,7 @@ export const presetThemes: PresetTheme[] = [
       bodyScale: 1.05,
     },
     // 阅读靠版心节奏而非留白，密度用正常档；正文页标题左对齐（长文更自然）
-    defaults: { headingAlignment: "left" },
+    defaults: { bodyHeadingAlignment: "left" },
   },
 
   // ===== 特色系列 =====
@@ -380,7 +379,7 @@ export const presetThemes: PresetTheme[] = [
       },
     },
     // 备忘录记录感：略紧密度 + 标题左对齐
-    defaults: { density: "snug", headingAlignment: "left" },
+    defaults: { bodyHeadingAlignment: "left", density: "snug" },
   },
 ];
 

@@ -1,21 +1,20 @@
 /**
  * Theme System
  *
- * Two-layer architecture:
- * - Layer 1: PresetTheme - 精心定制的预设主题，直接包含 FullStyle
- * - Layer 2: FullStyle - 底层完整样式定义
- *
- * 风格调整 (StyleAdjustments): 配合 Layer 1 的微调选项
+ * Internal theme primitives used behind the Style System Interface.
  */
 
 export type { AdjustedStyle } from "./adjustments";
 // Adjustments
+// biome-ignore lint/performance/noBarrelFile: stable public theme module API
 export {
   applyAdjustments,
+  bodyHeadingAlignmentOptions,
+  bodyHeadingSizeOptions,
+  coverLayoutOptions,
   defaultAdjustments,
   densityOptions,
   densityPresets,
-  headingAlignmentOptions,
   resolveThemeDefaults,
 } from "./adjustments";
 export type { FontPreset } from "./fonts";
@@ -42,6 +41,8 @@ export {
 export { colors, gradients, spacing, typography } from "./tokens";
 // Types
 export type {
+  BodyHeadingSize,
+  CoverLayout,
   CoverStyleOverride,
   Density,
   FullStyle,

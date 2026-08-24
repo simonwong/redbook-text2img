@@ -25,7 +25,7 @@ export const SegmentedControl = ({
       <button
         aria-pressed={option.value === value}
         className={cn(
-          "rounded-md px-3 py-1 font-medium text-xs transition-all",
+          "min-h-11 flex-1 rounded-md px-2 font-medium text-xs transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
           option.value === value
             ? "bg-background text-foreground shadow-sm"
             : "text-muted-foreground hover:text-foreground"

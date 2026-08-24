@@ -3,10 +3,12 @@
  * 风格调整模块 - 配合 Layer 1 预设主题的微调
  */
 
-import { applyAccentOverride, deriveDecoration } from "./accent";
 import { defaultFontId, getFontFamily, resolveFontId } from "./fonts";
+import { deriveDecoration } from "./heading-decoration";
 import { spacing, typography } from "./tokens";
 import type {
+  BodyHeadingSize,
+  CoverLayout,
   Density,
   FullStyle,
   HeadingAlignment,
@@ -22,10 +24,10 @@ import type {
 
 interface DensityValues {
   baseFontSize: number;
+  headingGap: number;
   lineHeight: number;
   padding: number;
   paragraphGap: number;
-  headingGap: number;
 }
 
 const densityValues = (d: Density): DensityValues => ({
@@ -56,7 +58,7 @@ export const densityOptions: { value: Density; label: string }[] = [
   { value: "spacious", label: "宽松" },
 ];
 
-export const headingAlignmentOptions: {
+export const bodyHeadingAlignmentOptions: {
   value: HeadingAlignment;
   label: string;
 }[] = [
@@ -64,16 +66,38 @@ export const headingAlignmentOptions: {
   { value: "left", label: "左对齐" },
 ];
 
+export const bodyHeadingSizeOptions: {
+  value: BodyHeadingSize;
+  label: string;
+}[] = [
+  { value: "small", label: "小" },
+  { value: "medium", label: "中" },
+  { value: "large", label: "大" },
+];
+
+export const coverLayoutOptions: { value: CoverLayout; label: string }[] = [
+  { value: "center-poster", label: "居中海报" },
+  { value: "top-left", label: "左上" },
+  { value: "bottom-left", label: "左下" },
+];
+
+const bodyHeadingScales: Record<BodyHeadingSize, number> = {
+  small: 0.875,
+  medium: 1,
+  large: 1.125,
+};
+
 // ============================================================
 // 默认调整值
 // ============================================================
 
 export const defaultAdjustments: StyleAdjustments = {
-  // 显式声明：默认无强调色覆盖（跟随主题）
-  accentColor: undefined,
+  bodyHeadingAlignment: "center",
+  bodyHeadingSize: "medium",
+  coverLayout: "center-poster",
+  decorationColor: "#111827",
   density: "normal",
   fontId: defaultFontId,
-  headingAlignment: "center",
   // 无主题时的兜底：无装饰
   headingDecoration: "none",
 };
@@ -88,6 +112,10 @@ export const defaultAdjustments: StyleAdjustments = {
 export function resolveThemeDefaults(theme?: PresetTheme): StyleAdjustments {
   return {
     ...defaultAdjustments,
+    decorationColor:
+      theme?.style.heading.decoration?.color ??
+      theme?.style.heading.color ??
+      defaultAdjustments.decorationColor,
     headingDecoration: theme?.style.heading.decoration?.kind ?? "none",
     ...theme?.defaults,
   };
@@ -116,34 +144,34 @@ export function applyAdjustments(
     resolveFontId(adjustments.fontId, typeset?.fontId)
   );
   const baseFontSize = density.baseFontSize * (typeset?.bodyScale ?? 1);
-  // 强调色两态：undefined=跟随主题原色；其余=自定义色覆盖。
-  // 只有自定义色才过 applyAccentOverride（未设置时保持主题原语义色，逐像素不变）。
-  const customAccent = adjustments.accentColor || undefined;
-  const styledBase = customAccent
-    ? applyAccentOverride(baseStyle, customAccent)
-    : baseStyle;
-
   // 有效标题装饰（kind 一致性规则）：
   // - "none" → 无装饰；
-  // - 所选类型 === 主题精修装饰类型 → 用精修装饰对象（保留定制颜色/粗细；
-  //   有自定义强调色时 applyAccentOverride 已按强调色重着色并保留粗细）；
-  // - 所选类型 ≠ 主题精修类型 → 从基色（强调色 ?? 主题标题色）统一派生。
+  // - 类型与颜色都等于主题值 → 保留主题精修对象和粗细；
+  // - 其他组合 → 从配置颜色派生，且不修改正文语义色。
   const themeKind = baseStyle.heading.decoration?.kind;
   let decoration: HeadingDecoration | undefined;
   if (adjustments.headingDecoration === "none") {
     decoration = undefined;
-  } else if (adjustments.headingDecoration === themeKind) {
-    decoration = styledBase.heading.decoration;
+  } else if (
+    adjustments.headingDecoration === themeKind &&
+    adjustments.decorationColor === baseStyle.heading.decoration?.color
+  ) {
+    decoration = baseStyle.heading.decoration;
   } else {
-    decoration = deriveDecoration(
+    const derived = deriveDecoration(
       adjustments.headingDecoration,
-      customAccent ?? baseStyle.heading.color
+      adjustments.decorationColor,
+      baseStyle.heading.color
     );
+    decoration =
+      adjustments.headingDecoration === themeKind
+        ? { ...baseStyle.heading.decoration, ...derived }
+        : derived;
   }
   const decorated =
-    decoration === styledBase.heading.decoration
-      ? styledBase
-      : { ...styledBase, heading: { ...styledBase.heading, decoration } };
+    decoration === baseStyle.heading.decoration
+      ? baseStyle
+      : { ...baseStyle, heading: { ...baseStyle.heading, decoration } };
 
   return {
     ...decorated,
@@ -157,7 +185,8 @@ export function applyAdjustments(
       headingGap: density.headingGap,
     },
     fontFamily,
-    headingAlignment: adjustments.headingAlignment,
+    bodyHeadingAlignment: adjustments.bodyHeadingAlignment,
+    bodyHeadingScale: bodyHeadingScales[adjustments.bodyHeadingSize],
     headingScale: typeset?.headingScale ?? 1,
     letterSpacing: typeset?.letterSpacing ?? {},
   };
@@ -165,8 +194,9 @@ export function applyAdjustments(
 
 /** 应用调整后的完整样式类型 */
 export type AdjustedStyle = FullStyle & {
+  bodyHeadingAlignment: HeadingAlignment;
+  bodyHeadingScale: number;
   fontFamily: string;
-  headingAlignment: HeadingAlignment;
   headingScale: number;
   letterSpacing: NonNullable<TypesetStyle["letterSpacing"]>;
 };

@@ -83,8 +83,13 @@ export function createHeadingDecoration(
   if (!decoration) {
     return;
   }
+  const fragmentStyle: CSSProperties = {
+    boxDecorationBreak: "clone",
+    WebkitBoxDecorationBreak: "clone",
+  };
   if (decoration.kind === "underline") {
     return {
+      ...fragmentStyle,
       backgroundImage: `linear-gradient(${decoration.color}, ${decoration.color})`,
       backgroundRepeat: "no-repeat",
       backgroundSize: `100% ${decoration.thickness ?? "0.14em"}`,
@@ -98,6 +103,7 @@ export function createHeadingDecoration(
     // width/height 必须显式声明：html2canvas-pro 按内在尺寸栅格化背景 SVG
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='28' height='8' viewBox='0 0 28 8' preserveAspectRatio='none'><path d='M0 4 Q3.5 1.6 7 4 Q10.5 6.4 14 4.3 Q17.5 2.1 21 3.8 Q24.5 6.4 28 4' fill='none' stroke='${decoration.color}' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
     return {
+      ...fragmentStyle,
       backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
       backgroundRepeat: "repeat-x",
       backgroundPosition: "0 100%",
@@ -106,6 +112,7 @@ export function createHeadingDecoration(
     };
   }
   return {
+    ...fragmentStyle,
     backgroundImage: `linear-gradient(180deg, transparent 55%, ${decoration.color} 55%, ${decoration.color} 92%, transparent 92%)`,
     padding: "0 0.08em",
   };
@@ -120,13 +127,20 @@ export function generateStyles(
 ): GeneratedStyles {
   const { baseFontSize, lineHeight } = style.typography;
   const { padding, paragraphGap, headingGap } = style.spacing;
-  const { fontFamily, headingAlignment, headingScale, letterSpacing } = style;
+  const {
+    bodyHeadingAlignment,
+    bodyHeadingScale,
+    fontFamily,
+    headingScale,
+    letterSpacing,
+  } = style;
   const coverStyle = options?.coverStyle;
   const surface = style.surface;
 
   // 封面标题对齐：优先使用 coverStyle 中的设置,覆盖用户调整
   const effectiveHeadingAlignment =
-    coverStyle?.headingAlignment ?? headingAlignment;
+    coverStyle?.headingAlignment ?? bodyHeadingAlignment;
+  const contextualBodyHeadingScale = coverStyle ? 1 : bodyHeadingScale;
 
   // 封面 h1 额外放大乘数：仅封面（coverStyle 存在）时生效，只作用于 h1
   const coverHeadingScale = coverStyle?.headingScale ?? 1;
@@ -150,7 +164,7 @@ export function generateStyles(
     isDisplay = false,
     extraScale = 1
   ): CSSProperties => ({
-    fontSize: `${scale * (isDisplay ? headingScale : 1) * extraScale}em`,
+    fontSize: `${scale * (isDisplay ? headingScale : 1) * (useHeadingAlignment ? contextualBodyHeadingScale : 1) * extraScale}em`,
     lineHeight: 1.2,
     fontWeight: style.heading.fontWeight,
     marginBottom: `${headingGap / baseFontSize}em`,

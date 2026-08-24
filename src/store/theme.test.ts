@@ -58,7 +58,7 @@ describe("content theme store", () => {
         currentThemeId: "clean-light",
         overrides: { density: "compact" },
       },
-      version: 2,
+      version: 3,
     });
   });
 
@@ -79,13 +79,17 @@ describe("content theme store", () => {
     });
   });
 
-  it("刷新后恢复 v2 稀疏状态", async () => {
+  it("刷新时迁移 v2 稀疏状态", async () => {
     storage.setItem(
       "redbook-content-theme",
       JSON.stringify({
         state: {
-          currentThemeId: "reading-mode",
-          overrides: { density: "compact" },
+          currentThemeId: "clean-light",
+          overrides: {
+            accentColor: "#e64f7a",
+            density: "compact",
+            headingAlignment: "left",
+          },
         },
         version: 2,
       })
@@ -99,8 +103,12 @@ describe("content theme store", () => {
       currentThemeId: state.currentThemeId,
       overrides: state.overrides,
     }).toEqual({
-      currentThemeId: "reading-mode",
-      overrides: { density: "compact" },
+      currentThemeId: "clean-light",
+      overrides: {
+        bodyHeadingAlignment: "left",
+        decorationColor: "#e64f7a",
+        density: "compact",
+      },
     });
   });
 
