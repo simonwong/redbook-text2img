@@ -1,10 +1,12 @@
 import { applyAdjustments, resolveThemeDefaults } from "../theme/adjustments";
+import { AUTO_FONT_ID, fontPresets } from "../theme/fonts";
 import { generateStyles } from "../theme/generator";
 import { defaultTheme, getThemeById, presetThemes } from "../theme/themes";
 import type {
   RenderContext,
   ResolvedStyle,
   StyleConfiguration,
+  StyleConfigurationOverrides,
   StyleSystem,
   StyleSystemCommand,
   StyleSystemSnapshot,
@@ -18,41 +20,127 @@ export type {
   RenderStyle,
   ResolvedStyle,
   StyleConfiguration,
+  StyleConfigurationOverrideState,
+  StyleConfigurationOverrides,
   StyleSystem,
   StyleSystemCommand,
   StyleSystemSnapshot,
   StyleSystemState,
+  StyleThemeSelection,
   ThemeCatalogItem,
 } from "./types";
 
 const themeCatalog: readonly ThemeCatalogItem[] = presetThemes.map(
   ({ description, id, name }) => ({ description, id, name })
 );
+const hexColorPattern = /^#[\da-f]{6}$/i;
+
+const diffConfiguration = (
+  configuration: StyleConfiguration,
+  themeConfiguration: StyleConfiguration
+): StyleConfigurationOverrides => {
+  const overrides: {
+    -readonly [Field in keyof StyleConfiguration]?: StyleConfiguration[Field];
+  } = {};
+
+  if (configuration.accentColor !== themeConfiguration.accentColor) {
+    overrides.accentColor = configuration.accentColor;
+  }
+  if (configuration.density !== themeConfiguration.density) {
+    overrides.density = configuration.density;
+  }
+  if (configuration.fontId !== themeConfiguration.fontId) {
+    overrides.fontId = configuration.fontId;
+  }
+  if (configuration.headingAlignment !== themeConfiguration.headingAlignment) {
+    overrides.headingAlignment = configuration.headingAlignment;
+  }
+  if (
+    configuration.headingDecoration !== themeConfiguration.headingDecoration
+  ) {
+    overrides.headingDecoration = configuration.headingDecoration;
+  }
+
+  return overrides;
+};
+
+const getThemeConfiguration = (themeId: string): StyleConfiguration =>
+  resolveThemeDefaults(getThemeById(themeId) ?? defaultTheme);
+
+const densities = new Set(["compact", "snug", "normal", "relaxed", "spacious"]);
+const fontIds = new Set([AUTO_FONT_ID, ...fontPresets.map(({ id }) => id)]);
+const headingAlignments = new Set(["left", "center"]);
+const headingDecorations = new Set(["none", "underline", "wavy", "highlight"]);
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
+  if (!isRecord(value)) {
+    return {};
+  }
+
+  return {
+    ...(typeof value.accentColor === "string" &&
+    hexColorPattern.test(value.accentColor)
+      ? { accentColor: value.accentColor }
+      : {}),
+    ...(typeof value.density === "string" && densities.has(value.density)
+      ? { density: value.density as StyleConfiguration["density"] }
+      : {}),
+    ...(typeof value.fontId === "string" && fontIds.has(value.fontId)
+      ? { fontId: value.fontId }
+      : {}),
+    ...(typeof value.headingAlignment === "string" &&
+    headingAlignments.has(value.headingAlignment)
+      ? {
+          headingAlignment:
+            value.headingAlignment as StyleConfiguration["headingAlignment"],
+        }
+      : {}),
+    ...(typeof value.headingDecoration === "string" &&
+    headingDecorations.has(value.headingDecoration)
+      ? {
+          headingDecoration:
+            value.headingDecoration as StyleConfiguration["headingDecoration"],
+        }
+      : {}),
+  };
+};
 
 const hydrate = (persisted: unknown): StyleSystemState => {
-  const legacy = (persisted ?? {}) as {
-    adjustments?: Partial<StyleConfiguration>;
-    configuration?: Partial<StyleConfiguration>;
-    currentThemeId?: string;
-  };
-  const theme = getThemeById(legacy.currentThemeId ?? "") ?? defaultTheme;
+  const legacy = isRecord(persisted) ? persisted : {};
+  const theme =
+    getThemeById(
+      typeof legacy.currentThemeId === "string" ? legacy.currentThemeId : ""
+    ) ?? defaultTheme;
+  const themeConfiguration = resolveThemeDefaults(theme);
+  const persistedConfiguration =
+    legacy.overrides ?? legacy.configuration ?? legacy.adjustments;
   const configuration: StyleConfiguration = {
-    ...resolveThemeDefaults(theme),
-    ...(legacy.configuration ?? legacy.adjustments),
+    ...themeConfiguration,
+    ...sanitizeConfiguration(persistedConfiguration),
   };
 
-  if (configuration.accentColor === "transparent") {
+  if (
+    isRecord(persistedConfiguration) &&
+    persistedConfiguration.accentColor === "transparent"
+  ) {
+    const migratedConfiguration: StyleConfiguration = {
+      ...configuration,
+      accentColor: undefined,
+      headingDecoration: "none",
+    };
     return {
-      configuration: {
-        ...configuration,
-        accentColor: undefined,
-        headingDecoration: "none",
-      },
       currentThemeId: theme.id,
+      overrides: diffConfiguration(migratedConfiguration, themeConfiguration),
     };
   }
 
-  return { configuration, currentThemeId: theme.id };
+  return {
+    currentThemeId: theme.id,
+    overrides: diffConfiguration(configuration, themeConfiguration),
+  };
 };
 
 const transition = (
@@ -60,46 +148,74 @@ const transition = (
   command: StyleSystemCommand
 ): StyleSystemState => {
   if (command.type === "update-configuration") {
+    const themeConfiguration = getThemeConfiguration(state.currentThemeId);
     return {
-      ...state,
-      configuration: { ...state.configuration, ...command.patch },
+      currentThemeId: state.currentThemeId,
+      overrides: diffConfiguration(
+        { ...themeConfiguration, ...state.overrides, ...command.patch },
+        themeConfiguration
+      ),
+    };
+  }
+
+  if (command.type === "reset-field") {
+    const themeConfiguration = getThemeConfiguration(state.currentThemeId);
+    return {
+      currentThemeId: state.currentThemeId,
+      overrides: diffConfiguration(
+        {
+          ...themeConfiguration,
+          ...state.overrides,
+          [command.field]: themeConfiguration[command.field],
+        },
+        themeConfiguration
+      ),
     };
   }
 
   if (command.type === "reset-configuration") {
     const theme = getThemeById(state.currentThemeId) ?? defaultTheme;
     return {
-      configuration: resolveThemeDefaults(theme),
       currentThemeId: theme.id,
+      overrides: {},
     };
+  }
+
+  if (command.type === "undo-theme-selection") {
+    return state.previousSelection ?? state;
   }
 
   const theme = getThemeById(command.themeId);
   return theme
     ? {
-        configuration: resolveThemeDefaults(theme),
         currentThemeId: theme.id,
+        overrides: {},
+        previousSelection: {
+          currentThemeId: state.currentThemeId,
+          overrides: state.overrides,
+        },
       }
     : state;
 };
 
-const isSameConfiguration = (
-  left: StyleConfiguration,
-  right: StyleConfiguration
-): boolean =>
-  left.accentColor === right.accentColor &&
-  left.density === right.density &&
-  left.fontId === right.fontId &&
-  left.headingAlignment === right.headingAlignment &&
-  left.headingDecoration === right.headingDecoration;
-
 const read = (state: StyleSystemState): StyleSystemSnapshot => {
   const theme = getThemeById(state.currentThemeId) ?? defaultTheme;
   const themeConfiguration = resolveThemeDefaults(theme);
+  const configuration: StyleConfiguration = {
+    ...themeConfiguration,
+    ...state.overrides,
+  };
 
   return {
-    configuration: state.configuration,
-    isModified: !isSameConfiguration(state.configuration, themeConfiguration),
+    configuration,
+    isModified: Object.keys(state.overrides).length > 0,
+    overridden: {
+      accentColor: "accentColor" in state.overrides,
+      density: "density" in state.overrides,
+      fontId: "fontId" in state.overrides,
+      headingAlignment: "headingAlignment" in state.overrides,
+      headingDecoration: "headingDecoration" in state.overrides,
+    },
     theme: {
       description: theme.description,
       id: theme.id,
@@ -114,9 +230,10 @@ const resolve = (
   context: RenderContext
 ): ResolvedStyle => {
   const theme = getThemeById(state.currentThemeId) ?? defaultTheme;
+  const { configuration } = read(state);
   const adjustedStyle = applyAdjustments(
     theme.style,
-    state.configuration,
+    configuration,
     theme.typeset
   );
 

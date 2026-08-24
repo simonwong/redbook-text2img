@@ -14,7 +14,7 @@ export function useContentOverflow(
   contentRef: React.RefObject<HTMLDivElement | null>,
   content: string
 ): boolean {
-  const { currentThemeId, configuration } = useContentThemeStore();
+  const { currentThemeId, overrides } = useContentThemeStore();
   const { signature, showPageNumber } = useWatermarkStore();
   const [isOverflowing, setIsOverflowing] = useState(false);
 
@@ -24,7 +24,7 @@ export function useContentOverflow(
     setIsOverflowing(
       el ? el.scrollHeight - el.clientHeight > OVERFLOW_TOLERANCE : false
     );
-  }, [content, currentThemeId, configuration, signature, showPageNumber]);
+  }, [content, currentThemeId, overrides, signature, showPageNumber]);
 
   return isOverflowing;
 }

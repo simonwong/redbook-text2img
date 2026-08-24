@@ -17,14 +17,57 @@ describe("Style System Interface", () => {
 
   it("从空持久化数据恢复默认主题状态", () => {
     expect(styleSystem.hydrate(undefined)).toEqual({
+      currentThemeId: "clean-light",
+      overrides: {},
+    });
+  });
+
+  it("修改单项只产生该字段覆盖", () => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { density: "compact" },
+      type: "update-configuration",
+    });
+    const snapshot = styleSystem.read(state);
+
+    expect({
+      density: snapshot.configuration.density,
+      overridden: snapshot.overridden,
+      overrides: state.overrides,
+    }).toEqual({
+      density: "compact",
+      overridden: {
+        accentColor: false,
+        density: true,
+        fontId: false,
+        headingAlignment: false,
+        headingDecoration: false,
+      },
+      overrides: { density: "compact" },
+    });
+  });
+
+  it("恢复单项只移除该字段覆盖", () => {
+    const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { density: "compact", fontId: "serif" },
+      type: "update-configuration",
+    });
+    const reset = styleSystem.transition(modified, {
+      field: "density",
+      type: "reset-field",
+    });
+
+    expect({
+      configuration: styleSystem.read(reset).configuration,
+      overrides: reset.overrides,
+    }).toEqual({
       configuration: {
         accentColor: undefined,
         density: "normal",
-        fontId: "auto",
+        fontId: "serif",
         headingAlignment: "center",
         headingDecoration: "underline",
       },
-      currentThemeId: "clean-light",
+      overrides: { fontId: "serif" },
     });
   });
 
@@ -35,18 +78,83 @@ describe("Style System Interface", () => {
     ).toBe("clean-light");
   });
 
+  it("丢弃持久化数据中的非法配置", () => {
+    expect(
+      styleSystem.hydrate({
+        currentThemeId: "removed-theme",
+        overrides: {
+          accentColor: "javascript:alert(1)",
+          density: "cramped",
+          fontId: "missing-font",
+          headingAlignment: "right",
+          headingDecoration: "sparkle",
+        },
+      })
+    ).toEqual({
+      currentThemeId: "clean-light",
+      overrides: {},
+    });
+  });
+
+  it("把旧版完整配置迁移为稀疏覆盖", () => {
+    expect(
+      styleSystem.hydrate({
+        configuration: {
+          accentColor: undefined,
+          density: "compact",
+          fontId: "auto",
+          headingAlignment: "left",
+          headingDecoration: "none",
+        },
+        currentThemeId: "reading-mode",
+      })
+    ).toEqual({
+      currentThemeId: "reading-mode",
+      overrides: { density: "compact" },
+    });
+  });
+
+  it("迁移旧版 transparent 强调色语义", () => {
+    expect(
+      styleSystem.hydrate({
+        adjustments: { accentColor: "transparent" },
+        currentThemeId: "clean-light",
+      })
+    ).toEqual({
+      currentThemeId: "clean-light",
+      overrides: { headingDecoration: "none" },
+    });
+  });
+
+  it("设置回主题默认值时删除对应覆盖", () => {
+    const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { density: "compact" },
+      type: "update-configuration",
+    });
+
+    expect(
+      styleSystem.transition(modified, {
+        patch: { density: "normal" },
+        type: "update-configuration",
+      }).overrides
+    ).toEqual({});
+  });
+
   it("切换主题时采用新主题配置", () => {
     const adjusted = styleSystem.transition(styleSystem.hydrate(undefined), {
       patch: { density: "compact" },
       type: "update-configuration",
     });
 
-    expect(
-      styleSystem.transition(adjusted, {
-        themeId: "reading-mode",
-        type: "select-theme",
-      })
-    ).toEqual({
+    const selected = styleSystem.transition(adjusted, {
+      themeId: "reading-mode",
+      type: "select-theme",
+    });
+
+    expect({
+      configuration: styleSystem.read(selected).configuration,
+      state: selected,
+    }).toEqual({
       configuration: {
         accentColor: undefined,
         density: "normal",
@@ -54,7 +162,45 @@ describe("Style System Interface", () => {
         headingAlignment: "left",
         headingDecoration: "none",
       },
-      currentThemeId: "reading-mode",
+      state: {
+        currentThemeId: "reading-mode",
+        overrides: {},
+        previousSelection: {
+          currentThemeId: "clean-light",
+          overrides: { density: "compact" },
+        },
+      },
+    });
+  });
+
+  it("撤销主题切换时恢复之前主题和覆盖", () => {
+    const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { density: "compact" },
+      type: "update-configuration",
+    });
+    const selected = styleSystem.transition(modified, {
+      themeId: "reading-mode",
+      type: "select-theme",
+    });
+    const restored = styleSystem.transition(selected, {
+      type: "undo-theme-selection",
+    });
+
+    expect({
+      configuration: styleSystem.read(restored).configuration,
+      state: restored,
+    }).toEqual({
+      configuration: {
+        accentColor: undefined,
+        density: "compact",
+        fontId: "auto",
+        headingAlignment: "center",
+        headingDecoration: "underline",
+      },
+      state: {
+        currentThemeId: "clean-light",
+        overrides: { density: "compact" },
+      },
     });
   });
 
@@ -64,9 +210,14 @@ describe("Style System Interface", () => {
       currentThemeId: "reading-mode",
     });
 
-    expect(
-      styleSystem.transition(state, { type: "reset-configuration" })
-    ).toEqual({
+    const reset = styleSystem.transition(state, {
+      type: "reset-configuration",
+    });
+
+    expect({
+      configuration: styleSystem.read(reset).configuration,
+      state: reset,
+    }).toEqual({
       configuration: {
         accentColor: undefined,
         density: "normal",
@@ -74,7 +225,7 @@ describe("Style System Interface", () => {
         headingAlignment: "left",
         headingDecoration: "none",
       },
-      currentThemeId: "reading-mode",
+      state: { currentThemeId: "reading-mode", overrides: {} },
     });
   });
 

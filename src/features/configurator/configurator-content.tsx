@@ -35,7 +35,7 @@ const headingDecorationOptions: {
 export const ConfiguratorContent = () => {
   const {
     currentThemeId,
-    configuration,
+    overrides,
     selectPresetTheme,
     setDensity,
     setFont,
@@ -47,7 +47,10 @@ export const ConfiguratorContent = () => {
   const { signature, showPageNumber, setSignature, setShowPageNumber } =
     useWatermarkStore();
 
-  const { isModified } = styleSystem.read({ configuration, currentThemeId });
+  const { configuration, isModified } = styleSystem.read({
+    currentThemeId,
+    overrides,
+  });
 
   return (
     <div className="space-y-4">

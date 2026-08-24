@@ -14,21 +14,39 @@ export interface StyleConfiguration {
 }
 
 export interface StyleSystemState {
-  readonly configuration: StyleConfiguration;
   readonly currentThemeId: string;
+  readonly overrides: StyleConfigurationOverrides;
+  readonly previousSelection?: StyleThemeSelection;
 }
+
+export interface StyleThemeSelection {
+  readonly currentThemeId: string;
+  readonly overrides: StyleConfigurationOverrides;
+}
+
+export type StyleConfigurationOverrides = Readonly<Partial<StyleConfiguration>>;
+
+export type StyleConfigurationOverrideState = Readonly<
+  Record<keyof StyleConfiguration, boolean>
+>;
 
 export type StyleSystemCommand =
   | {
       readonly patch: Partial<StyleConfiguration>;
       readonly type: "update-configuration";
     }
+  | {
+      readonly field: keyof StyleConfiguration;
+      readonly type: "reset-field";
+    }
   | { readonly type: "reset-configuration" }
+  | { readonly type: "undo-theme-selection" }
   | { readonly themeId: string; readonly type: "select-theme" };
 
 export interface StyleSystemSnapshot {
   readonly configuration: StyleConfiguration;
   readonly isModified: boolean;
+  readonly overridden: StyleConfigurationOverrideState;
   readonly theme: ThemeCatalogItem;
   readonly themeConfiguration: StyleConfiguration;
 }

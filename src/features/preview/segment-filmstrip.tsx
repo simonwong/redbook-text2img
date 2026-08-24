@@ -18,11 +18,11 @@ export const SegmentFilmstrip = ({
   onSelect,
 }: SegmentFilmstripProps) => {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const { currentThemeId, configuration } = useContentThemeStore();
+  const { currentThemeId, overrides } = useContentThemeStore();
 
   const thumbnailStyle = useMemo(() => {
     const { styles } = styleSystem.resolve(
-      { configuration, currentThemeId },
+      { currentThemeId, overrides },
       { page: "body" }
     );
     return {
@@ -31,7 +31,7 @@ export const SegmentFilmstrip = ({
       backgroundSize: styles.container.backgroundSize,
       color: styles.h1.color,
     };
-  }, [configuration, currentThemeId]);
+  }, [currentThemeId, overrides]);
 
   useEffect(() => {
     const activeItem = itemRefs.current[activeIndex];

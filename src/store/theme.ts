@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import {
   type StyleConfiguration,
+  type StyleSystemCommand,
+  type StyleSystemState,
   styleSystem,
 } from "@/lib/style-system/style-system";
 
@@ -9,10 +11,9 @@ import {
 // Content Theme (Image/Markdown styling)
 // ============================================================
 
-interface ContentThemeState {
-  configuration: StyleConfiguration;
-  currentThemeId: string;
+interface ContentThemeState extends StyleSystemState {
   resetConfiguration: () => void;
+  resetConfigurationField: (field: keyof StyleConfiguration) => void;
   selectPresetTheme: (themeId: string) => void;
   setAccentColor: (accentColor: string | undefined) => void;
   setDensity: (density: StyleConfiguration["density"]) => void;
@@ -23,6 +24,7 @@ interface ContentThemeState {
   setHeadingDecoration: (
     choice: StyleConfiguration["headingDecoration"]
   ) => void;
+  undoThemeSelection: () => void;
 }
 
 const initialStyleState = styleSystem.hydrate(undefined);
@@ -31,11 +33,23 @@ export const useContentThemeStore = create<ContentThemeState>()(
   devtools(
     persist(
       (set) => {
+        const applyTransition = (
+          state: ContentThemeState,
+          command: StyleSystemCommand
+        ) => {
+          const next = styleSystem.transition(state, command);
+          return {
+            currentThemeId: next.currentThemeId,
+            overrides: next.overrides,
+            previousSelection: next.previousSelection,
+          };
+        };
+
         const updateConfiguration = (
           patch: Partial<StyleConfiguration>
         ): void => {
           set((state) =>
-            styleSystem.transition(state, {
+            applyTransition(state, {
               patch,
               type: "update-configuration",
             })
@@ -47,7 +61,7 @@ export const useContentThemeStore = create<ContentThemeState>()(
 
           selectPresetTheme: (themeId: string) =>
             set((state) =>
-              styleSystem.transition(state, { themeId, type: "select-theme" })
+              applyTransition(state, { themeId, type: "select-theme" })
             ),
 
           setDensity: (density: StyleConfiguration["density"]) =>
@@ -68,24 +82,31 @@ export const useContentThemeStore = create<ContentThemeState>()(
 
           resetConfiguration: () =>
             set((state) =>
-              styleSystem.transition(state, { type: "reset-configuration" })
+              applyTransition(state, { type: "reset-configuration" })
+            ),
+
+          resetConfigurationField: (field: keyof StyleConfiguration) =>
+            set((state) =>
+              applyTransition(state, { field, type: "reset-field" })
+            ),
+
+          undoThemeSelection: () =>
+            set((state) =>
+              applyTransition(state, { type: "undo-theme-selection" })
             ),
         };
       },
       {
         name: "redbook-content-theme",
-        version: 1,
-        // v0 → v1：标题装饰从"可选/跟随主题"改为必填四值。
-        // - 旧数据缺 headingDecoration → 按持久化主题的精修 kind 解析（主题失效回落默认主题）；
-        // - 旧数据 accentColor 为 transparent（已移除的哨兵）→ 置装饰为 "none" 且清空强调色。
+        version: 2,
         migrate: styleSystem.hydrate,
         merge: (persisted, current) => ({
           ...current,
           ...styleSystem.hydrate(persisted),
         }),
         partialize: (state) => ({
-          configuration: state.configuration,
           currentThemeId: state.currentThemeId,
+          overrides: state.overrides,
         }),
       }
     )

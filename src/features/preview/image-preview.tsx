@@ -21,16 +21,16 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   ref,
   segment,
 }) => {
-  const { currentThemeId, configuration } = useContentThemeStore();
+  const { currentThemeId, overrides } = useContentThemeStore();
   const { signature, showPageNumber } = useWatermarkStore();
 
   const { styles, headerBar } = useMemo(
     () =>
       styleSystem.resolve(
-        { configuration, currentThemeId },
+        { currentThemeId, overrides },
         { page: segment.isCover ? "cover" : "body" }
       ),
-    [configuration, currentThemeId, segment.isCover]
+    [currentThemeId, overrides, segment.isCover]
   );
 
   // 页码只在非封面页显示（封面为第 1 张，计数含封面）；署名在所有卡片显示
