@@ -15,10 +15,14 @@ interface ContentThemeState extends StyleSystemState {
   resetConfiguration: () => void;
   resetConfigurationField: (field: keyof StyleConfiguration) => void;
   selectPresetTheme: (themeId: string) => void;
+  setBackground: (background: StyleConfiguration["background"]) => void;
   setBodyHeadingAlignment: (
     alignment: StyleConfiguration["bodyHeadingAlignment"]
   ) => void;
   setBodyHeadingSize: (size: StyleConfiguration["bodyHeadingSize"]) => void;
+  setContentSurface: (
+    contentSurface: StyleConfiguration["contentSurface"]
+  ) => void;
   setCoverLayout: (layout: StyleConfiguration["coverLayout"]) => void;
   setDecorationColor: (color: string) => void;
   setDensity: (density: StyleConfiguration["density"]) => void;
@@ -71,6 +75,9 @@ export const useContentThemeStore = create<ContentThemeState>()(
 
           setFont: (fontId: string) => updateConfiguration({ fontId }),
 
+          setBackground: (background: StyleConfiguration["background"]) =>
+            updateConfiguration({ background }),
+
           setBodyHeadingAlignment: (
             bodyHeadingAlignment: StyleConfiguration["bodyHeadingAlignment"]
           ) => updateConfiguration({ bodyHeadingAlignment }),
@@ -78,6 +85,10 @@ export const useContentThemeStore = create<ContentThemeState>()(
           setBodyHeadingSize: (
             bodyHeadingSize: StyleConfiguration["bodyHeadingSize"]
           ) => updateConfiguration({ bodyHeadingSize }),
+
+          setContentSurface: (
+            contentSurface: StyleConfiguration["contentSurface"]
+          ) => updateConfiguration({ contentSurface }),
 
           setCoverLayout: (coverLayout: StyleConfiguration["coverLayout"]) =>
             updateConfiguration({ coverLayout }),
@@ -107,7 +118,7 @@ export const useContentThemeStore = create<ContentThemeState>()(
       },
       {
         name: "redbook-content-theme",
-        version: 3,
+        version: 4,
         migrate: styleSystem.hydrate,
         merge: (persisted, current) => ({
           ...current,

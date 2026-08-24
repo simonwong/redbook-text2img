@@ -58,7 +58,24 @@ describe("content theme store", () => {
         currentThemeId: "clean-light",
         overrides: { density: "compact" },
       },
-      version: 3,
+      version: 4,
+    });
+  });
+
+  it("通过 store 持久化背景和内容底板覆盖", () => {
+    const themeStore = stores.useContentThemeStore.getState();
+    themeStore.setBackground({ color: "#111827", kind: "solid" });
+    themeStore.setContentSurface("floating-card");
+
+    expect(JSON.parse(storage.getItem("redbook-content-theme") ?? "")).toEqual({
+      state: {
+        currentThemeId: "clean-light",
+        overrides: {
+          background: { color: "#111827", kind: "solid" },
+          contentSurface: "floating-card",
+        },
+      },
+      version: 4,
     });
   });
 

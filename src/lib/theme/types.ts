@@ -14,6 +14,20 @@ export interface BackgroundStyle {
   value: string;
 }
 
+export type BackgroundPreset =
+  | "clean-light"
+  | "trianglify-gray"
+  | "night-aurora"
+  | "warm-sun"
+  | "cool-mist"
+  | "cherry-cream";
+
+export type CanvasBackground =
+  | { kind: "preset"; preset: BackgroundPreset }
+  | { color: string; kind: "solid" };
+
+export type ContentSurface = "none" | "floating-card" | "notebook";
+
 export interface TypographyStyle {
   baseFontSize: number; // 12-18
   lineHeight: number; // 1.4-2.0
@@ -99,10 +113,14 @@ export interface SpacingStyle {
 export interface SurfaceStyle {
   /** 浮层卡背景（建议 rgba 半透明白，如 rgba(255,255,255,0.88)） */
   background: string;
+  backgroundImage?: string;
+  backgroundPosition?: string;
+  backgroundSize?: string;
   /** 卡片圆角（px） */
   borderRadius: number;
   /** 卡片投影（柔和阴影，强化浮层层次） */
   boxShadow?: string;
+  kind?: Exclude<ContentSurface, "none">;
   /** 卡片四周留白 = container padding（px），露出背景边缘 */
   margin: number;
 }
@@ -146,8 +164,10 @@ export type HeadingDecorationChoice =
 
 /** Internal shape matching the resolved public style configuration */
 export interface StyleAdjustments {
+  background: CanvasBackground;
   bodyHeadingAlignment: HeadingAlignment;
   bodyHeadingSize: BodyHeadingSize;
+  contentSurface: ContentSurface;
   coverLayout: CoverLayout;
   /** 标题装饰颜色（hex） */
   decorationColor: string;

@@ -3,6 +3,11 @@
  * 风格调整模块 - 配合 Layer 1 预设主题的微调
  */
 
+import {
+  applyCanvasConfiguration,
+  resolveCanvasBackground,
+  resolveContentSurface,
+} from "./canvas";
 import { defaultFontId, getFontFamily, resolveFontId } from "./fonts";
 import { deriveDecoration } from "./heading-decoration";
 import { spacing, typography } from "./tokens";
@@ -54,8 +59,10 @@ const bodyHeadingScales: Record<StyleAdjustments["bodyHeadingSize"], number> = {
 // ============================================================
 
 export const defaultAdjustments: StyleAdjustments = {
+  background: { kind: "preset", preset: "clean-light" },
   bodyHeadingAlignment: "center",
   bodyHeadingSize: "medium",
+  contentSurface: "none",
   coverLayout: "center-poster",
   decorationColor: "#111827",
   density: "normal",
@@ -74,6 +81,10 @@ export const defaultAdjustments: StyleAdjustments = {
 export function resolveThemeDefaults(theme?: PresetTheme): StyleAdjustments {
   return {
     ...defaultAdjustments,
+    background: theme
+      ? resolveCanvasBackground(theme.style.background)
+      : defaultAdjustments.background,
+    contentSurface: resolveContentSurface(theme?.style.surface),
     decorationColor:
       theme?.style.heading.decoration?.color ??
       theme?.style.heading.color ??
@@ -106,6 +117,11 @@ export function applyAdjustments(
     resolveFontId(adjustments.fontId, typeset?.fontId)
   );
   const baseFontSize = density.baseFontSize * (typeset?.bodyScale ?? 1);
+  const canvasStyle = applyCanvasConfiguration(
+    baseStyle,
+    adjustments.background,
+    adjustments.contentSurface
+  );
   // 有效标题装饰（kind 一致性规则）：
   // - "none" → 无装饰；
   // - 类型与颜色都等于主题值 → 保留主题精修对象和粗细；
@@ -116,14 +132,15 @@ export function applyAdjustments(
     decoration = undefined;
   } else if (
     adjustments.headingDecoration === themeKind &&
-    adjustments.decorationColor === baseStyle.heading.decoration?.color
+    adjustments.decorationColor === baseStyle.heading.decoration?.color &&
+    canvasStyle === baseStyle
   ) {
     decoration = baseStyle.heading.decoration;
   } else {
     const derived = deriveDecoration(
       adjustments.headingDecoration,
       adjustments.decorationColor,
-      baseStyle.heading.color
+      canvasStyle.heading.color
     );
     decoration =
       adjustments.headingDecoration === themeKind
@@ -131,9 +148,9 @@ export function applyAdjustments(
         : derived;
   }
   const decorated =
-    decoration === baseStyle.heading.decoration
-      ? baseStyle
-      : { ...baseStyle, heading: { ...baseStyle.heading, decoration } };
+    decoration === canvasStyle.heading.decoration
+      ? canvasStyle
+      : { ...canvasStyle, heading: { ...canvasStyle.heading, decoration } };
 
   return {
     ...decorated,

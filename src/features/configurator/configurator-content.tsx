@@ -11,7 +11,9 @@ import {
   styleSystem,
 } from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
+import { type BackgroundOption, BackgroundPicker } from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
+import { ContentSurfacePicker } from "./content-surface-picker";
 import { CoverLayoutPicker } from "./cover-layout-picker";
 import { DecorationColorPicker } from "./decoration-color-picker";
 import { ThemeGrid } from "./theme-grid";
@@ -22,6 +24,18 @@ const pageNumberOptions = [
 ];
 
 const optionValues = styleSystem.configurationOptions();
+type BackgroundPreset = Extract<
+  StyleConfiguration["background"],
+  { kind: "preset" }
+>["preset"];
+const backgroundPresetLabels: Record<BackgroundPreset, string> = {
+  "cherry-cream": "樱花奶霜",
+  "clean-light": "清透白",
+  "cool-mist": "晨雾微光",
+  "night-aurora": "墨夜极光",
+  "trianglify-gray": "灰阶三角",
+  "warm-sun": "蜜光暖阳",
+};
 const bodyHeadingAlignmentLabels: Record<
   StyleConfiguration["bodyHeadingAlignment"],
   string
@@ -79,8 +93,10 @@ const headingDecorationOptions = optionValues.headingDecoration.map(
 );
 
 const fieldLabelIds = {
+  background: "background-label",
   bodyHeadingAlignment: "body-heading-alignment-label",
   bodyHeadingSize: "body-heading-size-label",
+  contentSurface: "content-surface-label",
   coverLayout: "cover-layout-label",
   decorationColor: "decoration-color-label",
   density: "density-label",
@@ -93,8 +109,10 @@ export const ConfiguratorContent = () => {
     currentThemeId,
     overrides,
     selectPresetTheme,
+    setBackground,
     setBodyHeadingAlignment,
     setBodyHeadingSize,
+    setContentSurface,
     setCoverLayout,
     setDecorationColor,
     setDensity,
@@ -110,6 +128,29 @@ export const ConfiguratorContent = () => {
     currentThemeId,
     overrides,
   });
+  const backgroundOptions: BackgroundOption[] =
+    optionValues.backgroundPreset.map((value) => {
+      const previewState = styleSystem.transition(
+        { currentThemeId, overrides },
+        {
+          patch: { background: { kind: "preset", preset: value } },
+          type: "update-configuration",
+        }
+      );
+      const preview = styleSystem.resolve(previewState, { page: "body" }).styles
+        .container;
+
+      return {
+        label: backgroundPresetLabels[value],
+        previewStyle: {
+          backgroundColor: preview.backgroundColor,
+          backgroundImage: preview.backgroundImage,
+          backgroundPosition: preview.backgroundPosition,
+          backgroundSize: preview.backgroundSize,
+        },
+        value,
+      };
+    });
 
   return (
     <div className="space-y-4">
@@ -120,6 +161,37 @@ export const ConfiguratorContent = () => {
           onSelect={selectPresetTheme}
         />
       </div>
+
+      <section className="space-y-3 border-t pt-4">
+        <h3 className="font-semibold text-sm">画布</h3>
+
+        <ConfigurationField
+          isModified={overridden.background}
+          label="背景方案"
+          labelId={fieldLabelIds.background}
+          onReset={() => resetConfigurationField("background")}
+        >
+          <BackgroundPicker
+            labelledBy={fieldLabelIds.background}
+            onChange={setBackground}
+            options={backgroundOptions}
+            value={configuration.background}
+          />
+        </ConfigurationField>
+
+        <ConfigurationField
+          isModified={overridden.contentSurface}
+          label="内容底板"
+          labelId={fieldLabelIds.contentSurface}
+          onReset={() => resetConfigurationField("contentSurface")}
+        >
+          <ContentSurfacePicker
+            labelledBy={fieldLabelIds.contentSurface}
+            onChange={setContentSurface}
+            value={configuration.contentSurface}
+          />
+        </ConfigurationField>
+      </section>
 
       <div className="space-y-2">
         <Label className="font-medium text-xs" id={fieldLabelIds.density}>

@@ -1,8 +1,9 @@
 import { applyAdjustments, resolveThemeDefaults } from "../theme/adjustments";
+import { backgroundPresetIds, canvasBackgroundsEqual } from "../theme/canvas";
 import { AUTO_FONT_ID, fontPresets } from "../theme/fonts";
 import { generateStyles } from "../theme/generator";
 import { defaultTheme, getThemeById, presetThemes } from "../theme/themes";
-import type { CoverStyleOverride } from "../theme/types";
+import type { BackgroundPreset, CoverStyleOverride } from "../theme/types";
 import type {
   RenderContext,
   ResolvedStyle,
@@ -38,8 +39,10 @@ const themeCatalog: readonly ThemeCatalogItem[] = presetThemes.map(
 );
 const hexColorPattern = /^#[\da-f]{6}$/i;
 const configurationOptions = {
+  backgroundPreset: backgroundPresetIds,
   bodyHeadingAlignment: ["center", "left"],
   bodyHeadingSize: ["small", "medium", "large"],
+  contentSurface: ["none", "floating-card", "notebook"],
   coverLayout: ["center-poster", "top-left", "bottom-left"],
   density: ["compact", "snug", "normal", "relaxed", "spacious"],
   fontId: [AUTO_FONT_ID, ...fontPresets.map(({ id }) => id)],
@@ -55,6 +58,14 @@ const diffConfiguration = (
   } = {};
 
   if (
+    !canvasBackgroundsEqual(
+      configuration.background,
+      themeConfiguration.background
+    )
+  ) {
+    overrides.background = configuration.background;
+  }
+  if (
     configuration.bodyHeadingAlignment !==
     themeConfiguration.bodyHeadingAlignment
   ) {
@@ -62,6 +73,9 @@ const diffConfiguration = (
   }
   if (configuration.bodyHeadingSize !== themeConfiguration.bodyHeadingSize) {
     overrides.bodyHeadingSize = configuration.bodyHeadingSize;
+  }
+  if (configuration.contentSurface !== themeConfiguration.contentSurface) {
+    overrides.contentSurface = configuration.contentSurface;
   }
   if (configuration.coverLayout !== themeConfiguration.coverLayout) {
     overrides.coverLayout = configuration.coverLayout;
@@ -92,7 +106,11 @@ const bodyHeadingAlignments = new Set<string>(
   configurationOptions.bodyHeadingAlignment
 );
 const bodyHeadingSizes = new Set<string>(configurationOptions.bodyHeadingSize);
+const contentSurfaces = new Set<string>(configurationOptions.contentSurface);
 const coverLayouts = new Set<string>(configurationOptions.coverLayout);
+const backgroundPresets = new Set<string>(
+  configurationOptions.backgroundPreset
+);
 const fontIds = new Set<string>(configurationOptions.fontId);
 const headingDecorations = new Set<string>(
   configurationOptions.headingDecoration
@@ -100,6 +118,31 @@ const headingDecorations = new Set<string>(
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
+
+const sanitizeBackground = (
+  value: unknown
+): StyleConfiguration["background"] | undefined => {
+  if (!isRecord(value)) {
+    return;
+  }
+  if (
+    value.kind === "preset" &&
+    typeof value.preset === "string" &&
+    backgroundPresets.has(value.preset)
+  ) {
+    return {
+      kind: "preset",
+      preset: value.preset as BackgroundPreset,
+    };
+  }
+  if (
+    value.kind === "solid" &&
+    typeof value.color === "string" &&
+    hexColorPattern.test(value.color)
+  ) {
+    return { color: value.color.toLowerCase(), kind: "solid" };
+  }
+};
 
 const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
   if (!isRecord(value)) {
@@ -109,8 +152,10 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
   const bodyHeadingAlignment =
     value.bodyHeadingAlignment ?? value.headingAlignment;
   const decorationColor = value.decorationColor ?? value.accentColor;
+  const background = sanitizeBackground(value.background);
 
   return {
+    ...(background ? { background } : {}),
     ...(typeof bodyHeadingAlignment === "string" &&
     bodyHeadingAlignments.has(bodyHeadingAlignment)
       ? {
@@ -123,6 +168,13 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
       ? {
           bodyHeadingSize:
             value.bodyHeadingSize as StyleConfiguration["bodyHeadingSize"],
+        }
+      : {}),
+    ...(typeof value.contentSurface === "string" &&
+    contentSurfaces.has(value.contentSurface)
+      ? {
+          contentSurface:
+            value.contentSurface as StyleConfiguration["contentSurface"],
         }
       : {}),
     ...(typeof value.coverLayout === "string" &&
@@ -196,7 +248,11 @@ const transition = (
     return {
       currentThemeId: state.currentThemeId,
       overrides: diffConfiguration(
-        { ...themeConfiguration, ...state.overrides, ...command.patch },
+        {
+          ...themeConfiguration,
+          ...state.overrides,
+          ...sanitizeConfiguration(command.patch),
+        },
         themeConfiguration
       ),
     };
@@ -254,8 +310,10 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
     configuration,
     isModified: Object.keys(state.overrides).length > 0,
     overridden: {
+      background: "background" in state.overrides,
       bodyHeadingAlignment: "bodyHeadingAlignment" in state.overrides,
       bodyHeadingSize: "bodyHeadingSize" in state.overrides,
+      contentSurface: "contentSurface" in state.overrides,
       coverLayout: "coverLayout" in state.overrides,
       decorationColor: "decorationColor" in state.overrides,
       density: "density" in state.overrides,

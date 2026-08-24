@@ -207,6 +207,9 @@ export function generateStyles(
       // surface 变体：innerContainer 变为浮层卡（保留原有密度 padding）
       ...(surface && {
         backgroundColor: surface.background,
+        backgroundImage: surface.backgroundImage,
+        backgroundPosition: surface.backgroundPosition,
+        backgroundSize: surface.backgroundSize,
         borderRadius: `${surface.borderRadius}px`,
         ...(surface.boxShadow && { boxShadow: surface.boxShadow }),
       }),
