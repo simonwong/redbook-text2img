@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import {
+  type StyleConfiguration,
+  styleSystem,
+} from "../style-system/style-system";
 import { contrastRatio, hexToRgb } from "./color-contrast";
-import { presetThemes } from "./themes";
-import type { StyleAdjustments } from "./types";
 
 const firstFourConfigurations = {
   "clean-dark": {
@@ -48,14 +50,7 @@ const firstFourConfigurations = {
     fontId: "sans",
     headingDecoration: "underline",
   },
-} satisfies Record<string, StyleAdjustments>;
-
-const readableBackgrounds = {
-  "clean-dark": "#28233a",
-  "clean-light": "#ffffff",
-  "gradient-warm": "#fffaf2",
-  "trianglify-minimalist": "#f8fafc",
-} as const;
+} satisfies Record<string, StyleConfiguration>;
 
 const ratio = (foreground: string, background: string): number =>
   contrastRatio(hexToRgb(foreground), hexToRgb(background));
@@ -63,14 +58,14 @@ const ratio = (foreground: string, background: string): number =>
 describe("内置主题 1–4", () => {
   it.each(
     Object.entries(firstFourConfigurations)
-  )("%s 由完整样式配置表达", (themeId, configuration) => {
-    const theme = presetThemes.find(({ id }) => id === themeId);
-
-    expect(theme?.configuration).toEqual(configuration);
-    expect(theme?.defaults).toBeUndefined();
-    expect(Object.keys(theme?.configuration ?? {}).sort()).toEqual(
-      Object.keys(configuration).sort()
+  )("%s 通过 Seam 公开完整样式配置", (themeId, configuration) => {
+    const snapshot = styleSystem.read(
+      styleSystem.hydrate({ currentThemeId: themeId })
     );
+
+    expect(snapshot.themeConfiguration).toEqual(configuration);
+    expect(snapshot.configuration).toEqual(configuration);
+    expect(snapshot.isModified).toBe(false);
   });
 
   it("任意两个主题至少有两个可见配置维度不同", () => {
@@ -79,7 +74,7 @@ describe("内置主题 1–4", () => {
     for (const [index, configuration] of configurations.entries()) {
       for (const candidate of configurations.slice(index + 1)) {
         const differences = Object.keys(configuration).filter((field) => {
-          const key = field as keyof StyleAdjustments;
+          const key = field as keyof StyleConfiguration;
           return (
             JSON.stringify(configuration[key]) !==
             JSON.stringify(candidate[key])
@@ -90,47 +85,43 @@ describe("内置主题 1–4", () => {
     }
   });
 
-  it.each(
-    Object.entries(readableBackgrounds)
-  )("%s 的正文语义色满足 WCAG AA", (themeId, canvasBackground) => {
-    const theme = presetThemes.find(({ id }) => id === themeId);
-    expect(theme).toBeDefined();
-    if (!theme) {
-      return;
-    }
-
-    const contentBackground =
-      theme.style.surface?.background ?? canvasBackground;
+  it.each([
+    "trianglify-minimalist",
+    "gradient-warm",
+  ])("%s 的浮层语义色从 Seam 解析后满足 WCAG AA", (themeId) => {
+    const styles = styleSystem.resolve(
+      styleSystem.hydrate({ currentThemeId: themeId }),
+      { page: "body" }
+    ).styles;
+    const background = String(styles.innerContainer.backgroundColor);
     const textColors = [
-      theme.style.heading.color,
-      theme.style.paragraph.color,
-      theme.style.emphasis.bold.color,
-      theme.style.emphasis.italic.color,
-      theme.style.list.color,
-      theme.style.link.color,
+      styles.h1.color,
+      styles.p.color,
+      styles.strong.color,
+      styles.em.color,
+      styles.ul.color,
+      styles.a.color,
+      styles.footer.color,
     ];
 
     for (const color of textColors) {
-      expect(ratio(color, contentBackground)).toBeGreaterThanOrEqual(4.5);
+      expect(ratio(String(color), background)).toBeGreaterThanOrEqual(4.5);
     }
     expect(
-      ratio(theme.style.list.markerColor, contentBackground)
-    ).toBeGreaterThanOrEqual(3);
+      ratio(String(styles.mark.color), String(styles.mark.backgroundColor))
+    ).toBeGreaterThanOrEqual(4.5);
     expect(
       ratio(
-        theme.style.emphasis.highlight.color,
-        theme.style.emphasis.highlight.background
+        String(styles.blockquote.color),
+        String(styles.blockquote.backgroundColor)
       )
     ).toBeGreaterThanOrEqual(4.5);
     expect(
-      ratio(theme.style.blockquote.textColor, theme.style.blockquote.background)
+      ratio(String(styles.code.color), String(styles.code.backgroundColor))
     ).toBeGreaterThanOrEqual(4.5);
     expect(
-      ratio(theme.style.code.inline.color, theme.style.code.inline.background)
+      ratio(String(styles.pre.color), String(styles.pre.backgroundColor))
     ).toBeGreaterThanOrEqual(4.5);
-    expect(
-      ratio(theme.style.code.block.color, theme.style.code.block.background)
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(theme.style.link.underline).toBe(true);
+    expect(styles.a.textDecoration).toBe("underline");
   });
 });

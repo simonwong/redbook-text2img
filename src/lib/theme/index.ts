@@ -29,7 +29,6 @@ export { createHeadingDecoration, generateStyles } from "./generator";
 export {
   defaultTheme,
   getThemeById,
-  getThemeStyle,
   presetThemes,
 } from "./themes";
 // Tokens

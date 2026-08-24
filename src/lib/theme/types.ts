@@ -23,8 +23,8 @@ export type BackgroundPreset =
   | "cherry-cream";
 
 export type CanvasBackground =
-  | { kind: "preset"; preset: BackgroundPreset }
-  | { color: string; kind: "solid" };
+  | { readonly kind: "preset"; readonly preset: BackgroundPreset }
+  | { readonly color: string; readonly kind: "solid" };
 
 export type ContentSurface = "none" | "floating-card" | "notebook";
 
@@ -164,17 +164,17 @@ export type HeadingDecorationChoice =
 
 /** Internal shape matching the resolved public style configuration */
 export interface StyleAdjustments {
-  background: CanvasBackground;
-  bodyHeadingAlignment: HeadingAlignment;
-  bodyHeadingSize: BodyHeadingSize;
-  contentSurface: ContentSurface;
-  coverLayout: CoverLayout;
+  readonly background: CanvasBackground;
+  readonly bodyHeadingAlignment: HeadingAlignment;
+  readonly bodyHeadingSize: BodyHeadingSize;
+  readonly contentSurface: ContentSurface;
+  readonly coverLayout: CoverLayout;
   /** 标题装饰颜色（hex） */
-  decorationColor: string;
-  density: Density;
-  fontId: string; // 字体预设 ID
+  readonly decorationColor: string;
+  readonly density: Density;
+  readonly fontId: string; // 字体预设 ID
   /** 标题装饰类型（四值封闭集合，无跟随主题的哨兵语义） */
-  headingDecoration: HeadingDecorationChoice;
+  readonly headingDecoration: HeadingDecorationChoice;
 }
 
 // ============================================================
@@ -222,22 +222,10 @@ export interface HeaderBarStyle {
   };
 }
 
-/** Built-in theme with complete foundation style and configuration defaults */
+/** Named built-in preset. Rendering details stay behind the Style Foundation. */
 export interface PresetTheme {
-  configuration?: StyleAdjustments;
-  /** 封面图特有的样式覆盖（继承 style，仅覆盖指定属性） */
-  coverStyle?: CoverStyleOverride;
-  /**
-   * 该主题的默认风格调整（仅声明与全局默认不同的项）。
-   * 切换到此主题时 adjustments 会重置为此默认；未声明的项回落全局默认。
-   */
-  defaults?: Partial<StyleAdjustments>;
-  description?: string;
-  /** 装饰性顶部导航栏 */
-  headerBar?: HeaderBarStyle;
-  id: string;
-  name: string;
-  style: FullStyle; // 直接包含完整样式，不再是 config
-  /** 每主题排版个性（字体/标题字号/字间距/正文字号） */
-  typeset?: TypesetStyle;
+  readonly configuration: StyleAdjustments;
+  readonly description?: string;
+  readonly id: string;
+  readonly name: string;
 }

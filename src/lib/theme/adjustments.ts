@@ -3,11 +3,7 @@
  * 风格调整模块 - 配合 Layer 1 预设主题的微调
  */
 
-import {
-  applyCanvasConfiguration,
-  resolveCanvasBackground,
-  resolveContentSurface,
-} from "./canvas";
+import { applyCanvasConfiguration } from "./canvas";
 import { defaultFontId, getFontFamily, resolveFontId } from "./fonts";
 import { deriveDecoration } from "./heading-decoration";
 import { spacing, typography } from "./tokens";
@@ -70,30 +66,11 @@ export const defaultAdjustments: StyleAdjustments = {
 };
 
 /**
- * 解析主题的完整配置。切换或重置主题时回落到这个配置。
- * 已迁移主题直接使用 configuration；旧主题暂从 style 和 defaults 推导。
- *
- * 标题装饰的初始落点从主题精修装饰的 kind 推导（无精修装饰 → "none"）；
- * 主题 defaults 仍可显式声明覆盖该落点（放在推导之后 spread）。
+ * 解析主题的完整配置。边界返回新对象，防止调用方污染全局预设。
  */
 export function resolveThemeDefaults(theme?: PresetTheme): StyleAdjustments {
-  if (theme?.configuration) {
-    return theme.configuration;
-  }
-
-  return {
-    ...defaultAdjustments,
-    background: theme
-      ? resolveCanvasBackground(theme.style.background)
-      : defaultAdjustments.background,
-    contentSurface: resolveContentSurface(theme?.style.surface),
-    decorationColor:
-      theme?.style.heading.decoration?.color ??
-      theme?.style.heading.color ??
-      defaultAdjustments.decorationColor,
-    headingDecoration: theme?.style.heading.decoration?.kind ?? "none",
-    ...theme?.defaults,
-  };
+  const configuration = theme?.configuration ?? defaultAdjustments;
+  return { ...configuration, background: { ...configuration.background } };
 }
 
 // ============================================================

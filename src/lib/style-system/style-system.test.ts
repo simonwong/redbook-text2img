@@ -100,6 +100,29 @@ describe("Style System Interface", () => {
     });
   });
 
+  it("读取快照不能污染主题默认值", () => {
+    const state = styleSystem.hydrate(undefined);
+    const first = styleSystem.read(state);
+    const mutableConfiguration = first.configuration as {
+      background: { preset: string };
+    };
+    const mutableThemeConfiguration = first.themeConfiguration as {
+      background: { preset: string };
+    };
+
+    mutableConfiguration.background.preset = "night-aurora";
+    mutableThemeConfiguration.background.preset = "warm-sun";
+
+    expect(styleSystem.read(state)).toMatchObject({
+      configuration: {
+        background: { kind: "preset", preset: "clean-light" },
+      },
+      themeConfiguration: {
+        background: { kind: "preset", preset: "clean-light" },
+      },
+    });
+  });
+
   it("修改单项只产生该字段覆盖", () => {
     const state = styleSystem.transition(styleSystem.hydrate(undefined), {
       patch: { density: "compact" },
@@ -429,6 +452,27 @@ describe("Style System Interface", () => {
       coverLayout: false,
       density: false,
       headingDecoration: false,
+    });
+  });
+
+  it("相同有效配置不受主题 ID 影响", () => {
+    const warmState = styleSystem.hydrate({ currentThemeId: "gradient-warm" });
+    const warmConfiguration = styleSystem.read(warmState).configuration;
+    const configuredCleanState = styleSystem.transition(
+      styleSystem.hydrate({ currentThemeId: "clean-light" }),
+      { patch: warmConfiguration, type: "update-configuration" }
+    );
+
+    expect({
+      body: styleSystem.resolve(configuredCleanState, { page: "body" }).styles,
+      cover: styleSystem.resolve(configuredCleanState, { page: "cover" })
+        .styles,
+      header: styleSystem.resolve(configuredCleanState, { page: "body" })
+        .headerBar,
+    }).toEqual({
+      body: styleSystem.resolve(warmState, { page: "body" }).styles,
+      cover: styleSystem.resolve(warmState, { page: "cover" }).styles,
+      header: styleSystem.resolve(warmState, { page: "body" }).headerBar,
     });
   });
 

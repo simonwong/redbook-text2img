@@ -1,6 +1,7 @@
 import { applyAdjustments, resolveThemeDefaults } from "../theme/adjustments";
 import { backgroundPresetIds, canvasBackgroundsEqual } from "../theme/canvas";
 import { AUTO_FONT_ID, fontPresets } from "../theme/fonts";
+import { resolveStyleFoundation } from "../theme/foundation";
 import { generateStyles } from "../theme/generator";
 import { defaultTheme, getThemeById, presetThemes } from "../theme/themes";
 import type { BackgroundPreset, CoverStyleOverride } from "../theme/types";
@@ -63,7 +64,7 @@ const diffConfiguration = (
       themeConfiguration.background
     )
   ) {
-    overrides.background = configuration.background;
+    overrides.background = { ...configuration.background };
   }
   if (
     configuration.bodyHeadingAlignment !==
@@ -100,6 +101,13 @@ const diffConfiguration = (
 
 const getThemeConfiguration = (themeId: string): StyleConfiguration =>
   resolveThemeDefaults(getThemeById(themeId) ?? defaultTheme);
+
+const cloneConfiguration = (
+  configuration: StyleConfiguration
+): StyleConfiguration => ({
+  ...configuration,
+  background: { ...configuration.background },
+});
 
 const bodyHeadingAlignments = new Set<string>(
   configurationOptions.bodyHeadingAlignment
@@ -325,10 +333,10 @@ const transition = (
 const read = (state: StyleSystemState): StyleSystemSnapshot => {
   const theme = getThemeById(state.currentThemeId) ?? defaultTheme;
   const themeConfiguration = resolveThemeDefaults(theme);
-  const configuration: StyleConfiguration = {
+  const configuration = cloneConfiguration({
     ...themeConfiguration,
     ...state.overrides,
-  };
+  });
 
   return {
     configuration,
@@ -349,7 +357,7 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
       id: theme.id,
       name: theme.name,
     },
-    themeConfiguration,
+    themeConfiguration: cloneConfiguration(themeConfiguration),
   };
 };
 
@@ -359,10 +367,11 @@ const resolve = (
 ): ResolvedStyle => {
   const theme = getThemeById(state.currentThemeId) ?? defaultTheme;
   const { configuration } = read(state);
+  const foundation = resolveStyleFoundation(configuration);
   const adjustedStyle = applyAdjustments(
-    theme.style,
+    foundation.style,
     configuration,
-    theme.typeset
+    foundation.typeset
   );
   const coverLayout: CoverStyleOverride =
     configuration.coverLayout === "center-poster"
@@ -379,11 +388,11 @@ const resolve = (
         };
 
   return {
-    headerBar: theme.headerBar,
+    headerBar: foundation.headerBar,
     styles: generateStyles(
       adjustedStyle,
       context.page === "cover"
-        ? { coverStyle: { ...theme.coverStyle, ...coverLayout } }
+        ? { coverStyle: { ...foundation.coverStyle, ...coverLayout } }
         : undefined
     ),
     theme: {

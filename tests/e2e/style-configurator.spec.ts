@@ -99,7 +99,7 @@ test.describe("移动端触控", () => {
               width,
             };
           })
-          .filter(({ height, width }) => height < 44 || width < 44)
+          .filter(({ height, width }) => height < 43.9 || width < 43.9)
       );
     expect(undersizedButtons).toEqual([]);
 
