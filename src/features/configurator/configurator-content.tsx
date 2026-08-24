@@ -2,6 +2,7 @@
 
 import { ArrowReloadHorizontalIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import type { CSSProperties } from "react";
 import { Select } from "@/components/enhance/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -151,6 +152,28 @@ export const ConfiguratorContent = () => {
         value,
       };
     });
+  const contentSurfacePreviews = Object.fromEntries(
+    optionValues.contentSurface.map((value) => {
+      const previewState = styleSystem.transition(
+        { currentThemeId, overrides },
+        {
+          patch: { contentSurface: value },
+          type: "update-configuration",
+        }
+      );
+      const { container, innerContainer } = styleSystem.resolve(previewState, {
+        page: "body",
+      }).styles;
+
+      return [value, { container, innerContainer }];
+    })
+  ) as Record<
+    StyleConfiguration["contentSurface"],
+    {
+      container: CSSProperties;
+      innerContainer: CSSProperties;
+    }
+  >;
 
   return (
     <div className="space-y-4">
@@ -188,6 +211,7 @@ export const ConfiguratorContent = () => {
           <ContentSurfacePicker
             labelledBy={fieldLabelIds.contentSurface}
             onChange={setContentSurface}
+            previews={contentSurfacePreviews}
             value={configuration.contentSurface}
           />
         </ConfigurationField>

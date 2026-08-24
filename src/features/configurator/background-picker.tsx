@@ -19,6 +19,7 @@ interface BackgroundPickerProps {
 }
 
 const defaultSolidColor = "#ffffff";
+const solidColorDescriptionId = "solid-background-color-description";
 
 export const BackgroundPicker = ({
   labelledBy,
@@ -67,12 +68,16 @@ export const BackgroundPicker = ({
             纯色颜色
           </label>
           {!isSolid && (
-            <p className="text-muted-foreground text-xs">
+            <p
+              className="text-muted-foreground text-xs"
+              id={solidColorDescriptionId}
+            >
               选择纯色后可设置颜色
             </p>
           )}
         </div>
         <input
+          aria-describedby={isSolid ? undefined : solidColorDescriptionId}
           className="h-11 w-14 cursor-pointer rounded border-0 bg-transparent p-0 disabled:cursor-not-allowed disabled:opacity-40"
           disabled={!isSolid}
           id="solid-background-color"

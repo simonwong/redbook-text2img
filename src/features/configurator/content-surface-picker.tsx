@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties } from "react";
 import {
   type StyleConfiguration,
   styleSystem,
@@ -10,6 +10,15 @@ type ContentSurface = StyleConfiguration["contentSurface"];
 interface ContentSurfacePickerProps {
   labelledBy: string;
   onChange: (surface: ContentSurface) => void;
+  previews: Readonly<
+    Record<
+      ContentSurface,
+      {
+        container: CSSProperties;
+        innerContainer: CSSProperties;
+      }
+    >
+  >;
   value: ContentSurface;
 }
 
@@ -23,32 +32,10 @@ const options = styleSystem
   .configurationOptions()
   .contentSurface.map((value) => ({ label: labels[value], value }));
 
-const previews: Record<ContentSurface, ReactNode> = {
-  "floating-card": (
-    <span className="flex size-full items-center justify-center bg-muted p-2">
-      <span className="size-full rounded bg-background shadow-sm" />
-    </span>
-  ),
-  none: (
-    <span className="flex size-full items-center justify-center bg-muted">
-      <span className="h-px w-10 bg-muted-foreground/50" />
-    </span>
-  ),
-  notebook: (
-    <span
-      className="block size-full bg-[#fffdf5]"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(148, 163, 184, 0.28) 1px, transparent 1px)",
-        backgroundSize: "100% 10px",
-      }}
-    />
-  ),
-};
-
 export const ContentSurfacePicker = ({
   labelledBy,
   onChange,
+  previews,
   value,
 }: ContentSurfacePickerProps) => (
   <fieldset
@@ -61,7 +48,24 @@ export const ContentSurfacePicker = ({
         key={option.value}
         label={option.label}
         onSelect={() => onChange(option.value)}
-        preview={previews[option.value]}
+        preview={
+          <span
+            className="block size-full"
+            style={{
+              ...previews[option.value].container,
+              borderRadius: 0,
+              height: "100%",
+              minHeight: 0,
+              minWidth: 0,
+              width: "100%",
+            }}
+          >
+            <span
+              className="block size-full"
+              style={previews[option.value].innerContainer}
+            />
+          </span>
+        }
       />
     ))}
   </fieldset>
