@@ -6,14 +6,12 @@ import type {
   FullStyle,
   HeaderBarStyle,
   StyleAdjustments,
-  TypesetStyle,
 } from "./types";
 
 interface StyleFoundation {
   readonly coverStyle: CoverStyleOverride;
   readonly headerBar?: HeaderBarStyle;
   readonly style: FullStyle;
-  readonly typeset?: TypesetStyle;
 }
 
 type FoundationProfile =
@@ -79,7 +77,7 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
       italic: { color: "#48484a" },
     },
     heading: { color: "#1d1d1f", fontWeight: typography.fontWeight.semibold },
-    link: { color: "#007aff", underline: false },
+    link: { color: "#007aff", underline: true },
     list: { color: "#1d1d1f", markerColor: "#8e8e93" },
     paragraph: { color: "#1d1d1f" },
     spacing: baseSpacing,
@@ -110,7 +108,7 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
       italic: { color: "#4664a0" },
     },
     heading: { color: "#1a3556", fontWeight: typography.fontWeight.semibold },
-    link: { color: "#3a5fab", underline: false },
+    link: { color: "#3a5fab", underline: true },
     list: { color: "#2c486b", markerColor: "#5b7bbf" },
     paragraph: { color: "#2c486b" },
     spacing: baseSpacing,
@@ -135,11 +133,6 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
     },
     heading: {
       color: "#f5f5f7",
-      decoration: {
-        color: "#a78bfa",
-        kind: "underline",
-        thickness: "0.16em",
-      },
       fontWeight: typography.fontWeight.semibold,
     },
     link: { color: "#c4b5fd", underline: true },
@@ -173,10 +166,9 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
     },
     heading: {
       color: "#6e1530",
-      decoration: { color: "#ff9dbe", kind: "highlight" },
       fontWeight: typography.fontWeight.bold,
     },
-    link: { color: "#c83768", underline: false },
+    link: { color: "#c83768", underline: true },
     list: { color: "#86283f", markerColor: "#e64f7a" },
     paragraph: { color: "#86283f" },
     spacing: baseSpacing,
@@ -223,24 +215,12 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
     },
     heading: {
       color: "#0f172a",
-      decoration: {
-        color: "#334155",
-        kind: "underline",
-        thickness: "0.18em",
-      },
       fontWeight: typography.fontWeight.bold,
     },
     link: { color: "#1d4ed8", underline: true },
     list: { color: "#334155", markerColor: "#64748b" },
     paragraph: { color: "#334155" },
     spacing: baseSpacing,
-    surface: {
-      background: "#f8fafc",
-      borderRadius: 16,
-      boxShadow: "0 8px 28px rgba(15, 23, 42, 0.18)",
-      kind: "floating-card",
-      margin: 16,
-    },
     typography: baseTypography,
   },
   warm: {
@@ -262,37 +242,14 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
     },
     heading: {
       color: "#4a2a15",
-      decoration: { color: "#f4b76a", kind: "highlight" },
       fontWeight: typography.fontWeight.bold,
     },
     link: { color: "#93400d", underline: true },
     list: { color: "#713715", markerColor: "#a34f17" },
     paragraph: { color: "#713715" },
     spacing: baseSpacing,
-    surface: {
-      background: "#fffaf2",
-      borderRadius: 24,
-      boxShadow: "0 10px 30px rgba(120, 53, 15, 0.14)",
-      kind: "floating-card",
-      margin: 12,
-    },
     typography: baseTypography,
   },
-};
-
-const profileTypesets: Partial<Record<FoundationProfile, TypesetStyle>> = {
-  cool: { fontId: "serif" },
-  dark: { letterSpacing: { heading: "0" } },
-  pink: { fontId: "sans", headingScale: 1.1 },
-  reading: { bodyScale: 1.05, fontId: "serif" },
-  triangle: { headingScale: 1.2, letterSpacing: { heading: "-0.02em" } },
-  warm: { headingScale: 1.1 },
-};
-
-const coverHeadingScales: Partial<Record<FoundationProfile, number>> = {
-  pink: 1.15,
-  triangle: 1.1,
-  warm: 1.15,
 };
 
 const appleHeader: HeaderBarStyle = {
@@ -331,14 +288,14 @@ export const resolveStyleFoundation = (
       contentHorizontalAlign: "center",
       contentVerticalAlign: "center",
       headingAlignment: "center",
-      headingScale: coverHeadingScales[profile] ?? 1.25,
+      headingScale: 1.25,
     },
-    headerBar: profile === "apple" ? appleHeader : undefined,
+    headerBar:
+      configuration.contentSurface === "notebook" ? appleHeader : undefined,
     style: applyCanvasConfiguration(
       baseStyle,
       configuration.background,
       configuration.contentSurface
     ),
-    typeset: profileTypesets[profile],
   };
 };

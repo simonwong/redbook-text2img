@@ -71,7 +71,7 @@ describe("Style System Interface", () => {
       contentSurface: ["none", "floating-card", "notebook"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "balanced", "spacious"],
-      fontId: ["auto", "sans", "serif"],
+      fontId: ["sans", "serif"],
       headingDecoration: ["none", "underline", "wavy", "highlight"],
     });
   });
@@ -476,6 +476,42 @@ describe("Style System Interface", () => {
     });
   });
 
+  it.each([
+    { color: "#fefcf3", kind: "solid" },
+    { color: "#fbfbfb", kind: "solid" },
+    { kind: "preset", preset: "warm-sun" },
+  ] as const)("只改背景 %# 不改变排版或顶栏", (background) => {
+    const originalState = styleSystem.hydrate({
+      currentThemeId: "clean-light",
+    });
+    const changedState = styleSystem.transition(originalState, {
+      patch: { background },
+      type: "update-configuration",
+    });
+    const originalBody = styleSystem.resolve(originalState, { page: "body" });
+    const changedBody = styleSystem.resolve(changedState, { page: "body" });
+    const originalCover = styleSystem.resolve(originalState, { page: "cover" });
+    const changedCover = styleSystem.resolve(changedState, { page: "cover" });
+
+    expect({
+      bodyHeadingSize: changedBody.styles.h1.fontSize,
+      bodyLetterSpacing: changedBody.styles.h1.letterSpacing,
+      bodyWeight: changedBody.styles.h1.fontWeight,
+      coverHeadingSize: changedCover.styles.h1.fontSize,
+      fontFamily: changedBody.styles.container.fontFamily,
+      fontSize: changedBody.styles.container.fontSize,
+      headerBar: changedBody.headerBar,
+    }).toEqual({
+      bodyHeadingSize: originalBody.styles.h1.fontSize,
+      bodyLetterSpacing: originalBody.styles.h1.letterSpacing,
+      bodyWeight: originalBody.styles.h1.fontWeight,
+      coverHeadingSize: originalCover.styles.h1.fontSize,
+      fontFamily: originalBody.styles.container.fontFamily,
+      fontSize: originalBody.styles.container.fontSize,
+      headerBar: originalBody.headerBar,
+    });
+  });
+
   it("刷新后恢复当前稀疏状态", () => {
     const selected = styleSystem.transition(styleSystem.hydrate(undefined), {
       themeId: "reading-mode",
@@ -505,7 +541,7 @@ describe("Style System Interface", () => {
         coverLayout: "center-poster",
         decorationColor: "#44403c",
         density: "compact",
-        fontId: "auto",
+        fontId: "serif",
         headingDecoration: "none",
       },
       state: {
@@ -538,7 +574,7 @@ describe("Style System Interface", () => {
         coverLayout: "center-poster",
         decorationColor: "#44403c",
         density: "balanced",
-        fontId: "auto",
+        fontId: "serif",
         headingDecoration: "none",
       },
       state: {
@@ -577,7 +613,7 @@ describe("Style System Interface", () => {
         coverLayout: "center-poster",
         decorationColor: "#64748b",
         density: "compact",
-        fontId: "auto",
+        fontId: "sans",
         headingDecoration: "none",
       },
       state: {
@@ -609,7 +645,7 @@ describe("Style System Interface", () => {
         coverLayout: "center-poster",
         decorationColor: "#44403c",
         density: "balanced",
-        fontId: "auto",
+        fontId: "serif",
         headingDecoration: "none",
       },
       state: { currentThemeId: "reading-mode", overrides: {} },

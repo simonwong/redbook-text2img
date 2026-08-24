@@ -26,7 +26,7 @@ interface ContentThemeState extends StyleSystemState {
   setCoverLayout: (layout: StyleConfiguration["coverLayout"]) => void;
   setDecorationColor: (color: string) => void;
   setDensity: (density: StyleConfiguration["density"]) => void;
-  setFont: (fontId: string) => void;
+  setFont: (fontId: StyleConfiguration["fontId"]) => void;
   setHeadingDecoration: (
     choice: StyleConfiguration["headingDecoration"]
   ) => void;
@@ -73,7 +73,8 @@ export const useContentThemeStore = create<ContentThemeState>()(
           setDensity: (density: StyleConfiguration["density"]) =>
             updateConfiguration({ density }),
 
-          setFont: (fontId: string) => updateConfiguration({ fontId }),
+          setFont: (fontId: StyleConfiguration["fontId"]) =>
+            updateConfiguration({ fontId }),
 
           setBackground: (background: StyleConfiguration["background"]) =>
             updateConfiguration({ background }),

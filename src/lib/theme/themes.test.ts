@@ -14,7 +14,7 @@ const firstFourConfigurations = {
     coverLayout: "bottom-left",
     decorationColor: "#a78bfa",
     density: "balanced",
-    fontId: "auto",
+    fontId: "sans",
     headingDecoration: "underline",
   },
   "clean-light": {
@@ -25,7 +25,7 @@ const firstFourConfigurations = {
     coverLayout: "center-poster",
     decorationColor: "#64748b",
     density: "balanced",
-    fontId: "auto",
+    fontId: "sans",
     headingDecoration: "none",
   },
   "gradient-warm": {

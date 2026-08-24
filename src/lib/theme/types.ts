@@ -172,7 +172,7 @@ export interface StyleAdjustments {
   /** 标题装饰颜色（hex） */
   readonly decorationColor: string;
   readonly density: Density;
-  readonly fontId: string; // 字体预设 ID
+  readonly fontId: "sans" | "serif";
   /** 标题装饰类型（四值封闭集合，无跟随主题的哨兵语义） */
   readonly headingDecoration: HeadingDecorationChoice;
 }
@@ -189,23 +189,8 @@ export interface CoverStyleOverride {
   contentVerticalAlign?: "top" | "center" | "bottom";
   /** 标题对齐方式（优先级高于用户调整） */
   headingAlignment?: HeadingAlignment;
-  /** 封面 h1 额外字号乘数（叠加于 typeset.headingScale 之上，仅作用于 h1） */
+  /** 封面 h1 额外字号乘数，仅作用于 h1 */
   headingScale?: number;
-}
-
-/**
- * 每主题排版个性（typeset）
- * 叠加在用户"密度"与"字体"选择之上，均为乘数/叠加，不与密度打架。
- */
-export interface TypesetStyle {
-  /** 正文字号乘数（乘在密度 baseFontSize 上） */
-  bodyScale?: number;
-  /** 主题默认字体（引用 fonts.ts 预设 id）；用户字体为 auto 时生效 */
-  fontId?: string;
-  /** 在 tokens.headingScale 基础上对 h1–h3 字号的乘数（如 1.15 放大标题） */
-  headingScale?: number;
-  /** 字间距（CSS 值） */
-  letterSpacing?: { heading?: string; body?: string };
 }
 
 /** 装饰性顶部导航栏（如 Apple Notes 风格） */

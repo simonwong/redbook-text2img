@@ -4,7 +4,7 @@
  */
 
 import { applyCanvasConfiguration } from "./canvas";
-import { defaultFontId, getFontFamily, resolveFontId } from "./fonts";
+import { defaultFontId, getFontFamily } from "./fonts";
 import { deriveDecoration } from "./heading-decoration";
 import { spacing, typography } from "./tokens";
 import type {
@@ -13,7 +13,6 @@ import type {
   HeadingDecoration,
   PresetTheme,
   StyleAdjustments,
-  TypesetStyle,
 } from "./types";
 
 // ============================================================
@@ -79,60 +78,44 @@ export function resolveThemeDefaults(theme?: PresetTheme): StyleAdjustments {
 
 /**
  * 将风格调整应用到基础样式上
- * 返回最终的 FullStyle（带有 fontFamily、调整后的间距，以及主题排版个性）
- *
- * typeset 是乘数/叠加，作用于密度之上，不覆盖密度逻辑：
- * - fontFamily：用户 auto 时用 typeset.fontId，否则用户选择优先
- * - baseFontSize：密度 baseFontSize × typeset.bodyScale
- * - headingScale / letterSpacing：交给 generator 消费
+ * 返回带字体、密度和标题配置的最终样式。
  */
 export function applyAdjustments(
   baseStyle: FullStyle,
-  adjustments: StyleAdjustments,
-  typeset?: TypesetStyle
+  adjustments: StyleAdjustments
 ): AdjustedStyle {
   const density = densityPresets[adjustments.density];
-  const fontFamily = getFontFamily(
-    resolveFontId(adjustments.fontId, typeset?.fontId)
-  );
-  const baseFontSize = density.baseFontSize * (typeset?.bodyScale ?? 1);
+  const fontFamily = getFontFamily(adjustments.fontId);
+  const baseFontSize = density.baseFontSize;
   const canvasStyle = applyCanvasConfiguration(
     baseStyle,
     adjustments.background,
     adjustments.contentSurface
   );
-  // 有效标题装饰（kind 一致性规则）：
-  // - "none" → 无装饰；
-  // - 类型与颜色都等于主题值 → 保留主题精修对象和粗细；
-  // - 其他组合 → 从配置颜色派生，且不修改正文语义色。
-  const themeKind = baseStyle.heading.decoration?.kind;
-  let decoration: HeadingDecoration | undefined;
-  if (adjustments.headingDecoration === "none") {
-    decoration = undefined;
-  } else if (
-    adjustments.headingDecoration === themeKind &&
-    adjustments.decorationColor === baseStyle.heading.decoration?.color &&
-    canvasStyle === baseStyle
-  ) {
-    decoration = baseStyle.heading.decoration;
-  } else {
-    const derived = deriveDecoration(
-      adjustments.headingDecoration,
-      adjustments.decorationColor,
-      canvasStyle.heading.color
-    );
-    decoration =
-      adjustments.headingDecoration === themeKind
-        ? { ...baseStyle.heading.decoration, ...derived }
-        : derived;
-  }
+  const decoration: HeadingDecoration | undefined =
+    adjustments.headingDecoration === "none"
+      ? undefined
+      : deriveDecoration(
+          adjustments.headingDecoration,
+          adjustments.decorationColor,
+          canvasStyle.heading.color
+        );
   const decorated =
     decoration === canvasStyle.heading.decoration
       ? canvasStyle
       : { ...canvasStyle, heading: { ...canvasStyle.heading, decoration } };
+  const headingWeight =
+    adjustments.bodyHeadingSize === "large"
+      ? typography.fontWeight.bold
+      : typography.fontWeight.semibold;
 
   return {
     ...decorated,
+    emphasis: {
+      ...decorated.emphasis,
+      bold: { ...decorated.emphasis.bold, fontWeight: headingWeight },
+    },
+    heading: { ...decorated.heading, fontWeight: headingWeight },
     typography: {
       baseFontSize,
       lineHeight: density.lineHeight,
@@ -145,8 +128,8 @@ export function applyAdjustments(
     fontFamily,
     bodyHeadingAlignment: adjustments.bodyHeadingAlignment,
     bodyHeadingScale: bodyHeadingScales[adjustments.bodyHeadingSize],
-    headingScale: typeset?.headingScale ?? 1,
-    letterSpacing: typeset?.letterSpacing ?? {},
+    headingScale: 1,
+    letterSpacing: {},
   };
 }
 
@@ -156,5 +139,5 @@ export type AdjustedStyle = FullStyle & {
   bodyHeadingScale: number;
   fontFamily: string;
   headingScale: number;
-  letterSpacing: NonNullable<TypesetStyle["letterSpacing"]>;
+  letterSpacing: { body?: string; heading?: string };
 };

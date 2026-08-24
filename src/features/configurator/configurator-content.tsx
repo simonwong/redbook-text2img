@@ -77,7 +77,7 @@ const densityOptions = optionValues.density.map((value) => ({
   label: densityLabels[value],
   value,
 }));
-const fontOptions = optionValues.fontId.map((value) => ({
+const fontOptions = ["auto", ...optionValues.fontId].map((value) => ({
   label: fontLabels[value] ?? value,
   value,
 }));
@@ -247,9 +247,13 @@ export const ConfiguratorContent = () => {
         >
           <FontPicker
             labelledBy={fieldLabelIds.font}
-            onChange={setFont}
+            onChange={(fontId) =>
+              fontId === "auto"
+                ? resetConfigurationField("fontId")
+                : setFont(fontId as StyleConfiguration["fontId"])
+            }
             options={fontOptions}
-            value={configuration.fontId}
+            value={overridden.fontId ? configuration.fontId : "auto"}
           />
         </ConfigurationField>
       </SettingsSection>

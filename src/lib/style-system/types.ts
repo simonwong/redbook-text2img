@@ -8,6 +8,7 @@ import type {
   Density,
   HeadingAlignment,
   HeadingDecorationChoice,
+  StyleAdjustments,
 } from "../theme/types";
 
 export interface StyleConfiguration {
@@ -18,7 +19,7 @@ export interface StyleConfiguration {
   readonly coverLayout: CoverLayout;
   readonly decorationColor: string;
   readonly density: Density;
-  readonly fontId: string;
+  readonly fontId: StyleAdjustments["fontId"];
   readonly headingDecoration: HeadingDecorationChoice;
 }
 

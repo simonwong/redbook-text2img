@@ -176,7 +176,6 @@ describe("content theme store", () => {
 
     expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual({
       density: "compact",
-      fontId: "sans",
     });
   });
 
@@ -195,9 +194,9 @@ describe("content theme store", () => {
 
     const reloadedStores = await import("./theme");
 
-    expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual({
-      fontId: "sans",
-    });
+    expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual(
+      {}
+    );
   });
 
   it("主题切换和重置不修改卡片标记", () => {

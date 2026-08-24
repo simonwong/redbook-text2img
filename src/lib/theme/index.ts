@@ -45,5 +45,4 @@ export type {
   HeadingDecorationChoice,
   PresetTheme,
   StyleAdjustments,
-  TypesetStyle,
 } from "./types";

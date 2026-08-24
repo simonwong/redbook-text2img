@@ -1,6 +1,6 @@
 import { applyAdjustments, resolveThemeDefaults } from "../theme/adjustments";
 import { backgroundPresetIds, canvasBackgroundsEqual } from "../theme/canvas";
-import { AUTO_FONT_ID, fontPresets } from "../theme/fonts";
+import { fontPresets } from "../theme/fonts";
 import { resolveStyleFoundation } from "../theme/foundation";
 import { generateStyles } from "../theme/generator";
 import { defaultTheme, getThemeById, presetThemes } from "../theme/themes";
@@ -46,7 +46,7 @@ const configurationOptions = {
   contentSurface: ["none", "floating-card", "notebook"],
   coverLayout: ["center-poster", "top-left", "bottom-left"],
   density: ["compact", "balanced", "spacious"],
-  fontId: [AUTO_FONT_ID, ...fontPresets.map(({ id }) => id)],
+  fontId: fontPresets.map(({ id }) => id),
   headingDecoration: ["none", "underline", "wavy", "highlight"],
 } satisfies StyleConfigurationOptions;
 
@@ -170,12 +170,16 @@ const sanitizeDensity = (
 ): StyleConfiguration["density"] | undefined =>
   typeof value === "string" ? legacyDensities.get(value) : undefined;
 
-const sanitizeFontId = (value: unknown): string | undefined => {
+const sanitizeFontId = (
+  value: unknown
+): StyleConfiguration["fontId"] | undefined => {
   if (typeof value !== "string") {
     return;
   }
   const fontId = legacyFontIds.get(value) ?? value;
-  return fontIds.has(fontId) ? fontId : undefined;
+  return fontIds.has(fontId)
+    ? (fontId as StyleConfiguration["fontId"])
+    : undefined;
 };
 
 const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
@@ -368,11 +372,7 @@ const resolve = (
   const theme = getThemeById(state.currentThemeId) ?? defaultTheme;
   const { configuration } = read(state);
   const foundation = resolveStyleFoundation(configuration);
-  const adjustedStyle = applyAdjustments(
-    foundation.style,
-    configuration,
-    foundation.typeset
-  );
+  const adjustedStyle = applyAdjustments(foundation.style, configuration);
   const coverLayout: CoverStyleOverride =
     configuration.coverLayout === "center-poster"
       ? {

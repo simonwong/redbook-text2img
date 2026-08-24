@@ -55,7 +55,7 @@ const backgroundDefinitions: Record<BackgroundPreset, BackgroundDefinition> = {
 };
 
 const lightSurface: SurfaceStyle = {
-  background: "rgba(255, 255, 255, 0.82)",
+  background: "#ffffff",
   borderRadius: 16,
   boxShadow: "0 8px 28px rgba(31, 41, 55, 0.14)",
   kind: "floating-card",

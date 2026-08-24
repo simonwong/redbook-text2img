@@ -14,9 +14,6 @@ export interface FontPreset {
 // 字体预设
 // ============================================================
 
-/** "跟随主题"字体 id：解析时替换为主题 typeset.fontId（无则 sans） */
-export const AUTO_FONT_ID = "auto";
-
 export const fontPresets: FontPreset[] = [
   {
     id: "sans",
@@ -44,16 +41,4 @@ export const getFontPreset = (id: string): FontPreset =>
 /** 获取 font-family 值 */
 export const getFontFamily = (id: string): string => getFontPreset(id).value;
 
-/**
- * 解析生效字体 id
- * - 用户显式选了具体字体（非 auto）→ 用用户的（覆盖主题）
- * - 用户为 auto（跟随主题）→ 用主题 typeset.fontId，无则 sans
- */
-export const resolveFontId = (
-  userFontId: string,
-  themeFontId?: string
-): string =>
-  userFontId === AUTO_FONT_ID ? (themeFontId ?? "sans") : userFontId;
-
-/** 默认字体 ID（跟随主题） */
-export const defaultFontId = AUTO_FONT_ID;
+export const defaultFontId = "sans";

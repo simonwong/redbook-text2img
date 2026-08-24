@@ -157,7 +157,7 @@ export function generateStyles(
   }
 
   // Helper for heading styles
-  // isDisplay: h1–h3 为展示级标题，应用主题 typeset 的 headingScale 与 heading 字间距
+  // isDisplay: h1–h3 为展示级标题
   const createHeadingStyle = (
     scale: number,
     useHeadingAlignment: boolean,
