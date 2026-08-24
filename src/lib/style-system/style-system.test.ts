@@ -17,7 +17,7 @@ describe("Style System Interface", () => {
 
   it("从空持久化数据恢复默认主题状态", () => {
     expect(styleSystem.hydrate(undefined)).toEqual({
-      adjustments: {
+      configuration: {
         accentColor: undefined,
         density: "normal",
         fontId: "auto",
@@ -47,7 +47,7 @@ describe("Style System Interface", () => {
         type: "select-theme",
       })
     ).toEqual({
-      adjustments: {
+      configuration: {
         accentColor: undefined,
         density: "normal",
         fontId: "auto",
@@ -67,7 +67,7 @@ describe("Style System Interface", () => {
     expect(
       styleSystem.transition(state, { type: "reset-configuration" })
     ).toEqual({
-      adjustments: {
+      configuration: {
         accentColor: undefined,
         density: "normal",
         fontId: "auto",
@@ -117,10 +117,22 @@ describe("Style System Interface", () => {
 
   it.each(styleSystem.catalog())("解析内置主题 $id", (theme) => {
     const state = styleSystem.hydrate({ currentThemeId: theme.id });
+    const body = styleSystem.resolve(state, { page: "body" });
+    const cover = styleSystem.resolve(state, { page: "cover" });
 
     expect({
-      bodyThemeId: styleSystem.resolve(state, { page: "body" }).theme.id,
-      coverThemeId: styleSystem.resolve(state, { page: "cover" }).theme.id,
-    }).toEqual({ bodyThemeId: theme.id, coverThemeId: theme.id });
+      bodyThemeId: body.theme.id,
+      bodyVerticalAlign: body.styles.content.justifyContent,
+      coverThemeId: cover.theme.id,
+      coverVerticalAlign: cover.styles.content.justifyContent,
+      hasCoverHeadingScale:
+        cover.styles.h1.fontSize !== body.styles.h1.fontSize,
+    }).toEqual({
+      bodyThemeId: theme.id,
+      bodyVerticalAlign: "flex-start",
+      coverThemeId: theme.id,
+      coverVerticalAlign: "center",
+      hasCoverHeadingScale: true,
+    });
   });
 });

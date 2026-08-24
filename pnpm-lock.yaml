@@ -116,6 +116,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: 1.0.0
         version: 1.0.0
+      csstype:
+        specifier: ^3.2.3
+        version: 3.2.3
       lint-staged:
         specifier: ^17.0.7
         version: 17.0.7

@@ -45,6 +45,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
+    "csstype": "^3.2.3",
     "lint-staged": "^17.0.7",
     "postcss": "^8.5.15",
     "typescript": "^6.0.3",

@@ -14,17 +14,17 @@ export function useContentOverflow(
   contentRef: React.RefObject<HTMLDivElement | null>,
   content: string
 ): boolean {
-  const { currentThemeId, adjustments } = useContentThemeStore();
+  const { currentThemeId, configuration } = useContentThemeStore();
   const { signature, showPageNumber } = useWatermarkStore();
   const [isOverflowing, setIsOverflowing] = useState(false);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: content/theme/adjustments/watermark 变化后需重新测量溢出状态
+  // biome-ignore lint/correctness/useExhaustiveDependencies: content/theme/configuration/watermark 变化后需重新测量溢出状态
   useEffect(() => {
     const el = contentRef.current;
     setIsOverflowing(
       el ? el.scrollHeight - el.clientHeight > OVERFLOW_TOLERANCE : false
     );
-  }, [content, currentThemeId, adjustments, signature, showPageNumber]);
+  }, [content, currentThemeId, configuration, signature, showPageNumber]);
 
   return isOverflowing;
 }

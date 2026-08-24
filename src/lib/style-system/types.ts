@@ -1,10 +1,20 @@
 import type { GeneratedStyles } from "../theme/generator";
-import type { StyleAdjustments } from "../theme/types";
+import type {
+  Density,
+  HeadingAlignment,
+  HeadingDecorationChoice,
+} from "../theme/types";
 
-export type StyleConfiguration = StyleAdjustments;
+export interface StyleConfiguration {
+  readonly accentColor?: string;
+  readonly density: Density;
+  readonly fontId: string;
+  readonly headingAlignment: HeadingAlignment;
+  readonly headingDecoration: HeadingDecorationChoice;
+}
 
 export interface StyleSystemState {
-  readonly adjustments: StyleConfiguration;
+  readonly configuration: StyleConfiguration;
   readonly currentThemeId: string;
 }
 

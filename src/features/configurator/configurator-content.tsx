@@ -35,19 +35,19 @@ const headingDecorationOptions: {
 export const ConfiguratorContent = () => {
   const {
     currentThemeId,
-    adjustments,
+    configuration,
     selectPresetTheme,
     setDensity,
     setFont,
     setHeadingAlignment,
     setAccentColor,
     setHeadingDecoration,
-    resetAdjustments,
+    resetConfiguration,
   } = useContentThemeStore();
   const { signature, showPageNumber, setSignature, setShowPageNumber } =
     useWatermarkStore();
 
-  const { isModified } = styleSystem.read({ adjustments, currentThemeId });
+  const { isModified } = styleSystem.read({ configuration, currentThemeId });
 
   return (
     <div className="space-y-4">
@@ -63,9 +63,9 @@ export const ConfiguratorContent = () => {
         <Label className="font-medium text-xs">密度</Label>
         <SegmentedControl
           className="w-full"
-          onChange={(v) => setDensity(v as typeof adjustments.density)}
+          onChange={(v) => setDensity(v as typeof configuration.density)}
           options={densityOptions}
-          value={adjustments.density}
+          value={configuration.density}
         />
       </div>
 
@@ -75,7 +75,7 @@ export const ConfiguratorContent = () => {
           className="w-full"
           onChange={setFont}
           options={fontOptions}
-          value={adjustments.fontId}
+          value={configuration.fontId}
         />
       </div>
 
@@ -84,10 +84,10 @@ export const ConfiguratorContent = () => {
         <SegmentedControl
           className="w-full"
           onChange={(v) =>
-            setHeadingAlignment(v as typeof adjustments.headingAlignment)
+            setHeadingAlignment(v as typeof configuration.headingAlignment)
           }
           options={headingAlignmentOptions}
-          value={adjustments.headingAlignment}
+          value={configuration.headingAlignment}
         />
       </div>
 
@@ -97,7 +97,7 @@ export const ConfiguratorContent = () => {
           className="w-full"
           onChange={(v) => setHeadingDecoration(v as HeadingDecorationChoice)}
           options={headingDecorationOptions}
-          value={adjustments.headingDecoration}
+          value={configuration.headingDecoration}
         />
       </div>
 
@@ -105,7 +105,7 @@ export const ConfiguratorContent = () => {
         <Label className="font-medium text-xs">强调色</Label>
         <AccentColorPicker
           onChange={setAccentColor}
-          value={adjustments.accentColor}
+          value={configuration.accentColor}
         />
       </div>
 
@@ -131,7 +131,7 @@ export const ConfiguratorContent = () => {
       {isModified && (
         <button
           className="flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-muted-foreground text-xs transition-colors hover:bg-accent hover:text-foreground"
-          onClick={resetAdjustments}
+          onClick={resetConfiguration}
           type="button"
         >
           <HugeiconsIcon className="h-3 w-3" icon={ArrowReloadHorizontalIcon} />

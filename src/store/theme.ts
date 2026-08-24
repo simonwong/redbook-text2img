@@ -10,12 +10,11 @@ import {
 // ============================================================
 
 interface ContentThemeState {
-  adjustments: StyleConfiguration;
+  configuration: StyleConfiguration;
   currentThemeId: string;
-  resetAdjustments: () => void;
+  resetConfiguration: () => void;
   selectPresetTheme: (themeId: string) => void;
   setAccentColor: (accentColor: string | undefined) => void;
-  setAdjustments: (adjustments: Partial<StyleConfiguration>) => void;
   setDensity: (density: StyleConfiguration["density"]) => void;
   setFont: (fontId: string) => void;
   setHeadingAlignment: (
@@ -31,73 +30,48 @@ const initialStyleState = styleSystem.hydrate(undefined);
 export const useContentThemeStore = create<ContentThemeState>()(
   devtools(
     persist(
-      (set) => ({
-        ...initialStyleState,
-
-        // 切换主题：把风格调整重置为新主题的默认配置（密度/对齐等随主题联动）
-        selectPresetTheme: (themeId: string) =>
-          set((state) =>
-            styleSystem.transition(state, { themeId, type: "select-theme" })
-          ),
-
-        setDensity: (density: StyleConfiguration["density"]) =>
+      (set) => {
+        const updateConfiguration = (
+          patch: Partial<StyleConfiguration>
+        ): void => {
           set((state) =>
             styleSystem.transition(state, {
-              patch: { density },
+              patch,
               type: "update-configuration",
             })
-          ),
+          );
+        };
 
-        setFont: (fontId: string) =>
-          set((state) =>
-            styleSystem.transition(state, {
-              patch: { fontId },
-              type: "update-configuration",
-            })
-          ),
+        return {
+          ...initialStyleState,
 
-        setHeadingAlignment: (
-          headingAlignment: StyleConfiguration["headingAlignment"]
-        ) =>
-          set((state) =>
-            styleSystem.transition(state, {
-              patch: { headingAlignment },
-              type: "update-configuration",
-            })
-          ),
+          selectPresetTheme: (themeId: string) =>
+            set((state) =>
+              styleSystem.transition(state, { themeId, type: "select-theme" })
+            ),
 
-        setAccentColor: (accentColor: string | undefined) =>
-          set((state) =>
-            styleSystem.transition(state, {
-              patch: { accentColor },
-              type: "update-configuration",
-            })
-          ),
+          setDensity: (density: StyleConfiguration["density"]) =>
+            updateConfiguration({ density }),
 
-        setHeadingDecoration: (
-          headingDecoration: StyleConfiguration["headingDecoration"]
-        ) =>
-          set((state) =>
-            styleSystem.transition(state, {
-              patch: { headingDecoration },
-              type: "update-configuration",
-            })
-          ),
+          setFont: (fontId: string) => updateConfiguration({ fontId }),
 
-        setAdjustments: (adjustments: Partial<StyleConfiguration>) =>
-          set((state) =>
-            styleSystem.transition(state, {
-              patch: adjustments,
-              type: "update-configuration",
-            })
-          ),
+          setHeadingAlignment: (
+            headingAlignment: StyleConfiguration["headingAlignment"]
+          ) => updateConfiguration({ headingAlignment }),
 
-        // 重置风格：回落到当前主题的默认配置（而非全局默认）
-        resetAdjustments: () =>
-          set((state) =>
-            styleSystem.transition(state, { type: "reset-configuration" })
-          ),
-      }),
+          setAccentColor: (accentColor: string | undefined) =>
+            updateConfiguration({ accentColor }),
+
+          setHeadingDecoration: (
+            headingDecoration: StyleConfiguration["headingDecoration"]
+          ) => updateConfiguration({ headingDecoration }),
+
+          resetConfiguration: () =>
+            set((state) =>
+              styleSystem.transition(state, { type: "reset-configuration" })
+            ),
+        };
+      },
       {
         name: "redbook-content-theme",
         version: 1,
@@ -105,9 +79,13 @@ export const useContentThemeStore = create<ContentThemeState>()(
         // - 旧数据缺 headingDecoration → 按持久化主题的精修 kind 解析（主题失效回落默认主题）；
         // - 旧数据 accentColor 为 transparent（已移除的哨兵）→ 置装饰为 "none" 且清空强调色。
         migrate: styleSystem.hydrate,
+        merge: (persisted, current) => ({
+          ...current,
+          ...styleSystem.hydrate(persisted),
+        }),
         partialize: (state) => ({
+          configuration: state.configuration,
           currentThemeId: state.currentThemeId,
-          adjustments: state.adjustments,
         }),
       }
     )

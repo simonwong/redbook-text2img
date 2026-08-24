@@ -32,20 +32,27 @@ const themeCatalog: readonly ThemeCatalogItem[] = presetThemes.map(
 const hydrate = (persisted: unknown): StyleSystemState => {
   const legacy = (persisted ?? {}) as {
     adjustments?: Partial<StyleConfiguration>;
+    configuration?: Partial<StyleConfiguration>;
     currentThemeId?: string;
   };
   const theme = getThemeById(legacy.currentThemeId ?? "") ?? defaultTheme;
-  const adjustments: StyleConfiguration = {
+  const configuration: StyleConfiguration = {
     ...resolveThemeDefaults(theme),
-    ...legacy.adjustments,
+    ...(legacy.configuration ?? legacy.adjustments),
   };
 
-  if (adjustments.accentColor === "transparent") {
-    adjustments.headingDecoration = "none";
-    adjustments.accentColor = undefined;
+  if (configuration.accentColor === "transparent") {
+    return {
+      configuration: {
+        ...configuration,
+        accentColor: undefined,
+        headingDecoration: "none",
+      },
+      currentThemeId: theme.id,
+    };
   }
 
-  return { adjustments, currentThemeId: theme.id };
+  return { configuration, currentThemeId: theme.id };
 };
 
 const transition = (
@@ -55,14 +62,14 @@ const transition = (
   if (command.type === "update-configuration") {
     return {
       ...state,
-      adjustments: { ...state.adjustments, ...command.patch },
+      configuration: { ...state.configuration, ...command.patch },
     };
   }
 
   if (command.type === "reset-configuration") {
     const theme = getThemeById(state.currentThemeId) ?? defaultTheme;
     return {
-      adjustments: resolveThemeDefaults(theme),
+      configuration: resolveThemeDefaults(theme),
       currentThemeId: theme.id,
     };
   }
@@ -70,7 +77,7 @@ const transition = (
   const theme = getThemeById(command.themeId);
   return theme
     ? {
-        adjustments: resolveThemeDefaults(theme),
+        configuration: resolveThemeDefaults(theme),
         currentThemeId: theme.id,
       }
     : state;
@@ -91,8 +98,8 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
   const themeConfiguration = resolveThemeDefaults(theme);
 
   return {
-    configuration: state.adjustments,
-    isModified: !isSameConfiguration(state.adjustments, themeConfiguration),
+    configuration: state.configuration,
+    isModified: !isSameConfiguration(state.configuration, themeConfiguration),
     theme: {
       description: theme.description,
       id: theme.id,
@@ -109,7 +116,7 @@ const resolve = (
   const theme = getThemeById(state.currentThemeId) ?? defaultTheme;
   const adjustedStyle = applyAdjustments(
     theme.style,
-    state.adjustments,
+    state.configuration,
     theme.typeset
   );
 

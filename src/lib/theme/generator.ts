@@ -1,38 +1,36 @@
 /**
  * Style Generator
- * Converts AdjustedStyle to React CSSProperties
+ * Converts AdjustedStyle to CSS properties
  */
 
-import type React from "react";
+import type { Properties as CSSProperties } from "csstype";
 import type { AdjustedStyle } from "./adjustments";
 import { typography } from "./tokens";
 import type { CoverStyleOverride, HeadingDecoration } from "./types";
 
 /** Generated CSS styles for Markdown rendering */
 export interface GeneratedStyles {
-  container: React.CSSProperties;
-  innerContainer: React.CSSProperties;
-  content: React.CSSProperties;
-  h1: React.CSSProperties;
-  h2: React.CSSProperties;
-  h3: React.CSSProperties;
-  h4: React.CSSProperties;
-  h5: React.CSSProperties;
-  h6: React.CSSProperties;
-  p: React.CSSProperties;
-  strong: React.CSSProperties;
-  em: React.CSSProperties;
-  ul: React.CSSProperties;
-  li: React.CSSProperties;
-  pre: React.CSSProperties;
-  code: React.CSSProperties;
-  blockquote: React.CSSProperties;
-  a: React.CSSProperties;
-  mark: React.CSSProperties;
-  /** 卡片底部水印（署名 + 页码），随主题次要色派生 */
-  footer: React.CSSProperties;
-  /** 标题装饰（内层 span 用），仅在主题配置了 heading.decoration 时存在 */
-  headingInner?: React.CSSProperties;
+  a: CSSProperties;
+  blockquote: CSSProperties;
+  code: CSSProperties;
+  container: CSSProperties;
+  content: CSSProperties;
+  em: CSSProperties;
+  footer: CSSProperties;
+  h1: CSSProperties;
+  h2: CSSProperties;
+  h3: CSSProperties;
+  h4: CSSProperties;
+  h5: CSSProperties;
+  h6: CSSProperties;
+  headingInner?: CSSProperties;
+  innerContainer: CSSProperties;
+  li: CSSProperties;
+  mark: CSSProperties;
+  p: CSSProperties;
+  pre: CSSProperties;
+  strong: CSSProperties;
+  ul: CSSProperties;
 }
 
 /** 封面图样式覆盖选项 */
@@ -46,13 +44,12 @@ export interface GenerateStylesOptions {
  */
 function getJustifyContent(
   align?: "top" | "center" | "bottom"
-): React.CSSProperties["justifyContent"] {
+): CSSProperties["justifyContent"] {
   switch (align) {
     case "center":
       return "center";
     case "bottom":
       return "flex-end";
-    case "top":
     default:
       return "flex-start";
   }
@@ -63,13 +60,12 @@ function getJustifyContent(
  */
 function getAlignItems(
   align?: "left" | "center" | "right"
-): React.CSSProperties["alignItems"] {
+): CSSProperties["alignItems"] {
   switch (align) {
     case "center":
       return "center";
     case "right":
       return "flex-end";
-    case "left":
     default:
       return "flex-start";
   }
@@ -83,7 +79,7 @@ function getAlignItems(
  */
 export function createHeadingDecoration(
   decoration?: HeadingDecoration
-): React.CSSProperties | undefined {
+): CSSProperties | undefined {
   if (!decoration) {
     return;
   }
@@ -137,12 +133,14 @@ export function generateStyles(
 
   // Background style (handles solid, gradient, image)
   // Use backgroundImage instead of background shorthand to avoid conflicts with backgroundSize/backgroundPosition
-  const backgroundStyle: React.CSSProperties =
-    style.background.type === "solid"
-      ? { backgroundColor: style.background.value }
-      : style.background.type === "image"
-        ? { backgroundImage: `url(${style.background.value})` }
-        : { backgroundImage: style.background.value };
+  let backgroundStyle: CSSProperties;
+  if (style.background.type === "solid") {
+    backgroundStyle = { backgroundColor: style.background.value };
+  } else if (style.background.type === "image") {
+    backgroundStyle = { backgroundImage: `url(${style.background.value})` };
+  } else {
+    backgroundStyle = { backgroundImage: style.background.value };
+  }
 
   // Helper for heading styles
   // isDisplay: h1–h3 为展示级标题，应用主题 typeset 的 headingScale 与 heading 字间距
@@ -151,7 +149,7 @@ export function generateStyles(
     useHeadingAlignment: boolean,
     isDisplay = false,
     extraScale = 1
-  ): React.CSSProperties => ({
+  ): CSSProperties => ({
     fontSize: `${scale * (isDisplay ? headingScale : 1) * extraScale}em`,
     lineHeight: 1.2,
     fontWeight: style.heading.fontWeight,
