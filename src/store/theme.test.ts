@@ -79,6 +79,61 @@ describe("content theme store", () => {
     });
   });
 
+  it("刷新后恢复 v2 稀疏状态", async () => {
+    storage.setItem(
+      "redbook-content-theme",
+      JSON.stringify({
+        state: {
+          currentThemeId: "reading-mode",
+          overrides: { density: "compact" },
+        },
+        version: 2,
+      })
+    );
+    vi.resetModules();
+
+    const reloadedStores = await import("./theme");
+    const state = reloadedStores.useContentThemeStore.getState();
+
+    expect({
+      currentThemeId: state.currentThemeId,
+      overrides: state.overrides,
+    }).toEqual({
+      currentThemeId: "reading-mode",
+      overrides: { density: "compact" },
+    });
+  });
+
+  it("刷新时迁移 v1 完整配置", async () => {
+    storage.setItem(
+      "redbook-content-theme",
+      JSON.stringify({
+        state: {
+          configuration: {
+            density: "compact",
+            fontId: "auto",
+            headingAlignment: "left",
+            headingDecoration: "none",
+          },
+          currentThemeId: "reading-mode",
+        },
+        version: 1,
+      })
+    );
+    vi.resetModules();
+
+    const reloadedStores = await import("./theme");
+    const state = reloadedStores.useContentThemeStore.getState();
+
+    expect({
+      currentThemeId: state.currentThemeId,
+      overrides: state.overrides,
+    }).toEqual({
+      currentThemeId: "reading-mode",
+      overrides: { density: "compact" },
+    });
+  });
+
   it("主题切换和重置不修改卡片标记", () => {
     const watermarkStore = stores.useWatermarkStore;
     watermarkStore.getState().setSignature("@simon");

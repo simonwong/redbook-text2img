@@ -140,6 +140,41 @@ describe("Style System Interface", () => {
     ).toEqual({});
   });
 
+  it("刷新后恢复当前稀疏状态", () => {
+    const selected = styleSystem.transition(styleSystem.hydrate(undefined), {
+      themeId: "reading-mode",
+      type: "select-theme",
+    });
+    const modified = styleSystem.transition(selected, {
+      patch: { density: "compact" },
+      type: "update-configuration",
+    });
+    const persisted = JSON.parse(
+      JSON.stringify({
+        currentThemeId: modified.currentThemeId,
+        overrides: modified.overrides,
+      })
+    );
+    const restored = styleSystem.hydrate(persisted);
+
+    expect({
+      configuration: styleSystem.read(restored).configuration,
+      state: restored,
+    }).toEqual({
+      configuration: {
+        accentColor: undefined,
+        density: "compact",
+        fontId: "auto",
+        headingAlignment: "left",
+        headingDecoration: "none",
+      },
+      state: {
+        currentThemeId: "reading-mode",
+        overrides: { density: "compact" },
+      },
+    });
+  });
+
   it("切换主题时采用新主题配置", () => {
     const adjusted = styleSystem.transition(styleSystem.hydrate(undefined), {
       patch: { density: "compact" },
