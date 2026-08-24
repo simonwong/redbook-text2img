@@ -724,7 +724,16 @@ describe("Style System Interface", () => {
     expect({
       body: styleSystem.resolve(state, { page: "body" }).styles.h1.fontSize,
       cover: styleSystem.resolve(state, { page: "cover" }).styles.h1.fontSize,
-    }).toEqual({ body: fontSize, cover: "2.03125em" });
+      coverWeight: styleSystem.resolve(state, { page: "cover" }).styles.h1
+        .fontWeight,
+      strongWeight: styleSystem.resolve(state, { page: "body" }).styles.strong
+        .fontWeight,
+    }).toEqual({
+      body: fontSize,
+      cover: "2.03125em",
+      coverWeight: 600,
+      strongWeight: 600,
+    });
   });
 
   it("正文标题对齐不改变封面对齐", () => {

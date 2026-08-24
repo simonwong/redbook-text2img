@@ -104,18 +104,15 @@ export function applyAdjustments(
     decoration === canvasStyle.heading.decoration
       ? canvasStyle
       : { ...canvasStyle, heading: { ...canvasStyle.heading, decoration } };
-  const headingWeight =
-    adjustments.bodyHeadingSize === "large"
-      ? typography.fontWeight.bold
-      : typography.fontWeight.semibold;
+  const foundationWeight = typography.fontWeight.semibold;
 
   return {
     ...decorated,
     emphasis: {
       ...decorated.emphasis,
-      bold: { ...decorated.emphasis.bold, fontWeight: headingWeight },
+      bold: { ...decorated.emphasis.bold, fontWeight: foundationWeight },
     },
-    heading: { ...decorated.heading, fontWeight: headingWeight },
+    heading: { ...decorated.heading, fontWeight: foundationWeight },
     typography: {
       baseFontSize,
       lineHeight: density.lineHeight,
