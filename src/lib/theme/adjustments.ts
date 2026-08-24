@@ -70,13 +70,17 @@ export const defaultAdjustments: StyleAdjustments = {
 };
 
 /**
- * 解析某主题的默认风格调整：全局默认叠加该主题声明的 defaults。
- * 切换主题 / 重置风格时用它把 adjustments 回落到"该主题的默认配置"。
+ * 解析主题的完整配置。切换或重置主题时回落到这个配置。
+ * 已迁移主题直接使用 configuration；旧主题暂从 style 和 defaults 推导。
  *
  * 标题装饰的初始落点从主题精修装饰的 kind 推导（无精修装饰 → "none"）；
  * 主题 defaults 仍可显式声明覆盖该落点（放在推导之后 spread）。
  */
 export function resolveThemeDefaults(theme?: PresetTheme): StyleAdjustments {
+  if (theme?.configuration) {
+    return theme.configuration;
+  }
+
   return {
     ...defaultAdjustments,
     background: theme

@@ -224,6 +224,7 @@ export interface HeaderBarStyle {
 
 /** Built-in theme with complete foundation style and configuration defaults */
 export interface PresetTheme {
+  configuration?: StyleAdjustments;
   /** 封面图特有的样式覆盖（继承 style，仅覆盖指定属性） */
   coverStyle?: CoverStyleOverride;
   /**

@@ -36,6 +36,11 @@ const themeBackgrounds = [
   ["reading-mode", { color: "#fefcf3", kind: "solid" }],
   ["apple-notes", { color: "#fbfbfb", kind: "solid" }],
 ] as const;
+const coverVerticalAlignments = {
+  "bottom-left": "flex-end",
+  "center-poster": "center",
+  "top-left": "flex-start",
+} as const;
 
 describe("Style System Interface", () => {
   it("列出 8 个稳定的内置主题", () => {
@@ -81,8 +86,8 @@ describe("Style System Interface", () => {
       bodyHeadingSize: "medium",
       contentSurface: "none",
       coverLayout: "center-poster",
-      decorationColor: "#f59e0b",
-      headingDecoration: "underline",
+      decorationColor: "#64748b",
+      headingDecoration: "none",
     });
     expect(configuration).not.toHaveProperty("accentColor");
     expect(configuration).not.toHaveProperty("headingAlignment");
@@ -143,10 +148,10 @@ describe("Style System Interface", () => {
         bodyHeadingSize: "medium",
         contentSurface: "none",
         coverLayout: "center-poster",
-        decorationColor: "#f59e0b",
+        decorationColor: "#64748b",
         density: "balanced",
         fontId: "serif",
-        headingDecoration: "underline",
+        headingDecoration: "none",
       },
       overrides: { fontId: "serif" },
     });
@@ -363,7 +368,7 @@ describe("Style System Interface", () => {
       })
     ).toEqual({
       currentThemeId: "clean-light",
-      overrides: { headingDecoration: "none" },
+      overrides: {},
     });
   });
 
@@ -402,6 +407,29 @@ describe("Style System Interface", () => {
         type: "update-configuration",
       }).overrides
     ).toEqual({});
+  });
+
+  it("主题升级时采用新默认值并保留用户覆盖", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "gradient-warm",
+      overrides: { bodyHeadingSize: "small" },
+    });
+    const snapshot = styleSystem.read(state);
+
+    expect(snapshot.configuration).toMatchObject({
+      bodyHeadingSize: "small",
+      contentSurface: "floating-card",
+      coverLayout: "center-poster",
+      density: "balanced",
+      headingDecoration: "highlight",
+    });
+    expect(snapshot.overridden).toMatchObject({
+      bodyHeadingSize: true,
+      contentSurface: false,
+      coverLayout: false,
+      density: false,
+      headingDecoration: false,
+    });
   });
 
   it("刷新后恢复当前稀疏状态", () => {
@@ -503,10 +531,10 @@ describe("Style System Interface", () => {
         bodyHeadingSize: "medium",
         contentSurface: "none",
         coverLayout: "center-poster",
-        decorationColor: "#f59e0b",
+        decorationColor: "#64748b",
         density: "compact",
         fontId: "auto",
-        headingDecoration: "underline",
+        headingDecoration: "none",
       },
       state: {
         currentThemeId: "clean-light",
@@ -657,10 +685,11 @@ describe("Style System Interface", () => {
   });
 
   it("装饰颜色不改变 Markdown 语义色", () => {
-    const original = styleSystem.resolve(styleSystem.hydrate(undefined), {
-      page: "body",
-    }).styles;
-    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+    const themeState = styleSystem.hydrate({
+      currentThemeId: "trianglify-minimalist",
+    });
+    const original = styleSystem.resolve(themeState, { page: "body" }).styles;
+    const state = styleSystem.transition(themeState, {
       patch: { decorationColor: "#e64f7a" },
       type: "update-configuration",
     });
@@ -752,8 +781,11 @@ describe("Style System Interface", () => {
 
   it.each(styleSystem.catalog())("解析内置主题 $id", (theme) => {
     const state = styleSystem.hydrate({ currentThemeId: theme.id });
+    const configuration = styleSystem.read(state).configuration;
     const body = styleSystem.resolve(state, { page: "body" });
     const cover = styleSystem.resolve(state, { page: "cover" });
+    const expectedCoverVerticalAlign =
+      coverVerticalAlignments[configuration.coverLayout];
 
     expect({
       bodyThemeId: body.theme.id,
@@ -766,7 +798,7 @@ describe("Style System Interface", () => {
       bodyThemeId: theme.id,
       bodyVerticalAlign: "flex-start",
       coverThemeId: theme.id,
-      coverVerticalAlign: "center",
+      coverVerticalAlign: expectedCoverVerticalAlign,
       hasCoverHeadingScale: true,
     });
   });
