@@ -77,7 +77,7 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
       italic: { color: "#48484a" },
     },
     heading: { color: "#1d1d1f", fontWeight: typography.fontWeight.semibold },
-    link: { color: "#007aff", underline: true },
+    link: { color: "#0066cc", underline: true },
     list: { color: "#1d1d1f", markerColor: "#8e8e93" },
     paragraph: { color: "#1d1d1f" },
     spacing: baseSpacing,
@@ -87,30 +87,30 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
   cool: {
     background: { type: "gradient", value: gradients.coolMist },
     blockquote: {
-      background: "rgba(245, 249, 253, 0.72)",
-      borderColor: "#5b7bbf",
+      background: "#eef4fb",
+      borderColor: "#3f6798",
       boxShadow: "0 1px 14px rgba(60, 90, 140, 0.08)",
-      textColor: "#3a577d",
+      textColor: "#2f4f75",
     },
     code: {
       block: {
-        background: "rgba(245, 249, 253, 0.7)",
-        color: "#1a3556",
+        background: "#e8f0f8",
+        color: "#233f60",
       },
       inline: {
-        background: "rgba(245, 249, 253, 0.78)",
-        color: "#3a577d",
+        background: "#e8f0f8",
+        color: "#233f60",
       },
     },
     emphasis: {
-      bold: { color: "#1a3556", fontWeight: typography.fontWeight.semibold },
-      highlight: { background: "#5b7bbf", color: "#f5f9fd" },
-      italic: { color: "#4664a0" },
+      bold: { color: "#172b45", fontWeight: typography.fontWeight.semibold },
+      highlight: { background: "#173f7a", color: "#ffffff" },
+      italic: { color: "#2f4f75" },
     },
-    heading: { color: "#1a3556", fontWeight: typography.fontWeight.semibold },
-    link: { color: "#3a5fab", underline: true },
-    list: { color: "#2c486b", markerColor: "#5b7bbf" },
-    paragraph: { color: "#2c486b" },
+    heading: { color: "#172b45", fontWeight: typography.fontWeight.semibold },
+    link: { color: "#173f7a", underline: true },
+    list: { color: "#233f60", markerColor: "#3f6798" },
+    paragraph: { color: "#233f60" },
     spacing: baseSpacing,
     typography: baseTypography,
   },
@@ -144,33 +144,33 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
   pink: {
     background: { type: "gradient", value: gradients.cherryCream },
     blockquote: {
-      background: "rgba(255, 246, 246, 0.72)",
-      borderColor: "#e64f7a",
+      background: "#fff3f6",
+      borderColor: "#a63255",
       boxShadow: "0 1px 14px rgba(214, 78, 122, 0.1)",
-      textColor: "#923049",
+      textColor: "#742039",
     },
     code: {
       block: {
-        background: "rgba(255, 246, 246, 0.7)",
-        color: "#6e1530",
+        background: "#fff3f6",
+        color: "#742039",
       },
       inline: {
-        background: "rgba(255, 246, 246, 0.78)",
-        color: "#923049",
+        background: "#fff3f6",
+        color: "#742039",
       },
     },
     emphasis: {
-      bold: { color: "#6e1530", fontWeight: typography.fontWeight.bold },
-      highlight: { background: "#e64f7a", color: "#fff6f6" },
-      italic: { color: "#a83a5a" },
+      bold: { color: "#64152d", fontWeight: typography.fontWeight.bold },
+      highlight: { background: "#8f1740", color: "#ffffff" },
+      italic: { color: "#7c2f46" },
     },
     heading: {
-      color: "#6e1530",
+      color: "#64152d",
       fontWeight: typography.fontWeight.bold,
     },
-    link: { color: "#c83768", underline: true },
-    list: { color: "#86283f", markerColor: "#e64f7a" },
-    paragraph: { color: "#86283f" },
+    link: { color: "#8f1740", underline: true },
+    list: { color: "#742039", markerColor: "#9c2d50" },
+    paragraph: { color: "#742039" },
     spacing: baseSpacing,
     typography: baseTypography,
   },
@@ -253,7 +253,7 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
 };
 
 const appleHeader: HeaderBarStyle = {
-  iconColor: "#d4a300",
+  iconColor: "#8a6800",
   icons: { backArrow: true, menu: true, share: true },
 };
 

@@ -73,7 +73,7 @@ const darkSurface: SurfaceStyle = {
 const notebookSurface: SurfaceStyle = {
   background: "#fffdf5",
   backgroundImage:
-    "linear-gradient(90deg, transparent 34px, rgba(239, 68, 68, 0.22) 34px, rgba(239, 68, 68, 0.22) 35px, transparent 35px), linear-gradient(rgba(148, 163, 184, 0.2) 1px, transparent 1px)",
+    "linear-gradient(90deg, transparent 14px, rgba(239, 68, 68, 0.22) 14px, rgba(239, 68, 68, 0.22) 15px, transparent 15px), linear-gradient(rgba(148, 163, 184, 0.2) 1px, transparent 1px)",
   backgroundPosition: "0 0",
   backgroundSize: "100% 100%, 100% 28px",
   borderRadius: 6,
@@ -212,7 +212,8 @@ export const applyCanvasConfiguration = (
     background: definition.background,
   };
   const readableStyle =
-    backgroundChanged || contentSurface === "notebook"
+    backgroundChanged ||
+    (contentSurface === "notebook" && definition.tone === "dark")
       ? applySemanticPalette(
           withBackground,
           contentSurface === "notebook" ? "light" : definition.tone

@@ -11,6 +11,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({ config }) => {
 
   return (
     <div
+      aria-hidden="true"
       style={{
         display: "flex",
         justifyContent: "space-between",

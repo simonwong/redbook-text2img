@@ -253,6 +253,7 @@ export function generateStyles(
       lineHeight,
       marginBottom: `${paragraphGap / baseFontSize}em`,
       color: style.paragraph.color,
+      textWrap: "pretty",
       wordBreak: "break-word",
     },
 
