@@ -9,6 +9,7 @@ interface SegmentedControlOption {
 
 interface SegmentedControlProps {
   className?: string;
+  labelledBy?: string;
   onChange: (value: string) => void;
   options: SegmentedControlOption[];
   value: string;
@@ -19,8 +20,15 @@ export const SegmentedControl = ({
   value,
   onChange,
   className,
+  labelledBy,
 }: SegmentedControlProps) => (
-  <div className={cn("inline-flex rounded-lg bg-muted p-0.5", className)}>
+  <fieldset
+    aria-labelledby={labelledBy}
+    className={cn(
+      "m-0 inline-flex min-w-0 rounded-lg border-0 bg-muted p-0.5",
+      className
+    )}
+  >
     {options.map((option) => (
       <button
         aria-pressed={option.value === value}
@@ -37,5 +45,5 @@ export const SegmentedControl = ({
         {option.label}
       </button>
     ))}
-  </div>
+  </fieldset>
 );

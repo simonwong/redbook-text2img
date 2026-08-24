@@ -4,10 +4,10 @@
  */
 
 export interface FontPreset {
+  description?: string;
   id: string;
   name: string;
   value: string; // 完整的 CSS font-family 值
-  description?: string;
 }
 
 // ============================================================
@@ -80,18 +80,6 @@ export const resolveFontId = (
   themeFontId?: string
 ): string =>
   userFontId === AUTO_FONT_ID ? (themeFontId ?? "system") : userFontId;
-
-// ============================================================
-// UI 选项
-// ============================================================
-
-export const fontOptions = [
-  { value: AUTO_FONT_ID, label: "跟随主题" },
-  ...fontPresets.map((f) => ({
-    value: f.id,
-    label: f.name,
-  })),
-];
 
 /** 默认字体 ID（跟随主题） */
 export const defaultFontId = AUTO_FONT_ID;

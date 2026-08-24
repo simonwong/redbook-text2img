@@ -1,18 +1,27 @@
-import type { StyleConfiguration } from "@/lib/style-system/style-system";
+import {
+  type StyleConfiguration,
+  styleSystem,
+} from "@/lib/style-system/style-system";
 import { cn } from "@/lib/utils";
 
 type CoverLayout = StyleConfiguration["coverLayout"];
 
 interface CoverLayoutPickerProps {
+  labelledBy: string;
   onChange: (layout: CoverLayout) => void;
   value: CoverLayout;
 }
 
-const layouts: { label: string; value: CoverLayout }[] = [
-  { label: "居中海报", value: "center-poster" },
-  { label: "左上", value: "top-left" },
-  { label: "左下", value: "bottom-left" },
-];
+const labels: Record<CoverLayout, string> = {
+  "bottom-left": "左下",
+  "center-poster": "居中海报",
+  "top-left": "左上",
+};
+
+const layouts = styleSystem.configurationOptions().coverLayout.map((value) => ({
+  label: labels[value],
+  value,
+}));
 
 const previewAlignment: Record<CoverLayout, string> = {
   "bottom-left": "items-start justify-end text-left",
@@ -21,10 +30,14 @@ const previewAlignment: Record<CoverLayout, string> = {
 };
 
 export const CoverLayoutPicker = ({
+  labelledBy,
   onChange,
   value,
 }: CoverLayoutPickerProps) => (
-  <div className="grid grid-cols-3 gap-2">
+  <fieldset
+    aria-labelledby={labelledBy}
+    className="m-0 grid min-w-0 grid-cols-3 gap-2 border-0 p-0"
+  >
     {layouts.map((layout) => (
       <button
         aria-pressed={layout.value === value}
@@ -49,5 +62,5 @@ export const CoverLayoutPicker = ({
         <span>{layout.label}</span>
       </button>
     ))}
-  </div>
+  </fieldset>
 );

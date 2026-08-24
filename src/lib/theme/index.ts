@@ -6,14 +6,10 @@
 
 export type { AdjustedStyle } from "./adjustments";
 // Adjustments
-// biome-ignore lint/performance/noBarrelFile: stable public theme module API
+// biome-ignore lint/performance/noBarrelFile: stable internal theme module API
 export {
   applyAdjustments,
-  bodyHeadingAlignmentOptions,
-  bodyHeadingSizeOptions,
-  coverLayoutOptions,
   defaultAdjustments,
-  densityOptions,
   densityPresets,
   resolveThemeDefaults,
 } from "./adjustments";
@@ -21,7 +17,6 @@ export type { FontPreset } from "./fonts";
 // Fonts
 export {
   defaultFontId,
-  fontOptions,
   fontPresets,
   getFontFamily,
   getFontPreset,

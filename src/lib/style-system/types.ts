@@ -17,6 +17,15 @@ export interface StyleConfiguration {
   readonly headingDecoration: HeadingDecorationChoice;
 }
 
+export interface StyleConfigurationOptions {
+  readonly bodyHeadingAlignment: readonly StyleConfiguration["bodyHeadingAlignment"][];
+  readonly bodyHeadingSize: readonly StyleConfiguration["bodyHeadingSize"][];
+  readonly coverLayout: readonly StyleConfiguration["coverLayout"][];
+  readonly density: readonly StyleConfiguration["density"][];
+  readonly fontId: readonly string[];
+  readonly headingDecoration: readonly StyleConfiguration["headingDecoration"][];
+}
+
 export interface StyleSystemState {
   readonly currentThemeId: string;
   readonly overrides: StyleConfigurationOverrides;
@@ -79,6 +88,7 @@ export interface ResolvedStyle {
 
 export interface StyleSystem {
   catalog(): readonly ThemeCatalogItem[];
+  configurationOptions(): StyleConfigurationOptions;
   hydrate(persisted: unknown): StyleSystemState;
   read(state: StyleSystemState): StyleSystemSnapshot;
   resolve(state: StyleSystemState, context: RenderContext): ResolvedStyle;

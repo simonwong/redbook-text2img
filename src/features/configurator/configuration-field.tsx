@@ -8,6 +8,7 @@ interface ConfigurationFieldProps {
   descriptionId?: string;
   isModified: boolean;
   label: string;
+  labelId: string;
   onReset: () => void;
 }
 
@@ -17,11 +18,14 @@ export const ConfigurationField = ({
   descriptionId,
   isModified,
   label,
+  labelId,
   onReset,
 }: ConfigurationFieldProps) => (
   <div className="space-y-2">
     <div className="flex min-h-8 items-center justify-between gap-2">
-      <span className="font-medium text-xs">{label}</span>
+      <span className="font-medium text-xs" id={labelId}>
+        {label}
+      </span>
       {isModified && (
         <button
           aria-label={`${label}已调整，恢复主题值`}

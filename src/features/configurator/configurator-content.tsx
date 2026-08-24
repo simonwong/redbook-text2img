@@ -6,14 +6,10 @@ import { Select } from "@/components/enhance/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
-import { styleSystem } from "@/lib/style-system/style-system";
 import {
-  bodyHeadingAlignmentOptions,
-  bodyHeadingSizeOptions,
-  densityOptions,
-  fontOptions,
-  type HeadingDecorationChoice,
-} from "@/lib/theme";
+  type StyleConfiguration,
+  styleSystem,
+} from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
 import { ConfigurationField } from "./configuration-field";
 import { CoverLayoutPicker } from "./cover-layout-picker";
@@ -25,15 +21,72 @@ const pageNumberOptions = [
   { value: "hide", label: "隐藏" },
 ];
 
-const headingDecorationOptions: {
-  value: HeadingDecorationChoice;
-  label: string;
-}[] = [
-  { value: "none", label: "无" },
-  { value: "underline", label: "直线" },
-  { value: "wavy", label: "波浪" },
-  { value: "highlight", label: "高亮" },
-];
+const optionValues = styleSystem.configurationOptions();
+const bodyHeadingAlignmentLabels: Record<
+  StyleConfiguration["bodyHeadingAlignment"],
+  string
+> = { center: "居中", left: "左对齐" };
+const bodyHeadingSizeLabels: Record<
+  StyleConfiguration["bodyHeadingSize"],
+  string
+> = { large: "大", medium: "中", small: "小" };
+const densityLabels: Record<StyleConfiguration["density"], string> = {
+  compact: "紧凑",
+  normal: "正常",
+  relaxed: "较松",
+  snug: "较紧",
+  spacious: "宽松",
+};
+const headingDecorationLabels: Record<
+  StyleConfiguration["headingDecoration"],
+  string
+> = {
+  highlight: "高亮",
+  none: "无",
+  underline: "直线",
+  wavy: "波浪",
+};
+const fontLabels: Record<string, string> = {
+  auto: "跟随主题",
+  kai: "楷体",
+  mono: "等宽",
+  rounded: "圆体",
+  sans: "无衬线",
+  serif: "衬线",
+  system: "系统默认",
+};
+
+const bodyHeadingAlignmentOptions = optionValues.bodyHeadingAlignment.map(
+  (value) => ({ label: bodyHeadingAlignmentLabels[value], value })
+);
+const bodyHeadingSizeOptions = optionValues.bodyHeadingSize.map((value) => ({
+  label: bodyHeadingSizeLabels[value],
+  value,
+}));
+const densityOptions = optionValues.density.map((value) => ({
+  label: densityLabels[value],
+  value,
+}));
+const fontOptions = optionValues.fontId.map((value) => ({
+  label: fontLabels[value] ?? value,
+  value,
+}));
+const headingDecorationOptions = optionValues.headingDecoration.map(
+  (value) => ({
+    label: headingDecorationLabels[value],
+    value,
+  })
+);
+
+const fieldLabelIds = {
+  bodyHeadingAlignment: "body-heading-alignment-label",
+  bodyHeadingSize: "body-heading-size-label",
+  coverLayout: "cover-layout-label",
+  decorationColor: "decoration-color-label",
+  density: "density-label",
+  headingDecoration: "heading-decoration-label",
+  pageNumber: "page-number-label",
+} as const;
 
 export const ConfiguratorContent = () => {
   const {
@@ -69,9 +122,12 @@ export const ConfiguratorContent = () => {
       </div>
 
       <div className="space-y-2">
-        <Label className="font-medium text-xs">密度</Label>
+        <Label className="font-medium text-xs" id={fieldLabelIds.density}>
+          密度
+        </Label>
         <SegmentedControl
           className="w-full"
+          labelledBy={fieldLabelIds.density}
           onChange={(v) => setDensity(v as typeof configuration.density)}
           options={densityOptions}
           value={configuration.density}
@@ -94,10 +150,12 @@ export const ConfiguratorContent = () => {
         <ConfigurationField
           isModified={overridden.bodyHeadingAlignment}
           label="正文标题对齐"
+          labelId={fieldLabelIds.bodyHeadingAlignment}
           onReset={() => resetConfigurationField("bodyHeadingAlignment")}
         >
           <SegmentedControl
             className="w-full"
+            labelledBy={fieldLabelIds.bodyHeadingAlignment}
             onChange={(value) =>
               setBodyHeadingAlignment(
                 value as typeof configuration.bodyHeadingAlignment
@@ -111,10 +169,12 @@ export const ConfiguratorContent = () => {
         <ConfigurationField
           isModified={overridden.bodyHeadingSize}
           label="正文标题大小"
+          labelId={fieldLabelIds.bodyHeadingSize}
           onReset={() => resetConfigurationField("bodyHeadingSize")}
         >
           <SegmentedControl
             className="w-full"
+            labelledBy={fieldLabelIds.bodyHeadingSize}
             onChange={(value) =>
               setBodyHeadingSize(value as typeof configuration.bodyHeadingSize)
             }
@@ -126,12 +186,16 @@ export const ConfiguratorContent = () => {
         <ConfigurationField
           isModified={overridden.headingDecoration}
           label="标题装饰"
+          labelId={fieldLabelIds.headingDecoration}
           onReset={() => resetConfigurationField("headingDecoration")}
         >
           <SegmentedControl
             className="w-full"
+            labelledBy={fieldLabelIds.headingDecoration}
             onChange={(value) =>
-              setHeadingDecoration(value as HeadingDecorationChoice)
+              setHeadingDecoration(
+                value as StyleConfiguration["headingDecoration"]
+              )
             }
             options={headingDecorationOptions}
             value={configuration.headingDecoration}
@@ -147,11 +211,13 @@ export const ConfiguratorContent = () => {
           descriptionId="decoration-color-status"
           isModified={overridden.decorationColor}
           label="装饰颜色"
+          labelId={fieldLabelIds.decorationColor}
           onReset={() => resetConfigurationField("decorationColor")}
         >
           <DecorationColorPicker
             descriptionId="decoration-color-status"
             disabled={configuration.headingDecoration === "none"}
+            labelledBy={fieldLabelIds.decorationColor}
             onChange={setDecorationColor}
             value={configuration.decorationColor}
           />
@@ -163,9 +229,11 @@ export const ConfiguratorContent = () => {
         <ConfigurationField
           isModified={overridden.coverLayout}
           label="封面版式"
+          labelId={fieldLabelIds.coverLayout}
           onReset={() => resetConfigurationField("coverLayout")}
         >
           <CoverLayoutPicker
+            labelledBy={fieldLabelIds.coverLayout}
             onChange={setCoverLayout}
             value={configuration.coverLayout}
           />
@@ -182,9 +250,12 @@ export const ConfiguratorContent = () => {
       </div>
 
       <div className="space-y-2">
-        <Label className="font-medium text-xs">页码</Label>
+        <Label className="font-medium text-xs" id={fieldLabelIds.pageNumber}>
+          页码
+        </Label>
         <SegmentedControl
           className="w-full"
+          labelledBy={fieldLabelIds.pageNumber}
           onChange={(v) => setShowPageNumber(v === "show")}
           options={pageNumberOptions}
           value={showPageNumber ? "show" : "hide"}

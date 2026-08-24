@@ -2,7 +2,7 @@
 target: 样式设置
 total_score: 20
 max_score: 40
-na_heuristics: 
+na_heuristics:
 p0_count: 0
 p1_count: 2
 timestamp: 2026-08-24T10-22-10Z

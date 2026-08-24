@@ -40,6 +40,17 @@ describe("Style System Interface", () => {
     ]);
   });
 
+  it("通过公共接口列出封闭配置选项", () => {
+    expect(styleSystem.configurationOptions()).toEqual({
+      bodyHeadingAlignment: ["center", "left"],
+      bodyHeadingSize: ["small", "medium", "large"],
+      coverLayout: ["center-poster", "top-left", "bottom-left"],
+      density: ["compact", "snug", "normal", "relaxed", "spacious"],
+      fontId: ["auto", "system", "sans", "serif", "kai", "rounded", "mono"],
+      headingDecoration: ["none", "underline", "wavy", "highlight"],
+    });
+  });
+
   it("公开语义准确的正文标题与封面配置", () => {
     const configuration = styleSystem.read(styleSystem.hydrate(undefined))
       .configuration as unknown as Record<string, unknown>;

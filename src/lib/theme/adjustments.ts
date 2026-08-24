@@ -7,11 +7,8 @@ import { defaultFontId, getFontFamily, resolveFontId } from "./fonts";
 import { deriveDecoration } from "./heading-decoration";
 import { spacing, typography } from "./tokens";
 import type {
-  BodyHeadingSize,
-  CoverLayout,
   Density,
   FullStyle,
-  HeadingAlignment,
   HeadingDecoration,
   PresetTheme,
   StyleAdjustments,
@@ -46,42 +43,7 @@ export const densityPresets: Record<Density, DensityValues> = {
   spacious: densityValues("spacious"),
 };
 
-// ============================================================
-// UI 选项
-// ============================================================
-
-export const densityOptions: { value: Density; label: string }[] = [
-  { value: "compact", label: "紧凑" },
-  { value: "snug", label: "较紧" },
-  { value: "normal", label: "正常" },
-  { value: "relaxed", label: "较松" },
-  { value: "spacious", label: "宽松" },
-];
-
-export const bodyHeadingAlignmentOptions: {
-  value: HeadingAlignment;
-  label: string;
-}[] = [
-  { value: "center", label: "居中" },
-  { value: "left", label: "左对齐" },
-];
-
-export const bodyHeadingSizeOptions: {
-  value: BodyHeadingSize;
-  label: string;
-}[] = [
-  { value: "small", label: "小" },
-  { value: "medium", label: "中" },
-  { value: "large", label: "大" },
-];
-
-export const coverLayoutOptions: { value: CoverLayout; label: string }[] = [
-  { value: "center-poster", label: "居中海报" },
-  { value: "top-left", label: "左上" },
-  { value: "bottom-left", label: "左下" },
-];
-
-const bodyHeadingScales: Record<BodyHeadingSize, number> = {
+const bodyHeadingScales: Record<StyleAdjustments["bodyHeadingSize"], number> = {
   small: 0.875,
   medium: 1,
   large: 1.125,
@@ -194,7 +156,7 @@ export function applyAdjustments(
 
 /** 应用调整后的完整样式类型 */
 export type AdjustedStyle = FullStyle & {
-  bodyHeadingAlignment: HeadingAlignment;
+  bodyHeadingAlignment: StyleAdjustments["bodyHeadingAlignment"];
   bodyHeadingScale: number;
   fontFamily: string;
   headingScale: number;

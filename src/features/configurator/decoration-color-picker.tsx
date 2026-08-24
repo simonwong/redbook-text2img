@@ -2,15 +2,14 @@
 
 import { Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { colors } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 const DECORATION_COLORS = [
   "#e64f7a",
-  colors.accent.orange,
-  colors.accent.green,
-  colors.accent.blue,
-  colors.accent.purple,
+  "#f59e0b",
+  "#10b981",
+  "#3b82f6",
+  "#8b5cf6",
   "#f43f5e",
 ];
 
@@ -20,6 +19,7 @@ const RAINBOW =
 interface DecorationColorPickerProps {
   descriptionId?: string;
   disabled: boolean;
+  labelledBy: string;
   onChange: (color: string) => void;
   value: string;
 }
@@ -27,6 +27,7 @@ interface DecorationColorPickerProps {
 export const DecorationColorPicker = ({
   descriptionId,
   disabled,
+  labelledBy,
   onChange,
   value,
 }: DecorationColorPickerProps) => {
@@ -38,6 +39,7 @@ export const DecorationColorPicker = ({
   return (
     <fieldset
       aria-describedby={disabled ? descriptionId : undefined}
+      aria-labelledby={labelledBy}
       className="m-0 grid min-w-0 grid-cols-4 gap-1 border-0 p-0"
       disabled={disabled}
     >
@@ -95,7 +97,7 @@ export const DecorationColorPicker = ({
           className="sr-only"
           onChange={(event) => onChange(event.target.value)}
           type="color"
-          value={value.startsWith("#") ? value : colors.accent.purple}
+          value={value.startsWith("#") ? value : "#8b5cf6"}
         />
       </label>
     </fieldset>

@@ -7,6 +7,7 @@ import type {
   RenderContext,
   ResolvedStyle,
   StyleConfiguration,
+  StyleConfigurationOptions,
   StyleConfigurationOverrides,
   StyleSystem,
   StyleSystemCommand,
@@ -21,6 +22,7 @@ export type {
   RenderStyle,
   ResolvedStyle,
   StyleConfiguration,
+  StyleConfigurationOptions,
   StyleConfigurationOverrideState,
   StyleConfigurationOverrides,
   StyleSystem,
@@ -35,6 +37,14 @@ const themeCatalog: readonly ThemeCatalogItem[] = presetThemes.map(
   ({ description, id, name }) => ({ description, id, name })
 );
 const hexColorPattern = /^#[\da-f]{6}$/i;
+const configurationOptions = {
+  bodyHeadingAlignment: ["center", "left"],
+  bodyHeadingSize: ["small", "medium", "large"],
+  coverLayout: ["center-poster", "top-left", "bottom-left"],
+  density: ["compact", "snug", "normal", "relaxed", "spacious"],
+  fontId: [AUTO_FONT_ID, ...fontPresets.map(({ id }) => id)],
+  headingDecoration: ["none", "underline", "wavy", "highlight"],
+} satisfies StyleConfigurationOptions;
 
 const diffConfiguration = (
   configuration: StyleConfiguration,
@@ -77,12 +87,16 @@ const diffConfiguration = (
 const getThemeConfiguration = (themeId: string): StyleConfiguration =>
   resolveThemeDefaults(getThemeById(themeId) ?? defaultTheme);
 
-const densities = new Set(["compact", "snug", "normal", "relaxed", "spacious"]);
-const bodyHeadingAlignments = new Set(["left", "center"]);
-const bodyHeadingSizes = new Set(["small", "medium", "large"]);
-const coverLayouts = new Set(["center-poster", "top-left", "bottom-left"]);
-const fontIds = new Set([AUTO_FONT_ID, ...fontPresets.map(({ id }) => id)]);
-const headingDecorations = new Set(["none", "underline", "wavy", "highlight"]);
+const densities = new Set<string>(configurationOptions.density);
+const bodyHeadingAlignments = new Set<string>(
+  configurationOptions.bodyHeadingAlignment
+);
+const bodyHeadingSizes = new Set<string>(configurationOptions.bodyHeadingSize);
+const coverLayouts = new Set<string>(configurationOptions.coverLayout);
+const fontIds = new Set<string>(configurationOptions.fontId);
+const headingDecorations = new Set<string>(
+  configurationOptions.headingDecoration
+);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -300,6 +314,7 @@ const resolve = (
 
 export const styleSystem = {
   catalog: (): readonly ThemeCatalogItem[] => themeCatalog,
+  configurationOptions: (): StyleConfigurationOptions => configurationOptions,
   hydrate,
   read,
   resolve,
