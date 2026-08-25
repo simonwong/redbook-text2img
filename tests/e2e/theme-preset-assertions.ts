@@ -51,7 +51,19 @@ const themeContent = `# 用完整配置做出稳定又漂亮的小红书图片 �
 
 > 复杂背景不能牺牲正文可读性。
 
-使用 \`inline code\` 验证技术内容。`;
+使用 \`inline code\` 验证技术内容。
+
+---
+
+## 代码、列表与引用
+
+- 中文与 English 混排
+
+> 导出的结构必须稳定。
+
+~~~ts
+const ready = true;
+~~~`;
 
 const decodePng = async (
   page: Page,
@@ -208,6 +220,18 @@ export const assertThemePreset = async (
       (element) => element.scrollHeight <= element.clientHeight + 1
     )
   ).toBe(true);
+  await expect(inner.getByText("03 / 04", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "第 4 张图片" }).click();
+  await expect(preview.locator("pre code")).toContainText(
+    "const ready = true;"
+  );
+  expect(
+    await content.evaluate(
+      (element) => element.scrollHeight <= element.clientHeight + 1
+    )
+  ).toBe(true);
+  await page.getByRole("button", { name: "第 3 张图片" }).click();
 
   await page.getByRole("button", { name: "关闭样式设置" }).click();
   const { containedPairs, textColors } = await preview.evaluate((element) => {

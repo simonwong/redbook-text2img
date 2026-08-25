@@ -1,54 +1,107 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import type {
+  RenderHeader,
   RenderStyle,
   ThemeCatalogItem,
 } from "@/lib/style-system/style-system";
+import { ChevronLeftIcon, MenuCircleIcon, ShareIcon } from "../preview/icons";
 
 interface ThemeThumbnailProps {
-  styles: RenderStyle;
+  bodyStyles: RenderStyle;
+  coverStyles: RenderStyle;
+  headerBar?: RenderHeader;
   theme: ThemeCatalogItem;
 }
 
-/**
- * 主题缩略图的迷你卡片内容（标题 + 两条模拟正文横条）。
- * 背景由外层按钮提供；此处只渲染主题的字体、标题色/装饰与正文色示意。
- */
-export const ThemeThumbnail = ({ styles, theme }: ThemeThumbnailProps) => {
-  const hasSurface = Boolean(styles.innerContainer.backgroundColor);
-  const barStyle = { backgroundColor: styles.p.color, opacity: 0.45 };
+export const ThemeThumbnail = ({
+  bodyStyles,
+  coverStyles,
+  headerBar,
+  theme,
+}: ThemeThumbnailProps) => {
+  const density = Number.parseFloat(
+    String(bodyStyles.container.fontSize ?? "16px")
+  );
+  const hasSurface = Boolean(coverStyles.container.padding);
+  const surfaceStyle: CSSProperties = hasSurface
+    ? {
+        backgroundColor: coverStyles.innerContainer.backgroundColor,
+        backgroundImage: coverStyles.innerContainer.backgroundImage,
+        backgroundPosition: coverStyles.innerContainer.backgroundPosition,
+        backgroundSize: coverStyles.innerContainer.backgroundSize,
+        borderRadius: coverStyles.innerContainer.borderRadius,
+        boxShadow: coverStyles.innerContainer.boxShadow,
+        inset: "5px",
+        position: "absolute",
+      }
+    : { inset: 0, position: "absolute" };
+  const barStyle = {
+    backgroundColor: bodyStyles.p.color,
+    height: density > 16 ? 4 : 3,
+    opacity: 0.48,
+  };
 
   return (
-    <div className="flex h-full w-full flex-col justify-center px-3">
-      {/* surface 主题：内容浮在小圆角白卡上，背景四周露出 */}
+    <div
+      aria-hidden="true"
+      className="flex h-full w-full flex-col"
+      data-cover-align={coverStyles.content.alignItems}
+      data-cover-vertical={coverStyles.content.justifyContent}
+      data-density={bodyStyles.container.fontSize}
+      data-theme-thumbnail={theme.id}
+      style={surfaceStyle}
+    >
+      {headerBar && (
+        <div
+          className="flex h-4 shrink-0 items-center justify-between px-1.5"
+          data-theme-header="true"
+          style={{ background: headerBar.background }}
+        >
+          <span>
+            {headerBar.icons.backArrow && (
+              <ChevronLeftIcon color={headerBar.iconColor} size={8} />
+            )}
+          </span>
+          <span className="flex gap-1">
+            {headerBar.icons.share && (
+              <ShareIcon color={headerBar.iconColor} size={7} />
+            )}
+            {headerBar.icons.menu && (
+              <MenuCircleIcon color={headerBar.iconColor} size={7} />
+            )}
+          </span>
+        </div>
+      )}
       <div
-        className="flex flex-col gap-2"
-        style={
-          hasSurface
-            ? {
-                backgroundColor: styles.innerContainer.backgroundColor,
-                borderRadius: 8,
-                boxShadow: "0 2px 8px rgba(31, 41, 55, 0.14)",
-                padding: "10px 12px",
-              }
-            : undefined
-        }
+        className="flex min-h-0 flex-1 flex-col p-2"
+        style={{
+          alignItems: coverStyles.content.alignItems,
+          justifyContent: coverStyles.content.justifyContent,
+        }}
       >
         <span
-          className="w-fit whitespace-nowrap text-xs leading-tight"
+          className="max-w-full truncate leading-tight"
+          data-theme-title="true"
           style={{
-            color: styles.h1.color,
-            fontFamily: styles.container.fontFamily,
-            fontWeight: styles.h1.fontWeight,
-            letterSpacing: styles.h1.letterSpacing,
-            ...styles.headingInner,
+            color: coverStyles.h1.color,
+            fontFamily: coverStyles.container.fontFamily,
+            fontSize: `${Math.max(10, Math.min(12, density * 0.7))}px`,
+            fontWeight: coverStyles.h1.fontWeight,
+            letterSpacing: coverStyles.h1.letterSpacing,
+            textAlign: coverStyles.h1.textAlign,
+            ...coverStyles.headingInner,
           }}
         >
           {theme.name}
         </span>
-        <div className="flex flex-col gap-1">
-          <div className="h-[3px] w-4/5 rounded-full" style={barStyle} />
-          <div className="h-[3px] w-3/5 rounded-full" style={barStyle} />
+        <div
+          className="mt-2 flex w-3/5 flex-col"
+          style={{ gap: density > 16 ? 4 : 3 }}
+        >
+          <div className="w-full rounded-full" style={barStyle} />
+          <div className="w-3/4 rounded-full" style={barStyle} />
         </div>
       </div>
     </div>

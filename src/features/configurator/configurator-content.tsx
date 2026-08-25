@@ -186,6 +186,7 @@ export const ConfiguratorContent = () => {
       <SettingsSection headingId={sectionHeadingIds.theme} title="主题">
         <ThemeGrid
           currentThemeId={currentThemeId}
+          isModified={isModified}
           labelledBy={sectionHeadingIds.theme}
           onSelect={selectPresetTheme}
         />

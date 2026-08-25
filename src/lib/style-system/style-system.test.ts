@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { type StyleConfiguration, styleSystem } from "./style-system";
 
 const highlightColorPattern = /#[\da-f]{6}(?= 55%)/i;
+const unsafeCssValuePattern = /https?:|javascript:/i;
 
 const relativeLuminance = (hex: string): number => {
   const channels = [1, 3, 5].map((start) => {
@@ -890,5 +891,42 @@ describe("Style System Interface", () => {
       coverVerticalAlign: expectedCoverVerticalAlign,
       hasCoverHeadingScale: true,
     });
+  });
+
+  it("8 个主题的封面和正文只使用 html2canvas 安全的本地样式", () => {
+    const unsafeProperties = new Set([
+      "backdropFilter",
+      "filter",
+      "maskImage",
+      "mixBlendMode",
+    ]);
+    let resolvedContexts = 0;
+
+    for (const theme of styleSystem.catalog()) {
+      const state = styleSystem.hydrate({ currentThemeId: theme.id });
+      for (const page of ["cover", "body"] as const) {
+        const resolved = styleSystem.resolve(state, { page });
+        const styleObjects = Object.values(resolved.styles).filter(
+          (value): value is Record<string, unknown> =>
+            typeof value === "object" && value !== null
+        );
+
+        for (const style of styleObjects) {
+          for (const [property, value] of Object.entries(style)) {
+            expect(unsafeProperties).not.toContain(property);
+            if (typeof value !== "string") {
+              continue;
+            }
+            expect(value).not.toMatch(unsafeCssValuePattern);
+            if (value.includes("url(")) {
+              expect(value).toContain("data:image/");
+            }
+          }
+        }
+        resolvedContexts += 1;
+      }
+    }
+
+    expect(resolvedContexts).toBe(16);
   });
 });
