@@ -58,6 +58,7 @@ export const ThemeGrid = ({
   >
     {themePreviews.map(({ bodyStyles, coverStyles, headerBar, theme }) => {
       const isCurrent = theme.id === currentThemeId;
+      const statusId = `theme-${theme.id}-status`;
       return (
         <label
           className={cn(
@@ -70,6 +71,7 @@ export const ThemeGrid = ({
           style={getThemeBackground(coverStyles)}
         >
           <input
+            aria-describedby={isCurrent ? statusId : undefined}
             aria-label={theme.name}
             checked={isCurrent}
             className="sr-only"
@@ -85,7 +87,10 @@ export const ThemeGrid = ({
             theme={theme}
           />
           {isCurrent && (
-            <span className="absolute right-1.5 bottom-1.5 rounded-full bg-background/92 px-1.5 py-0.5 font-medium text-[10px] text-foreground shadow-sm ring-1 ring-foreground/10">
+            <span
+              className="absolute right-1.5 bottom-1.5 rounded-full bg-background/92 px-1.5 py-0.5 font-medium text-[10px] text-foreground shadow-sm ring-1 ring-foreground/10"
+              id={statusId}
+            >
               {isModified ? "已调整" : "当前"}
             </span>
           )}

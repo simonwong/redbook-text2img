@@ -65,6 +65,9 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
 
   for (const name of themeNames) {
     const card = await selectTheme(page, name);
+    await expect(page.getByRole("radio", { name })).toHaveAccessibleDescription(
+      "当前"
+    );
     await expect(card.getByText("当前", { exact: true })).toBeVisible();
     await expect(themeGroup.getByText("当前", { exact: true })).toHaveCount(1);
 
@@ -177,11 +180,13 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
 
   const currentCard = await selectTheme(page, "Apple 备忘录");
   await page.getByRole("radio", { name: "舒展" }).locator("..").click();
+  await expect(currentTheme).toHaveAccessibleDescription("已调整");
   await expect(currentCard.getByText("已调整", { exact: true })).toBeVisible();
   await expect(currentCard.getByText("当前", { exact: true })).toHaveCount(0);
   await page
     .getByRole("button", { name: "恢复“Apple 备忘录”主题配置" })
     .click();
+  await expect(currentTheme).toHaveAccessibleDescription("当前");
   await expect(currentCard.getByText("当前", { exact: true })).toBeVisible();
 });
 

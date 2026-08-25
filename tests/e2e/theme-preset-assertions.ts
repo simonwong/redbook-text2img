@@ -171,6 +171,13 @@ export const assertThemePreset = async (
       "redbook-markdown-content",
       JSON.stringify({ state: { content, isChange: true }, version: 0 })
     );
+    localStorage.setItem(
+      "redbook-watermark",
+      JSON.stringify({
+        state: { showPageNumber: true, signature: "@theme-audit" },
+        version: 0,
+      })
+    );
   }, themeContent);
   await page.setViewportSize({ height: 900, width: 1200 });
   await page.goto("/");
@@ -220,6 +227,7 @@ export const assertThemePreset = async (
       (element) => element.scrollHeight <= element.clientHeight + 1
     )
   ).toBe(true);
+  await expect(inner.getByText("@theme-audit", { exact: true })).toBeVisible();
   await expect(inner.getByText("03 / 04", { exact: true })).toBeVisible();
 
   await page.getByRole("button", { name: "第 4 张图片" }).click();
@@ -332,13 +340,44 @@ export const assertThemePreset = async (
         previewRect.height,
     };
   }, profile.decoration);
-  const comparisonPoints = [
+  const footerRegions = await preview.evaluate((element) => {
+    const previewRect = element.getBoundingClientRect();
+    const footer = element.lastElementChild?.lastElementChild;
+    const spans = footer?.querySelectorAll(":scope > span");
+    if (spans?.length !== 2) {
+      throw new Error("Missing signature or page number");
+    }
+    return Array.from(spans).map((span) => {
+      const rect = span.getBoundingClientRect();
+      const points: NormalizedPoint[] = [];
+      for (let row = 0; row < 8; row += 1) {
+        for (let column = 0; column < 20; column += 1) {
+          points.push({
+            x:
+              (rect.left -
+                previewRect.left +
+                (rect.width * (column + 0.5)) / 20) /
+              previewRect.width,
+            y:
+              (rect.top - previewRect.top + (rect.height * (row + 0.5)) / 8) /
+              previewRect.height,
+          });
+        }
+      }
+      return { color: getComputedStyle(span).color, points };
+    });
+  });
+  const baseComparisonPoints = [
     { x: 0.02, y: 0.5 },
     { x: 0.06, y: 0.12 },
     { x: 0.5, y: 0.5 },
     { x: 0.88, y: 0.86 },
     titlePoint,
   ] as const;
+  const comparisonPoints = [
+    ...baseComparisonPoints,
+    ...footerRegions.flatMap(({ points }) => points),
+  ];
   const previewPng = await preview.screenshot();
 
   const downloadPromise = page.waitForEvent("download");
@@ -360,11 +399,38 @@ export const assertThemePreset = async (
   expect(previewSample.height).toBe(500);
   expect(previewSample.width).toBeGreaterThanOrEqual(375);
   expect(previewSample.width).toBeLessThanOrEqual(376);
-  for (const [index, previewPixel] of previewSample.pixels.entries()) {
-    const tolerance = index === comparisonPoints.length - 1 ? 105 : 30;
+  for (const [index, previewPixel] of previewSample.pixels
+    .slice(0, baseComparisonPoints.length)
+    .entries()) {
+    const tolerance = index === baseComparisonPoints.length - 1 ? 105 : 30;
     expect(
       colorDistance(previewPixel, exportedSample.pixels[index])
     ).toBeLessThanOrEqual(tolerance);
+  }
+  let footerOffset = baseComparisonPoints.length;
+  for (const region of footerRegions) {
+    const targetColor = parseCssColor(region.color);
+    const previewPixels = previewSample.pixels.slice(
+      footerOffset,
+      footerOffset + region.points.length
+    );
+    const exportedPixels = exportedSample.pixels.slice(
+      footerOffset,
+      footerOffset + region.points.length
+    );
+    const previewInk = previewPixels.filter(
+      (pixel) => colorDistance(pixel, targetColor) <= 65
+    ).length;
+    const exportedInk = exportedPixels.filter(
+      (pixel) => colorDistance(pixel, targetColor) <= 65
+    ).length;
+
+    expect(previewInk).toBeGreaterThan(2);
+    expect(exportedInk).toBeGreaterThan(2);
+    expect(
+      Math.abs(previewInk - exportedInk) / region.points.length
+    ).toBeLessThanOrEqual(0.12);
+    footerOffset += region.points.length;
   }
   if (profile.expectedSurface) {
     expect(
