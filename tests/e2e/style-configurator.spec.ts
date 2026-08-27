@@ -31,6 +31,39 @@ test("1200px 使用内嵌设置且六组常驻", async ({ page }) => {
   await expectNoHorizontalOverflow(page);
 });
 
+test("内嵌设置栏不撑高文档，点击单选控件页面不滚动", async ({ page }) => {
+  await resetState(page);
+  await page.setViewportSize({ height: 900, width: 1440 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "设置样式" }).click();
+  // 等待面板最后一组控件渲染完成再测量
+  await expect(page.getByRole("radio", { name: "隐藏" })).toBeAttached();
+
+  const expectNoVerticalOverflow = async () => {
+    const dimensions = await page.evaluate(() => ({
+      innerHeight: window.innerHeight,
+      scrollHeight: document.documentElement.scrollHeight,
+      scrollY: window.scrollY,
+    }));
+    expect(dimensions.scrollHeight).toBeLessThanOrEqual(dimensions.innerHeight);
+    expect(dimensions.scrollY).toBe(0);
+  };
+
+  await expectNoVerticalOverflow();
+
+  // 点击分段控件与字体单选（label 触发，真实用户路径）
+  await page.locator("label", { hasText: "舒展" }).first().click();
+  await page
+    .locator("label", { hasText: "衬线" })
+    .filter({ hasNotText: "无衬线" })
+    .click();
+  await expect(page.getByRole("radio", { name: "舒展" })).toBeChecked();
+  await expect(
+    page.getByRole("radio", { name: "衬线", exact: true })
+  ).toBeChecked();
+  await expectNoVerticalOverflow();
+});
+
 for (const width of [768, 1199]) {
   test(`${width}px 使用右侧设置抽屉`, async ({ page }) => {
     await resetState(page);
