@@ -67,7 +67,6 @@ describe("Style System Interface", () => {
         "cherry-cream",
       ],
       bodyHeadingAlignment: ["center", "left"],
-      contentSurface: ["none", "floating-card", "notebook"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "snug", "normal", "relaxed", "spacious"],
       fontId: ["sans", "serif"],
@@ -82,13 +81,13 @@ describe("Style System Interface", () => {
     expect(configuration).toMatchObject({
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
-      contentSurface: "none",
       coverLayout: "center-poster",
       decorationColor: "#64748b",
       headingDecoration: "none",
     });
     expect(configuration).not.toHaveProperty("accentColor");
     expect(configuration).not.toHaveProperty("bodyHeadingSize");
+    expect(configuration).not.toHaveProperty("contentSurface");
     expect(configuration).not.toHaveProperty("headingAlignment");
   });
 
@@ -138,7 +137,6 @@ describe("Style System Interface", () => {
       overridden: {
         background: false,
         bodyHeadingAlignment: false,
-        contentSurface: false,
         coverLayout: false,
         decorationColor: false,
         density: true,
@@ -166,7 +164,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
-        contentSurface: "none",
         coverLayout: "center-poster",
         decorationColor: "#64748b",
         density: "normal",
@@ -278,48 +275,75 @@ describe("Style System Interface", () => {
   });
 
   it.each([
-    ["none", undefined, undefined],
-    ["floating-card", "16px", undefined],
-    ["notebook", "12px", "linear-gradient"],
-  ] as const)("内容底板 %s 生成稳定渲染语义", (contentSurface, containerPadding, backgroundMarker) => {
-    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
-      patch: { contentSurface },
-      type: "update-configuration",
-    });
-    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+    ["clean-light", false],
+    ["trianglify-minimalist", true],
+    ["gradient-warm", true],
+    ["apple-notes", false],
+  ] as const)("主题 %s 的浮层卡是内部细节（%s）", (themeId, hasSurface) => {
+    const state = styleSystem.hydrate({ currentThemeId: themeId });
+    const body = styleSystem.resolve(state, { page: "body" }).styles;
+    const cover = styleSystem.resolve(state, { page: "cover" }).styles;
 
-    expect(styles.container.padding).toBe(containerPadding);
-    if (contentSurface === "none") {
-      expect(styles.innerContainer.backgroundColor).toBeUndefined();
-      expect(styles.innerContainer.boxShadow).toBeUndefined();
-    } else {
-      expect(styles.innerContainer.backgroundColor).toBeDefined();
-      expect(styles.innerContainer.boxShadow).toBeDefined();
-    }
-    if (backgroundMarker) {
-      expect(String(styles.innerContainer.backgroundImage)).toContain(
-        backgroundMarker
-      );
-    } else {
-      expect(styles.innerContainer.backgroundImage).toBeUndefined();
+    for (const styles of [body, cover]) {
+      if (hasSurface) {
+        expect(styles.container.padding).toBe("16px");
+        expect(styles.innerContainer.backgroundColor).toBeDefined();
+        expect(styles.innerContainer.borderRadius).toBeDefined();
+        expect(styles.innerContainer.boxShadow).toBeDefined();
+      } else {
+        expect(styles.container.padding).toBeUndefined();
+        expect(styles.innerContainer.backgroundColor).toBeUndefined();
+        expect(styles.innerContainer.boxShadow).toBeUndefined();
+      }
     }
   });
 
-  it.each([
-    ["background", { color: "#111827", kind: "solid" }],
-    ["contentSurface", "floating-card"],
-  ] as const)("画布字段 %s 可识别并单项恢复", (field, value) => {
+  it("Apple 备忘录的装饰顶栏是主题内部细节，封面与正文一致", () => {
+    const state = styleSystem.hydrate({ currentThemeId: "apple-notes" });
+    const body = styleSystem.resolve(state, { page: "body" });
+    const cover = styleSystem.resolve(state, { page: "cover" });
+
+    for (const resolved of [body, cover]) {
+      expect(resolved.headerBar).toEqual({
+        iconColor: "#8a6800",
+        icons: { backArrow: true, menu: true, share: true },
+      });
+      expect(resolved.styles.container.padding).toBeUndefined();
+    }
+  });
+
+  it("其余主题没有浮层卡或装饰顶栏", () => {
+    for (const theme of styleSystem.catalog()) {
+      if (
+        ["trianglify-minimalist", "gradient-warm", "apple-notes"].includes(
+          theme.id
+        )
+      ) {
+        continue;
+      }
+      const resolved = styleSystem.resolve(
+        styleSystem.hydrate({ currentThemeId: theme.id }),
+        { page: "body" }
+      );
+
+      expect(resolved.headerBar).toBeUndefined();
+      expect(resolved.styles.container.padding).toBeUndefined();
+      expect(resolved.styles.innerContainer.backgroundColor).toBeUndefined();
+    }
+  });
+
+  it("背景字段可识别并单项恢复", () => {
     const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
-      patch: { [field]: value } as Partial<StyleConfiguration>,
+      patch: { background: { color: "#111827", kind: "solid" } },
       type: "update-configuration",
     });
     const reset = styleSystem.transition(modified, {
-      field,
+      field: "background",
       type: "reset-field",
     });
 
-    expect(styleSystem.read(modified).overridden[field]).toBe(true);
-    expect(styleSystem.read(reset).overridden[field]).toBe(false);
+    expect(styleSystem.read(modified).overridden.background).toBe(true);
+    expect(styleSystem.read(reset).overridden.background).toBe(false);
   });
 
   it("把旧版完整配置迁移为稀疏覆盖", () => {
@@ -447,14 +471,12 @@ describe("Style System Interface", () => {
     const snapshot = styleSystem.read(state);
 
     expect(snapshot.configuration).toMatchObject({
-      contentSurface: "floating-card",
       coverLayout: "center-poster",
       density: "normal",
       fontId: "serif",
       headingDecoration: "highlight",
     });
     expect(snapshot.overridden).toMatchObject({
-      contentSurface: false,
       coverLayout: false,
       density: false,
       fontId: true,
@@ -477,12 +499,27 @@ describe("Style System Interface", () => {
     );
   });
 
+  it("丢弃已移除的内容底板覆盖并保留其他字段", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "clean-light",
+      overrides: { contentSurface: "notebook", density: "compact" },
+    });
+
+    expect(state).toEqual({
+      currentThemeId: "clean-light",
+      overrides: { density: "compact" },
+    });
+    expect(styleSystem.read(state).configuration).not.toHaveProperty(
+      "contentSurface"
+    );
+  });
+
   it("相同有效配置不受主题 ID 影响", () => {
-    const warmState = styleSystem.hydrate({ currentThemeId: "gradient-warm" });
-    const warmConfiguration = styleSystem.read(warmState).configuration;
+    const coolState = styleSystem.hydrate({ currentThemeId: "gradient-cool" });
+    const coolConfiguration = styleSystem.read(coolState).configuration;
     const configuredCleanState = styleSystem.transition(
       styleSystem.hydrate({ currentThemeId: "clean-light" }),
-      { patch: warmConfiguration, type: "update-configuration" }
+      { patch: coolConfiguration, type: "update-configuration" }
     );
 
     expect({
@@ -492,9 +529,9 @@ describe("Style System Interface", () => {
       header: styleSystem.resolve(configuredCleanState, { page: "body" })
         .headerBar,
     }).toEqual({
-      body: styleSystem.resolve(warmState, { page: "body" }).styles,
-      cover: styleSystem.resolve(warmState, { page: "cover" }).styles,
-      header: styleSystem.resolve(warmState, { page: "body" }).headerBar,
+      body: styleSystem.resolve(coolState, { page: "body" }).styles,
+      cover: styleSystem.resolve(coolState, { page: "cover" }).styles,
+      header: styleSystem.resolve(coolState, { page: "body" }).headerBar,
     });
   });
 
@@ -558,7 +595,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
-        contentSurface: "none",
         coverLayout: "top-left",
         decorationColor: "#44403c",
         density: "compact",
@@ -590,7 +626,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
-        contentSurface: "none",
         coverLayout: "top-left",
         decorationColor: "#44403c",
         density: "normal",
@@ -628,7 +663,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
-        contentSurface: "none",
         coverLayout: "center-poster",
         decorationColor: "#64748b",
         density: "compact",
@@ -659,7 +693,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
-        contentSurface: "none",
         coverLayout: "top-left",
         decorationColor: "#44403c",
         density: "normal",
@@ -711,11 +744,10 @@ describe("Style System Interface", () => {
     });
   });
 
-  it("背景与内容底板在封面和正文生成相同画布样式", () => {
+  it("背景在封面和正文生成相同画布样式", () => {
     const state = styleSystem.transition(styleSystem.hydrate(undefined), {
       patch: {
         background: { color: "#111827", kind: "solid" },
-        contentSurface: "notebook",
       },
       type: "update-configuration",
     });

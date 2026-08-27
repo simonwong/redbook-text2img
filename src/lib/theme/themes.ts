@@ -5,7 +5,6 @@ export const presetThemes: readonly PresetTheme[] = [
     configuration: {
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
-      contentSurface: "none",
       coverLayout: "center-poster",
       decorationColor: "#64748b",
       density: "normal",
@@ -20,7 +19,6 @@ export const presetThemes: readonly PresetTheme[] = [
     configuration: {
       background: { kind: "preset", preset: "trianglify-gray" },
       bodyHeadingAlignment: "left",
-      contentSurface: "floating-card",
       coverLayout: "top-left",
       decorationColor: "#334155",
       density: "snug",
@@ -29,13 +27,13 @@ export const presetThemes: readonly PresetTheme[] = [
     },
     description: "抽象三角形为背景的极简风格",
     id: "trianglify-minimalist",
+    internals: { floatingCard: true },
     name: "三角极简",
   },
   {
     configuration: {
       background: { kind: "preset", preset: "night-aurora" },
       bodyHeadingAlignment: "left",
-      contentSurface: "none",
       coverLayout: "bottom-left",
       decorationColor: "#a78bfa",
       density: "normal",
@@ -50,7 +48,6 @@ export const presetThemes: readonly PresetTheme[] = [
     configuration: {
       background: { kind: "preset", preset: "warm-sun" },
       bodyHeadingAlignment: "center",
-      contentSurface: "floating-card",
       coverLayout: "center-poster",
       decorationColor: "#f4b76a",
       density: "normal",
@@ -59,13 +56,13 @@ export const presetThemes: readonly PresetTheme[] = [
     },
     description: "奶油蜜桃光晕，温柔包裹的午后阳光",
     id: "gradient-warm",
+    internals: { floatingCard: true },
     name: "蜜光暖阳",
   },
   {
     configuration: {
       background: { kind: "preset", preset: "cool-mist" },
       bodyHeadingAlignment: "center",
-      contentSurface: "none",
       coverLayout: "center-poster",
       decorationColor: "#1a3556",
       density: "normal",
@@ -80,7 +77,6 @@ export const presetThemes: readonly PresetTheme[] = [
     configuration: {
       background: { kind: "preset", preset: "cherry-cream" },
       bodyHeadingAlignment: "center",
-      contentSurface: "none",
       coverLayout: "center-poster",
       decorationColor: "#b42355",
       density: "normal",
@@ -95,7 +91,6 @@ export const presetThemes: readonly PresetTheme[] = [
     configuration: {
       background: { color: "#fefcf3", kind: "solid" },
       bodyHeadingAlignment: "left",
-      contentSurface: "none",
       coverLayout: "top-left",
       decorationColor: "#44403c",
       density: "normal",
@@ -110,8 +105,7 @@ export const presetThemes: readonly PresetTheme[] = [
     configuration: {
       background: { color: "#fbfbfb", kind: "solid" },
       bodyHeadingAlignment: "left",
-      contentSurface: "notebook",
-      coverLayout: "top-left",
+      coverLayout: "center-poster",
       decorationColor: "#1d1d1f",
       density: "snug",
       fontId: "sans",
@@ -119,6 +113,12 @@ export const presetThemes: readonly PresetTheme[] = [
     },
     description: "简洁的苹果备忘录风格",
     id: "apple-notes",
+    internals: {
+      headerBar: {
+        iconColor: "#8a6800",
+        icons: { backArrow: true, menu: true, share: true },
+      },
+    },
     name: "Apple 备忘录",
   },
 ];

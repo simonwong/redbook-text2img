@@ -42,15 +42,14 @@ const themeProfiles: readonly ThemeProfile[] = [
   },
   {
     bodyAlign: "left",
-    coverAlign: "left",
-    coverVerticalAlign: "flex-start",
+    coverAlign: "center",
+    coverVerticalAlign: "center",
     decoration: "none",
-    expectedSurface: [255, 253, 245],
     fontFamily: sansFontPattern,
     fontSize: "15px",
     hasHeader: true,
     name: "Apple 备忘录",
-    surface: "rgb(255, 253, 245)",
+    surface: "rgba(0, 0, 0, 0)",
     tone: "light",
   },
 ];

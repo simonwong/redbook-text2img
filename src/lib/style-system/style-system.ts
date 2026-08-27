@@ -42,7 +42,6 @@ const hexColorPattern = /^#[\da-f]{6}$/i;
 const configurationOptions = {
   backgroundPreset: backgroundPresetIds,
   bodyHeadingAlignment: ["center", "left"],
-  contentSurface: ["none", "floating-card", "notebook"],
   coverLayout: ["center-poster", "top-left", "bottom-left"],
   density: ["compact", "snug", "normal", "relaxed", "spacious"],
   fontId: fontPresets.map(({ id }) => id),
@@ -70,9 +69,6 @@ const diffConfiguration = (
     themeConfiguration.bodyHeadingAlignment
   ) {
     overrides.bodyHeadingAlignment = configuration.bodyHeadingAlignment;
-  }
-  if (configuration.contentSurface !== themeConfiguration.contentSurface) {
-    overrides.contentSurface = configuration.contentSurface;
   }
   if (configuration.coverLayout !== themeConfiguration.coverLayout) {
     overrides.coverLayout = configuration.coverLayout;
@@ -108,7 +104,6 @@ const cloneConfiguration = (
 const bodyHeadingAlignments = new Set<string>(
   configurationOptions.bodyHeadingAlignment
 );
-const contentSurfaces = new Set<string>(configurationOptions.contentSurface);
 const coverLayouts = new Set<string>(configurationOptions.coverLayout);
 const backgroundPresets = new Set<string>(
   configurationOptions.backgroundPreset
@@ -201,13 +196,6 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
       ? {
           bodyHeadingAlignment:
             bodyHeadingAlignment as StyleConfiguration["bodyHeadingAlignment"],
-        }
-      : {}),
-    ...(typeof value.contentSurface === "string" &&
-    contentSurfaces.has(value.contentSurface)
-      ? {
-          contentSurface:
-            value.contentSurface as StyleConfiguration["contentSurface"],
         }
       : {}),
     ...(typeof value.coverLayout === "string" &&
@@ -341,7 +329,6 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
     overridden: {
       background: "background" in state.overrides,
       bodyHeadingAlignment: "bodyHeadingAlignment" in state.overrides,
-      contentSurface: "contentSurface" in state.overrides,
       coverLayout: "coverLayout" in state.overrides,
       decorationColor: "decorationColor" in state.overrides,
       density: "density" in state.overrides,
@@ -363,7 +350,7 @@ const resolve = (
 ): ResolvedStyle => {
   const theme = getThemeById(state.currentThemeId) ?? defaultTheme;
   const { configuration } = read(state);
-  const foundation = resolveStyleFoundation(configuration);
+  const foundation = resolveStyleFoundation(configuration, theme.internals);
   const adjustedStyle = applyAdjustments(foundation.style, configuration);
   const coverLayout: CoverStyleOverride =
     configuration.coverLayout === "center-poster"

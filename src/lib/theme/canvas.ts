@@ -5,7 +5,6 @@ import type {
   BackgroundPreset,
   BackgroundStyle,
   CanvasBackground,
-  ContentSurface,
   FullStyle,
   SurfaceStyle,
 } from "./types";
@@ -58,7 +57,6 @@ const lightSurface: SurfaceStyle = {
   background: "#ffffff",
   borderRadius: 16,
   boxShadow: "0 8px 28px rgba(31, 41, 55, 0.14)",
-  kind: "floating-card",
   margin: 16,
 };
 
@@ -66,20 +64,7 @@ const darkSurface: SurfaceStyle = {
   background: "rgba(17, 24, 39, 0.88)",
   borderRadius: 16,
   boxShadow: "0 8px 28px rgba(0, 0, 0, 0.28)",
-  kind: "floating-card",
   margin: 16,
-};
-
-const notebookSurface: SurfaceStyle = {
-  background: "#fffdf5",
-  backgroundImage:
-    "linear-gradient(90deg, transparent 14px, rgba(239, 68, 68, 0.22) 14px, rgba(239, 68, 68, 0.22) 15px, transparent 15px), linear-gradient(rgba(148, 163, 184, 0.2) 1px, transparent 1px)",
-  backgroundPosition: "0 0",
-  backgroundSize: "100% 100%, 100% 28px",
-  borderRadius: 6,
-  boxShadow: "0 6px 20px rgba(71, 59, 43, 0.16)",
-  kind: "notebook",
-  margin: 12,
 };
 
 const getSolidTone = (color: string): Tone =>
@@ -113,9 +98,6 @@ export const resolveCanvasBackground = (
   }
   throw new Error(`Unsupported theme background type: ${background.type}`);
 };
-
-export const resolveContentSurface = (surface?: SurfaceStyle): ContentSurface =>
-  surface?.kind ?? (surface ? "floating-card" : "none");
 
 export const canvasBackgroundsEqual = (
   first: CanvasBackground,
@@ -178,49 +160,30 @@ const applySemanticPalette = (style: FullStyle, tone: Tone): FullStyle => {
   };
 };
 
-const getSurface = (
-  contentSurface: ContentSurface,
-  tone: Tone
-): SurfaceStyle | undefined => {
-  if (contentSurface === "floating-card") {
-    return tone === "dark" ? darkSurface : lightSurface;
-  }
-  if (contentSurface === "notebook") {
-    return notebookSurface;
-  }
-};
+/** 浮层卡 surface：跟随背景明暗（主题内部细节，由 foundation 装配） */
+export const floatingCardSurface = (
+  backgroundChoice: CanvasBackground
+): SurfaceStyle =>
+  getBackgroundDefinition(backgroundChoice).tone === "dark"
+    ? darkSurface
+    : lightSurface;
 
 export const applyCanvasConfiguration = (
   baseStyle: FullStyle,
-  backgroundChoice: CanvasBackground,
-  contentSurface: ContentSurface
+  backgroundChoice: CanvasBackground
 ): FullStyle => {
   const definition = getBackgroundDefinition(backgroundChoice);
   const backgroundChanged = !canvasBackgroundsEqual(
     resolveCanvasBackground(baseStyle.background),
     backgroundChoice
   );
-  const surfaceChanged =
-    resolveContentSurface(baseStyle.surface) !== contentSurface;
 
-  if (!(backgroundChanged || surfaceChanged)) {
+  if (!backgroundChanged) {
     return baseStyle;
   }
 
-  const withBackground = {
-    ...baseStyle,
-    background: definition.background,
-  };
-  const readableStyle =
-    backgroundChanged ||
-    (contentSurface === "notebook" && definition.tone === "dark")
-      ? applySemanticPalette(
-          withBackground,
-          contentSurface === "notebook" ? "light" : definition.tone
-        )
-      : withBackground;
-  return {
-    ...readableStyle,
-    surface: getSurface(contentSurface, definition.tone),
-  };
+  return applySemanticPalette(
+    { ...baseStyle, background: definition.background },
+    definition.tone
+  );
 };

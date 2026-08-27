@@ -9,7 +9,6 @@ const firstFourConfigurations = {
   "clean-dark": {
     background: { kind: "preset", preset: "night-aurora" },
     bodyHeadingAlignment: "left",
-    contentSurface: "none",
     coverLayout: "bottom-left",
     decorationColor: "#a78bfa",
     density: "normal",
@@ -19,7 +18,6 @@ const firstFourConfigurations = {
   "clean-light": {
     background: { kind: "preset", preset: "clean-light" },
     bodyHeadingAlignment: "center",
-    contentSurface: "none",
     coverLayout: "center-poster",
     decorationColor: "#64748b",
     density: "normal",
@@ -29,7 +27,6 @@ const firstFourConfigurations = {
   "gradient-warm": {
     background: { kind: "preset", preset: "warm-sun" },
     bodyHeadingAlignment: "center",
-    contentSurface: "floating-card",
     coverLayout: "center-poster",
     decorationColor: "#f4b76a",
     density: "normal",
@@ -39,7 +36,6 @@ const firstFourConfigurations = {
   "trianglify-minimalist": {
     background: { kind: "preset", preset: "trianglify-gray" },
     bodyHeadingAlignment: "left",
-    contentSurface: "floating-card",
     coverLayout: "top-left",
     decorationColor: "#334155",
     density: "snug",
@@ -52,8 +48,7 @@ const secondFourConfigurations = {
   "apple-notes": {
     background: { color: "#fbfbfb", kind: "solid" },
     bodyHeadingAlignment: "left",
-    contentSurface: "notebook",
-    coverLayout: "top-left",
+    coverLayout: "center-poster",
     decorationColor: "#1d1d1f",
     density: "snug",
     fontId: "sans",
@@ -62,7 +57,6 @@ const secondFourConfigurations = {
   "gradient-cool": {
     background: { kind: "preset", preset: "cool-mist" },
     bodyHeadingAlignment: "center",
-    contentSurface: "none",
     coverLayout: "center-poster",
     decorationColor: "#1a3556",
     density: "normal",
@@ -72,7 +66,6 @@ const secondFourConfigurations = {
   "reading-mode": {
     background: { color: "#fefcf3", kind: "solid" },
     bodyHeadingAlignment: "left",
-    contentSurface: "none",
     coverLayout: "top-left",
     decorationColor: "#44403c",
     density: "normal",
@@ -82,7 +75,6 @@ const secondFourConfigurations = {
   "xiaohongshu-pink": {
     background: { kind: "preset", preset: "cherry-cream" },
     bodyHeadingAlignment: "center",
-    contentSurface: "none",
     coverLayout: "center-poster",
     decorationColor: "#b42355",
     density: "normal",
@@ -242,7 +234,7 @@ describe("内置主题 5–8", () => {
     expect(styles.a.textDecoration).toBe("underline");
   });
 
-  it("Apple 备忘录由 notebook 配置生成底板与装饰顶栏", () => {
+  it("Apple 备忘录由主题内部细节生成装饰顶栏且无底板", () => {
     const resolved = styleSystem.resolve(
       styleSystem.hydrate({ currentThemeId: "apple-notes" }),
       { page: "body" }
@@ -252,9 +244,7 @@ describe("内置主题 5–8", () => {
       iconColor: "#8a6800",
       icons: { backArrow: true, menu: true, share: true },
     });
-    expect(String(resolved.styles.innerContainer.backgroundImage)).toContain(
-      "linear-gradient"
-    );
-    expect(resolved.styles.container.padding).toBe("12px");
+    expect(resolved.styles.container.padding).toBeUndefined();
+    expect(resolved.styles.innerContainer.backgroundColor).toBeUndefined();
   });
 });
