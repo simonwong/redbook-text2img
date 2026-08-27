@@ -69,7 +69,7 @@ describe("Style System Interface", () => {
       bodyHeadingAlignment: ["center", "left"],
       contentSurface: ["none", "floating-card", "notebook"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
-      density: ["compact", "balanced", "spacious"],
+      density: ["compact", "snug", "normal", "relaxed", "spacious"],
       fontId: ["sans", "serif"],
       headingDecoration: ["none", "underline", "wavy", "highlight"],
     });
@@ -169,7 +169,7 @@ describe("Style System Interface", () => {
         contentSurface: "none",
         coverLayout: "center-poster",
         decorationColor: "#64748b",
-        density: "balanced",
+        density: "normal",
         fontId: "serif",
         headingDecoration: "none",
       },
@@ -342,17 +342,28 @@ describe("Style System Interface", () => {
 
   it.each([
     ["compact", "compact"],
-    ["snug", "compact"],
-    ["normal", "balanced"],
-    ["relaxed", "spacious"],
+    ["snug", "snug"],
+    ["normal", "normal"],
+    ["relaxed", "relaxed"],
     ["spacious", "spacious"],
-  ] as const)("把旧密度 %s 迁移到三档密度 %s", (legacy, expected) => {
+  ] as const)("五档密度 %s 原样保留为 %s", (legacy, expected) => {
     const state = styleSystem.hydrate({
       currentThemeId: "clean-light",
       overrides: { density: legacy },
     });
 
     expect(styleSystem.read(state).configuration.density).toBe(expected);
+  });
+
+  it("把旧三档密度 balanced 迁移为像素等价的 normal", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "clean-light",
+      overrides: { density: "balanced" },
+    });
+
+    expect(styleSystem.read(state).configuration.density).toBe("normal");
+    // clean-light 默认密度即 normal，迁移后不产生覆盖
+    expect(state.overrides).toEqual({});
   });
 
   it.each([
@@ -375,7 +386,7 @@ describe("Style System Interface", () => {
       overrides: { density: "__proto__" },
     });
 
-    expect(styleSystem.read(state).configuration.density).toBe("balanced");
+    expect(styleSystem.read(state).configuration.density).toBe("normal");
     expect(state.overrides).toEqual({});
   });
 
@@ -422,7 +433,7 @@ describe("Style System Interface", () => {
 
     expect(
       styleSystem.transition(modified, {
-        patch: { density: "balanced" },
+        patch: { density: "normal" },
         type: "update-configuration",
       }).overrides
     ).toEqual({});
@@ -438,7 +449,7 @@ describe("Style System Interface", () => {
     expect(snapshot.configuration).toMatchObject({
       contentSurface: "floating-card",
       coverLayout: "center-poster",
-      density: "balanced",
+      density: "normal",
       fontId: "serif",
       headingDecoration: "highlight",
     });
@@ -582,7 +593,7 @@ describe("Style System Interface", () => {
         contentSurface: "none",
         coverLayout: "top-left",
         decorationColor: "#44403c",
-        density: "balanced",
+        density: "normal",
         fontId: "serif",
         headingDecoration: "none",
       },
@@ -651,7 +662,7 @@ describe("Style System Interface", () => {
         contentSurface: "none",
         coverLayout: "top-left",
         decorationColor: "#44403c",
-        density: "balanced",
+        density: "normal",
         fontId: "serif",
         headingDecoration: "none",
       },
@@ -852,6 +863,18 @@ describe("Style System Interface", () => {
     expect(
       contrastRatio(String(styles.h1.color), decorationColor ?? "")
     ).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it.each([
+    ["clean-light", "normal", "16px"],
+    ["trianglify-minimalist", "snug", "15px"],
+  ] as const)("主题 %s 由密度 %s 推导正文基础字号 %s", (themeId, density, fontSize) => {
+    const state = styleSystem.hydrate({ currentThemeId: themeId });
+    const snapshot = styleSystem.read(state);
+    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+
+    expect(snapshot.configuration.density).toBe(density);
+    expect(styles.container.fontSize).toBe(fontSize);
   });
 
   it.each(styleSystem.catalog())("解析内置主题 $id", (theme) => {

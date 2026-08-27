@@ -25,14 +25,14 @@ type FoundationProfile =
   | "warm";
 
 const baseTypography = {
-  baseFontSize: typography.fontSize.balanced,
-  lineHeight: typography.lineHeight.balanced,
+  baseFontSize: typography.fontSize.normal,
+  lineHeight: typography.lineHeight.normal,
 };
 
 const baseSpacing = {
-  headingGap: spacing.headingGap.balanced,
-  padding: spacing.padding.balanced,
-  paragraphGap: spacing.paragraphGap.balanced,
+  headingGap: spacing.headingGap.normal,
+  padding: spacing.padding.normal,
+  paragraphGap: spacing.paragraphGap.normal,
 };
 
 const cleanStyle: FullStyle = {

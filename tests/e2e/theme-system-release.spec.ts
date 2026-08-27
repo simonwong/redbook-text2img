@@ -179,7 +179,7 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
   await expect(keyboardCard).toHaveCSS("outline-width", "2px");
 
   const currentCard = await selectTheme(page, "Apple 备忘录");
-  await page.getByRole("radio", { name: "舒展" }).locator("..").click();
+  await page.getByRole("radio", { name: "宽松" }).locator("..").click();
   await expect(currentTheme).toHaveAccessibleDescription("已调整");
   await expect(currentCard.getByText("已调整", { exact: true })).toBeVisible();
   await expect(currentCard.getByText("当前", { exact: true })).toHaveCount(0);

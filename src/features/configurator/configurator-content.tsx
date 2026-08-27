@@ -43,9 +43,11 @@ const bodyHeadingAlignmentLabels: Record<
   string
 > = { center: "居中", left: "左对齐" };
 const densityLabels: Record<StyleConfiguration["density"], string> = {
-  balanced: "均衡",
   compact: "紧凑",
-  spacious: "舒展",
+  normal: "正常",
+  relaxed: "较松",
+  snug: "较紧",
+  spacious: "宽松",
 };
 const headingDecorationLabels: Record<
   StyleConfiguration["headingDecoration"],

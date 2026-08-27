@@ -159,7 +159,7 @@ describe("content theme store", () => {
     });
   });
 
-  it("刷新时迁移五档密度和旧字体", async () => {
+  it("刷新时保留五档密度并迁移旧字体", async () => {
     storage.setItem(
       "redbook-content-theme",
       JSON.stringify({
@@ -175,8 +175,29 @@ describe("content theme store", () => {
     const reloadedStores = await import("./theme");
 
     expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual({
-      density: "compact",
+      density: "snug",
     });
+  });
+
+  it("刷新时把旧三档密度迁移为像素等价的新档", async () => {
+    storage.setItem(
+      "redbook-content-theme",
+      JSON.stringify({
+        state: {
+          currentThemeId: "reading-mode",
+          overrides: { density: "balanced" },
+        },
+        version: 6,
+      })
+    );
+    vi.resetModules();
+
+    const reloadedStores = await import("./theme");
+
+    // reading-mode 默认密度即 normal，迁移后不残留覆盖
+    expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual(
+      {}
+    );
   });
 
   it("刷新时把 v5 等宽字体迁移为无衬线", async () => {

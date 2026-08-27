@@ -44,7 +44,7 @@ const configurationOptions = {
   bodyHeadingAlignment: ["center", "left"],
   contentSurface: ["none", "floating-card", "notebook"],
   coverLayout: ["center-poster", "top-left", "bottom-left"],
-  density: ["compact", "balanced", "spacious"],
+  density: ["compact", "snug", "normal", "relaxed", "spacious"],
   fontId: fontPresets.map(({ id }) => id),
   headingDecoration: ["none", "underline", "wavy", "highlight"],
 } satisfies StyleConfigurationOptions;
@@ -117,13 +117,11 @@ const fontIds = new Set<string>(configurationOptions.fontId);
 const headingDecorations = new Set<string>(
   configurationOptions.headingDecoration
 );
+const densities = new Set<string>(configurationOptions.density);
+// 旧三档持久化值中仅 balanced 消失，按像素等价迁移到 normal；
+// 五档新值（含 compact/spacious）恒等保留，保证界面可选且刷新稳定。
 const legacyDensities = new Map<string, StyleConfiguration["density"]>([
-  ["balanced", "balanced"],
-  ["compact", "compact"],
-  ["snug", "compact"],
-  ["normal", "balanced"],
-  ["relaxed", "spacious"],
-  ["spacious", "spacious"],
+  ["balanced", "normal"],
 ]);
 const legacyFontIds = new Map<string, string>([
   ["kai", "serif"],
@@ -162,8 +160,15 @@ const sanitizeBackground = (
 
 const sanitizeDensity = (
   value: unknown
-): StyleConfiguration["density"] | undefined =>
-  typeof value === "string" ? legacyDensities.get(value) : undefined;
+): StyleConfiguration["density"] | undefined => {
+  if (typeof value !== "string") {
+    return;
+  }
+  const density = legacyDensities.get(value) ?? value;
+  return densities.has(density)
+    ? (density as StyleConfiguration["density"])
+    : undefined;
+};
 
 const sanitizeFontId = (
   value: unknown
