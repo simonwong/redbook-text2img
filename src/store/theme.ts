@@ -19,9 +19,6 @@ interface ContentThemeState extends StyleSystemState {
   setBodyHeadingAlignment: (
     alignment: StyleConfiguration["bodyHeadingAlignment"]
   ) => void;
-  setContentSurface: (
-    contentSurface: StyleConfiguration["contentSurface"]
-  ) => void;
   setCoverLayout: (layout: StyleConfiguration["coverLayout"]) => void;
   setDecorationColor: (color: string) => void;
   setDensity: (density: StyleConfiguration["density"]) => void;
@@ -81,10 +78,6 @@ export const useContentThemeStore = create<ContentThemeState>()(
           setBodyHeadingAlignment: (
             bodyHeadingAlignment: StyleConfiguration["bodyHeadingAlignment"]
           ) => updateConfiguration({ bodyHeadingAlignment }),
-
-          setContentSurface: (
-            contentSurface: StyleConfiguration["contentSurface"]
-          ) => updateConfiguration({ contentSurface }),
 
           setCoverLayout: (coverLayout: StyleConfiguration["coverLayout"]) =>
             updateConfiguration({ coverLayout }),

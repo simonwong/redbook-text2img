@@ -50,7 +50,6 @@ export const densityPresets: Record<Density, DensityValues> = {
 export const defaultAdjustments: StyleAdjustments = {
   background: { kind: "preset", preset: "clean-light" },
   bodyHeadingAlignment: "center",
-  contentSurface: "none",
   coverLayout: "center-poster",
   decorationColor: "#111827",
   density: "normal",
@@ -84,8 +83,7 @@ export function applyAdjustments(
   const baseFontSize = density.baseFontSize;
   const canvasStyle = applyCanvasConfiguration(
     baseStyle,
-    adjustments.background,
-    adjustments.contentSurface
+    adjustments.background
   );
   const decoration: HeadingDecoration | undefined =
     adjustments.headingDecoration === "none"

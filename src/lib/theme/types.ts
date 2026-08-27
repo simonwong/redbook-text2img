@@ -26,8 +26,6 @@ export type CanvasBackground =
   | { readonly kind: "preset"; readonly preset: BackgroundPreset }
   | { readonly color: string; readonly kind: "solid" };
 
-export type ContentSurface = "none" | "floating-card" | "notebook";
-
 export interface TypographyStyle {
   baseFontSize: number; // 12-18
   lineHeight: number; // 1.4-2.0
@@ -107,7 +105,7 @@ export interface SpacingStyle {
 
 /**
  * 卡片浮层（surface）：内容浮在圆角卡片上，背景四周露出（封面与内容页一致生效）。
- * 无此字段时文字直接铺在整卡背景上（默认行为，逐像素不变）。
+ * 主题内部实现细节，不对用户开放配置。
  * 仅使用 html2canvas-pro 可导出属性：solid/rgba 背景、borderRadius、boxShadow；禁 backdrop-filter。
  */
 export interface SurfaceStyle {
@@ -120,7 +118,6 @@ export interface SurfaceStyle {
   borderRadius: number;
   /** 卡片投影（柔和阴影，强化浮层层次） */
   boxShadow?: string;
-  kind?: Exclude<ContentSurface, "none">;
   /** 卡片四周留白 = container padding（px），露出背景边缘 */
   margin: number;
 }
@@ -164,7 +161,6 @@ export type HeadingDecorationChoice =
 export interface StyleAdjustments {
   readonly background: CanvasBackground;
   readonly bodyHeadingAlignment: HeadingAlignment;
-  readonly contentSurface: ContentSurface;
   readonly coverLayout: CoverLayout;
   /** 标题装饰颜色（hex） */
   readonly decorationColor: string;
@@ -204,10 +200,19 @@ export interface HeaderBarStyle {
   };
 }
 
+/** 主题内部实现细节（不参与用户配置，不持久化） */
+export interface ThemeInternals {
+  /** 内容浮层卡（三角极简、蜜光暖阳的观感核心） */
+  readonly floatingCard?: boolean;
+  /** 装饰性顶部导航栏（Apple 备忘录） */
+  readonly headerBar?: HeaderBarStyle;
+}
+
 /** Named built-in preset. Rendering details stay behind the Style Foundation. */
 export interface PresetTheme {
   readonly configuration: StyleAdjustments;
   readonly description?: string;
   readonly id: string;
+  readonly internals?: ThemeInternals;
   readonly name: string;
 }

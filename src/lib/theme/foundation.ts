@@ -1,11 +1,12 @@
 import { TrianglifyGary } from "./backgroundSet";
-import { applyCanvasConfiguration } from "./canvas";
+import { applyCanvasConfiguration, floatingCardSurface } from "./canvas";
 import { gradients, spacing, typography } from "./tokens";
 import type {
   CoverStyleOverride,
   FullStyle,
   HeaderBarStyle,
   StyleAdjustments,
+  ThemeInternals,
 } from "./types";
 
 interface StyleFoundation {
@@ -252,11 +253,6 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
   },
 };
 
-const appleHeader: HeaderBarStyle = {
-  iconColor: "#8a6800",
-  icons: { backArrow: true, menu: true, share: true },
-};
-
 const resolveProfile = (configuration: StyleAdjustments): FoundationProfile => {
   if (configuration.background.kind === "preset") {
     return {
@@ -278,10 +274,14 @@ const resolveProfile = (configuration: StyleAdjustments): FoundationProfile => {
 };
 
 export const resolveStyleFoundation = (
-  configuration: StyleAdjustments
+  configuration: StyleAdjustments,
+  internals?: ThemeInternals
 ): StyleFoundation => {
   const profile = resolveProfile(configuration);
-  const baseStyle = foundationStyles[profile];
+  const styled = applyCanvasConfiguration(
+    foundationStyles[profile],
+    configuration.background
+  );
 
   return {
     coverStyle: {
@@ -290,12 +290,9 @@ export const resolveStyleFoundation = (
       headingAlignment: "center",
       headingScale: 1.25,
     },
-    headerBar:
-      configuration.contentSurface === "notebook" ? appleHeader : undefined,
-    style: applyCanvasConfiguration(
-      baseStyle,
-      configuration.background,
-      configuration.contentSurface
-    ),
+    headerBar: internals?.headerBar,
+    style: internals?.floatingCard
+      ? { ...styled, surface: floatingCardSurface(configuration.background) }
+      : styled,
   };
 };

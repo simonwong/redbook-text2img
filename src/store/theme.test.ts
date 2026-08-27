@@ -62,17 +62,15 @@ describe("content theme store", () => {
     });
   });
 
-  it("通过 store 持久化背景和内容底板覆盖", () => {
+  it("通过 store 持久化背景覆盖", () => {
     const themeStore = stores.useContentThemeStore.getState();
     themeStore.setBackground({ color: "#111827", kind: "solid" });
-    themeStore.setContentSurface("floating-card");
 
     expect(JSON.parse(storage.getItem("redbook-content-theme") ?? "")).toEqual({
       state: {
         currentThemeId: "clean-light",
         overrides: {
           background: { color: "#111827", kind: "solid" },
-          contentSurface: "floating-card",
         },
       },
       version: 6,
@@ -227,6 +225,26 @@ describe("content theme store", () => {
         state: {
           currentThemeId: "clean-light",
           overrides: { bodyHeadingSize: "large", density: "compact" },
+        },
+        version: 6,
+      })
+    );
+    vi.resetModules();
+
+    const reloadedStores = await import("./theme");
+
+    expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual({
+      density: "compact",
+    });
+  });
+
+  it("刷新时丢弃已移除的内容底板覆盖并保留其他字段", async () => {
+    storage.setItem(
+      "redbook-content-theme",
+      JSON.stringify({
+        state: {
+          currentThemeId: "clean-light",
+          overrides: { contentSurface: "notebook", density: "compact" },
         },
         version: 6,
       })

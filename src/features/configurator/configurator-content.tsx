@@ -2,7 +2,6 @@
 
 import { ArrowReloadHorizontalIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { CSSProperties } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
@@ -13,7 +12,6 @@ import {
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
 import { type BackgroundOption, BackgroundPicker } from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
-import { ContentSurfacePicker } from "./content-surface-picker";
 import { CoverLayoutPicker } from "./cover-layout-picker";
 import { DecorationColorPicker } from "./decoration-color-picker";
 import { FontPicker } from "./font-picker";
@@ -85,7 +83,6 @@ const headingDecorationOptions = optionValues.headingDecoration.map(
 const fieldLabelIds = {
   background: "background-label",
   bodyHeadingAlignment: "body-heading-alignment-label",
-  contentSurface: "content-surface-label",
   coverLayout: "cover-layout-label",
   decorationColor: "decoration-color-label",
   density: "density-label",
@@ -111,7 +108,6 @@ export const ConfiguratorContent = () => {
     selectPresetTheme,
     setBackground,
     setBodyHeadingAlignment,
-    setContentSurface,
     setCoverLayout,
     setDecorationColor,
     setDensity,
@@ -150,28 +146,6 @@ export const ConfiguratorContent = () => {
         value,
       };
     });
-  const contentSurfacePreviews = Object.fromEntries(
-    optionValues.contentSurface.map((value) => {
-      const previewState = styleSystem.transition(
-        { currentThemeId, overrides },
-        {
-          patch: { contentSurface: value },
-          type: "update-configuration",
-        }
-      );
-      const { container, innerContainer } = styleSystem.resolve(previewState, {
-        page: "body",
-      }).styles;
-
-      return [value, { container, innerContainer }];
-    })
-  ) as Record<
-    StyleConfiguration["contentSurface"],
-    {
-      container: CSSProperties;
-      innerContainer: CSSProperties;
-    }
-  >;
 
   return (
     <div className="space-y-4">
@@ -196,20 +170,6 @@ export const ConfiguratorContent = () => {
             onChange={setBackground}
             options={backgroundOptions}
             value={configuration.background}
-          />
-        </ConfigurationField>
-
-        <ConfigurationField
-          isModified={overridden.contentSurface}
-          label="内容底板"
-          labelId={fieldLabelIds.contentSurface}
-          onReset={() => resetConfigurationField("contentSurface")}
-        >
-          <ContentSurfacePicker
-            labelledBy={fieldLabelIds.contentSurface}
-            onChange={setContentSurface}
-            previews={contentSurfacePreviews}
-            value={configuration.contentSurface}
           />
         </ConfigurationField>
       </SettingsSection>
