@@ -4,8 +4,10 @@ import type {
   CanvasBackground,
   CoverLayout,
   Density,
+  GradientPreset,
   HeadingAlignment,
   HeadingDecorationChoice,
+  PatternPreset,
   StyleAdjustments,
 } from "../theme/types";
 
@@ -25,7 +27,9 @@ export interface StyleConfigurationOptions {
   readonly coverLayout: readonly StyleConfiguration["coverLayout"][];
   readonly density: readonly StyleConfiguration["density"][];
   readonly fontId: readonly string[];
+  readonly gradient: readonly GradientPreset[];
   readonly headingDecoration: readonly StyleConfiguration["headingDecoration"][];
+  readonly pattern: readonly PatternPreset[];
 }
 
 export interface StyleSystemState {

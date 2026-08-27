@@ -2,6 +2,7 @@
 
 import { ArrowReloadHorizontalIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import type { CSSProperties } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
@@ -10,7 +11,10 @@ import {
   styleSystem,
 } from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
-import { type BackgroundOption, BackgroundPicker } from "./background-picker";
+import {
+  type BackgroundOptionGroup,
+  BackgroundPicker,
+} from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
 import { CoverLayoutPicker } from "./cover-layout-picker";
 import { DecorationColorPicker } from "./decoration-color-picker";
@@ -24,10 +28,13 @@ const pageNumberOptions = [
 ];
 
 const optionValues = styleSystem.configurationOptions();
-type BackgroundPreset = Extract<
-  StyleConfiguration["background"],
-  { kind: "preset" }
->["preset"];
+type BackgroundChoice = StyleConfiguration["background"];
+type BackgroundPreset = Extract<BackgroundChoice, { kind: "preset" }>["preset"];
+type GradientPreset = Extract<
+  BackgroundChoice,
+  { kind: "gradient" }
+>["gradient"];
+type PatternPreset = Extract<BackgroundChoice, { kind: "pattern" }>["pattern"];
 const backgroundPresetLabels: Record<BackgroundPreset, string> = {
   "cherry-cream": "樱花奶霜",
   "clean-light": "清透白",
@@ -35,6 +42,18 @@ const backgroundPresetLabels: Record<BackgroundPreset, string> = {
   "night-aurora": "墨夜极光",
   "trianglify-gray": "灰阶三角",
   "warm-sun": "蜜光暖阳",
+};
+const gradientLabels: Record<GradientPreset, string> = {
+  "cool-light": "清溪",
+  forest: "青野",
+  ocean: "海蓝",
+  "pink-light": "粉雾",
+  "warm-light": "暖云",
+};
+const patternLabels: Record<PatternPreset, string> = {
+  diagonal: "斜纹",
+  dots: "圆点",
+  grid: "方格",
 };
 const bodyHeadingAlignmentLabels: Record<
   StyleConfiguration["bodyHeadingAlignment"],
@@ -123,29 +142,51 @@ export const ConfiguratorContent = () => {
     currentThemeId,
     overrides,
   });
-  const backgroundOptions: BackgroundOption[] =
-    optionValues.backgroundPreset.map((value) => {
-      const previewState = styleSystem.transition(
-        { currentThemeId, overrides },
-        {
-          patch: { background: { kind: "preset", preset: value } },
-          type: "update-configuration",
-        }
-      );
-      const preview = styleSystem.resolve(previewState, { page: "body" }).styles
-        .container;
+  const backgroundPreview = (background: BackgroundChoice): CSSProperties => {
+    const previewState = styleSystem.transition(
+      { currentThemeId, overrides },
+      {
+        patch: { background },
+        type: "update-configuration",
+      }
+    );
+    const preview = styleSystem.resolve(previewState, { page: "body" }).styles
+      .container;
 
-      return {
+    return {
+      backgroundColor: preview.backgroundColor,
+      backgroundImage: preview.backgroundImage,
+      backgroundPosition: preview.backgroundPosition,
+      backgroundRepeat: preview.backgroundRepeat,
+      backgroundSize: preview.backgroundSize,
+    };
+  };
+  const backgroundGroups: BackgroundOptionGroup[] = [
+    {
+      label: "内置方案",
+      options: optionValues.backgroundPreset.map((value) => ({
         label: backgroundPresetLabels[value],
-        previewStyle: {
-          backgroundColor: preview.backgroundColor,
-          backgroundImage: preview.backgroundImage,
-          backgroundPosition: preview.backgroundPosition,
-          backgroundSize: preview.backgroundSize,
-        },
-        value,
-      };
-    });
+        previewStyle: backgroundPreview({ kind: "preset", preset: value }),
+        value: { kind: "preset", preset: value },
+      })),
+    },
+    {
+      label: "渐变",
+      options: optionValues.gradient.map((value) => ({
+        label: gradientLabels[value],
+        previewStyle: backgroundPreview({ gradient: value, kind: "gradient" }),
+        value: { gradient: value, kind: "gradient" },
+      })),
+    },
+    {
+      label: "图案",
+      options: optionValues.pattern.map((value) => ({
+        label: patternLabels[value],
+        previewStyle: backgroundPreview({ kind: "pattern", pattern: value }),
+        value: { kind: "pattern", pattern: value },
+      })),
+    },
+  ];
 
   return (
     <div className="space-y-4">
@@ -166,9 +207,9 @@ export const ConfiguratorContent = () => {
           onReset={() => resetConfigurationField("background")}
         >
           <BackgroundPicker
+            groups={backgroundGroups}
             labelledBy={fieldLabelIds.background}
             onChange={setBackground}
-            options={backgroundOptions}
             value={configuration.background}
           />
         </ConfigurationField>

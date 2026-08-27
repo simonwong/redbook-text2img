@@ -70,7 +70,9 @@ describe("Style System Interface", () => {
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "snug", "normal", "relaxed", "spacious"],
       fontId: ["sans", "serif"],
+      gradient: ["warm-light", "cool-light", "pink-light", "ocean", "forest"],
       headingDecoration: ["none", "underline", "wavy", "highlight"],
+      pattern: ["dots", "grid", "diagonal"],
     });
   });
 
@@ -228,6 +230,9 @@ describe("Style System Interface", () => {
     { color: "url(https://example.com/image.png)", kind: "solid" },
     { kind: "preset", preset: "https://example.com/image.png" },
     { kind: "preset", preset: "linear-gradient(red, blue)" },
+    { kind: "gradient", gradient: "neon-party" },
+    { kind: "gradient", gradient: "https://example.com/x.css" },
+    { kind: "pattern", pattern: "remote-image" },
     "#ffffff",
   ])("拒绝非法背景配置 %#", (background) => {
     expect(
@@ -251,6 +256,110 @@ describe("Style System Interface", () => {
       styleSystem.read(styleSystem.hydrate({ currentThemeId: themeId }))
         .configuration.background
     ).toEqual(background);
+  });
+
+  it.each([
+    { gradient: "warm-light", kind: "gradient" },
+    { gradient: "cool-light", kind: "gradient" },
+    { gradient: "pink-light", kind: "gradient" },
+    { gradient: "ocean", kind: "gradient" },
+    { gradient: "forest", kind: "gradient" },
+    { kind: "pattern", pattern: "dots" },
+    { kind: "pattern", pattern: "grid" },
+    { kind: "pattern", pattern: "diagonal" },
+  ] as const)("受控背景 %# 可识别并单项恢复", (background) => {
+    const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { background },
+      type: "update-configuration",
+    });
+    const reset = styleSystem.transition(modified, {
+      field: "background",
+      type: "reset-field",
+    });
+
+    expect(styleSystem.read(modified).overridden.background).toBe(true);
+    expect(modified.overrides.background).toEqual(background);
+    expect(
+      styleSystem.hydrate({
+        currentThemeId: "clean-light",
+        overrides: modified.overrides,
+      }).overrides.background
+    ).toEqual(background);
+    expect(styleSystem.read(reset).overridden.background).toBe(false);
+  });
+
+  it("选回主题默认背景时删除对应覆盖", () => {
+    const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { background: { gradient: "forest", kind: "gradient" } },
+      type: "update-configuration",
+    });
+
+    expect(
+      styleSystem.transition(modified, {
+        patch: { background: { kind: "preset", preset: "clean-light" } },
+        type: "update-configuration",
+      }).overrides
+    ).toEqual({});
+  });
+
+  it("受控渐变背景生成渐变渲染样式", () => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { background: { gradient: "ocean", kind: "gradient" } },
+      type: "update-configuration",
+    });
+    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+
+    expect(String(styles.container.backgroundImage)).toContain(
+      "linear-gradient"
+    );
+    expect(styles.container.backgroundSize).toBe("cover");
+    expect(styles.container.backgroundRepeat).toBeUndefined();
+    // 受控渐变全部是浅色基调，正文保持深色可读
+    expect(styles.p.color).toBe("#000000");
+  });
+
+  it("受控图案背景生成平铺渲染样式", () => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { background: { kind: "pattern", pattern: "dots" } },
+      type: "update-configuration",
+    });
+    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+
+    expect(String(styles.container.backgroundImage)).toContain(
+      "data:image/svg+xml"
+    );
+    expect(styles.container.backgroundRepeat).toBe("repeat");
+    expect(styles.container.backgroundSize).toBe("16px 16px");
+    // 图案铺在浅色底上，正文保持深色可读
+    expect(styles.p.color).toBe("#000000");
+  });
+
+  it("受控渐变与图案背景在导出审计中保持安全", () => {
+    for (const background of [
+      { gradient: "warm-light", kind: "gradient" },
+      { kind: "pattern", pattern: "grid" },
+    ] as const) {
+      const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { background },
+        type: "update-configuration",
+      });
+      const styles = styleSystem.resolve(state, { page: "body" }).styles;
+
+      for (const style of Object.values(styles)) {
+        if (typeof style !== "object" || style === null) {
+          continue;
+        }
+        for (const value of Object.values(style)) {
+          if (typeof value !== "string") {
+            continue;
+          }
+          expect(value).not.toMatch(unsafeCssValuePattern);
+          if (value.includes("url(")) {
+            expect(value).toContain("data:image/");
+          }
+        }
+      }
+    }
   });
 
   it.each([

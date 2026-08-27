@@ -10,6 +10,10 @@
 // ============================================================
 
 export interface BackgroundStyle {
+  /** image 类型的平铺方式（受控图案背景）；缺省不平铺 */
+  repeat?: "repeat";
+  /** image 类型的铺放尺寸（受控图案背景）；缺省 cover */
+  size?: string;
   type: "solid" | "gradient" | "image";
   value: string;
 }
@@ -22,9 +26,22 @@ export type BackgroundPreset =
   | "cool-mist"
   | "cherry-cream";
 
+/** 受控渐变背景选项（封闭集合，全部浅色基调） */
+export type GradientPreset =
+  | "warm-light"
+  | "cool-light"
+  | "pink-light"
+  | "ocean"
+  | "forest";
+
+/** 受控图案背景选项（封闭集合，内联 SVG 平铺在浅色底上） */
+export type PatternPreset = "dots" | "grid" | "diagonal";
+
 export type CanvasBackground =
   | { readonly kind: "preset"; readonly preset: BackgroundPreset }
-  | { readonly color: string; readonly kind: "solid" };
+  | { readonly color: string; readonly kind: "solid" }
+  | { readonly gradient: GradientPreset; readonly kind: "gradient" }
+  | { readonly kind: "pattern"; readonly pattern: PatternPreset };
 
 export interface TypographyStyle {
   baseFontSize: number; // 12-18
