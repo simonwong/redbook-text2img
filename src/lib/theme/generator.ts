@@ -141,11 +141,19 @@ export function generateStyles(
 
   // Background style (handles solid, gradient, image)
   // Use backgroundImage instead of background shorthand to avoid conflicts with backgroundSize/backgroundPosition
+  // image 类背景（受控图案）可携带自己的 size/repeat，缺省保持 cover 居中
   let backgroundStyle: CSSProperties;
   if (style.background.type === "solid") {
     backgroundStyle = { backgroundColor: style.background.value };
   } else if (style.background.type === "image") {
-    backgroundStyle = { backgroundImage: `url(${style.background.value})` };
+    backgroundStyle = {
+      // data-URI 含未编码的单引号，必须加双引号包裹才是合法 url()
+      // （与下方波浪标题装饰的 encodeURIComponent 用法一致）
+      backgroundImage: `url("${style.background.value}")`,
+      ...(style.background.repeat && {
+        backgroundRepeat: style.background.repeat,
+      }),
+    };
   } else {
     backgroundStyle = { backgroundImage: style.background.value };
   }
@@ -177,7 +185,7 @@ export function generateStyles(
       height: "500px",
       minHeight: "500px",
       ...backgroundStyle,
-      backgroundSize: "cover",
+      backgroundSize: style.background.size ?? "cover",
       backgroundPosition: "center",
       borderRadius: "12px",
       overflow: "hidden",

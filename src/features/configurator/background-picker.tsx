@@ -1,20 +1,25 @@
 import type { CSSProperties } from "react";
 import type { StyleConfiguration } from "@/lib/style-system/style-system";
+import { canvasBackgroundsEqual } from "@/lib/theme";
 import { ThumbnailChoice } from "./thumbnail-choice";
 
 type BackgroundChoice = StyleConfiguration["background"];
-type BackgroundPreset = Extract<BackgroundChoice, { kind: "preset" }>["preset"];
 
 export interface BackgroundOption {
   label: string;
   previewStyle: CSSProperties;
-  value: BackgroundPreset;
+  value: BackgroundChoice;
+}
+
+export interface BackgroundOptionGroup {
+  label: string;
+  options: readonly BackgroundOption[];
 }
 
 interface BackgroundPickerProps {
+  groups: readonly BackgroundOptionGroup[];
   labelledBy: string;
   onChange: (background: BackgroundChoice) => void;
-  options: readonly BackgroundOption[];
   value: BackgroundChoice;
 }
 
@@ -22,9 +27,9 @@ const defaultSolidColor = "#ffffff";
 const solidColorDescriptionId = "solid-background-color-description";
 
 export const BackgroundPicker = ({
+  groups,
   labelledBy,
   onChange,
-  options,
   value,
 }: BackgroundPickerProps) => {
   const solidColor = value.kind === "solid" ? value.color : defaultSolidColor;
@@ -33,33 +38,45 @@ export const BackgroundPicker = ({
   return (
     <fieldset
       aria-labelledby={labelledBy}
-      className="m-0 grid min-w-0 grid-cols-3 gap-2 border-0 p-0"
+      className="m-0 min-w-0 space-y-3 border-0 p-0"
     >
-      {options.map((option) => (
-        <ThumbnailChoice
-          active={value.kind === "preset" && value.preset === option.value}
-          key={option.value}
-          label={option.label}
-          onSelect={() => onChange({ kind: "preset", preset: option.value })}
-          preview={
-            <span className="block size-full" style={option.previewStyle} />
-          }
-        />
+      {groups.map((group) => (
+        <div key={group.label}>
+          <p className="mb-1.5 text-muted-foreground text-xs">{group.label}</p>
+          <div className="grid grid-cols-3 gap-2">
+            {group.options.map((option) => (
+              <ThumbnailChoice
+                active={canvasBackgroundsEqual(value, option.value)}
+                key={option.label}
+                label={option.label}
+                onSelect={() => onChange(option.value)}
+                preview={
+                  <span
+                    className="block size-full"
+                    style={option.previewStyle}
+                  />
+                }
+              />
+            ))}
+          </div>
+        </div>
       ))}
 
-      <ThumbnailChoice
-        active={isSolid}
-        label="纯色"
-        onSelect={() => onChange({ color: solidColor, kind: "solid" })}
-        preview={
-          <span
-            className="block size-full"
-            style={{ backgroundColor: solidColor }}
-          />
-        }
-      />
+      <div className="grid grid-cols-3 gap-2">
+        <ThumbnailChoice
+          active={isSolid}
+          label="纯色"
+          onSelect={() => onChange({ color: solidColor, kind: "solid" })}
+          preview={
+            <span
+              className="block size-full"
+              style={{ backgroundColor: solidColor }}
+            />
+          }
+        />
+      </div>
 
-      <div className="col-span-3 flex min-h-14 items-center justify-between gap-3 rounded-lg border px-3">
+      <div className="flex min-h-14 items-center justify-between gap-3 rounded-lg border px-3">
         <div>
           <label
             className="font-medium text-xs"

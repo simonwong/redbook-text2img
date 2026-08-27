@@ -1,10 +1,20 @@
 import { applyAdjustments, resolveThemeDefaults } from "../theme/adjustments";
-import { backgroundPresetIds, canvasBackgroundsEqual } from "../theme/canvas";
+import {
+  backgroundPresetIds,
+  canvasBackgroundsEqual,
+  gradientPresetIds,
+  patternPresetIds,
+} from "../theme/canvas";
 import { fontPresets } from "../theme/fonts";
 import { resolveStyleFoundation } from "../theme/foundation";
 import { generateStyles } from "../theme/generator";
 import { defaultTheme, getThemeById, presetThemes } from "../theme/themes";
-import type { BackgroundPreset, CoverStyleOverride } from "../theme/types";
+import type {
+  BackgroundPreset,
+  CoverStyleOverride,
+  GradientPreset,
+  PatternPreset,
+} from "../theme/types";
 import type {
   RenderContext,
   ResolvedStyle,
@@ -45,7 +55,9 @@ const configurationOptions = {
   coverLayout: ["center-poster", "top-left", "bottom-left"],
   density: ["compact", "snug", "normal", "relaxed", "spacious"],
   fontId: fontPresets.map(({ id }) => id),
+  gradient: gradientPresetIds,
   headingDecoration: ["none", "underline", "wavy", "highlight"],
+  pattern: patternPresetIds,
 } satisfies StyleConfigurationOptions;
 
 const diffConfiguration = (
@@ -108,6 +120,8 @@ const coverLayouts = new Set<string>(configurationOptions.coverLayout);
 const backgroundPresets = new Set<string>(
   configurationOptions.backgroundPreset
 );
+const gradientPresets = new Set<string>(configurationOptions.gradient);
+const patternPresets = new Set<string>(configurationOptions.pattern);
 const fontIds = new Set<string>(configurationOptions.fontId);
 const headingDecorations = new Set<string>(
   configurationOptions.headingDecoration
@@ -142,6 +156,26 @@ const sanitizeBackground = (
     return {
       kind: "preset",
       preset: value.preset as BackgroundPreset,
+    };
+  }
+  if (
+    value.kind === "gradient" &&
+    typeof value.gradient === "string" &&
+    gradientPresets.has(value.gradient)
+  ) {
+    return {
+      gradient: value.gradient as GradientPreset,
+      kind: "gradient",
+    };
+  }
+  if (
+    value.kind === "pattern" &&
+    typeof value.pattern === "string" &&
+    patternPresets.has(value.pattern)
+  ) {
+    return {
+      kind: "pattern",
+      pattern: value.pattern as PatternPreset,
     };
   }
   if (

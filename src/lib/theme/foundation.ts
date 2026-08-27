@@ -264,12 +264,15 @@ const resolveProfile = (configuration: StyleAdjustments): FoundationProfile => {
       "warm-sun": "warm",
     }[configuration.background.preset] as FoundationProfile;
   }
-  if (configuration.background.color === "#fefcf3") {
-    return "reading";
+  if (configuration.background.kind === "solid") {
+    if (configuration.background.color === "#fefcf3") {
+      return "reading";
+    }
+    if (configuration.background.color === "#fbfbfb") {
+      return "apple";
+    }
   }
-  if (configuration.background.color === "#fbfbfb") {
-    return "apple";
-  }
+  // 受控渐变与图案背景统一回落到 clean 样式基础（浅色基调）
   return "clean";
 };
 

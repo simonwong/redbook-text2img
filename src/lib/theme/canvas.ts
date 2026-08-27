@@ -6,6 +6,8 @@ import type {
   BackgroundStyle,
   CanvasBackground,
   FullStyle,
+  GradientPreset,
+  PatternPreset,
   SurfaceStyle,
 } from "./types";
 
@@ -24,6 +26,20 @@ export const backgroundPresetIds: readonly BackgroundPreset[] = [
   "warm-sun",
   "cool-mist",
   "cherry-cream",
+];
+
+export const gradientPresetIds: readonly GradientPreset[] = [
+  "warm-light",
+  "cool-light",
+  "pink-light",
+  "ocean",
+  "forest",
+];
+
+export const patternPresetIds: readonly PatternPreset[] = [
+  "dots",
+  "grid",
+  "diagonal",
 ];
 
 const backgroundDefinitions: Record<BackgroundPreset, BackgroundDefinition> = {
@@ -53,6 +69,72 @@ const backgroundDefinitions: Record<BackgroundPreset, BackgroundDefinition> = {
   },
 };
 
+const gradientDefinitions: Record<GradientPreset, BackgroundDefinition> = {
+  "cool-light": {
+    background: { type: "gradient", value: gradients.coolLight },
+    tone: "light",
+  },
+  forest: {
+    background: { type: "gradient", value: gradients.forest },
+    tone: "light",
+  },
+  ocean: {
+    background: { type: "gradient", value: gradients.ocean },
+    tone: "light",
+  },
+  "pink-light": {
+    background: { type: "gradient", value: gradients.pinkLight },
+    tone: "light",
+  },
+  "warm-light": {
+    background: { type: "gradient", value: gradients.warmLight },
+    tone: "light",
+  },
+};
+
+/**
+ * 受控图案：内联 SVG data-URI 平铺在浅色底上，细线低对比，不抢内容。
+ * SVG 必须显式 width/height：html2canvas-pro 按内在尺寸栅格化背景图。
+ */
+const patternSvg = (svg: string): string =>
+  `data:image/svg+xml,${encodeURIComponent(svg)}`;
+
+const patternDefinitions: Record<PatternPreset, BackgroundDefinition> = {
+  diagonal: {
+    background: {
+      repeat: "repeat",
+      size: "12px 12px",
+      type: "image",
+      value: patternSvg(
+        "<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><rect width='12' height='12' fill='#f8fafc'/><path d='M0 12 L12 0' stroke='#e2e8f0' stroke-width='1'/></svg>"
+      ),
+    },
+    tone: "light",
+  },
+  dots: {
+    background: {
+      repeat: "repeat",
+      size: "16px 16px",
+      type: "image",
+      value: patternSvg(
+        "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='16' height='16' fill='#fafafa'/><circle cx='8' cy='8' r='1' fill='#d6d9de'/></svg>"
+      ),
+    },
+    tone: "light",
+  },
+  grid: {
+    background: {
+      repeat: "repeat",
+      size: "16px 16px",
+      type: "image",
+      value: patternSvg(
+        "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='16' height='16' fill='#fafafa'/><path d='M0 0.5 H16 M0.5 0 V16' stroke='#e5e7eb' stroke-width='1'/></svg>"
+      ),
+    },
+    tone: "light",
+  },
+};
+
 const lightSurface: SurfaceStyle = {
   background: "#ffffff",
   borderRadius: 16,
@@ -72,26 +154,60 @@ const getSolidTone = (color: string): Tone =>
 
 const getBackgroundDefinition = (
   choice: CanvasBackground
-): BackgroundDefinition =>
-  choice.kind === "preset"
-    ? backgroundDefinitions[choice.preset]
-    : {
-        background: { type: "solid", value: choice.color },
-        tone: getSolidTone(choice.color),
-      };
+): BackgroundDefinition => {
+  if (choice.kind === "preset") {
+    return backgroundDefinitions[choice.preset];
+  }
+  if (choice.kind === "gradient") {
+    return gradientDefinitions[choice.gradient];
+  }
+  if (choice.kind === "pattern") {
+    return patternDefinitions[choice.pattern];
+  }
+  return {
+    background: { type: "solid", value: choice.color },
+    tone: getSolidTone(choice.color),
+  };
+};
 
-export const resolveCanvasBackground = (
+const findDefinitionId = <Id extends string>(
+  definitions: Record<Id, BackgroundDefinition>,
+  ids: readonly Id[],
   background: BackgroundStyle
-): CanvasBackground => {
-  const preset = backgroundPresetIds.find((id) => {
-    const candidate = backgroundDefinitions[id].background;
+): Id | undefined =>
+  ids.find((id) => {
+    const candidate = definitions[id].background;
     return (
       candidate.type === background.type && candidate.value === background.value
     );
   });
 
+export const resolveCanvasBackground = (
+  background: BackgroundStyle
+): CanvasBackground => {
+  const preset = findDefinitionId(
+    backgroundDefinitions,
+    backgroundPresetIds,
+    background
+  );
   if (preset) {
     return { kind: "preset", preset };
+  }
+  const gradient = findDefinitionId(
+    gradientDefinitions,
+    gradientPresetIds,
+    background
+  );
+  if (gradient) {
+    return { gradient, kind: "gradient" };
+  }
+  const pattern = findDefinitionId(
+    patternDefinitions,
+    patternPresetIds,
+    background
+  );
+  if (pattern) {
+    return { kind: "pattern", pattern };
   }
   if (background.type === "solid" && hexColorPattern.test(background.value)) {
     return { color: background.value.toLowerCase(), kind: "solid" };
@@ -108,6 +224,12 @@ export const canvasBackgroundsEqual = (
   }
   if (first.kind === "solid" && second.kind === "solid") {
     return first.color === second.color;
+  }
+  if (first.kind === "gradient" && second.kind === "gradient") {
+    return first.gradient === second.gradient;
+  }
+  if (first.kind === "pattern" && second.kind === "pattern") {
+    return first.pattern === second.pattern;
   }
   return false;
 };
