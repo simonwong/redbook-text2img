@@ -139,15 +139,19 @@ export const typography = {
   },
 
   fontSize: {
-    compact: 15,
-    balanced: 16,
-    spacious: 17.5,
+    compact: 14,
+    snug: 15,
+    normal: 16,
+    relaxed: 17.5,
+    spacious: 19,
   },
 
   lineHeight: {
-    compact: 1.58,
-    balanced: 1.65,
-    spacious: 1.72,
+    compact: 1.5,
+    snug: 1.58,
+    normal: 1.65,
+    relaxed: 1.72,
+    spacious: 1.8,
   },
 
   fontWeight: {
@@ -159,7 +163,7 @@ export const typography = {
 
   // Heading scale multipliers (relative to base font size)
   headingScale: {
-    h1: 1.625, // ×密度 baseFontSize（如 balanced 16px → 26px）
+    h1: 1.625, // ×密度 baseFontSize（如 normal 16px → 26px）
     h2: 1.25,
     h3: 1.125,
     h4: 1,
@@ -174,20 +178,26 @@ export const typography = {
 
 export const spacing = {
   padding: {
-    compact: 20,
-    balanced: 24,
-    spacious: 28,
+    compact: 16,
+    snug: 20,
+    normal: 24,
+    relaxed: 28,
+    spacious: 32,
   },
 
   paragraphGap: {
-    compact: 16,
-    balanced: 20,
-    spacious: 26,
+    compact: 12,
+    snug: 16,
+    normal: 20,
+    relaxed: 26,
+    spacious: 32,
   },
 
   headingGap: {
-    compact: 14,
-    balanced: 16,
-    spacious: 20,
+    compact: 12,
+    snug: 14,
+    normal: 16,
+    relaxed: 20,
+    spacious: 24,
   },
 } as const;

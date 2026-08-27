@@ -52,12 +52,12 @@ test("内嵌设置栏不撑高文档，点击单选控件页面不滚动", async
   await expectNoVerticalOverflow();
 
   // 点击分段控件与字体单选（label 触发，真实用户路径）
-  await page.locator("label", { hasText: "舒展" }).first().click();
+  await page.locator("label", { hasText: "宽松" }).first().click();
   await page
     .locator("label", { hasText: "衬线" })
     .filter({ hasNotText: "无衬线" })
     .click();
-  await expect(page.getByRole("radio", { name: "舒展" })).toBeChecked();
+  await expect(page.getByRole("radio", { name: "宽松" })).toBeChecked();
   await expect(
     page.getByRole("radio", { name: "衬线", exact: true })
   ).toBeChecked();
