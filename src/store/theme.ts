@@ -19,7 +19,6 @@ interface ContentThemeState extends StyleSystemState {
   setBodyHeadingAlignment: (
     alignment: StyleConfiguration["bodyHeadingAlignment"]
   ) => void;
-  setBodyHeadingSize: (size: StyleConfiguration["bodyHeadingSize"]) => void;
   setContentSurface: (
     contentSurface: StyleConfiguration["contentSurface"]
   ) => void;
@@ -82,10 +81,6 @@ export const useContentThemeStore = create<ContentThemeState>()(
           setBodyHeadingAlignment: (
             bodyHeadingAlignment: StyleConfiguration["bodyHeadingAlignment"]
           ) => updateConfiguration({ bodyHeadingAlignment }),
-
-          setBodyHeadingSize: (
-            bodyHeadingSize: StyleConfiguration["bodyHeadingSize"]
-          ) => updateConfiguration({ bodyHeadingSize }),
 
           setContentSurface: (
             contentSurface: StyleConfiguration["contentSurface"]

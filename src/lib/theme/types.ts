@@ -151,8 +151,6 @@ export type Density = "compact" | "balanced" | "spacious";
 /** 标题对齐方式 */
 export type HeadingAlignment = "left" | "center";
 
-export type BodyHeadingSize = "small" | "medium" | "large";
-
 export type CoverLayout = "center-poster" | "top-left" | "bottom-left";
 
 /** 标题装饰用户选项（四值封闭集合，每个取值都有明确含义） */
@@ -166,7 +164,6 @@ export type HeadingDecorationChoice =
 export interface StyleAdjustments {
   readonly background: CanvasBackground;
   readonly bodyHeadingAlignment: HeadingAlignment;
-  readonly bodyHeadingSize: BodyHeadingSize;
   readonly contentSurface: ContentSurface;
   readonly coverLayout: CoverLayout;
   /** 标题装饰颜色（hex） */

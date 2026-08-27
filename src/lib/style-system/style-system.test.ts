@@ -22,7 +22,6 @@ const contrastRatio = (first: string, second: string): number => {
 
 const headingOverrideCases = [
   ["bodyHeadingAlignment", "left"],
-  ["bodyHeadingSize", "large"],
   ["headingDecoration", "wavy"],
   ["decorationColor", "#e64f7a"],
 ] as const;
@@ -68,7 +67,6 @@ describe("Style System Interface", () => {
         "cherry-cream",
       ],
       bodyHeadingAlignment: ["center", "left"],
-      bodyHeadingSize: ["small", "medium", "large"],
       contentSurface: ["none", "floating-card", "notebook"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "balanced", "spacious"],
@@ -84,13 +82,13 @@ describe("Style System Interface", () => {
     expect(configuration).toMatchObject({
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
-      bodyHeadingSize: "medium",
       contentSurface: "none",
       coverLayout: "center-poster",
       decorationColor: "#64748b",
       headingDecoration: "none",
     });
     expect(configuration).not.toHaveProperty("accentColor");
+    expect(configuration).not.toHaveProperty("bodyHeadingSize");
     expect(configuration).not.toHaveProperty("headingAlignment");
   });
 
@@ -140,7 +138,6 @@ describe("Style System Interface", () => {
       overridden: {
         background: false,
         bodyHeadingAlignment: false,
-        bodyHeadingSize: false,
         contentSurface: false,
         coverLayout: false,
         decorationColor: false,
@@ -169,7 +166,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
-        bodyHeadingSize: "medium",
         contentSurface: "none",
         coverLayout: "center-poster",
         decorationColor: "#64748b",
@@ -215,7 +211,6 @@ describe("Style System Interface", () => {
             kind: "solid",
           },
           bodyHeadingAlignment: "right",
-          bodyHeadingSize: "huge",
           coverLayout: "freeform",
           decorationColor: "currentColor",
           density: "cramped",
@@ -436,24 +431,39 @@ describe("Style System Interface", () => {
   it("主题升级时采用新默认值并保留用户覆盖", () => {
     const state = styleSystem.hydrate({
       currentThemeId: "gradient-warm",
-      overrides: { bodyHeadingSize: "small" },
+      overrides: { fontId: "serif" },
     });
     const snapshot = styleSystem.read(state);
 
     expect(snapshot.configuration).toMatchObject({
-      bodyHeadingSize: "small",
       contentSurface: "floating-card",
       coverLayout: "center-poster",
       density: "balanced",
+      fontId: "serif",
       headingDecoration: "highlight",
     });
     expect(snapshot.overridden).toMatchObject({
-      bodyHeadingSize: true,
       contentSurface: false,
       coverLayout: false,
       density: false,
+      fontId: true,
       headingDecoration: false,
     });
+  });
+
+  it("丢弃已移除的正文标题大小覆盖并保留其他字段", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "gradient-warm",
+      overrides: { bodyHeadingSize: "small", density: "compact" },
+    });
+
+    expect(state).toEqual({
+      currentThemeId: "gradient-warm",
+      overrides: { density: "compact" },
+    });
+    expect(styleSystem.read(state).configuration).not.toHaveProperty(
+      "bodyHeadingSize"
+    );
   });
 
   it("相同有效配置不受主题 ID 影响", () => {
@@ -495,18 +505,18 @@ describe("Style System Interface", () => {
     const changedCover = styleSystem.resolve(changedState, { page: "cover" });
 
     expect({
-      bodyHeadingSize: changedBody.styles.h1.fontSize,
+      bodyHeadingFontSize: changedBody.styles.h1.fontSize,
       bodyLetterSpacing: changedBody.styles.h1.letterSpacing,
       bodyWeight: changedBody.styles.h1.fontWeight,
-      coverHeadingSize: changedCover.styles.h1.fontSize,
+      coverHeadingFontSize: changedCover.styles.h1.fontSize,
       fontFamily: changedBody.styles.container.fontFamily,
       fontSize: changedBody.styles.container.fontSize,
       headerBar: changedBody.headerBar,
     }).toEqual({
-      bodyHeadingSize: originalBody.styles.h1.fontSize,
+      bodyHeadingFontSize: originalBody.styles.h1.fontSize,
       bodyLetterSpacing: originalBody.styles.h1.letterSpacing,
       bodyWeight: originalBody.styles.h1.fontWeight,
-      coverHeadingSize: originalCover.styles.h1.fontSize,
+      coverHeadingFontSize: originalCover.styles.h1.fontSize,
       fontFamily: originalBody.styles.container.fontFamily,
       fontSize: originalBody.styles.container.fontSize,
       headerBar: originalBody.headerBar,
@@ -537,7 +547,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
-        bodyHeadingSize: "medium",
         contentSurface: "none",
         coverLayout: "top-left",
         decorationColor: "#44403c",
@@ -570,7 +579,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
-        bodyHeadingSize: "medium",
         contentSurface: "none",
         coverLayout: "top-left",
         decorationColor: "#44403c",
@@ -609,7 +617,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
-        bodyHeadingSize: "medium",
         contentSurface: "none",
         coverLayout: "center-poster",
         decorationColor: "#64748b",
@@ -641,7 +648,6 @@ describe("Style System Interface", () => {
       configuration: {
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
-        bodyHeadingSize: "medium",
         contentSurface: "none",
         coverLayout: "top-left",
         decorationColor: "#44403c",
@@ -678,15 +684,19 @@ describe("Style System Interface", () => {
     const cover = styleSystem.resolve(state, { page: "cover" });
 
     expect({
-      bodyHeadingSize: body.styles.h1.fontSize,
+      bodyHeadingFontSize: body.styles.h1.fontSize,
       bodyVerticalAlign: body.styles.content.justifyContent,
-      coverHeadingSize: cover.styles.h1.fontSize,
+      coverHeadingFontSize: cover.styles.h1.fontSize,
       coverVerticalAlign: cover.styles.content.justifyContent,
+      coverWeight: cover.styles.h1.fontWeight,
+      strongWeight: body.styles.strong.fontWeight,
     }).toEqual({
-      bodyHeadingSize: "1.625em",
+      bodyHeadingFontSize: "1.625em",
       bodyVerticalAlign: "flex-start",
-      coverHeadingSize: "2.03125em",
+      coverHeadingFontSize: "2.03125em",
       coverVerticalAlign: "center",
+      coverWeight: 600,
+      strongWeight: 600,
     });
   });
 
@@ -709,31 +719,6 @@ describe("Style System Interface", () => {
       backgroundColor: body.container.backgroundColor,
       innerContainer: body.innerContainer,
       padding: body.container.padding,
-    });
-  });
-
-  it.each([
-    ["small", "1.421875em"],
-    ["medium", "1.625em"],
-    ["large", "1.828125em"],
-  ] as const)("正文标题大小 %s 只改变正文", (bodyHeadingSize, fontSize) => {
-    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
-      patch: { bodyHeadingSize },
-      type: "update-configuration",
-    });
-
-    expect({
-      body: styleSystem.resolve(state, { page: "body" }).styles.h1.fontSize,
-      cover: styleSystem.resolve(state, { page: "cover" }).styles.h1.fontSize,
-      coverWeight: styleSystem.resolve(state, { page: "cover" }).styles.h1
-        .fontWeight,
-      strongWeight: styleSystem.resolve(state, { page: "body" }).styles.strong
-        .fontWeight,
-    }).toEqual({
-      body: fontSize,
-      cover: "2.03125em",
-      coverWeight: 600,
-      strongWeight: 600,
     });
   });
 

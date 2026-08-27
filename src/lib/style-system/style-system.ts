@@ -42,7 +42,6 @@ const hexColorPattern = /^#[\da-f]{6}$/i;
 const configurationOptions = {
   backgroundPreset: backgroundPresetIds,
   bodyHeadingAlignment: ["center", "left"],
-  bodyHeadingSize: ["small", "medium", "large"],
   contentSurface: ["none", "floating-card", "notebook"],
   coverLayout: ["center-poster", "top-left", "bottom-left"],
   density: ["compact", "balanced", "spacious"],
@@ -71,9 +70,6 @@ const diffConfiguration = (
     themeConfiguration.bodyHeadingAlignment
   ) {
     overrides.bodyHeadingAlignment = configuration.bodyHeadingAlignment;
-  }
-  if (configuration.bodyHeadingSize !== themeConfiguration.bodyHeadingSize) {
-    overrides.bodyHeadingSize = configuration.bodyHeadingSize;
   }
   if (configuration.contentSurface !== themeConfiguration.contentSurface) {
     overrides.contentSurface = configuration.contentSurface;
@@ -112,7 +108,6 @@ const cloneConfiguration = (
 const bodyHeadingAlignments = new Set<string>(
   configurationOptions.bodyHeadingAlignment
 );
-const bodyHeadingSizes = new Set<string>(configurationOptions.bodyHeadingSize);
 const contentSurfaces = new Set<string>(configurationOptions.contentSurface);
 const coverLayouts = new Set<string>(configurationOptions.coverLayout);
 const backgroundPresets = new Set<string>(
@@ -201,13 +196,6 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
       ? {
           bodyHeadingAlignment:
             bodyHeadingAlignment as StyleConfiguration["bodyHeadingAlignment"],
-        }
-      : {}),
-    ...(typeof value.bodyHeadingSize === "string" &&
-    bodyHeadingSizes.has(value.bodyHeadingSize)
-      ? {
-          bodyHeadingSize:
-            value.bodyHeadingSize as StyleConfiguration["bodyHeadingSize"],
         }
       : {}),
     ...(typeof value.contentSurface === "string" &&
@@ -348,7 +336,6 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
     overridden: {
       background: "background" in state.overrides,
       bodyHeadingAlignment: "bodyHeadingAlignment" in state.overrides,
-      bodyHeadingSize: "bodyHeadingSize" in state.overrides,
       contentSurface: "contentSurface" in state.overrides,
       coverLayout: "coverLayout" in state.overrides,
       decorationColor: "decorationColor" in state.overrides,

@@ -199,6 +199,26 @@ describe("content theme store", () => {
     );
   });
 
+  it("刷新时丢弃已移除的正文标题大小覆盖并保留其他字段", async () => {
+    storage.setItem(
+      "redbook-content-theme",
+      JSON.stringify({
+        state: {
+          currentThemeId: "clean-light",
+          overrides: { bodyHeadingSize: "large", density: "compact" },
+        },
+        version: 6,
+      })
+    );
+    vi.resetModules();
+
+    const reloadedStores = await import("./theme");
+
+    expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual({
+      density: "compact",
+    });
+  });
+
   it("主题切换和重置不修改卡片标记", () => {
     const watermarkStore = stores.useWatermarkStore;
     watermarkStore.getState().setSignature("@simon");

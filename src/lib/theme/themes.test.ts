@@ -9,7 +9,6 @@ const firstFourConfigurations = {
   "clean-dark": {
     background: { kind: "preset", preset: "night-aurora" },
     bodyHeadingAlignment: "left",
-    bodyHeadingSize: "medium",
     contentSurface: "none",
     coverLayout: "bottom-left",
     decorationColor: "#a78bfa",
@@ -20,7 +19,6 @@ const firstFourConfigurations = {
   "clean-light": {
     background: { kind: "preset", preset: "clean-light" },
     bodyHeadingAlignment: "center",
-    bodyHeadingSize: "medium",
     contentSurface: "none",
     coverLayout: "center-poster",
     decorationColor: "#64748b",
@@ -31,7 +29,6 @@ const firstFourConfigurations = {
   "gradient-warm": {
     background: { kind: "preset", preset: "warm-sun" },
     bodyHeadingAlignment: "center",
-    bodyHeadingSize: "large",
     contentSurface: "floating-card",
     coverLayout: "center-poster",
     decorationColor: "#f4b76a",
@@ -42,7 +39,6 @@ const firstFourConfigurations = {
   "trianglify-minimalist": {
     background: { kind: "preset", preset: "trianglify-gray" },
     bodyHeadingAlignment: "left",
-    bodyHeadingSize: "large",
     contentSurface: "floating-card",
     coverLayout: "top-left",
     decorationColor: "#334155",
@@ -56,7 +52,6 @@ const secondFourConfigurations = {
   "apple-notes": {
     background: { color: "#fbfbfb", kind: "solid" },
     bodyHeadingAlignment: "left",
-    bodyHeadingSize: "medium",
     contentSurface: "notebook",
     coverLayout: "top-left",
     decorationColor: "#1d1d1f",
@@ -67,7 +62,6 @@ const secondFourConfigurations = {
   "gradient-cool": {
     background: { kind: "preset", preset: "cool-mist" },
     bodyHeadingAlignment: "center",
-    bodyHeadingSize: "medium",
     contentSurface: "none",
     coverLayout: "center-poster",
     decorationColor: "#1a3556",
@@ -78,7 +72,6 @@ const secondFourConfigurations = {
   "reading-mode": {
     background: { color: "#fefcf3", kind: "solid" },
     bodyHeadingAlignment: "left",
-    bodyHeadingSize: "medium",
     contentSurface: "none",
     coverLayout: "top-left",
     decorationColor: "#44403c",
@@ -89,7 +82,6 @@ const secondFourConfigurations = {
   "xiaohongshu-pink": {
     background: { kind: "preset", preset: "cherry-cream" },
     bodyHeadingAlignment: "center",
-    bodyHeadingSize: "medium",
     contentSurface: "none",
     coverLayout: "center-poster",
     decorationColor: "#b42355",

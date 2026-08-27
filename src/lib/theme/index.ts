@@ -35,7 +35,6 @@ export {
 export { colors, gradients, spacing, typography } from "./tokens";
 // Types
 export type {
-  BodyHeadingSize,
   CoverLayout,
   CoverStyleOverride,
   Density,

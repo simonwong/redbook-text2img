@@ -127,20 +127,14 @@ export function generateStyles(
 ): GeneratedStyles {
   const { baseFontSize, lineHeight } = style.typography;
   const { padding, paragraphGap, headingGap } = style.spacing;
-  const {
-    bodyHeadingAlignment,
-    bodyHeadingScale,
-    fontFamily,
-    headingScale,
-    letterSpacing,
-  } = style;
+  const { bodyHeadingAlignment, fontFamily, headingScale, letterSpacing } =
+    style;
   const coverStyle = options?.coverStyle;
   const surface = style.surface;
 
   // 封面标题对齐：优先使用 coverStyle 中的设置,覆盖用户调整
   const effectiveHeadingAlignment =
     coverStyle?.headingAlignment ?? bodyHeadingAlignment;
-  const contextualBodyHeadingScale = coverStyle ? 1 : bodyHeadingScale;
 
   // 封面 h1 额外放大乘数：仅封面（coverStyle 存在）时生效，只作用于 h1
   const coverHeadingScale = coverStyle?.headingScale ?? 1;
@@ -164,7 +158,7 @@ export function generateStyles(
     isDisplay = false,
     extraScale = 1
   ): CSSProperties => ({
-    fontSize: `${scale * (isDisplay ? headingScale : 1) * (useHeadingAlignment ? contextualBodyHeadingScale : 1) * extraScale}em`,
+    fontSize: `${scale * (isDisplay ? headingScale : 1) * extraScale}em`,
     lineHeight: 1.2,
     fontWeight: style.heading.fontWeight,
     marginBottom: `${headingGap / baseFontSize}em`,

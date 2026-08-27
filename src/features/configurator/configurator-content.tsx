@@ -42,10 +42,6 @@ const bodyHeadingAlignmentLabels: Record<
   StyleConfiguration["bodyHeadingAlignment"],
   string
 > = { center: "居中", left: "左对齐" };
-const bodyHeadingSizeLabels: Record<
-  StyleConfiguration["bodyHeadingSize"],
-  string
-> = { large: "大", medium: "中", small: "小" };
 const densityLabels: Record<StyleConfiguration["density"], string> = {
   balanced: "均衡",
   compact: "紧凑",
@@ -69,10 +65,6 @@ const fontLabels: Record<string, string> = {
 const bodyHeadingAlignmentOptions = optionValues.bodyHeadingAlignment.map(
   (value) => ({ label: bodyHeadingAlignmentLabels[value], value })
 );
-const bodyHeadingSizeOptions = optionValues.bodyHeadingSize.map((value) => ({
-  label: bodyHeadingSizeLabels[value],
-  value,
-}));
 const densityOptions = optionValues.density.map((value) => ({
   label: densityLabels[value],
   value,
@@ -91,7 +83,6 @@ const headingDecorationOptions = optionValues.headingDecoration.map(
 const fieldLabelIds = {
   background: "background-label",
   bodyHeadingAlignment: "body-heading-alignment-label",
-  bodyHeadingSize: "body-heading-size-label",
   contentSurface: "content-surface-label",
   coverLayout: "cover-layout-label",
   decorationColor: "decoration-color-label",
@@ -118,7 +109,6 @@ export const ConfiguratorContent = () => {
     selectPresetTheme,
     setBackground,
     setBodyHeadingAlignment,
-    setBodyHeadingSize,
     setContentSurface,
     setCoverLayout,
     setDecorationColor,
@@ -279,23 +269,6 @@ export const ConfiguratorContent = () => {
             }
             options={bodyHeadingAlignmentOptions}
             value={configuration.bodyHeadingAlignment}
-          />
-        </ConfigurationField>
-
-        <ConfigurationField
-          isModified={overridden.bodyHeadingSize}
-          label="正文标题大小"
-          labelId={fieldLabelIds.bodyHeadingSize}
-          onReset={() => resetConfigurationField("bodyHeadingSize")}
-        >
-          <SegmentedControl
-            className="w-full"
-            labelledBy={fieldLabelIds.bodyHeadingSize}
-            onChange={(value) =>
-              setBodyHeadingSize(value as typeof configuration.bodyHeadingSize)
-            }
-            options={bodyHeadingSizeOptions}
-            value={configuration.bodyHeadingSize}
           />
         </ConfigurationField>
 
