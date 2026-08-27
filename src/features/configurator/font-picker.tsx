@@ -25,7 +25,7 @@ export const FontPicker = ({
     {options.map((option) => (
       <label
         className={cn(
-          "flex min-h-11 cursor-pointer items-center justify-center rounded-lg border px-3 font-medium text-muted-foreground text-xs transition-colors hover:border-muted-foreground/40 hover:text-foreground has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
+          "relative flex min-h-11 cursor-pointer items-center justify-center rounded-lg border px-3 font-medium text-muted-foreground text-xs transition-colors hover:border-muted-foreground/40 hover:text-foreground has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
           option.value === value &&
             "border-primary bg-primary/5 text-foreground ring-1 ring-primary"
         )}

@@ -72,7 +72,7 @@ export const DecorationColorPicker = ({
 
       <label
         className={cn(
-          "flex min-h-11 items-center justify-center rounded-md focus-within:ring-2 focus-within:ring-ring",
+          "relative flex min-h-11 items-center justify-center rounded-md focus-within:ring-2 focus-within:ring-ring",
           disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"
         )}
       >

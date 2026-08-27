@@ -32,7 +32,7 @@ export const SegmentedControl = ({
     {options.map((option) => (
       <label
         className={cn(
-          "flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-2 font-medium text-xs transition-all has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-inset",
+          "relative flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-2 font-medium text-xs transition-all has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-inset",
           option.value === value
             ? "bg-background text-foreground shadow-sm"
             : "text-muted-foreground hover:text-foreground"
