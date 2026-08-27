@@ -61,6 +61,12 @@ test("内嵌设置栏不撑高文档，点击单选控件页面不滚动", async
   await expect(
     page.getByRole("radio", { name: "衬线", exact: true })
   ).toBeChecked();
+  // 装饰颜色（先启用标题装饰，再点自定义颜色 label）
+  await page.locator("label", { hasText: "波浪" }).click();
+  await page
+    .locator("label", { has: page.locator('input[type="color"]') })
+    .last()
+    .click();
   await expectNoVerticalOverflow();
 });
 

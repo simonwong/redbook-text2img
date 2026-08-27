@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 const linearGradientPattern = /linear-gradient/;
 const radialGradientPattern = /radial-gradient/;
 const svgDataUriPattern = /url\("data:image\/svg\+xml/;
+const pngFilenamePattern = /\.png$/;
 
 test("选择受控背景后预览更新且刷新保持", async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 1200 });
@@ -51,4 +52,32 @@ test("选择受控背景后预览更新且刷新保持", async ({ page }) => {
       name: "方格",
     })
   ).toHaveAttribute("aria-pressed", "true");
+});
+
+test("渐变与图案背景导出 PNG 成功", async ({ page }) => {
+  await page.setViewportSize({ height: 900, width: 1200 });
+  await page.goto("/");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await page.getByRole("button", { name: "设置样式" }).click();
+  const backgroundSection = page.getByRole("region", { name: "背景" });
+
+  for (const name of ["海蓝", "圆点"]) {
+    await backgroundSection.getByRole("button", { name }).click();
+    const downloadPromise = page.waitForEvent("download", {
+      timeout: 30_000,
+    });
+    await page
+      .getByRole("button", { name: "导出", exact: true })
+      .first()
+      .click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(pngFilenamePattern);
+    const path = await download.path();
+    const { size } = await import("node:fs/promises").then((fs) =>
+      fs.stat(path)
+    );
+    // 非空图片（空白/失败导出通常只有几 KB）
+    expect(size).toBeGreaterThan(10_000);
+  }
 });
