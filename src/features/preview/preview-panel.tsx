@@ -235,6 +235,8 @@ export const PreviewPanel = ({
             className="group relative origin-top-left rounded-lg shadow-md ring-1 ring-black/5 dark:shadow-none dark:ring-white/10"
             style={{
               transform: scale < 1 ? `scale(${scale})` : undefined,
+              // 缩小时保持卡片完整布局宽度参与缩放，否则内层 overflow 会先把卡片裁短
+              width: scale < 1 ? PREVIEW_WIDTH : undefined,
               height: scale < 1 ? `${500 * scale}px` : undefined,
             }}
           >
