@@ -41,12 +41,6 @@ export const densityPresets: Record<Density, DensityValues> = {
   spacious: densityValues("spacious"),
 };
 
-const bodyHeadingScales: Record<StyleAdjustments["bodyHeadingSize"], number> = {
-  small: 0.875,
-  medium: 1,
-  large: 1.125,
-};
-
 // ============================================================
 // 默认调整值
 // ============================================================
@@ -54,7 +48,6 @@ const bodyHeadingScales: Record<StyleAdjustments["bodyHeadingSize"], number> = {
 export const defaultAdjustments: StyleAdjustments = {
   background: { kind: "preset", preset: "clean-light" },
   bodyHeadingAlignment: "center",
-  bodyHeadingSize: "medium",
   contentSurface: "none",
   coverLayout: "center-poster",
   decorationColor: "#111827",
@@ -124,7 +117,6 @@ export function applyAdjustments(
     },
     fontFamily,
     bodyHeadingAlignment: adjustments.bodyHeadingAlignment,
-    bodyHeadingScale: bodyHeadingScales[adjustments.bodyHeadingSize],
     headingScale: 1,
     letterSpacing: {},
   };
@@ -133,7 +125,6 @@ export function applyAdjustments(
 /** 应用调整后的完整样式类型 */
 export type AdjustedStyle = FullStyle & {
   bodyHeadingAlignment: StyleAdjustments["bodyHeadingAlignment"];
-  bodyHeadingScale: number;
   fontFamily: string;
   headingScale: number;
   letterSpacing: { body?: string; heading?: string };

@@ -33,7 +33,7 @@ _Avoid_: 自定义 CSS、背景代码、背景 URL
 _Avoid_: 内容背景色、卡片主题
 
 **正文标题（Body Heading）**：
-只出现在正文图片中的 Markdown 标题。正文标题对齐和大小不改变封面标题的位置或比例。
+只出现在正文图片中的 Markdown 标题。正文标题对齐不改变封面标题的位置。
 _Avoid_: 全局标题、封面标题
 
 **标题装饰（Heading Decoration）**：

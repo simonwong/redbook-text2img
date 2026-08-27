@@ -1,7 +1,6 @@
 import type { GeneratedStyles } from "../theme/generator";
 import type {
   BackgroundPreset,
-  BodyHeadingSize,
   CanvasBackground,
   ContentSurface,
   CoverLayout,
@@ -14,7 +13,6 @@ import type {
 export interface StyleConfiguration {
   readonly background: CanvasBackground;
   readonly bodyHeadingAlignment: HeadingAlignment;
-  readonly bodyHeadingSize: BodyHeadingSize;
   readonly contentSurface: ContentSurface;
   readonly coverLayout: CoverLayout;
   readonly decorationColor: string;
@@ -26,7 +24,6 @@ export interface StyleConfiguration {
 export interface StyleConfigurationOptions {
   readonly backgroundPreset: readonly BackgroundPreset[];
   readonly bodyHeadingAlignment: readonly StyleConfiguration["bodyHeadingAlignment"][];
-  readonly bodyHeadingSize: readonly StyleConfiguration["bodyHeadingSize"][];
   readonly contentSurface: readonly StyleConfiguration["contentSurface"][];
   readonly coverLayout: readonly StyleConfiguration["coverLayout"][];
   readonly density: readonly StyleConfiguration["density"][];
