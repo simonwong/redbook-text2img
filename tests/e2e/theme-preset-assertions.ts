@@ -16,7 +16,6 @@ export interface ThemeProfile {
   readonly bodyAlign: "center" | "left";
   readonly coverAlign: "center" | "left";
   readonly coverVerticalAlign: "center" | "flex-end" | "flex-start";
-  readonly decoration: "highlight" | "none" | "underline" | "wavy";
   readonly expectedSurface?: readonly [number, number, number];
   readonly fontFamily: RegExp;
   readonly fontSize: string;
@@ -27,8 +26,6 @@ export interface ThemeProfile {
 }
 
 const pngFilenamePattern = /\.png$/;
-const linearGradientPattern = /linear-gradient/;
-const urlPattern = /url\(/;
 const themeContent = `# 用完整配置做出稳定又漂亮的小红书图片 ✨
 
 一行副标题，也要清晰有力。
@@ -154,13 +151,6 @@ const backdropPoints: readonly NormalizedPoint[] = [
   { x: 0.88, y: 0.86 },
 ];
 
-const decorationPattern = (decoration: ThemeProfile["decoration"]) => {
-  if (decoration === "none") {
-    return "none";
-  }
-  return decoration === "wavy" ? urlPattern : linearGradientPattern;
-};
-
 export const assertThemePreset = async (
   page: Page,
   profile: ThemeProfile
@@ -194,10 +184,6 @@ export const assertThemePreset = async (
   await expect(preview.locator("h1")).toHaveCSS(
     "text-align",
     profile.coverAlign
-  );
-  await expect(preview.locator("h1 span")).toHaveCSS(
-    "background-image",
-    decorationPattern(profile.decoration)
   );
   await expect(inner.locator(":scope > div:first-child")).toHaveCSS(
     "justify-content",
@@ -316,30 +302,29 @@ export const assertThemePreset = async (
     expect(averageLuminance).toBeGreaterThan(0.65);
   }
 
-  const titlePoint = await preview.evaluate((element, decoration) => {
-    const title = element.querySelector("h2 span");
+  const titlePoint = await preview.evaluate((element) => {
+    const title = element.querySelector("h2");
     if (!title) {
-      throw new Error("Missing title span");
+      throw new Error("Missing title element");
+    }
+    // h2 是 100% 宽块级盒，容器几何中心可能落在文字之外（左对齐短行尤其如此），
+    // 改取首个文本行的 client rect，其中点必落在标题墨迹内，跨渲染器稳定。
+    const range = document.createRange();
+    range.selectNodeContents(title);
+    const firstLine = range.getClientRects()[0];
+    if (!firstLine) {
+      throw new Error("Missing title text box");
     }
     const previewRect = element.getBoundingClientRect();
-    const titleRect = title.getBoundingClientRect();
-    let verticalRatio = 0.5;
-    if (decoration === "highlight") {
-      verticalRatio = 0.75;
-    } else if (decoration === "underline") {
-      verticalRatio = 0.94;
-    } else if (decoration === "wavy") {
-      verticalRatio = 0.9;
-    }
     return {
       x:
-        (titleRect.left - previewRect.left + titleRect.width / 2) /
+        (firstLine.left - previewRect.left + firstLine.width / 2) /
         previewRect.width,
       y:
-        (titleRect.top - previewRect.top + titleRect.height * verticalRatio) /
+        (firstLine.top - previewRect.top + firstLine.height / 2) /
         previewRect.height,
     };
-  }, profile.decoration);
+  });
   const footerRegions = await preview.evaluate((element) => {
     const previewRect = element.getBoundingClientRect();
     const footer = element.lastElementChild?.lastElementChild;

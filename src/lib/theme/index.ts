@@ -25,7 +25,7 @@ export {
 } from "./fonts";
 export type { GeneratedStyles, GenerateStylesOptions } from "./generator";
 // Generator
-export { createHeadingDecoration, generateStyles } from "./generator";
+export { generateStyles } from "./generator";
 
 // Themes
 export {
@@ -43,7 +43,6 @@ export type {
   FullStyle,
   HeaderBarStyle,
   HeadingAlignment,
-  HeadingDecorationChoice,
   PresetTheme,
   StyleAdjustments,
   ThemeInternals,

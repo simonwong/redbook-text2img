@@ -5,12 +5,10 @@
 
 import { applyCanvasConfiguration } from "./canvas";
 import { defaultFontId, getFontFamily } from "./fonts";
-import { deriveDecoration } from "./heading-decoration";
 import { spacing, typography } from "./tokens";
 import type {
   Density,
   FullStyle,
-  HeadingDecoration,
   PresetTheme,
   StyleAdjustments,
 } from "./types";
@@ -51,11 +49,8 @@ export const defaultAdjustments: StyleAdjustments = {
   background: { kind: "preset", preset: "clean-light" },
   bodyHeadingAlignment: "center",
   coverLayout: "center-poster",
-  decorationColor: "#111827",
   density: "normal",
   fontId: defaultFontId,
-  // 无主题时的兜底：无装饰
-  headingDecoration: "none",
 };
 
 /**
@@ -85,27 +80,15 @@ export function applyAdjustments(
     baseStyle,
     adjustments.background
   );
-  const decoration: HeadingDecoration | undefined =
-    adjustments.headingDecoration === "none"
-      ? undefined
-      : deriveDecoration(
-          adjustments.headingDecoration,
-          adjustments.decorationColor,
-          canvasStyle.heading.color
-        );
-  const decorated =
-    decoration === canvasStyle.heading.decoration
-      ? canvasStyle
-      : { ...canvasStyle, heading: { ...canvasStyle.heading, decoration } };
   const foundationWeight = typography.fontWeight.semibold;
 
   return {
-    ...decorated,
+    ...canvasStyle,
     emphasis: {
-      ...decorated.emphasis,
-      bold: { ...decorated.emphasis.bold, fontWeight: foundationWeight },
+      ...canvasStyle.emphasis,
+      bold: { ...canvasStyle.emphasis.bold, fontWeight: foundationWeight },
     },
-    heading: { ...decorated.heading, fontWeight: foundationWeight },
+    heading: { ...canvasStyle.heading, fontWeight: foundationWeight },
     typography: {
       baseFontSize,
       lineHeight: density.lineHeight,

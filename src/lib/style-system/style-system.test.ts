@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { type StyleConfiguration, styleSystem } from "./style-system";
 
-const highlightColorPattern = /#[\da-f]{6}(?= 55%)/i;
 const unsafeCssValuePattern = /https?:|javascript:/i;
 
 const relativeLuminance = (hex: string): number => {
@@ -19,12 +18,6 @@ const contrastRatio = (first: string, second: string): number => {
   const darker = Math.min(relativeLuminance(first), relativeLuminance(second));
   return (lighter + 0.05) / (darker + 0.05);
 };
-
-const headingOverrideCases = [
-  ["bodyHeadingAlignment", "left"],
-  ["headingDecoration", "wavy"],
-  ["decorationColor", "#e64f7a"],
-] as const;
 
 const themeBackgrounds = [
   ["clean-light", { kind: "preset", preset: "clean-light" }],
@@ -71,7 +64,6 @@ describe("Style System Interface", () => {
       density: ["compact", "snug", "normal", "relaxed", "spacious"],
       fontId: ["sans", "serif"],
       gradient: ["warm-light", "cool-light", "pink-light", "ocean", "forest"],
-      headingDecoration: ["none", "underline", "wavy", "highlight"],
       pattern: ["dots", "grid", "diagonal"],
     });
   });
@@ -84,13 +76,13 @@ describe("Style System Interface", () => {
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
       coverLayout: "center-poster",
-      decorationColor: "#64748b",
-      headingDecoration: "none",
     });
     expect(configuration).not.toHaveProperty("accentColor");
     expect(configuration).not.toHaveProperty("bodyHeadingSize");
     expect(configuration).not.toHaveProperty("contentSurface");
+    expect(configuration).not.toHaveProperty("decorationColor");
     expect(configuration).not.toHaveProperty("headingAlignment");
+    expect(configuration).not.toHaveProperty("headingDecoration");
   });
 
   it("从空持久化数据恢复默认主题状态", () => {
@@ -140,10 +132,8 @@ describe("Style System Interface", () => {
         background: false,
         bodyHeadingAlignment: false,
         coverLayout: false,
-        decorationColor: false,
         density: true,
         fontId: false,
-        headingDecoration: false,
       },
       overrides: { density: "compact" },
     });
@@ -167,29 +157,27 @@ describe("Style System Interface", () => {
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
         coverLayout: "center-poster",
-        decorationColor: "#64748b",
         density: "normal",
         fontId: "serif",
-        headingDecoration: "none",
       },
       overrides: { fontId: "serif" },
     });
   });
 
-  it.each(
-    headingOverrideCases
-  )("标题字段 %s 可识别并单项恢复", (field, value) => {
+  it("正文标题对齐可识别并单项恢复", () => {
     const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
-      patch: { [field]: value } as Partial<StyleConfiguration>,
+      patch: { bodyHeadingAlignment: "left" },
       type: "update-configuration",
     });
     const reset = styleSystem.transition(modified, {
-      field,
+      field: "bodyHeadingAlignment",
       type: "reset-field",
     });
 
-    expect(styleSystem.read(modified).overridden[field]).toBe(true);
-    expect(styleSystem.read(reset).overridden[field]).toBe(false);
+    expect(styleSystem.read(modified).overridden.bodyHeadingAlignment).toBe(
+      true
+    );
+    expect(styleSystem.read(reset).overridden.bodyHeadingAlignment).toBe(false);
   });
 
   it("未知主题回落到默认主题", () => {
@@ -204,18 +192,15 @@ describe("Style System Interface", () => {
       styleSystem.hydrate({
         currentThemeId: "removed-theme",
         overrides: {
-          accentColor: "javascript:alert(1)",
           background: {
             color: "linear-gradient(red, blue)",
             kind: "solid",
           },
           bodyHeadingAlignment: "right",
           coverLayout: "freeform",
-          decorationColor: "currentColor",
           density: "cramped",
           fontId: "missing-font",
           headingAlignment: "right",
-          headingDecoration: "sparkle",
         },
       })
     ).toEqual({
@@ -463,7 +448,6 @@ describe("Style System Interface", () => {
           density: "compact",
           fontId: "auto",
           headingAlignment: "left",
-          headingDecoration: "none",
         },
         currentThemeId: "reading-mode",
       })
@@ -523,39 +507,25 @@ describe("Style System Interface", () => {
     expect(state.overrides).toEqual({});
   });
 
-  it("迁移旧版 transparent 强调色语义", () => {
-    expect(
-      styleSystem.hydrate({
-        adjustments: { accentColor: "transparent" },
-        currentThemeId: "clean-light",
-      })
-    ).toEqual({
+  it("丢弃已移除的标题装饰与装饰颜色覆盖并保留其他字段", () => {
+    const state = styleSystem.hydrate({
       currentThemeId: "clean-light",
-      overrides: {},
+      overrides: {
+        accentColor: "transparent",
+        decorationColor: "#e64f7a",
+        density: "compact",
+        headingDecoration: "wavy",
+      },
     });
-  });
 
-  it("把旧强调色迁移为仅作用于标题的装饰颜色", () => {
-    const original = styleSystem.resolve(styleSystem.hydrate(undefined), {
-      page: "body",
-    }).styles;
-    const migrated = styleSystem.hydrate({
+    expect(state).toEqual({
       currentThemeId: "clean-light",
-      overrides: { accentColor: "#e64f7a" },
+      overrides: { density: "compact" },
     });
-    const styles = styleSystem.resolve(migrated, { page: "body" }).styles;
-
-    expect({
-      blockquote: styles.blockquote,
-      link: styles.a,
-      markdownHighlight: styles.mark,
-      overrides: migrated.overrides,
-    }).toEqual({
-      blockquote: original.blockquote,
-      link: original.a,
-      markdownHighlight: original.mark,
-      overrides: { decorationColor: "#e64f7a" },
-    });
+    const configuration = styleSystem.read(state)
+      .configuration as unknown as Record<string, unknown>;
+    expect(configuration).not.toHaveProperty("decorationColor");
+    expect(configuration).not.toHaveProperty("headingDecoration");
   });
 
   it("设置回主题默认值时删除对应覆盖", () => {
@@ -583,13 +553,11 @@ describe("Style System Interface", () => {
       coverLayout: "center-poster",
       density: "normal",
       fontId: "serif",
-      headingDecoration: "highlight",
     });
     expect(snapshot.overridden).toMatchObject({
       coverLayout: false,
       density: false,
       fontId: true,
-      headingDecoration: false,
     });
   });
 
@@ -705,10 +673,8 @@ describe("Style System Interface", () => {
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
         coverLayout: "top-left",
-        decorationColor: "#44403c",
         density: "compact",
         fontId: "serif",
-        headingDecoration: "none",
       },
       state: {
         currentThemeId: "reading-mode",
@@ -736,10 +702,8 @@ describe("Style System Interface", () => {
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
         coverLayout: "top-left",
-        decorationColor: "#44403c",
         density: "normal",
         fontId: "serif",
-        headingDecoration: "none",
       },
       state: {
         currentThemeId: "reading-mode",
@@ -773,10 +737,8 @@ describe("Style System Interface", () => {
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
         coverLayout: "center-poster",
-        decorationColor: "#64748b",
         density: "compact",
         fontId: "sans",
-        headingDecoration: "none",
       },
       state: {
         currentThemeId: "clean-light",
@@ -803,10 +765,8 @@ describe("Style System Interface", () => {
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
         coverLayout: "top-left",
-        decorationColor: "#44403c",
         density: "normal",
         fontId: "serif",
-        headingDecoration: "none",
       },
       state: { currentThemeId: "reading-mode", overrides: {} },
     });
@@ -909,101 +869,6 @@ describe("Style System Interface", () => {
       horizontal,
       vertical,
     });
-  });
-
-  it("装饰颜色不改变 Markdown 语义色", () => {
-    const themeState = styleSystem.hydrate({
-      currentThemeId: "trianglify-minimalist",
-    });
-    const original = styleSystem.resolve(themeState, { page: "body" }).styles;
-    const state = styleSystem.transition(themeState, {
-      patch: { decorationColor: "#e64f7a" },
-      type: "update-configuration",
-    });
-    const changed = styleSystem.resolve(state, { page: "body" }).styles;
-
-    expect({
-      blockquote: changed.blockquote,
-      decorationChanged:
-        changed.headingInner?.backgroundImage !==
-        original.headingInner?.backgroundImage,
-      link: changed.a,
-      list: changed.ul,
-      markdownHighlight: changed.mark,
-    }).toEqual({
-      blockquote: original.blockquote,
-      decorationChanged: true,
-      link: original.a,
-      list: original.ul,
-      markdownHighlight: original.mark,
-    });
-  });
-
-  it.each([
-    ["none", undefined],
-    ["underline", "linear-gradient("],
-    ["wavy", "data:image/svg+xml"],
-    ["highlight", "linear-gradient(180deg"],
-  ] as const)("标题装饰 %s 生成稳定渲染样式", (headingDecoration, marker) => {
-    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
-      patch: { headingDecoration },
-      type: "update-configuration",
-    });
-    const headingInner = styleSystem.resolve(state, { page: "body" }).styles
-      .headingInner;
-
-    if (marker === undefined) {
-      expect(headingInner).toBeUndefined();
-    } else {
-      expect(String(headingInner?.backgroundImage)).toContain(marker);
-    }
-  });
-
-  it("高亮装饰保持标题文字对比度", () => {
-    const state = styleSystem.transition(
-      styleSystem.hydrate({ currentThemeId: "clean-dark" }),
-      {
-        patch: {
-          decorationColor: "#fefefe",
-          headingDecoration: "highlight",
-        },
-        type: "update-configuration",
-      }
-    );
-    const styles = styleSystem.resolve(state, { page: "body" }).styles;
-    const decorationColor = String(styles.headingInner?.backgroundImage).match(
-      highlightColorPattern
-    )?.[0];
-
-    expect(decorationColor).toBeDefined();
-    expect(
-      contrastRatio(String(styles.h1.color), decorationColor ?? "")
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(styles.headingInner).toMatchObject({
-      boxDecorationBreak: "clone",
-      WebkitBoxDecorationBreak: "clone",
-    });
-  });
-
-  it.each(
-    styleSystem.catalog()
-  )("主题 $id 的高亮装饰保持文字对比度", (theme) => {
-    const state = styleSystem.transition(
-      styleSystem.hydrate({ currentThemeId: theme.id }),
-      {
-        patch: { headingDecoration: "highlight" },
-        type: "update-configuration",
-      }
-    );
-    const styles = styleSystem.resolve(state, { page: "body" }).styles;
-    const decorationColor = String(styles.headingInner?.backgroundImage).match(
-      highlightColorPattern
-    )?.[0];
-
-    expect(decorationColor).toBeDefined();
-    expect(
-      contrastRatio(String(styles.h1.color), decorationColor ?? "")
-    ).toBeGreaterThanOrEqual(4.5);
   });
 
   it.each([

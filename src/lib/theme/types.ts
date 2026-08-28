@@ -49,21 +49,8 @@ export interface TypographyStyle {
   // fontFamily 由 StyleAdjustments 动态生成，不在 FullStyle 中
 }
 
-/**
- * 标题装饰变体（作用于 h1–h2 内层 span，跟随文字宽度）
- * 仅使用 html2canvas-pro 可导出的属性：linear-gradient / padding / 内联 SVG data-URI 背景图
- * - underline：文字宽度的粗下划线（linear-gradient 底部铺色）
- * - wavy：文字宽度的波浪下划线（repeat-x 平铺内联 SVG data-URI）
- * - highlight：荧光笔衬底（linear-gradient 只染文字后半高）
- */
-export type HeadingDecoration =
-  | { color: string; kind: "underline"; thickness?: string }
-  | { color: string; kind: "wavy" }
-  | { color: string; kind: "highlight" };
-
 export interface HeadingStyle {
   color: string;
-  decoration?: HeadingDecoration;
   fontWeight: number; // 400-900
   // alignment 由 StyleAdjustments 控制
 }
@@ -167,24 +154,13 @@ export type HeadingAlignment = "left" | "center";
 
 export type CoverLayout = "center-poster" | "top-left" | "bottom-left";
 
-/** 标题装饰用户选项（四值封闭集合，每个取值都有明确含义） */
-export type HeadingDecorationChoice =
-  | "none"
-  | "underline"
-  | "wavy"
-  | "highlight";
-
 /** Internal shape matching the resolved public style configuration */
 export interface StyleAdjustments {
   readonly background: CanvasBackground;
   readonly bodyHeadingAlignment: HeadingAlignment;
   readonly coverLayout: CoverLayout;
-  /** 标题装饰颜色（hex） */
-  readonly decorationColor: string;
   readonly density: Density;
   readonly fontId: "sans" | "serif";
-  /** 标题装饰类型（四值封闭集合，无跟随主题的哨兵语义） */
-  readonly headingDecoration: HeadingDecorationChoice;
 }
 
 // ============================================================

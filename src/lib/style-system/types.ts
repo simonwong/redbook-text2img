@@ -6,7 +6,6 @@ import type {
   Density,
   GradientPreset,
   HeadingAlignment,
-  HeadingDecorationChoice,
   PatternPreset,
   StyleAdjustments,
 } from "../theme/types";
@@ -15,10 +14,8 @@ export interface StyleConfiguration {
   readonly background: CanvasBackground;
   readonly bodyHeadingAlignment: HeadingAlignment;
   readonly coverLayout: CoverLayout;
-  readonly decorationColor: string;
   readonly density: Density;
   readonly fontId: StyleAdjustments["fontId"];
-  readonly headingDecoration: HeadingDecorationChoice;
 }
 
 export interface StyleConfigurationOptions {
@@ -28,7 +25,6 @@ export interface StyleConfigurationOptions {
   readonly density: readonly StyleConfiguration["density"][];
   readonly fontId: readonly string[];
   readonly gradient: readonly GradientPreset[];
-  readonly headingDecoration: readonly StyleConfiguration["headingDecoration"][];
   readonly pattern: readonly PatternPreset[];
 }
 

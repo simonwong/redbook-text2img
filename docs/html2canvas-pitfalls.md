@@ -87,7 +87,7 @@ await new Promise<void>((resolve) => {
 "radial-gradient(ellipse at 88% 12%, #ffe7c2 0%, rgba(255, 231, 194, 0) 55%)"
 ```
 
-**例外**：**硬色标**里的 `transparent` 是安全的 —— 两侧位置相同时不存在跨 alpha 的插值区间。`generator.ts` 的 highlight 标题装饰就是这种写法，实测导出 Δ=0，不需要改：
+**例外**：**硬色标**里的 `transparent` 是安全的 —— 两侧位置相同时不存在跨 alpha 的插值区间。已移除的 highlight 标题装饰曾是这种写法，实测导出 Δ=0：
 
 ```ts
 // 安全：55%→55%、92%→92% 位置重合，没有渐变区间
@@ -98,4 +98,4 @@ await new Promise<void>((resolve) => {
 
 **验证方式**：Playwright 截元素图作 ground truth，与 html2canvas-pro 导出结果逐像素比对通道差。修复前 warmSun 最大通道差 93，修复后 5。
 
-**文件位置**：`src/lib/theme/tokens.ts`（`gradients`）、`src/lib/theme/generator.ts:113`（硬色标例外）
+**文件位置**：`src/lib/theme/tokens.ts`（`gradients`）

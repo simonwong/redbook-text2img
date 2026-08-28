@@ -20,12 +20,8 @@ interface ContentThemeState extends StyleSystemState {
     alignment: StyleConfiguration["bodyHeadingAlignment"]
   ) => void;
   setCoverLayout: (layout: StyleConfiguration["coverLayout"]) => void;
-  setDecorationColor: (color: string) => void;
   setDensity: (density: StyleConfiguration["density"]) => void;
   setFont: (fontId: StyleConfiguration["fontId"]) => void;
-  setHeadingDecoration: (
-    choice: StyleConfiguration["headingDecoration"]
-  ) => void;
   undoThemeSelection: () => void;
 }
 
@@ -81,13 +77,6 @@ export const useContentThemeStore = create<ContentThemeState>()(
 
           setCoverLayout: (coverLayout: StyleConfiguration["coverLayout"]) =>
             updateConfiguration({ coverLayout }),
-
-          setDecorationColor: (decorationColor: string) =>
-            updateConfiguration({ decorationColor }),
-
-          setHeadingDecoration: (
-            headingDecoration: StyleConfiguration["headingDecoration"]
-          ) => updateConfiguration({ headingDecoration }),
 
           resetConfiguration: () =>
             set((state) =>

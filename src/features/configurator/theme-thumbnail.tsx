@@ -91,7 +91,6 @@ export const ThemeThumbnail = ({
             fontWeight: coverStyles.h1.fontWeight,
             letterSpacing: coverStyles.h1.letterSpacing,
             textAlign: coverStyles.h1.textAlign,
-            ...coverStyles.headingInner,
           }}
         >
           {theme.name}
