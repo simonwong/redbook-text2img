@@ -17,7 +17,6 @@ import {
 } from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
 import { CoverLayoutPicker } from "./cover-layout-picker";
-import { DecorationColorPicker } from "./decoration-color-picker";
 import { FontPicker } from "./font-picker";
 import { SettingsSection } from "./settings-section";
 import { ThemeGrid } from "./theme-grid";
@@ -66,15 +65,6 @@ const densityLabels: Record<StyleConfiguration["density"], string> = {
   snug: "较紧",
   spacious: "宽松",
 };
-const headingDecorationLabels: Record<
-  StyleConfiguration["headingDecoration"],
-  string
-> = {
-  highlight: "高亮",
-  none: "无",
-  underline: "直线",
-  wavy: "波浪",
-};
 const fontLabels: Record<string, string> = {
   auto: "跟随主题",
   sans: "无衬线",
@@ -92,21 +82,13 @@ const fontOptions = ["auto", ...optionValues.fontId].map((value) => ({
   label: fontLabels[value] ?? value,
   value,
 }));
-const headingDecorationOptions = optionValues.headingDecoration.map(
-  (value) => ({
-    label: headingDecorationLabels[value],
-    value,
-  })
-);
 
 const fieldLabelIds = {
   background: "background-label",
   bodyHeadingAlignment: "body-heading-alignment-label",
   coverLayout: "cover-layout-label",
-  decorationColor: "decoration-color-label",
   density: "density-label",
   font: "font-label",
-  headingDecoration: "heading-decoration-label",
   pageNumber: "page-number-label",
   signature: "signature-label",
 } as const;
@@ -128,10 +110,8 @@ export const ConfiguratorContent = () => {
     setBackground,
     setBodyHeadingAlignment,
     setCoverLayout,
-    setDecorationColor,
     setDensity,
     setFont,
-    setHeadingDecoration,
     resetConfiguration,
     resetConfigurationField,
   } = useContentThemeStore();
@@ -272,46 +252,6 @@ export const ConfiguratorContent = () => {
             }
             options={bodyHeadingAlignmentOptions}
             value={configuration.bodyHeadingAlignment}
-          />
-        </ConfigurationField>
-
-        <ConfigurationField
-          isModified={overridden.headingDecoration}
-          label="标题装饰"
-          labelId={fieldLabelIds.headingDecoration}
-          onReset={() => resetConfigurationField("headingDecoration")}
-        >
-          <SegmentedControl
-            className="w-full"
-            labelledBy={fieldLabelIds.headingDecoration}
-            onChange={(value) =>
-              setHeadingDecoration(
-                value as StyleConfiguration["headingDecoration"]
-              )
-            }
-            options={headingDecorationOptions}
-            value={configuration.headingDecoration}
-          />
-        </ConfigurationField>
-
-        <ConfigurationField
-          description={
-            configuration.headingDecoration === "none"
-              ? "选择标题装饰后可设置颜色"
-              : undefined
-          }
-          descriptionId="decoration-color-status"
-          isModified={overridden.decorationColor}
-          label="装饰颜色"
-          labelId={fieldLabelIds.decorationColor}
-          onReset={() => resetConfigurationField("decorationColor")}
-        >
-          <DecorationColorPicker
-            descriptionId="decoration-color-status"
-            disabled={configuration.headingDecoration === "none"}
-            labelledBy={fieldLabelIds.decorationColor}
-            onChange={setDecorationColor}
-            value={configuration.decorationColor}
           />
         </ConfigurationField>
       </SettingsSection>

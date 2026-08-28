@@ -56,7 +56,6 @@ const configurationOptions = {
   density: ["compact", "snug", "normal", "relaxed", "spacious"],
   fontId: fontPresets.map(({ id }) => id),
   gradient: gradientPresetIds,
-  headingDecoration: ["none", "underline", "wavy", "highlight"],
   pattern: patternPresetIds,
 } satisfies StyleConfigurationOptions;
 
@@ -85,19 +84,11 @@ const diffConfiguration = (
   if (configuration.coverLayout !== themeConfiguration.coverLayout) {
     overrides.coverLayout = configuration.coverLayout;
   }
-  if (configuration.decorationColor !== themeConfiguration.decorationColor) {
-    overrides.decorationColor = configuration.decorationColor;
-  }
   if (configuration.density !== themeConfiguration.density) {
     overrides.density = configuration.density;
   }
   if (configuration.fontId !== themeConfiguration.fontId) {
     overrides.fontId = configuration.fontId;
-  }
-  if (
-    configuration.headingDecoration !== themeConfiguration.headingDecoration
-  ) {
-    overrides.headingDecoration = configuration.headingDecoration;
   }
 
   return overrides;
@@ -123,9 +114,6 @@ const backgroundPresets = new Set<string>(
 const gradientPresets = new Set<string>(configurationOptions.gradient);
 const patternPresets = new Set<string>(configurationOptions.pattern);
 const fontIds = new Set<string>(configurationOptions.fontId);
-const headingDecorations = new Set<string>(
-  configurationOptions.headingDecoration
-);
 const densities = new Set<string>(configurationOptions.density);
 // 旧三档持久化值中仅 balanced 消失，按像素等价迁移到 normal；
 // 五档新值（含 compact/spacious）恒等保留，保证界面可选且刷新稳定。
@@ -218,7 +206,6 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
 
   const bodyHeadingAlignment =
     value.bodyHeadingAlignment ?? value.headingAlignment;
-  const decorationColor = value.decorationColor ?? value.accentColor;
   const background = sanitizeBackground(value.background);
   const density = sanitizeDensity(value.density);
   const fontId = sanitizeFontId(value.fontId);
@@ -238,19 +225,8 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
           coverLayout: value.coverLayout as StyleConfiguration["coverLayout"],
         }
       : {}),
-    ...(typeof decorationColor === "string" &&
-    hexColorPattern.test(decorationColor)
-      ? { decorationColor }
-      : {}),
     ...(density ? { density } : {}),
     ...(fontId ? { fontId } : {}),
-    ...(typeof value.headingDecoration === "string" &&
-    headingDecorations.has(value.headingDecoration)
-      ? {
-          headingDecoration:
-            value.headingDecoration as StyleConfiguration["headingDecoration"],
-        }
-      : {}),
   };
 };
 
@@ -267,22 +243,6 @@ const hydrate = (persisted: unknown): StyleSystemState => {
     ...themeConfiguration,
     ...sanitizeConfiguration(persistedConfiguration),
   };
-
-  if (
-    isRecord(persistedConfiguration) &&
-    (persistedConfiguration.decorationColor === "transparent" ||
-      persistedConfiguration.accentColor === "transparent")
-  ) {
-    const migratedConfiguration: StyleConfiguration = {
-      ...configuration,
-      decorationColor: themeConfiguration.decorationColor,
-      headingDecoration: "none",
-    };
-    return {
-      currentThemeId: theme.id,
-      overrides: diffConfiguration(migratedConfiguration, themeConfiguration),
-    };
-  }
 
   return {
     currentThemeId: theme.id,
@@ -364,10 +324,8 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
       background: "background" in state.overrides,
       bodyHeadingAlignment: "bodyHeadingAlignment" in state.overrides,
       coverLayout: "coverLayout" in state.overrides,
-      decorationColor: "decorationColor" in state.overrides,
       density: "density" in state.overrides,
       fontId: "fontId" in state.overrides,
-      headingDecoration: "headingDecoration" in state.overrides,
     },
     theme: {
       description: theme.description,

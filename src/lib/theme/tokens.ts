@@ -82,7 +82,7 @@ export const colors = {
  * 黑色，导出图背景发灰发脏。
  *
  * 例外：硬色标（两侧位置相同，如 `transparent 55%, color 55%`）没有插值区间，用
- * `transparent` 是安全的 —— generator.ts 的 highlight 标题装饰即为此种。
+ * `transparent` 是安全的。
  * 详见 docs/html2canvas-pitfalls.md 第 6 条。
  */
 export const gradients = {

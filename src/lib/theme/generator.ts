@@ -6,7 +6,7 @@
 import type { Properties as CSSProperties } from "csstype";
 import type { AdjustedStyle } from "./adjustments";
 import { typography } from "./tokens";
-import type { CoverStyleOverride, HeadingDecoration } from "./types";
+import type { CoverStyleOverride } from "./types";
 
 /** Generated CSS styles for Markdown rendering */
 export interface GeneratedStyles {
@@ -23,7 +23,6 @@ export interface GeneratedStyles {
   h4: CSSProperties;
   h5: CSSProperties;
   h6: CSSProperties;
-  headingInner?: CSSProperties;
   innerContainer: CSSProperties;
   li: CSSProperties;
   mark: CSSProperties;
@@ -72,53 +71,6 @@ function getAlignItems(
 }
 
 /**
- * 将标题装饰转换为内层 span 的 CSSProperties
- * 装饰跟随文字宽度（span 为 inline），居中/左对齐均随文字。
- * 装饰边界为 h1–h2（比 isDisplay 的 h1–h3 收窄一级：h3 尺寸接近正文，装饰过吵）。
- * 仅 html2canvas-pro 可导出的属性：linear-gradient / padding / 内联 SVG data-URI 背景图。
- */
-export function createHeadingDecoration(
-  decoration?: HeadingDecoration
-): CSSProperties | undefined {
-  if (!decoration) {
-    return;
-  }
-  const fragmentStyle: CSSProperties = {
-    boxDecorationBreak: "clone",
-    WebkitBoxDecorationBreak: "clone",
-  };
-  if (decoration.kind === "underline") {
-    return {
-      ...fragmentStyle,
-      backgroundImage: `linear-gradient(${decoration.color}, ${decoration.color})`,
-      backgroundRepeat: "no-repeat",
-      backgroundSize: `100% ${decoration.thickness ?? "0.14em"}`,
-      backgroundPosition: "0 100%",
-      paddingBottom: "0.06em",
-    };
-  }
-  if (decoration.kind === "wavy") {
-    // 手绘感波浪：单元内两个振幅微差的周期（首尾同高同斜率）repeat-x 无缝平铺，
-    // 波长恒定为 0.56em、不随标题长度拉伸，整条线落在字底之下（不压字）。
-    // width/height 必须显式声明：html2canvas-pro 按内在尺寸栅格化背景 SVG
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='28' height='8' viewBox='0 0 28 8' preserveAspectRatio='none'><path d='M0 4 Q3.5 1.6 7 4 Q10.5 6.4 14 4.3 Q17.5 2.1 21 3.8 Q24.5 6.4 28 4' fill='none' stroke='${decoration.color}' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
-    return {
-      ...fragmentStyle,
-      backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
-      backgroundRepeat: "repeat-x",
-      backgroundPosition: "0 100%",
-      backgroundSize: "1.12em 0.32em",
-      paddingBottom: "0.25em",
-    };
-  }
-  return {
-    ...fragmentStyle,
-    backgroundImage: `linear-gradient(180deg, transparent 55%, ${decoration.color} 55%, ${decoration.color} 92%, transparent 92%)`,
-    padding: "0 0.08em",
-  };
-}
-
-/**
  * Generate React CSSProperties from AdjustedStyle
  */
 export function generateStyles(
@@ -148,7 +100,6 @@ export function generateStyles(
   } else if (style.background.type === "image") {
     backgroundStyle = {
       // data-URI 含未编码的单引号，必须加双引号包裹才是合法 url()
-      // （与下方波浪标题装饰的 encodeURIComponent 用法一致）
       backgroundImage: `url("${style.background.value}")`,
       ...(style.background.repeat && {
         backgroundRepeat: style.background.repeat,
@@ -334,8 +285,5 @@ export function generateStyles(
     footer: {
       color: style.emphasis.italic.color,
     },
-
-    // 标题装饰仅作用于展示级标题 h1–h2（由 image-preview 包裹内层 span）
-    headingInner: createHeadingDecoration(style.heading.decoration),
   };
 }

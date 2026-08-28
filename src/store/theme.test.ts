@@ -121,7 +121,6 @@ describe("content theme store", () => {
       currentThemeId: "clean-light",
       overrides: {
         bodyHeadingAlignment: "left",
-        decorationColor: "#e64f7a",
         density: "compact",
       },
     });

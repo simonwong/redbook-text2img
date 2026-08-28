@@ -76,7 +76,7 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
       const previewInner = preview?.lastElementChild as HTMLElement | null;
       const previewContent =
         previewInner?.firstElementChild as HTMLElement | null;
-      const previewTitle = preview?.querySelector<HTMLElement>("h1 span");
+      const previewTitle = preview?.querySelector<HTMLElement>("h1");
       const thumbnail = element.querySelector<HTMLElement>(
         "[data-theme-thumbnail]"
       );
@@ -151,7 +151,7 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
           previewTitleStyle.fontFamily,
           previewTitleStyle.fontWeight,
           previewTitleStyle.backgroundImage,
-          getComputedStyle(previewTitle.parentElement as HTMLElement).textAlign,
+          previewTitleStyle.textAlign,
         ],
       };
     });
