@@ -66,10 +66,12 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
   for (const name of themeNames) {
     const card = await selectTheme(page, name);
     await expect(page.getByRole("radio", { name })).toHaveAccessibleDescription(
-      "当前"
+      "当前主题"
     );
-    await expect(card.getByText("当前", { exact: true })).toBeVisible();
-    await expect(themeGroup.getByText("当前", { exact: true })).toHaveCount(1);
+    await expect(card.getByText("当前主题", { exact: true })).toBeVisible();
+    await expect(themeGroup.getByText("当前主题", { exact: true })).toHaveCount(
+      1
+    );
 
     const evidence = await card.evaluate((element) => {
       const preview = document.querySelector<HTMLElement>(".img-preview");
@@ -182,12 +184,16 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
   await page.getByRole("radio", { name: "宽松" }).locator("..").click();
   await expect(currentTheme).toHaveAccessibleDescription("已调整");
   await expect(currentCard.getByText("已调整", { exact: true })).toBeVisible();
-  await expect(currentCard.getByText("当前", { exact: true })).toHaveCount(0);
+  await expect(currentCard.getByText("当前主题", { exact: true })).toHaveCount(
+    0
+  );
   await page
     .getByRole("button", { name: "恢复“Apple 备忘录”主题配置" })
     .click();
-  await expect(currentTheme).toHaveAccessibleDescription("当前");
-  await expect(currentCard.getByText("当前", { exact: true })).toBeVisible();
+  await expect(currentTheme).toHaveAccessibleDescription("当前主题");
+  await expect(
+    currentCard.getByText("当前主题", { exact: true })
+  ).toBeVisible();
 });
 
 test("8 个主题在超长正文上给出不进入导出卡片的分页提示", async ({ page }) => {

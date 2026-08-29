@@ -14,7 +14,7 @@ export {
   resolveThemeDefaults,
 } from "./adjustments";
 // Canvas
-export { canvasBackgroundsEqual } from "./canvas";
+export { canvasBackgroundsEqual, customGradientValue } from "./canvas";
 export type { FontPreset } from "./fonts";
 // Fonts
 export {

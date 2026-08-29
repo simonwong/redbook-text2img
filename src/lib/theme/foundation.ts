@@ -272,7 +272,7 @@ const resolveProfile = (configuration: StyleAdjustments): FoundationProfile => {
       return "apple";
     }
   }
-  // 受控渐变与图案背景统一回落到 clean 样式基础（浅色基调）
+  // 自定义背景（纯色/渐变/图片）回落到 clean 基础，语义色由 applyCanvasConfiguration 按背景明暗覆盖
   return "clean";
 };
 

@@ -89,13 +89,6 @@ export const gradients = {
   // Light gradients
   cleanLight:
     "radial-gradient(ellipse at 75% 85%, rgba(180, 190, 200, 0.12) 0%, rgba(180, 190, 200, 0) 50%), radial-gradient(ellipse at 15% 15%, rgba(160, 175, 190, 0.08) 0%, rgba(160, 175, 190, 0) 45%), linear-gradient(160deg, #ffffff 0%, #fdfdfe 50%, #ffffff 100%)",
-  warmLight:
-    "linear-gradient(135deg, #fef7f0 0%, #fef3ec 25%, #fdf2f8 50%, #f3e8ff 75%, #f0f9ff 100%)",
-  coolLight:
-    "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 25%, #f0fdfa 50%, #ecfeff 75%, #f0fdf4 100%)",
-  pinkLight:
-    "linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #fef3ec 50%, #fff7ed 75%, #fffbeb 100%)",
-
   // Mesh gradients (multi-radial + linear) - 现代 Apple/Linear/Stripe 风格
   /** 蜜光暖阳：奶油 + 蜜桃 + 杏色，四点光晕模拟蜜光 */
   warmSun:
@@ -121,10 +114,6 @@ export const gradients = {
   // Vibrant gradients
   sunset:
     "linear-gradient(135deg, #fef3c7 0%, #fde68a 25%, #fcd34d 50%, #fb923c 75%, #f97316 100%)",
-  ocean:
-    "linear-gradient(135deg, #cffafe 0%, #a5f3fc 25%, #67e8f9 50%, #22d3ee 75%, #06b6d4 100%)",
-  forest:
-    "linear-gradient(135deg, #dcfce7 0%, #bbf7d0 25%, #86efac 50%, #4ade80 75%, #22c55e 100%)",
 } as const;
 
 // ============================================================

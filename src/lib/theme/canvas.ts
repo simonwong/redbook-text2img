@@ -6,13 +6,12 @@ import type {
   BackgroundStyle,
   CanvasBackground,
   FullStyle,
-  GradientPreset,
-  PatternPreset,
+  GradientDirection,
   SurfaceStyle,
 } from "./types";
 
 type Tone = "dark" | "light";
-const hexColorPattern = /^#[\da-f]{6}$/i;
+const lightToneLuminanceThreshold = 0.179;
 
 interface BackgroundDefinition {
   background: BackgroundStyle;
@@ -28,19 +27,22 @@ export const backgroundPresetIds: readonly BackgroundPreset[] = [
   "cherry-cream",
 ];
 
-export const gradientPresetIds: readonly GradientPreset[] = [
-  "warm-light",
-  "cool-light",
-  "pink-light",
-  "ocean",
-  "forest",
-];
+const gradientDirectionAngles: Record<GradientDirection, number> = {
+  diagonal: 135,
+  horizontal: 90,
+  vertical: 180,
+};
 
-export const patternPresetIds: readonly PatternPreset[] = [
-  "dots",
-  "grid",
-  "diagonal",
-];
+/**
+ * 自定义双色渐变：两端都是不透明实色，没有跨区间透明淡出，
+ * html2canvas-pro 导出与浏览器一致（见 docs/html2canvas-pitfalls.md 第 6 条）。
+ */
+export const customGradientValue = (
+  from: string,
+  to: string,
+  direction: GradientDirection
+): string =>
+  `linear-gradient(${gradientDirectionAngles[direction]}deg, ${from} 0%, ${to} 100%)`;
 
 const backgroundDefinitions: Record<BackgroundPreset, BackgroundDefinition> = {
   "cherry-cream": {
@@ -69,72 +71,6 @@ const backgroundDefinitions: Record<BackgroundPreset, BackgroundDefinition> = {
   },
 };
 
-const gradientDefinitions: Record<GradientPreset, BackgroundDefinition> = {
-  "cool-light": {
-    background: { type: "gradient", value: gradients.coolLight },
-    tone: "light",
-  },
-  forest: {
-    background: { type: "gradient", value: gradients.forest },
-    tone: "light",
-  },
-  ocean: {
-    background: { type: "gradient", value: gradients.ocean },
-    tone: "light",
-  },
-  "pink-light": {
-    background: { type: "gradient", value: gradients.pinkLight },
-    tone: "light",
-  },
-  "warm-light": {
-    background: { type: "gradient", value: gradients.warmLight },
-    tone: "light",
-  },
-};
-
-/**
- * 受控图案：内联 SVG data-URI 平铺在浅色底上，细线低对比，不抢内容。
- * SVG 必须显式 width/height：html2canvas-pro 按内在尺寸栅格化背景图。
- */
-const patternSvg = (svg: string): string =>
-  `data:image/svg+xml,${encodeURIComponent(svg)}`;
-
-const patternDefinitions: Record<PatternPreset, BackgroundDefinition> = {
-  diagonal: {
-    background: {
-      repeat: "repeat",
-      size: "12px 12px",
-      type: "image",
-      value: patternSvg(
-        "<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><rect width='12' height='12' fill='#f8fafc'/><path d='M0 12 L12 0' stroke='#e2e8f0' stroke-width='1'/></svg>"
-      ),
-    },
-    tone: "light",
-  },
-  dots: {
-    background: {
-      repeat: "repeat",
-      size: "16px 16px",
-      type: "image",
-      value: patternSvg(
-        "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='16' height='16' fill='#fafafa'/><circle cx='8' cy='8' r='1' fill='#d6d9de'/></svg>"
-      ),
-    },
-    tone: "light",
-  },
-  grid: {
-    background: {
-      repeat: "repeat",
-      size: "16px 16px",
-      type: "image",
-      value: patternSvg(
-        "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='16' height='16' fill='#fafafa'/><path d='M0 0.5 H16 M0.5 0 V16' stroke='#e5e7eb' stroke-width='1'/></svg>"
-      ),
-    },
-    tone: "light",
-  },
-};
-
 const lightSurface: SurfaceStyle = {
   background: "#ffffff",
   borderRadius: 16,
@@ -150,7 +86,15 @@ const darkSurface: SurfaceStyle = {
 };
 
 const getSolidTone = (color: string): Tone =>
-  relativeLuminance(hexToRgb(color)) > 0.179 ? "light" : "dark";
+  relativeLuminance(hexToRgb(color)) > lightToneLuminanceThreshold
+    ? "light"
+    : "dark";
+
+const getGradientTone = (from: string, to: string): Tone =>
+  (relativeLuminance(hexToRgb(from)) + relativeLuminance(hexToRgb(to))) / 2 >
+  lightToneLuminanceThreshold
+    ? "light"
+    : "dark";
 
 const getBackgroundDefinition = (
   choice: CanvasBackground
@@ -158,11 +102,20 @@ const getBackgroundDefinition = (
   if (choice.kind === "preset") {
     return backgroundDefinitions[choice.preset];
   }
-  if (choice.kind === "gradient") {
-    return gradientDefinitions[choice.gradient];
+  if (choice.kind === "custom-gradient") {
+    return {
+      background: {
+        type: "gradient",
+        value: customGradientValue(choice.from, choice.to, choice.direction),
+      },
+      tone: getGradientTone(choice.from, choice.to),
+    };
   }
-  if (choice.kind === "pattern") {
-    return patternDefinitions[choice.pattern];
+  if (choice.kind === "image") {
+    return {
+      background: { type: "image", value: choice.dataUrl },
+      tone: choice.tone,
+    };
   }
   return {
     background: { type: "solid", value: choice.color },
@@ -170,50 +123,14 @@ const getBackgroundDefinition = (
   };
 };
 
-const findDefinitionId = <Id extends string>(
-  definitions: Record<Id, BackgroundDefinition>,
-  ids: readonly Id[],
-  background: BackgroundStyle
-): Id | undefined =>
-  ids.find((id) => {
-    const candidate = definitions[id].background;
-    return (
-      candidate.type === background.type && candidate.value === background.value
-    );
-  });
-
-export const resolveCanvasBackground = (
-  background: BackgroundStyle
-): CanvasBackground => {
-  const preset = findDefinitionId(
-    backgroundDefinitions,
-    backgroundPresetIds,
-    background
-  );
-  if (preset) {
-    return { kind: "preset", preset };
-  }
-  const gradient = findDefinitionId(
-    gradientDefinitions,
-    gradientPresetIds,
-    background
-  );
-  if (gradient) {
-    return { gradient, kind: "gradient" };
-  }
-  const pattern = findDefinitionId(
-    patternDefinitions,
-    patternPresetIds,
-    background
-  );
-  if (pattern) {
-    return { kind: "pattern", pattern };
-  }
-  if (background.type === "solid" && hexColorPattern.test(background.value)) {
-    return { color: background.value.toLowerCase(), kind: "solid" };
-  }
-  throw new Error(`Unsupported theme background type: ${background.type}`);
-};
+const sameBackgroundStyle = (
+  first: BackgroundStyle,
+  second: BackgroundStyle
+): boolean =>
+  first.type === second.type &&
+  first.value === second.value &&
+  first.repeat === second.repeat &&
+  first.size === second.size;
 
 export const canvasBackgroundsEqual = (
   first: CanvasBackground,
@@ -225,11 +142,15 @@ export const canvasBackgroundsEqual = (
   if (first.kind === "solid" && second.kind === "solid") {
     return first.color === second.color;
   }
-  if (first.kind === "gradient" && second.kind === "gradient") {
-    return first.gradient === second.gradient;
+  if (first.kind === "custom-gradient" && second.kind === "custom-gradient") {
+    return (
+      first.direction === second.direction &&
+      first.from === second.from &&
+      first.to === second.to
+    );
   }
-  if (first.kind === "pattern" && second.kind === "pattern") {
-    return first.pattern === second.pattern;
+  if (first.kind === "image" && second.kind === "image") {
+    return first.dataUrl === second.dataUrl;
   }
   return false;
 };
@@ -295,12 +216,10 @@ export const applyCanvasConfiguration = (
   backgroundChoice: CanvasBackground
 ): FullStyle => {
   const definition = getBackgroundDefinition(backgroundChoice);
-  const backgroundChanged = !canvasBackgroundsEqual(
-    resolveCanvasBackground(baseStyle.background),
-    backgroundChoice
-  );
 
-  if (!backgroundChanged) {
+  // 幂等：foundation 与 adjustments 会连续套用同一背景，第二次直接返回，
+  // 避免重复覆盖语义色；自定义渐变/图片值无法反查标识，直接比对样式值。
+  if (sameBackgroundStyle(baseStyle.background, definition.background)) {
     return baseStyle;
   }
 

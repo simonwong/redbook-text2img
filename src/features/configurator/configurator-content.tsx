@@ -11,13 +11,9 @@ import {
   styleSystem,
 } from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
-import {
-  type BackgroundOptionGroup,
-  BackgroundPicker,
-} from "./background-picker";
+import { BackgroundPicker } from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
 import { CoverLayoutPicker } from "./cover-layout-picker";
-import { FontPicker } from "./font-picker";
 import { SettingsSection } from "./settings-section";
 import { ThemeGrid } from "./theme-grid";
 
@@ -28,32 +24,6 @@ const pageNumberOptions = [
 
 const optionValues = styleSystem.configurationOptions();
 type BackgroundChoice = StyleConfiguration["background"];
-type BackgroundPreset = Extract<BackgroundChoice, { kind: "preset" }>["preset"];
-type GradientPreset = Extract<
-  BackgroundChoice,
-  { kind: "gradient" }
->["gradient"];
-type PatternPreset = Extract<BackgroundChoice, { kind: "pattern" }>["pattern"];
-const backgroundPresetLabels: Record<BackgroundPreset, string> = {
-  "cherry-cream": "樱花奶霜",
-  "clean-light": "清透白",
-  "cool-mist": "晨雾微光",
-  "night-aurora": "墨夜极光",
-  "trianglify-gray": "灰阶三角",
-  "warm-sun": "蜜光暖阳",
-};
-const gradientLabels: Record<GradientPreset, string> = {
-  "cool-light": "清溪",
-  forest: "青野",
-  ocean: "海蓝",
-  "pink-light": "粉雾",
-  "warm-light": "暖云",
-};
-const patternLabels: Record<PatternPreset, string> = {
-  diagonal: "斜纹",
-  dots: "圆点",
-  grid: "方格",
-};
 const bodyHeadingAlignmentLabels: Record<
   StyleConfiguration["bodyHeadingAlignment"],
   string
@@ -66,7 +36,6 @@ const densityLabels: Record<StyleConfiguration["density"], string> = {
   spacious: "宽松",
 };
 const fontLabels: Record<string, string> = {
-  auto: "跟随主题",
   sans: "无衬线",
   serif: "衬线",
 };
@@ -78,13 +47,12 @@ const densityOptions = optionValues.density.map((value) => ({
   label: densityLabels[value],
   value,
 }));
-const fontOptions = ["auto", ...optionValues.fontId].map((value) => ({
+const fontOptions = optionValues.fontId.map((value) => ({
   label: fontLabels[value] ?? value,
   value,
 }));
 
 const fieldLabelIds = {
-  background: "background-label",
   bodyHeadingAlignment: "body-heading-alignment-label",
   coverLayout: "cover-layout-label",
   density: "density-label",
@@ -118,10 +86,11 @@ export const ConfiguratorContent = () => {
   const { signature, showPageNumber, setSignature, setShowPageNumber } =
     useWatermarkStore();
 
-  const { configuration, isModified, overridden, theme } = styleSystem.read({
-    currentThemeId,
-    overrides,
-  });
+  const { configuration, isModified, overridden, theme, themeConfiguration } =
+    styleSystem.read({
+      currentThemeId,
+      overrides,
+    });
   const backgroundPreview = (background: BackgroundChoice): CSSProperties => {
     const previewState = styleSystem.transition(
       { currentThemeId, overrides },
@@ -141,35 +110,9 @@ export const ConfiguratorContent = () => {
       backgroundSize: preview.backgroundSize,
     };
   };
-  const backgroundGroups: BackgroundOptionGroup[] = [
-    {
-      label: "内置方案",
-      options: optionValues.backgroundPreset.map((value) => ({
-        label: backgroundPresetLabels[value],
-        previewStyle: backgroundPreview({ kind: "preset", preset: value }),
-        value: { kind: "preset", preset: value },
-      })),
-    },
-    {
-      label: "渐变",
-      options: optionValues.gradient.map((value) => ({
-        label: gradientLabels[value],
-        previewStyle: backgroundPreview({ gradient: value, kind: "gradient" }),
-        value: { gradient: value, kind: "gradient" },
-      })),
-    },
-    {
-      label: "图案",
-      options: optionValues.pattern.map((value) => ({
-        label: patternLabels[value],
-        previewStyle: backgroundPreview({ kind: "pattern", pattern: value }),
-        value: { kind: "pattern", pattern: value },
-      })),
-    },
-  ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <SettingsSection headingId={sectionHeadingIds.theme} title="主题">
         <ThemeGrid
           currentThemeId={currentThemeId}
@@ -179,20 +122,20 @@ export const ConfiguratorContent = () => {
         />
       </SettingsSection>
 
-      <SettingsSection headingId={sectionHeadingIds.background} title="背景">
-        <ConfigurationField
-          isModified={overridden.background}
-          label="背景方案"
-          labelId={fieldLabelIds.background}
-          onReset={() => resetConfigurationField("background")}
-        >
-          <BackgroundPicker
-            groups={backgroundGroups}
-            labelledBy={fieldLabelIds.background}
-            onChange={setBackground}
-            value={configuration.background}
-          />
-        </ConfigurationField>
+      <SettingsSection
+        headingId={sectionHeadingIds.background}
+        isModified={overridden.background}
+        onReset={() => resetConfigurationField("background")}
+        title="背景"
+      >
+        <BackgroundPicker
+          labelledBy={sectionHeadingIds.background}
+          onChange={setBackground}
+          onResetToTheme={() => resetConfigurationField("background")}
+          themeBackground={themeConfiguration.background}
+          themePreviewStyle={backgroundPreview(themeConfiguration.background)}
+          value={configuration.background}
+        />
       </SettingsSection>
 
       <SettingsSection headingId={sectionHeadingIds.typography} title="排版">
@@ -219,15 +162,14 @@ export const ConfiguratorContent = () => {
           labelId={fieldLabelIds.font}
           onReset={() => resetConfigurationField("fontId")}
         >
-          <FontPicker
+          <SegmentedControl
+            className="w-full"
             labelledBy={fieldLabelIds.font}
             onChange={(fontId) =>
-              fontId === "auto"
-                ? resetConfigurationField("fontId")
-                : setFont(fontId as StyleConfiguration["fontId"])
+              setFont(fontId as StyleConfiguration["fontId"])
             }
             options={fontOptions}
-            value={overridden.fontId ? configuration.fontId : "auto"}
+            value={configuration.fontId}
           />
         </ConfigurationField>
       </SettingsSection>

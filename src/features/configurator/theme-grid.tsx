@@ -1,5 +1,7 @@
 "use client";
 
+import { Tick02Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
   type RenderHeader,
   type RenderStyle,
@@ -88,10 +90,17 @@ export const ThemeGrid = ({
           />
           {isCurrent && (
             <span
-              className="absolute right-1.5 bottom-1.5 rounded-full bg-background/92 px-1.5 py-0.5 font-medium text-[10px] text-foreground shadow-sm ring-1 ring-foreground/10"
+              className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm"
               id={statusId}
             >
-              {isModified ? "已调整" : "当前"}
+              <HugeiconsIcon
+                aria-hidden="true"
+                className="size-3"
+                icon={Tick02Icon}
+              />
+              <span className="sr-only">
+                {isModified ? "已调整" : "当前主题"}
+              </span>
             </span>
           )}
         </label>
