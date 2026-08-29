@@ -51,20 +51,10 @@ describe("Style System Interface", () => {
 
   it("通过公共接口列出封闭配置选项", () => {
     expect(styleSystem.configurationOptions()).toEqual({
-      backgroundPreset: [
-        "clean-light",
-        "trianglify-gray",
-        "night-aurora",
-        "warm-sun",
-        "cool-mist",
-        "cherry-cream",
-      ],
       bodyHeadingAlignment: ["center", "left"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "snug", "normal", "relaxed", "spacious"],
       fontId: ["sans", "serif"],
-      gradient: ["warm-light", "cool-light", "pink-light", "ocean", "forest"],
-      pattern: ["dots", "grid", "diagonal"],
     });
   });
 
@@ -215,9 +205,25 @@ describe("Style System Interface", () => {
     { color: "url(https://example.com/image.png)", kind: "solid" },
     { kind: "preset", preset: "https://example.com/image.png" },
     { kind: "preset", preset: "linear-gradient(red, blue)" },
-    { kind: "gradient", gradient: "neon-party" },
+    // 旧版受控渐变/图案种类已下线，旧值一律丢弃
+    { kind: "gradient", gradient: "warm-light" },
     { kind: "gradient", gradient: "https://example.com/x.css" },
-    { kind: "pattern", pattern: "remote-image" },
+    { kind: "pattern", pattern: "dots" },
+    {
+      direction: "diagonal",
+      from: "red",
+      kind: "custom-gradient",
+      to: "#ffffff",
+    },
+    {
+      direction: "sideways",
+      from: "#e0e7ff",
+      kind: "custom-gradient",
+      to: "#fef3c7",
+    },
+    { dataUrl: "https://example.com/x.png", kind: "image", tone: "light" },
+    { dataUrl: "data:text/html,<p>x</p>", kind: "image", tone: "light" },
+    { dataUrl: "data:image/png;base64,iVBORw0KGgo=", kind: "image" },
     "#ffffff",
   ])("拒绝非法背景配置 %#", (background) => {
     expect(
@@ -244,15 +250,24 @@ describe("Style System Interface", () => {
   });
 
   it.each([
-    { gradient: "warm-light", kind: "gradient" },
-    { gradient: "cool-light", kind: "gradient" },
-    { gradient: "pink-light", kind: "gradient" },
-    { gradient: "ocean", kind: "gradient" },
-    { gradient: "forest", kind: "gradient" },
-    { kind: "pattern", pattern: "dots" },
-    { kind: "pattern", pattern: "grid" },
-    { kind: "pattern", pattern: "diagonal" },
-  ] as const)("受控背景 %# 可识别并单项恢复", (background) => {
+    {
+      direction: "diagonal",
+      from: "#e0e7ff",
+      kind: "custom-gradient",
+      to: "#fef3c7",
+    },
+    {
+      direction: "vertical",
+      from: "#111827",
+      kind: "custom-gradient",
+      to: "#374151",
+    },
+    {
+      dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+      kind: "image",
+      tone: "light",
+    },
+  ] as const)("自定义背景 %# 可识别并单项恢复", (background) => {
     const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
       patch: { background },
       type: "update-configuration",
@@ -275,7 +290,14 @@ describe("Style System Interface", () => {
 
   it("选回主题默认背景时删除对应覆盖", () => {
     const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
-      patch: { background: { gradient: "forest", kind: "gradient" } },
+      patch: {
+        background: {
+          direction: "vertical",
+          from: "#111827",
+          kind: "custom-gradient",
+          to: "#374151",
+        },
+      },
       type: "update-configuration",
     });
 
@@ -287,42 +309,79 @@ describe("Style System Interface", () => {
     ).toEqual({});
   });
 
-  it("受控渐变背景生成渐变渲染样式", () => {
+  it("自定义渐变背景生成渐变渲染样式", () => {
     const state = styleSystem.transition(styleSystem.hydrate(undefined), {
-      patch: { background: { gradient: "ocean", kind: "gradient" } },
+      patch: {
+        background: {
+          direction: "horizontal",
+          from: "#e0e7ff",
+          kind: "custom-gradient",
+          to: "#fef3c7",
+        },
+      },
       type: "update-configuration",
     });
     const styles = styleSystem.resolve(state, { page: "body" }).styles;
 
-    expect(String(styles.container.backgroundImage)).toContain(
-      "linear-gradient"
+    expect(styles.container.backgroundImage).toBe(
+      "linear-gradient(90deg, #e0e7ff 0%, #fef3c7 100%)"
     );
     expect(styles.container.backgroundSize).toBe("cover");
     expect(styles.container.backgroundRepeat).toBeUndefined();
-    // 受控渐变全部是浅色基调，正文保持深色可读
+    // 浅色渐变正文保持深色可读
     expect(styles.p.color).toBe("#000000");
   });
 
-  it("受控图案背景生成平铺渲染样式", () => {
+  it("深色自定义渐变自动使用深色基调可读样式", () => {
     const state = styleSystem.transition(styleSystem.hydrate(undefined), {
-      patch: { background: { kind: "pattern", pattern: "dots" } },
+      patch: {
+        background: {
+          direction: "vertical",
+          from: "#111827",
+          kind: "custom-gradient",
+          to: "#1f2937",
+        },
+      },
       type: "update-configuration",
     });
     const styles = styleSystem.resolve(state, { page: "body" }).styles;
 
-    expect(String(styles.container.backgroundImage)).toContain(
-      "data:image/svg+xml"
-    );
-    expect(styles.container.backgroundRepeat).toBe("repeat");
-    expect(styles.container.backgroundSize).toBe("16px 16px");
-    // 图案铺在浅色底上，正文保持深色可读
-    expect(styles.p.color).toBe("#000000");
+    expect(styles.p.color).toBe("#ffffff");
   });
 
-  it("受控渐变与图案背景在导出审计中保持安全", () => {
+  it("图片背景按 cover 居中铺放并按采样基调选取可读语义色", () => {
+    const darkImage = {
+      dataUrl: "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
+      kind: "image",
+      tone: "dark",
+    } as const;
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { background: darkImage },
+      type: "update-configuration",
+    });
+    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+
+    expect(styles.container.backgroundImage).toBe(
+      `url("${darkImage.dataUrl}")`
+    );
+    expect(styles.container.backgroundSize).toBe("cover");
+    expect(styles.container.backgroundPosition).toBe("center");
+    expect(styles.p.color).toBe("#ffffff");
+  });
+
+  it("自定义渐变与图片背景在导出审计中保持安全", () => {
     for (const background of [
-      { gradient: "warm-light", kind: "gradient" },
-      { kind: "pattern", pattern: "grid" },
+      {
+        direction: "diagonal",
+        from: "#fbcfe8",
+        kind: "custom-gradient",
+        to: "#bfdbfe",
+      },
+      {
+        dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+        kind: "image",
+        tone: "light",
+      },
     ] as const) {
       const state = styleSystem.transition(styleSystem.hydrate(undefined), {
         patch: { background },

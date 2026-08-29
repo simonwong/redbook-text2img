@@ -1,69 +1,94 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
-const linearGradientPattern = /linear-gradient/;
 const radialGradientPattern = /radial-gradient/;
-const svgDataUriPattern = /url\("data:image\/svg\+xml/;
+const diagonalGradientPattern = /linear-gradient\(135deg/;
+const horizontalGradientPattern = /linear-gradient\(90deg/;
+const jpegDataUrlPattern = /url\("data:image\/jpeg/;
 const pngFilenamePattern = /\.png$/;
 
-test("选择受控背景后预览更新且刷新保持", async ({ page }) => {
+// 1×1 红色 PNG，走真实上传压缩链路
+const redPixelPng = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=",
+  "base64"
+);
+
+const openSettings = async (page: Page) => {
   await page.setViewportSize({ height: 900, width: 1200 });
   await page.goto("/");
   // 手动清一次再刷新：addInitScript 会在 reload 时重复执行并清掉已持久化的选择
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.getByRole("button", { name: "设置样式" }).click();
+};
 
+test("自定义背景：主题背景、纯色、渐变、图片上传并刷新保持", async ({
+  page,
+}) => {
+  await openSettings(page);
   const backgroundSection = page.getByRole("region", { name: "背景" });
-  await expect(backgroundSection.getByText("内置方案")).toBeVisible();
-  await expect(backgroundSection.getByText("渐变")).toBeVisible();
-  await expect(backgroundSection.getByText("图案")).toBeVisible();
   const preview = page.locator(".img-preview");
 
-  // 受控渐变：海蓝
-  await backgroundSection.getByRole("button", { name: "海蓝" }).click();
-  await expect(preview).toHaveCSS("background-image", linearGradientPattern);
-  await expect(preview).toHaveCSS("background-size", "cover");
-
-  // 受控图案：圆点（平铺 + 固定尺寸）
-  await backgroundSection.getByRole("button", { name: "圆点" }).click();
-  await expect(preview).toHaveCSS("background-image", svgDataUriPattern);
-  await expect(preview).toHaveCSS("background-repeat", "repeat");
-  await expect(preview).toHaveCSS("background-size", "16px 16px");
-
-  // 内置方案：蜜光暖阳
-  await backgroundSection.getByRole("button", { name: "蜜光暖阳" }).click();
+  // 默认选中主题背景（清新白为 mesh 渐变）
+  await expect(
+    backgroundSection.getByRole("button", { name: "主题背景" })
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(preview).toHaveCSS("background-image", radialGradientPattern);
 
-  // 纯色：默认白色
+  // 自定义渐变：双色 + 方向
+  await backgroundSection.getByRole("button", { name: "渐变" }).click();
+  await expect(preview).toHaveCSS("background-image", diagonalGradientPattern);
+  await expect(preview).toHaveCSS("background-size", "cover");
+  await backgroundSection
+    .getByRole("radio", { name: "左右" })
+    .locator("..")
+    .click();
+  await expect(preview).toHaveCSS(
+    "background-image",
+    horizontalGradientPattern
+  );
+
+  // 纯色：默认白色，调色后跟随
   await backgroundSection
     .getByRole("button", { name: "纯色", exact: true })
     .click();
   await expect(preview).toHaveCSS("background-color", "rgb(255, 255, 255)");
   await expect(preview).toHaveCSS("background-image", "none");
+  await backgroundSection.locator("#solid-background-color").fill("#111827");
+  await expect(preview).toHaveCSS("background-color", "rgb(17, 24, 39)");
 
-  // 刷新后选择保持
-  await backgroundSection.getByRole("button", { name: "方格" }).click();
-  await expect(preview).toHaveCSS("background-repeat", "repeat");
+  // 图片：上传后压缩为本地 data URL
+  await backgroundSection.locator('input[type="file"]').setInputFiles({
+    buffer: redPixelPng,
+    mimeType: "image/png",
+    name: "pixel.png",
+  });
+  await expect(preview).toHaveCSS("background-image", jpegDataUrlPattern);
+  await expect(preview).toHaveCSS("background-size", "cover");
+
+  // 刷新后图片背景保持，重新打开面板仍选中图片
   await page.reload();
-  await expect(preview).toHaveCSS("background-image", svgDataUriPattern);
+  await expect(preview).toHaveCSS("background-image", jpegDataUrlPattern);
   await page.getByRole("button", { name: "设置样式" }).click();
   await expect(
-    page.getByRole("region", { name: "背景" }).getByRole("button", {
-      name: "方格",
-    })
+    page
+      .getByRole("region", { name: "背景" })
+      .getByRole("button", { name: "图片", exact: true })
   ).toHaveAttribute("aria-pressed", "true");
+
+  // 选回主题背景后恢复主题画布
+  await page
+    .getByRole("region", { name: "背景" })
+    .getByRole("button", { name: "主题背景" })
+    .click();
+  await expect(preview).toHaveCSS("background-image", radialGradientPattern);
 });
 
-test("渐变与图案背景导出 PNG 成功", async ({ page }) => {
-  await page.setViewportSize({ height: 900, width: 1200 });
-  await page.goto("/");
-  await page.evaluate(() => localStorage.clear());
-  await page.reload();
-  await page.getByRole("button", { name: "设置样式" }).click();
+test("自定义渐变与图片背景导出 PNG 成功", async ({ page }) => {
+  await openSettings(page);
   const backgroundSection = page.getByRole("region", { name: "背景" });
+  const preview = page.locator(".img-preview");
 
-  for (const name of ["海蓝", "圆点"]) {
-    await backgroundSection.getByRole("button", { name }).click();
+  const exportAndExpectPng = async () => {
     const downloadPromise = page.waitForEvent("download", {
       timeout: 30_000,
     });
@@ -79,5 +104,17 @@ test("渐变与图案背景导出 PNG 成功", async ({ page }) => {
     );
     // 非空图片（空白/失败导出通常只有几 KB）
     expect(size).toBeGreaterThan(10_000);
-  }
+  };
+
+  await backgroundSection.getByRole("button", { name: "渐变" }).click();
+  await expect(preview).toHaveCSS("background-image", diagonalGradientPattern);
+  await exportAndExpectPng();
+
+  await backgroundSection.locator('input[type="file"]').setInputFiles({
+    buffer: redPixelPng,
+    mimeType: "image/png",
+    name: "pixel.png",
+  });
+  await expect(preview).toHaveCSS("background-image", jpegDataUrlPattern);
+  await exportAndExpectPng();
 });

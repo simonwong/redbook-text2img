@@ -1,12 +1,9 @@
 import type { GeneratedStyles } from "../theme/generator";
 import type {
-  BackgroundPreset,
   CanvasBackground,
   CoverLayout,
   Density,
-  GradientPreset,
   HeadingAlignment,
-  PatternPreset,
   StyleAdjustments,
 } from "../theme/types";
 
@@ -19,13 +16,10 @@ export interface StyleConfiguration {
 }
 
 export interface StyleConfigurationOptions {
-  readonly backgroundPreset: readonly BackgroundPreset[];
   readonly bodyHeadingAlignment: readonly StyleConfiguration["bodyHeadingAlignment"][];
   readonly coverLayout: readonly StyleConfiguration["coverLayout"][];
   readonly density: readonly StyleConfiguration["density"][];
   readonly fontId: readonly string[];
-  readonly gradient: readonly GradientPreset[];
-  readonly pattern: readonly PatternPreset[];
 }
 
 export interface StyleSystemState {

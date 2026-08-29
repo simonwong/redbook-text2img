@@ -1,10 +1,5 @@
 import { applyAdjustments, resolveThemeDefaults } from "../theme/adjustments";
-import {
-  backgroundPresetIds,
-  canvasBackgroundsEqual,
-  gradientPresetIds,
-  patternPresetIds,
-} from "../theme/canvas";
+import { backgroundPresetIds, canvasBackgroundsEqual } from "../theme/canvas";
 import { fontPresets } from "../theme/fonts";
 import { resolveStyleFoundation } from "../theme/foundation";
 import { generateStyles } from "../theme/generator";
@@ -12,8 +7,7 @@ import { defaultTheme, getThemeById, presetThemes } from "../theme/themes";
 import type {
   BackgroundPreset,
   CoverStyleOverride,
-  GradientPreset,
-  PatternPreset,
+  GradientDirection,
 } from "../theme/types";
 import type {
   RenderContext,
@@ -49,14 +43,14 @@ const themeCatalog: readonly ThemeCatalogItem[] = presetThemes.map(
   ({ description, id, name }) => ({ description, id, name })
 );
 const hexColorPattern = /^#[\da-f]{6}$/i;
+const imageDataUrlPattern = /^data:image\//;
+// 图片背景经上传压缩（JPEG ≤1600px）后持久化在 localStorage，留出配额余量
+const maxImageDataUrlLength = 4_000_000;
 const configurationOptions = {
-  backgroundPreset: backgroundPresetIds,
   bodyHeadingAlignment: ["center", "left"],
   coverLayout: ["center-poster", "top-left", "bottom-left"],
   density: ["compact", "snug", "normal", "relaxed", "spacious"],
   fontId: fontPresets.map(({ id }) => id),
-  gradient: gradientPresetIds,
-  pattern: patternPresetIds,
 } satisfies StyleConfigurationOptions;
 
 const diffConfiguration = (
@@ -108,11 +102,12 @@ const bodyHeadingAlignments = new Set<string>(
   configurationOptions.bodyHeadingAlignment
 );
 const coverLayouts = new Set<string>(configurationOptions.coverLayout);
-const backgroundPresets = new Set<string>(
-  configurationOptions.backgroundPreset
-);
-const gradientPresets = new Set<string>(configurationOptions.gradient);
-const patternPresets = new Set<string>(configurationOptions.pattern);
+const backgroundPresets = new Set<string>(backgroundPresetIds);
+const gradientDirections = new Set<string>([
+  "vertical",
+  "horizontal",
+  "diagonal",
+]);
 const fontIds = new Set<string>(configurationOptions.fontId);
 const densities = new Set<string>(configurationOptions.density);
 // 旧三档持久化值中仅 balanced 消失，按像素等价迁移到 normal；
@@ -147,24 +142,29 @@ const sanitizeBackground = (
     };
   }
   if (
-    value.kind === "gradient" &&
-    typeof value.gradient === "string" &&
-    gradientPresets.has(value.gradient)
+    value.kind === "custom-gradient" &&
+    typeof value.from === "string" &&
+    hexColorPattern.test(value.from) &&
+    typeof value.to === "string" &&
+    hexColorPattern.test(value.to) &&
+    typeof value.direction === "string" &&
+    gradientDirections.has(value.direction)
   ) {
     return {
-      gradient: value.gradient as GradientPreset,
-      kind: "gradient",
+      direction: value.direction as GradientDirection,
+      from: value.from.toLowerCase(),
+      kind: "custom-gradient",
+      to: value.to.toLowerCase(),
     };
   }
   if (
-    value.kind === "pattern" &&
-    typeof value.pattern === "string" &&
-    patternPresets.has(value.pattern)
+    value.kind === "image" &&
+    typeof value.dataUrl === "string" &&
+    imageDataUrlPattern.test(value.dataUrl) &&
+    value.dataUrl.length <= maxImageDataUrlLength &&
+    (value.tone === "light" || value.tone === "dark")
   ) {
-    return {
-      kind: "pattern",
-      pattern: value.pattern as PatternPreset,
-    };
+    return { dataUrl: value.dataUrl, kind: "image", tone: value.tone };
   }
   if (
     value.kind === "solid" &&
@@ -173,6 +173,7 @@ const sanitizeBackground = (
   ) {
     return { color: value.color.toLowerCase(), kind: "solid" };
   }
+  // 旧版受控渐变/图案背景已下线，持久化旧值按非法值丢弃，回落主题背景
 };
 
 const sanitizeDensity = (

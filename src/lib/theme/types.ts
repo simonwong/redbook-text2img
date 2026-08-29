@@ -26,22 +26,25 @@ export type BackgroundPreset =
   | "cool-mist"
   | "cherry-cream";
 
-/** 受控渐变背景选项（封闭集合，全部浅色基调） */
-export type GradientPreset =
-  | "warm-light"
-  | "cool-light"
-  | "pink-light"
-  | "ocean"
-  | "forest";
-
-/** 受控图案背景选项（封闭集合，内联 SVG 平铺在浅色底上） */
-export type PatternPreset = "dots" | "grid" | "diagonal";
+/** 自定义渐变方向（封闭集合，双色线性渐变） */
+export type GradientDirection = "vertical" | "horizontal" | "diagonal";
 
 export type CanvasBackground =
   | { readonly kind: "preset"; readonly preset: BackgroundPreset }
   | { readonly color: string; readonly kind: "solid" }
-  | { readonly gradient: GradientPreset; readonly kind: "gradient" }
-  | { readonly kind: "pattern"; readonly pattern: PatternPreset };
+  | {
+      readonly direction: GradientDirection;
+      readonly from: string;
+      readonly kind: "custom-gradient";
+      readonly to: string;
+    }
+  | {
+      /** 本地图片 data URL（上传时压缩，禁止远程资源） */
+      readonly dataUrl: string;
+      readonly kind: "image";
+      /** 上传时采样的明暗基调，用于选取可读语义色 */
+      readonly tone: "light" | "dark";
+    };
 
 export interface TypographyStyle {
   baseFontSize: number; // 12-18
