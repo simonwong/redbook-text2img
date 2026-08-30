@@ -105,25 +105,14 @@ describe("内置主题 1–4", () => {
   it.each([
     "trianglify-minimalist",
     "gradient-warm",
-  ])("%s 的浮层语义色从 Seam 解析后满足 WCAG AA", (themeId) => {
+  ])("%s 的容器化语义色满足 WCAG AA", (themeId) => {
     const styles = styleSystem.resolve(
       styleSystem.hydrate({ currentThemeId: themeId }),
       { page: "body" }
     ).styles;
-    const background = String(styles.innerContainer.backgroundColor);
-    const textColors = [
-      styles.h1.color,
-      styles.p.color,
-      styles.strong.color,
-      styles.em.color,
-      styles.ul.color,
-      styles.a.color,
-      styles.footer.color,
-    ];
 
-    for (const color of textColors) {
-      expect(ratio(String(color), background)).toBeGreaterThanOrEqual(4.5);
-    }
+    // 文字直接落在图案/渐变背景上，正文级对比由 e2e 像素采样校验；
+    // 这里只断言能静态求值的容器化元素（高亮/引用/代码）与链接下划线。
     expect(
       ratio(String(styles.mark.color), String(styles.mark.backgroundColor))
     ).toBeGreaterThanOrEqual(4.5);

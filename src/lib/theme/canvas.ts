@@ -7,7 +7,6 @@ import type {
   CanvasBackground,
   FullStyle,
   GradientDirection,
-  SurfaceStyle,
 } from "./types";
 
 type Tone = "dark" | "light";
@@ -69,20 +68,6 @@ const backgroundDefinitions: Record<BackgroundPreset, BackgroundDefinition> = {
     background: { type: "gradient", value: gradients.warmSun },
     tone: "light",
   },
-};
-
-const lightSurface: SurfaceStyle = {
-  background: "#ffffff",
-  borderRadius: 16,
-  boxShadow: "0 8px 28px rgba(31, 41, 55, 0.14)",
-  margin: 16,
-};
-
-const darkSurface: SurfaceStyle = {
-  background: "rgba(17, 24, 39, 0.88)",
-  borderRadius: 16,
-  boxShadow: "0 8px 28px rgba(0, 0, 0, 0.28)",
-  margin: 16,
 };
 
 const getSolidTone = (color: string): Tone =>
@@ -202,14 +187,6 @@ const applySemanticPalette = (style: FullStyle, tone: Tone): FullStyle => {
     paragraph: { color: "#000000" },
   };
 };
-
-/** 浮层卡 surface：跟随背景明暗（主题内部细节，由 foundation 装配） */
-export const floatingCardSurface = (
-  backgroundChoice: CanvasBackground
-): SurfaceStyle =>
-  getBackgroundDefinition(backgroundChoice).tone === "dark"
-    ? darkSurface
-    : lightSurface;
 
 export const applyCanvasConfiguration = (
   baseStyle: FullStyle,

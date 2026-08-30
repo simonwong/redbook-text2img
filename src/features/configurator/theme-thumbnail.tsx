@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import type {
   RenderHeader,
   RenderStyle,
@@ -24,19 +23,6 @@ export const ThemeThumbnail = ({
   const density = Number.parseFloat(
     String(bodyStyles.container.fontSize ?? "16px")
   );
-  const hasSurface = Boolean(coverStyles.container.padding);
-  const surfaceStyle: CSSProperties = hasSurface
-    ? {
-        backgroundColor: coverStyles.innerContainer.backgroundColor,
-        backgroundImage: coverStyles.innerContainer.backgroundImage,
-        backgroundPosition: coverStyles.innerContainer.backgroundPosition,
-        backgroundSize: coverStyles.innerContainer.backgroundSize,
-        borderRadius: coverStyles.innerContainer.borderRadius,
-        boxShadow: coverStyles.innerContainer.boxShadow,
-        inset: "5px",
-        position: "absolute",
-      }
-    : { inset: 0, position: "absolute" };
   const barStyle = {
     backgroundColor: bodyStyles.p.color,
     height: density > 16 ? 4 : 3,
@@ -46,12 +32,11 @@ export const ThemeThumbnail = ({
   return (
     <div
       aria-hidden="true"
-      className="flex h-full w-full flex-col"
+      className="absolute inset-0 flex h-full w-full flex-col"
       data-cover-align={coverStyles.content.alignItems}
       data-cover-vertical={coverStyles.content.justifyContent}
       data-density={bodyStyles.container.fontSize}
       data-theme-thumbnail={theme.id}
-      style={surfaceStyle}
     >
       {headerBar && (
         <div

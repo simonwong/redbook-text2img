@@ -23,7 +23,6 @@ export const presetThemes: readonly PresetTheme[] = [
     },
     description: "抽象三角形为背景的极简风格",
     id: "trianglify-minimalist",
-    internals: { floatingCard: true },
     name: "三角极简",
   },
   {
@@ -48,7 +47,6 @@ export const presetThemes: readonly PresetTheme[] = [
     },
     description: "奶油蜜桃光晕，温柔包裹的午后阳光",
     id: "gradient-warm",
-    internals: { floatingCard: true },
     name: "蜜光暖阳",
   },
   {

@@ -14,7 +14,6 @@ const themeProfiles: readonly ThemeProfile[] = [
     fontFamily: serifFontPattern,
     fontSize: "16px",
     name: "晨雾微光",
-    surface: "rgba(0, 0, 0, 0)",
     tone: "light",
   },
   {
@@ -24,7 +23,6 @@ const themeProfiles: readonly ThemeProfile[] = [
     fontFamily: sansFontPattern,
     fontSize: "16px",
     name: "樱花奶霜",
-    surface: "rgba(0, 0, 0, 0)",
     tone: "light",
   },
   {
@@ -34,7 +32,6 @@ const themeProfiles: readonly ThemeProfile[] = [
     fontFamily: serifFontPattern,
     fontSize: "16px",
     name: "阅读模式",
-    surface: "rgba(0, 0, 0, 0)",
     tone: "light",
   },
   {
@@ -45,7 +42,6 @@ const themeProfiles: readonly ThemeProfile[] = [
     fontSize: "15px",
     hasHeader: true,
     name: "Apple 备忘录",
-    surface: "rgba(0, 0, 0, 0)",
     tone: "light",
   },
 ];

@@ -82,7 +82,6 @@ export function generateStyles(
   const { bodyHeadingAlignment, fontFamily, headingScale, letterSpacing } =
     style;
   const coverStyle = options?.coverStyle;
-  const surface = style.surface;
 
   // 封面标题对齐：优先使用 coverStyle 中的设置,覆盖用户调整
   const effectiveHeadingAlignment =
@@ -144,10 +143,6 @@ export function generateStyles(
       position: "relative",
       fontSize: `${baseFontSize}px`,
       boxSizing: "border-box",
-      // surface 变体：container 获得留白露出背景四周（innerContainer 100% 高度自动收缩）
-      ...(surface && {
-        padding: `${surface.margin}px`,
-      }),
     },
 
     innerContainer: {
@@ -157,15 +152,6 @@ export function generateStyles(
       boxSizing: "border-box",
       display: "flex",
       flexDirection: "column",
-      // surface 变体：innerContainer 变为浮层卡（保留原有密度 padding）
-      ...(surface && {
-        backgroundColor: surface.background,
-        backgroundImage: surface.backgroundImage,
-        backgroundPosition: surface.backgroundPosition,
-        backgroundSize: surface.backgroundSize,
-        borderRadius: `${surface.borderRadius}px`,
-        ...(surface.boxShadow && { boxShadow: surface.boxShadow }),
-      }),
     },
 
     content: {

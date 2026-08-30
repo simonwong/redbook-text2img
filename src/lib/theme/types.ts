@@ -110,25 +110,6 @@ export interface SpacingStyle {
   paragraphGap: number;
 }
 
-/**
- * 卡片浮层（surface）：内容浮在圆角卡片上，背景四周露出（封面与内容页一致生效）。
- * 主题内部实现细节，不对用户开放配置。
- * 仅使用 html2canvas-pro 可导出属性：solid/rgba 背景、borderRadius、boxShadow；禁 backdrop-filter。
- */
-export interface SurfaceStyle {
-  /** 浮层卡背景（建议 rgba 半透明白，如 rgba(255,255,255,0.88)） */
-  background: string;
-  backgroundImage?: string;
-  backgroundPosition?: string;
-  backgroundSize?: string;
-  /** 卡片圆角（px） */
-  borderRadius: number;
-  /** 卡片投影（柔和阴影，强化浮层层次） */
-  boxShadow?: string;
-  /** 卡片四周留白 = container padding（px），露出背景边缘 */
-  margin: number;
-}
-
 /** Complete internal style definition for Markdown rendering */
 export interface FullStyle {
   background: BackgroundStyle;
@@ -140,8 +121,6 @@ export interface FullStyle {
   list: ListStyle;
   paragraph: ParagraphStyle;
   spacing: SpacingStyle;
-  /** 内容卡浮层布局变体（可选） */
-  surface?: SurfaceStyle;
   typography: TypographyStyle;
 }
 
@@ -198,8 +177,6 @@ export interface HeaderBarStyle {
 
 /** 主题内部实现细节（不参与用户配置，不持久化） */
 export interface ThemeInternals {
-  /** 内容浮层卡（三角极简、蜜光暖阳的观感核心） */
-  readonly floatingCard?: boolean;
   /** 装饰性顶部导航栏（Apple 备忘录） */
   readonly headerBar?: HeaderBarStyle;
 }
