@@ -16,12 +16,10 @@ export interface ThemeProfile {
   readonly bodyAlign: "center" | "left";
   readonly coverAlign: "center" | "left";
   readonly coverVerticalAlign: "center" | "flex-end" | "flex-start";
-  readonly expectedSurface?: readonly [number, number, number];
   readonly fontFamily: RegExp;
   readonly fontSize: string;
   readonly hasHeader?: boolean;
   readonly name: string;
-  readonly surface: string;
   readonly tone: "dark" | "light";
 }
 
@@ -207,7 +205,8 @@ export const assertThemePreset = async (
   await page.getByRole("button", { name: "第 3 张图片" }).click();
   const content = inner.locator(":scope > div:first-child");
   await expect(content).toHaveCSS("justify-content", "flex-start");
-  await expect(inner).toHaveCSS("background-color", profile.surface);
+  // 浮层卡已移除（ADR 0005）：内容容器必须透明，直接露出画布背景
+  await expect(inner).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   expect(
     await content.evaluate(
       (element) => element.scrollHeight <= element.clientHeight + 1
@@ -416,10 +415,5 @@ export const assertThemePreset = async (
       Math.abs(previewInk - exportedInk) / region.points.length
     ).toBeLessThanOrEqual(0.12);
     footerOffset += region.points.length;
-  }
-  if (profile.expectedSurface) {
-    expect(
-      colorDistance(exportedSample.pixels[1], profile.expectedSurface)
-    ).toBeLessThanOrEqual(12);
   }
 };

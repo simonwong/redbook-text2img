@@ -1,5 +1,5 @@
 import { TrianglifyGary } from "./backgroundSet";
-import { applyCanvasConfiguration, floatingCardSurface } from "./canvas";
+import { applyCanvasConfiguration } from "./canvas";
 import { gradients, spacing, typography } from "./tokens";
 import type {
   CoverStyleOverride,
@@ -212,13 +212,13 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
     emphasis: {
       bold: { color: "#0f172a", fontWeight: typography.fontWeight.bold },
       highlight: { background: "#1d4ed8", color: "#ffffff" },
-      italic: { color: "#475569" },
+      italic: { color: "#334155" },
     },
     heading: {
       color: "#0f172a",
       fontWeight: typography.fontWeight.bold,
     },
-    link: { color: "#1d4ed8", underline: true },
+    link: { color: "#1e3a8a", underline: true },
     list: { color: "#334155", markerColor: "#64748b" },
     paragraph: { color: "#334155" },
     spacing: baseSpacing,
@@ -239,13 +239,13 @@ const foundationStyles: Record<FoundationProfile, FullStyle> = {
     emphasis: {
       bold: { color: "#4a2a15", fontWeight: typography.fontWeight.bold },
       highlight: { background: "#9a4512", color: "#ffffff" },
-      italic: { color: "#8a4719" },
+      italic: { color: "#713715" },
     },
     heading: {
       color: "#4a2a15",
       fontWeight: typography.fontWeight.bold,
     },
-    link: { color: "#93400d", underline: true },
+    link: { color: "#7c2d12", underline: true },
     list: { color: "#713715", markerColor: "#a34f17" },
     paragraph: { color: "#713715" },
     spacing: baseSpacing,
@@ -294,8 +294,6 @@ export const resolveStyleFoundation = (
       headingScale: 1.25,
     },
     headerBar: internals?.headerBar,
-    style: internals?.floatingCard
-      ? { ...styled, surface: floatingCardSurface(configuration.background) }
-      : styled,
+    style: styled,
   };
 };

@@ -427,30 +427,6 @@ describe("Style System Interface", () => {
     ).toBeGreaterThanOrEqual(4.5);
   });
 
-  it.each([
-    ["clean-light", false],
-    ["trianglify-minimalist", true],
-    ["gradient-warm", true],
-    ["apple-notes", false],
-  ] as const)("主题 %s 的浮层卡是内部细节（%s）", (themeId, hasSurface) => {
-    const state = styleSystem.hydrate({ currentThemeId: themeId });
-    const body = styleSystem.resolve(state, { page: "body" }).styles;
-    const cover = styleSystem.resolve(state, { page: "cover" }).styles;
-
-    for (const styles of [body, cover]) {
-      if (hasSurface) {
-        expect(styles.container.padding).toBe("16px");
-        expect(styles.innerContainer.backgroundColor).toBeDefined();
-        expect(styles.innerContainer.borderRadius).toBeDefined();
-        expect(styles.innerContainer.boxShadow).toBeDefined();
-      } else {
-        expect(styles.container.padding).toBeUndefined();
-        expect(styles.innerContainer.backgroundColor).toBeUndefined();
-        expect(styles.innerContainer.boxShadow).toBeUndefined();
-      }
-    }
-  });
-
   it("Apple 备忘录的装饰顶栏是主题内部细节，封面与正文一致", () => {
     const state = styleSystem.hydrate({ currentThemeId: "apple-notes" });
     const body = styleSystem.resolve(state, { page: "body" });
@@ -465,13 +441,9 @@ describe("Style System Interface", () => {
     }
   });
 
-  it("其余主题没有浮层卡或装饰顶栏", () => {
+  it("其余主题没有装饰顶栏", () => {
     for (const theme of styleSystem.catalog()) {
-      if (
-        ["trianglify-minimalist", "gradient-warm", "apple-notes"].includes(
-          theme.id
-        )
-      ) {
+      if (theme.id === "apple-notes") {
         continue;
       }
       const resolved = styleSystem.resolve(
