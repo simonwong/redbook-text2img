@@ -4,5 +4,12 @@
     "ultracite/biome/core",
     "ultracite/biome/react",
     "ultracite/biome/next"
-  ]
+  ],
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedPackageJson": "off"
+      }
+    }
+  }
 }
