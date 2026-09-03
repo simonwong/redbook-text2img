@@ -222,7 +222,7 @@ export const ConfiguratorContent = () => {
         <Input
           id="card-signature"
           onChange={(event) => setSignature(event.target.value)}
-          placeholder="署名"
+          placeholder="署名，如 @你的小红书名"
           value={signature}
         />
         <Switch

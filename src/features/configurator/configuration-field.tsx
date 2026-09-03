@@ -24,7 +24,7 @@ export const ConfigurationField = ({
   <div className="flex min-w-0 flex-col items-start gap-1.5">
     <div className="flex min-h-5 w-full items-center justify-between gap-2">
       <span
-        className="flex items-center gap-1.5 text-[11px] text-ink-3"
+        className="flex items-center gap-1.5 text-[11px] text-ink-2"
         id={labelId}
       >
         {label}
