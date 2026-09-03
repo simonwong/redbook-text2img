@@ -28,10 +28,10 @@ export const GradientStopRow = ({
 }: GradientStopRowProps) => (
   <div className="ds-input flex h-11 w-full items-center gap-2 px-2 md:h-[34px]">
     <ColorPopover
-      className="size-6"
       label="渐变起点颜色"
       onChange={onChangeFrom}
       presets={backgroundColorPresets}
+      swatchClassName="size-6"
       value={from}
     />
     <span
@@ -40,10 +40,10 @@ export const GradientStopRow = ({
       style={{ backgroundImage: customGradientValue(from, to, direction) }}
     />
     <ColorPopover
-      className="size-6"
       label="渐变终点颜色"
       onChange={onChangeTo}
       presets={backgroundColorPresets}
+      swatchClassName="size-6"
       value={to}
     />
   </div>
