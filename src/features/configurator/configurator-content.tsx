@@ -42,6 +42,8 @@ const densityLabels: Record<StyleConfiguration["density"], string> = {
   spacious: "宽松",
 };
 const fontLabels: Record<string, string> = {
+  kai: "楷体",
+  mono: "等宽",
   sans: "无衬线",
   serif: "衬线",
 };
@@ -196,23 +198,12 @@ export const ConfiguratorContent = () => {
           />
         </ConfigurationField>
 
-        <ConfigurationField
-          isModified={overridden.fontId}
+        <ConfigurationSegmentRow
+          field="fontId"
           label="字体"
           labelId={fieldLabelIds.font}
-          onReset={() => resetConfigurationField("fontId")}
-        >
-          <SegmentedControl
-            labelledBy={fieldLabelIds.font}
-            onChange={(fontId) =>
-              updateConfiguration({
-                fontId: fontId as StyleConfiguration["fontId"],
-              })
-            }
-            options={fontOptions}
-            value={configuration.fontId}
-          />
-        </ConfigurationField>
+          options={fontOptions}
+        />
       </SettingsGroup>
 
       <SettingsGroup headingId={sectionHeadingIds.bodyHeading} title="正文标题">

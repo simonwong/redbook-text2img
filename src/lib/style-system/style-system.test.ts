@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { type StyleConfiguration, styleSystem } from "./style-system";
 
 const unsafeCssValuePattern = /https?:|javascript:/i;
+// 四种系统字体栈都必须给中文留回退，否则中文会掉进纯拉丁字库的兜底
+const chineseFallbackPattern =
+  /PingFang SC|Microsoft YaHei|Noto Sans SC|Noto Serif SC|Source Han Serif SC|SimSun|Kaiti SC|STKaiti|KaiTi|AR PL UKai CN|Noto Serif CJK SC/;
 
 const relativeLuminance = (hex: string): number => {
   const channels = [1, 3, 5].map((start) => {
@@ -56,7 +59,7 @@ describe("Style System Interface", () => {
       cardFrame: ["none", "white"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "snug", "normal", "relaxed", "spacious"],
-      fontId: ["sans", "serif"],
+      fontId: ["sans", "serif", "kai", "mono"],
     });
   });
 
@@ -523,8 +526,6 @@ describe("Style System Interface", () => {
   it.each([
     ["system", "sans"],
     ["rounded", "sans"],
-    ["kai", "serif"],
-    ["mono", "sans"],
   ] as const)("把旧字体 %s 迁移到可靠字体 %s", (legacy, expected) => {
     const state = styleSystem.hydrate({
       currentThemeId: "clean-light",
@@ -533,6 +534,18 @@ describe("Style System Interface", () => {
 
     expect(styleSystem.read(state).configuration.fontId).toBe(expected);
   });
+
+  it.each(["sans", "serif", "kai", "mono"] as const)(
+    "旧持久化字体 %s 直接生效",
+    (fontId) => {
+      const state = styleSystem.hydrate({
+        currentThemeId: "clean-light",
+        overrides: { fontId },
+      });
+
+      expect(styleSystem.read(state).configuration.fontId).toBe(fontId);
+    }
+  );
 
   it("丢弃会命中对象原型的非法密度", () => {
     const state = styleSystem.hydrate({
@@ -927,6 +940,20 @@ describe("Style System Interface", () => {
     expect(snapshot.configuration.density).toBe(density);
     expect(styles.container.fontSize).toBe(fontSize);
   });
+
+  it.each(styleSystem.configurationOptions().fontId)(
+    "字体 %s 的 font-family 栈保留中文回退",
+    (fontId) => {
+      const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { fontId: fontId as StyleConfiguration["fontId"] },
+        type: "update-configuration",
+      });
+
+      expect(
+        styleSystem.resolve(state, { page: "body" }).styles.container.fontFamily
+      ).toMatch(chineseFallbackPattern);
+    }
+  );
 
   it.each(styleSystem.catalog())("解析内置主题 $id", (theme) => {
     const state = styleSystem.hydrate({ currentThemeId: theme.id });

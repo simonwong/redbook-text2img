@@ -201,7 +201,7 @@ describe("content theme store", () => {
     );
   });
 
-  it("刷新时把 v5 等宽字体迁移为无衬线", async () => {
+  it("刷新时让 v5 等宽字体直接生效", async () => {
     storage.setItem(
       "redbook-content-theme",
       JSON.stringify({
@@ -216,9 +216,9 @@ describe("content theme store", () => {
 
     const reloadedStores = await import("./theme");
 
-    expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual(
-      {}
-    );
+    expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual({
+      fontId: "mono",
+    });
   });
 
   it("刷新时丢弃已移除的正文标题大小覆盖并保留其他字段", async () => {

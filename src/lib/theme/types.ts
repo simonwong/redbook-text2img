@@ -150,7 +150,7 @@ export interface StyleAdjustments {
   readonly cardFrame: CardFrame;
   readonly coverLayout: CoverLayout;
   readonly density: Density;
-  readonly fontId: "sans" | "serif";
+  readonly fontId: "sans" | "serif" | "kai" | "mono";
 }
 
 // ============================================================

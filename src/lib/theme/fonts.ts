@@ -16,17 +16,32 @@ export interface FontPreset {
 
 export const fontPresets: FontPreset[] = [
   {
+    description: "现代简洁风格",
     id: "sans",
     name: "无衬线",
     value:
       '"Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
-    description: "现代简洁风格",
   },
   {
+    description: "传统阅读风格",
     id: "serif",
     name: "衬线",
     value: 'Georgia, "Noto Serif SC", "Source Han Serif SC", "SimSun", serif',
-    description: "传统阅读风格",
+  },
+  {
+    description: "书写手札风格",
+    id: "kai",
+    name: "楷体",
+    value:
+      '"Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL UKai CN", "Noto Serif CJK SC", serif',
+  },
+  {
+    // 等宽字库多不含汉字，中文回落到系统无衬线
+    description: "代码笔记风格",
+    id: "mono",
+    name: "等宽",
+    value:
+      '"SF Mono", "Menlo", "Consolas", "Roboto Mono", "PingFang SC", "Microsoft YaHei", monospace',
   },
 ];
 

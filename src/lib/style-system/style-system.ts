@@ -125,9 +125,8 @@ const densities = new Set<string>(configurationOptions.density);
 const legacyDensities = new Map<string, StyleConfiguration["density"]>([
   ["balanced", "normal"],
 ]);
+// kai 与 mono 已是正式字体，旧持久化值直接生效；只有再无对应字体的旧值才迁移
 const legacyFontIds = new Map<string, string>([
-  ["kai", "serif"],
-  ["mono", "sans"],
   ["rounded", "sans"],
   ["system", "sans"],
 ]);
