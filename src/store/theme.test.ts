@@ -51,7 +51,9 @@ beforeEach(() => {
 
 describe("content theme store", () => {
   it("只持久化主题标识和稀疏覆盖", () => {
-    stores.useContentThemeStore.getState().setDensity("compact");
+    stores.useContentThemeStore
+      .getState()
+      .updateConfiguration({ density: "compact" });
 
     expect(JSON.parse(storage.getItem("redbook-content-theme") ?? "")).toEqual({
       state: {
@@ -64,7 +66,9 @@ describe("content theme store", () => {
 
   it("通过 store 持久化背景覆盖", () => {
     const themeStore = stores.useContentThemeStore.getState();
-    themeStore.setBackground({ color: "#111827", kind: "solid" });
+    themeStore.updateConfiguration({
+      background: { color: "#111827", kind: "solid" },
+    });
 
     expect(JSON.parse(storage.getItem("redbook-content-theme") ?? "")).toEqual({
       state: {
@@ -79,7 +83,7 @@ describe("content theme store", () => {
 
   it("通过 store 撤销主题切换", () => {
     const themeStore = stores.useContentThemeStore;
-    themeStore.getState().setDensity("compact");
+    themeStore.getState().updateConfiguration({ density: "compact" });
     themeStore.getState().selectPresetTheme("reading-mode");
     themeStore.getState().undoThemeSelection();
 

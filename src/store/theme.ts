@@ -15,14 +15,8 @@ interface ContentThemeState extends StyleSystemState {
   resetConfiguration: () => void;
   resetConfigurationField: (field: keyof StyleConfiguration) => void;
   selectPresetTheme: (themeId: string) => void;
-  setBackground: (background: StyleConfiguration["background"]) => void;
-  setBodyHeadingAlignment: (
-    alignment: StyleConfiguration["bodyHeadingAlignment"]
-  ) => void;
-  setCoverLayout: (layout: StyleConfiguration["coverLayout"]) => void;
-  setDensity: (density: StyleConfiguration["density"]) => void;
-  setFont: (fontId: StyleConfiguration["fontId"]) => void;
   undoThemeSelection: () => void;
+  updateConfiguration: (patch: Partial<StyleConfiguration>) => void;
 }
 
 const initialStyleState = styleSystem.hydrate(undefined);
@@ -43,17 +37,6 @@ export const useContentThemeStore = create<ContentThemeState>()(
           };
         };
 
-        const updateConfiguration = (
-          patch: Partial<StyleConfiguration>
-        ): void => {
-          set((state) =>
-            applyTransition(state, {
-              patch,
-              type: "update-configuration",
-            })
-          );
-        };
-
         return {
           ...initialStyleState,
 
@@ -62,21 +45,10 @@ export const useContentThemeStore = create<ContentThemeState>()(
               applyTransition(state, { themeId, type: "select-theme" })
             ),
 
-          setDensity: (density: StyleConfiguration["density"]) =>
-            updateConfiguration({ density }),
-
-          setFont: (fontId: StyleConfiguration["fontId"]) =>
-            updateConfiguration({ fontId }),
-
-          setBackground: (background: StyleConfiguration["background"]) =>
-            updateConfiguration({ background }),
-
-          setBodyHeadingAlignment: (
-            bodyHeadingAlignment: StyleConfiguration["bodyHeadingAlignment"]
-          ) => updateConfiguration({ bodyHeadingAlignment }),
-
-          setCoverLayout: (coverLayout: StyleConfiguration["coverLayout"]) =>
-            updateConfiguration({ coverLayout }),
+          updateConfiguration: (patch: Partial<StyleConfiguration>) =>
+            set((state) =>
+              applyTransition(state, { patch, type: "update-configuration" })
+            ),
 
           resetConfiguration: () =>
             set((state) =>

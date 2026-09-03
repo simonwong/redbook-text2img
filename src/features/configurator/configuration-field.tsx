@@ -21,10 +21,10 @@ export const ConfigurationField = ({
   labelId,
   onReset,
 }: ConfigurationFieldProps) => (
-  <div className="flex flex-col items-start gap-2">
-    <div className="flex w-full items-center justify-between gap-2">
+  <div className="flex min-w-0 flex-col items-start gap-1.5">
+    <div className="flex min-h-5 w-full items-center justify-between gap-2">
       <span
-        className="relative flex items-center gap-1.5 font-semibold text-[12px] text-ink-2"
+        className="flex items-center gap-1.5 text-[11px] text-ink-3"
         id={labelId}
       >
         {label}
@@ -41,7 +41,7 @@ export const ConfigurationField = ({
       {isModified && (
         <button
           aria-label={`${label}已调整，恢复主题值`}
-          className="-my-2 -mr-2 flex size-11 items-center justify-center rounded-[9px] text-ink-2 transition-colors duration-150 ease-out hover:bg-[var(--ds-well)] hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2 md:size-8"
+          className="relative z-10 -my-3 -mr-2 flex size-11 items-center justify-center rounded-[9px] text-ink-2 transition-colors duration-150 ease-out hover:bg-[var(--ds-well)] hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2 md:size-7"
           onClick={onReset}
           title="恢复主题值"
           type="button"
@@ -55,7 +55,7 @@ export const ConfigurationField = ({
     </div>
     {children}
     {description && (
-      <p className="text-[11.5px] text-ink-3" id={descriptionId}>
+      <p className="text-[11px] text-ink-3" id={descriptionId}>
         {description}
       </p>
     )}

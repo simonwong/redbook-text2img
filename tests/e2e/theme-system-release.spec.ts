@@ -187,9 +187,12 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
   await expect(currentCard.getByText("当前主题", { exact: true })).toHaveCount(
     0
   );
-  await page
-    .getByRole("button", { name: "恢复“Apple 备忘录”主题配置" })
-    .click();
+  const resetTheme = page.getByRole("button", { name: "恢复主题配置" });
+  await expect(resetTheme).toHaveAttribute(
+    "title",
+    "恢复“Apple 备忘录”主题配置"
+  );
+  await resetTheme.click();
   await expect(currentTheme).toHaveAccessibleDescription("当前主题");
   await expect(
     currentCard.getByText("当前主题", { exact: true })
