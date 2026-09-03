@@ -1,4 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { estimatePersistedSize, maxPersistedSize } from "./persist-size";
 
 class MemoryStorage implements Storage {
   readonly #items = new Map<string, string>();
@@ -40,6 +41,7 @@ beforeEach(() => {
   storage.clear();
   stores.useContentThemeStore.setState({
     currentThemeId: "clean-light",
+    customThemes: [],
     overrides: {},
     previousSelection: undefined,
   });
@@ -58,6 +60,7 @@ describe("content theme store", () => {
     expect(JSON.parse(storage.getItem("redbook-content-theme") ?? "")).toEqual({
       state: {
         currentThemeId: "clean-light",
+        customThemes: [],
         overrides: { density: "compact" },
       },
       version: 6,
@@ -73,6 +76,7 @@ describe("content theme store", () => {
     expect(JSON.parse(storage.getItem("redbook-content-theme") ?? "")).toEqual({
       state: {
         currentThemeId: "clean-light",
+        customThemes: [],
         overrides: {
           background: { color: "#111827", kind: "solid" },
         },
@@ -261,6 +265,115 @@ describe("content theme store", () => {
     expect(reloadedStores.useContentThemeStore.getState().overrides).toEqual({
       density: "compact",
     });
+  });
+
+  it("保存自定义主题后持久化并切换到它", () => {
+    const themeStore = stores.useContentThemeStore;
+    themeStore.getState().updateConfiguration({ density: "compact" });
+
+    expect(themeStore.getState().saveCustomTheme("我的主题 1")).toEqual({
+      ok: true,
+    });
+
+    const persisted = JSON.parse(
+      storage.getItem("redbook-content-theme") ?? ""
+    );
+    expect(persisted.state.currentThemeId).toBe(
+      persisted.state.customThemes[0].id
+    );
+    expect(persisted.state.customThemes[0]).toMatchObject({
+      configuration: { density: "compact" },
+      name: "我的主题 1",
+    });
+    expect(persisted.state.overrides).toEqual({});
+  });
+
+  it("刷新后仍然选中保存的自定义主题", async () => {
+    const themeStore = stores.useContentThemeStore;
+    themeStore.getState().updateConfiguration({ density: "compact" });
+    themeStore.getState().saveCustomTheme("我的主题 1");
+    vi.resetModules();
+
+    const reloadedStores = await import("./theme");
+    const state = reloadedStores.useContentThemeStore.getState();
+
+    expect(state.customThemes).toHaveLength(1);
+    expect(state.currentThemeId).toBe(state.customThemes[0].id);
+    expect(state.overrides).toEqual({});
+  });
+
+  it("达到上限时拒绝保存", () => {
+    const themeStore = stores.useContentThemeStore;
+    for (let index = 0; index < 8; index += 1) {
+      expect(themeStore.getState().saveCustomTheme(`主题 ${index}`)).toEqual({
+        ok: true,
+      });
+    }
+
+    expect(themeStore.getState().saveCustomTheme("第九个")).toEqual({
+      ok: false,
+      reason: "limit",
+    });
+    expect(themeStore.getState().customThemes).toHaveLength(8);
+  });
+
+  it("持久化体积超限时拒绝保存且不写入", () => {
+    const themeStore = stores.useContentThemeStore;
+    const dataUrl = `data:image/jpeg;base64,${"a".repeat(3_900_000)}`;
+    themeStore.getState().updateConfiguration({
+      background: { dataUrl, frost: "none", kind: "image", tone: "light" },
+    });
+    expect(themeStore.getState().saveCustomTheme("大图一")).toEqual({
+      ok: true,
+    });
+
+    expect(themeStore.getState().saveCustomTheme("大图二")).toEqual({
+      ok: false,
+      reason: "quota",
+    });
+    expect(themeStore.getState().customThemes).toHaveLength(1);
+  });
+
+  it("更新与删除自定义主题", () => {
+    const themeStore = stores.useContentThemeStore;
+    themeStore.getState().saveCustomTheme("我的主题 1");
+    const themeId = themeStore.getState().currentThemeId;
+
+    themeStore.getState().updateConfiguration({ density: "spacious" });
+    themeStore.getState().updateCustomTheme();
+
+    expect(themeStore.getState().overrides).toEqual({});
+    expect(themeStore.getState().customThemes[0].configuration).toMatchObject({
+      density: "spacious",
+    });
+
+    themeStore.getState().deleteCustomTheme(themeId);
+
+    expect({
+      currentThemeId: themeStore.getState().currentThemeId,
+      customThemes: themeStore.getState().customThemes,
+    }).toEqual({ currentThemeId: "clean-light", customThemes: [] });
+  });
+
+  it("估算持久化体积只算持久化的三个字段", () => {
+    const state = {
+      currentThemeId: "clean-light",
+      customThemes: [],
+      overrides: {},
+      previousSelection: {
+        currentThemeId: "reading-mode",
+        overrides: { density: "compact" as const },
+      },
+    };
+
+    expect(estimatePersistedSize(state)).toBe(
+      JSON.stringify({
+        currentThemeId: "clean-light",
+        customThemes: [],
+        overrides: {},
+      }).length
+    );
+    expect(estimatePersistedSize(state)).toBeLessThan(maxPersistedSize);
   });
 
   it("主题切换和重置不修改卡片标记", () => {

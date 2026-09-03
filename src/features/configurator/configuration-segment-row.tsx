@@ -28,12 +28,14 @@ export const ConfigurationSegmentRow = ({
 }: ConfigurationSegmentRowProps) => {
   const {
     currentThemeId,
+    customThemes,
     overrides,
     resetConfigurationField,
     updateConfiguration,
   } = useContentThemeStore();
   const { configuration, overridden } = styleSystem.read({
     currentThemeId,
+    customThemes,
     overrides,
   });
 

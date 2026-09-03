@@ -20,12 +20,14 @@ interface AccentColorRowProps {
 export const AccentColorRow = ({ label, labelId }: AccentColorRowProps) => {
   const {
     currentThemeId,
+    customThemes,
     overrides,
     resetConfigurationField,
     updateConfiguration,
   } = useContentThemeStore();
   const { configuration, overridden } = styleSystem.read({
     currentThemeId,
+    customThemes,
     overrides,
   });
 

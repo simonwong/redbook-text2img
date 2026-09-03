@@ -15,6 +15,7 @@ import { BackgroundPicker } from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
 import { ConfigurationSegmentRow } from "./configuration-segment-row";
 import { CoverLayoutPicker } from "./cover-layout-picker";
+import { CustomThemeActions } from "./custom-theme-actions";
 import { FrostRow } from "./frost-row";
 import { ResetThemeButton } from "./reset-theme-button";
 import { SettingsGroup } from "./settings-group";
@@ -96,6 +97,7 @@ const sectionHeadingIds = {
 export const ConfiguratorContent = () => {
   const {
     currentThemeId,
+    customThemes,
     overrides,
     selectPresetTheme,
     updateConfiguration,
@@ -108,11 +110,12 @@ export const ConfiguratorContent = () => {
   const { configuration, isModified, overridden, theme, themeConfiguration } =
     styleSystem.read({
       currentThemeId,
+      customThemes,
       overrides,
     });
   const backgroundPreview = (background: BackgroundChoice): CSSProperties => {
     const previewState = styleSystem.transition(
-      { currentThemeId, overrides },
+      { currentThemeId, customThemes, overrides },
       {
         patch: { background },
         type: "update-configuration",
@@ -145,6 +148,7 @@ export const ConfiguratorContent = () => {
       >
         <ThemeGrid
           currentThemeId={currentThemeId}
+          customThemes={customThemes}
           isModified={isModified}
           labelledBy={sectionHeadingIds.theme}
           onSelect={selectPresetTheme}
@@ -274,6 +278,8 @@ export const ConfiguratorContent = () => {
           onCheckedChange={setShowPageNumber}
         />
       </SettingsGroup>
+
+      <CustomThemeActions />
     </div>
   );
 };

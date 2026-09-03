@@ -31,10 +31,11 @@ const unsupportedNoticeId = "frost-unsupported-notice";
  * 保留已上传的图片与明暗基调。浏览器导不出磨砂时整行禁用，配置值不变。
  */
 export const FrostRow = ({ label, labelId }: FrostRowProps) => {
-  const { currentThemeId, overrides, updateConfiguration } =
+  const { currentThemeId, customThemes, overrides, updateConfiguration } =
     useContentThemeStore();
   const { configuration, themeConfiguration } = styleSystem.read({
     currentThemeId,
+    customThemes,
     overrides,
   });
   // 能力判定只在客户端做：服务端渲染阶段一律当作支持，避免水合不一致

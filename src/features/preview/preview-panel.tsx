@@ -104,13 +104,15 @@ export const PreviewPanel = ({
     setSegmentCount(segments.length);
   }, [segments.length, setSegmentCount]);
 
-  const { currentThemeId, overrides } = useContentThemeStore();
+  const { currentThemeId, customThemes, overrides } = useContentThemeStore();
   // 卡片尺寸与圆角由渲染样式决定（比例与白边），预览不再写死
   const { card, container } = useMemo(
     () =>
-      styleSystem.resolve({ currentThemeId, overrides }, { page: "body" })
-        .styles,
-    [currentThemeId, overrides]
+      styleSystem.resolve(
+        { currentThemeId, customThemes, overrides },
+        { page: "body" }
+      ).styles,
+    [currentThemeId, customThemes, overrides]
   );
   const cardRadius = String(card.frame?.borderRadius ?? container.borderRadius);
 

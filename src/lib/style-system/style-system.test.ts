@@ -86,6 +86,7 @@ describe("Style System Interface", () => {
   it("从空持久化数据恢复默认主题状态", () => {
     expect(styleSystem.hydrate(undefined)).toEqual({
       currentThemeId: "clean-light",
+      customThemes: [],
       overrides: {},
     });
   });
@@ -209,6 +210,7 @@ describe("Style System Interface", () => {
       })
     ).toEqual({
       currentThemeId: "clean-light",
+      customThemes: [],
       overrides: {},
     });
   });
@@ -513,6 +515,7 @@ describe("Style System Interface", () => {
       })
     ).toEqual({
       currentThemeId: "reading-mode",
+      customThemes: [],
       overrides: { density: "compact" },
     });
   });
@@ -590,6 +593,7 @@ describe("Style System Interface", () => {
 
     expect(state).toEqual({
       currentThemeId: "clean-light",
+      customThemes: [],
       overrides: { density: "compact" },
     });
     const configuration = styleSystem.read(state)
@@ -639,6 +643,7 @@ describe("Style System Interface", () => {
 
     expect(state).toEqual({
       currentThemeId: "gradient-warm",
+      customThemes: [],
       overrides: { density: "compact" },
     });
     expect(styleSystem.read(state).configuration).not.toHaveProperty(
@@ -654,6 +659,7 @@ describe("Style System Interface", () => {
 
     expect(state).toEqual({
       currentThemeId: "clean-light",
+      customThemes: [],
       overrides: { density: "compact" },
     });
     expect(styleSystem.read(state).configuration).not.toHaveProperty(
@@ -751,6 +757,7 @@ describe("Style System Interface", () => {
       },
       state: {
         currentThemeId: "reading-mode",
+        customThemes: [],
         overrides: { density: "compact" },
       },
     });
@@ -783,6 +790,7 @@ describe("Style System Interface", () => {
       },
       state: {
         currentThemeId: "reading-mode",
+        customThemes: [],
         overrides: {},
         previousSelection: {
           currentThemeId: "clean-light",
@@ -821,6 +829,7 @@ describe("Style System Interface", () => {
       },
       state: {
         currentThemeId: "clean-light",
+        customThemes: [],
         overrides: { density: "compact" },
       },
     });
@@ -850,7 +859,11 @@ describe("Style System Interface", () => {
         density: "normal",
         fontId: "serif",
       },
-      state: { currentThemeId: "reading-mode", overrides: {} },
+      state: {
+        currentThemeId: "reading-mode",
+        customThemes: [],
+        overrides: {},
+      },
     });
   });
 
@@ -1589,5 +1602,355 @@ describe("图片背景磨砂", () => {
         styleSystem.resolve(state, { page: "body" }).styles
       ).not.toHaveProperty("frost");
     }
+  });
+});
+
+describe("自定义主题", () => {
+  const savedState = (name = "我的主题 1", now = 1) =>
+    styleSystem.transition(
+      styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { aspectRatio: "1:1", density: "compact" },
+        type: "update-configuration",
+      }),
+      { name, now, type: "save-custom-theme" }
+    );
+
+  it("保存后切换到新主题并清空覆盖", () => {
+    const state = savedState();
+
+    expect(state).toEqual({
+      currentThemeId: "custom-1",
+      customThemes: [
+        {
+          configuration: {
+            accentColor: "#111827",
+            aspectRatio: "1:1",
+            background: { kind: "preset", preset: "clean-light" },
+            bodyHeadingAlignment: "center",
+            cardFrame: "none",
+            coverLayout: "center-poster",
+            density: "compact",
+            fontId: "sans",
+          },
+          createdAt: 1,
+          id: "custom-1",
+          name: "我的主题 1",
+        },
+      ],
+      overrides: {},
+      previousSelection: {
+        currentThemeId: "clean-light",
+        overrides: { aspectRatio: "1:1", density: "compact" },
+      },
+    });
+    expect(styleSystem.read(state)).toMatchObject({
+      isModified: false,
+      theme: { id: "custom-1", name: "我的主题 1", source: "custom" },
+    });
+  });
+
+  it("保存的配置成为解析与缩略图的起点", () => {
+    const state = savedState();
+    const resolved = styleSystem.resolve(state, { page: "body" });
+
+    expect(resolved.theme).toEqual({
+      id: "custom-1",
+      name: "我的主题 1",
+      source: "custom",
+    });
+    expect(resolved.styles.card).toMatchObject({ height: 375, width: 375 });
+  });
+
+  it("拒绝空白名称与超长名称", () => {
+    const base = styleSystem.hydrate(undefined);
+
+    for (const name of ["", "   ", "超过十二个字的主题名称吧啊"]) {
+      expect(
+        styleSystem.transition(base, {
+          name,
+          now: 1,
+          type: "save-custom-theme",
+        })
+      ).toBe(base);
+    }
+  });
+
+  it("达到上限后保存不改变状态", () => {
+    let state = styleSystem.hydrate(undefined);
+    for (let index = 0; index < 8; index += 1) {
+      state = styleSystem.transition(state, {
+        name: `主题 ${index}`,
+        now: index + 1,
+        type: "save-custom-theme",
+      });
+    }
+
+    expect(state.customThemes).toHaveLength(8);
+    expect(
+      styleSystem.transition(state, {
+        name: "第九个",
+        now: 9,
+        type: "save-custom-theme",
+      })
+    ).toBe(state);
+  });
+
+  it("同毫秒内连续保存生成不重复的标识", () => {
+    const first = styleSystem.transition(styleSystem.hydrate(undefined), {
+      name: "一",
+      now: 7,
+      type: "save-custom-theme",
+    });
+    const second = styleSystem.transition(first, {
+      name: "二",
+      now: 7,
+      type: "save-custom-theme",
+    });
+
+    expect(second.customThemes.map(({ id }) => id)).toEqual([
+      "custom-7",
+      "custom-71",
+    ]);
+  });
+
+  it("更新用当前有效配置覆盖自定义主题并清空覆盖", () => {
+    const modified = styleSystem.transition(savedState(), {
+      patch: { density: "spacious" },
+      type: "update-configuration",
+    });
+
+    const updated = styleSystem.transition(modified, {
+      type: "update-custom-theme",
+    });
+
+    expect(updated.overrides).toEqual({});
+    expect(updated.customThemes[0]).toMatchObject({
+      configuration: { aspectRatio: "1:1", density: "spacious" },
+      createdAt: 1,
+      id: "custom-1",
+      name: "我的主题 1",
+    });
+    expect(styleSystem.read(updated).isModified).toBe(false);
+  });
+
+  it("当前是内置主题时更新命令无操作", () => {
+    const state = styleSystem.transition(savedState(), {
+      themeId: "reading-mode",
+      type: "select-theme",
+    });
+
+    expect(styleSystem.transition(state, { type: "update-custom-theme" })).toBe(
+      state
+    );
+  });
+
+  it("删除当前自定义主题时回落默认主题", () => {
+    const modified = styleSystem.transition(savedState(), {
+      patch: { density: "spacious" },
+      type: "update-configuration",
+    });
+
+    const deleted = styleSystem.transition(modified, {
+      id: "custom-1",
+      type: "delete-custom-theme",
+    });
+
+    expect(deleted).toEqual({
+      currentThemeId: "clean-light",
+      customThemes: [],
+      overrides: {},
+      previousSelection: undefined,
+    });
+  });
+
+  it("删除其他自定义主题时保留当前选择", () => {
+    const first = savedState("主题一", 1);
+    const second = styleSystem.transition(first, {
+      name: "主题二",
+      now: 2,
+      type: "save-custom-theme",
+    });
+
+    const deleted = styleSystem.transition(second, {
+      id: "custom-1",
+      type: "delete-custom-theme",
+    });
+
+    expect(deleted.currentThemeId).toBe("custom-2");
+    expect(deleted.customThemes.map(({ id }) => id)).toEqual(["custom-2"]);
+  });
+
+  it("删除不存在的标识不改变状态", () => {
+    const state = savedState();
+
+    expect(
+      styleSystem.transition(state, {
+        id: "custom-missing",
+        type: "delete-custom-theme",
+      })
+    ).toBe(state);
+  });
+
+  it("目录按状态返回内置与自定义主题并带来源", () => {
+    const state = savedState();
+
+    expect(styleSystem.catalog().map(({ source }) => source)).toEqual(
+      new Array(8).fill("built-in")
+    );
+    expect(styleSystem.catalog(state).at(-1)).toEqual({
+      id: "custom-1",
+      name: "我的主题 1",
+      source: "custom",
+    });
+    expect(styleSystem.catalog(state)).toHaveLength(9);
+  });
+
+  it("刷新后保留自定义主题与当前选择", () => {
+    const state = savedState();
+    const persisted = JSON.parse(
+      JSON.stringify({
+        currentThemeId: state.currentThemeId,
+        customThemes: state.customThemes,
+        overrides: state.overrides,
+      })
+    );
+
+    expect(styleSystem.hydrate(persisted)).toEqual({
+      currentThemeId: "custom-1",
+      customThemes: state.customThemes,
+      overrides: {},
+    });
+  });
+
+  it("恢复时把 customThemes 非数组当作空列表", () => {
+    for (const customThemes of [undefined, null, "custom", 3, {}]) {
+      expect(
+        styleSystem.hydrate({ currentThemeId: "clean-light", customThemes })
+          .customThemes
+      ).toEqual([]);
+    }
+  });
+
+  it("恢复时丢弃标识或名称非法的自定义主题", () => {
+    const [{ configuration }] = savedState().customThemes;
+
+    expect(
+      styleSystem.hydrate({
+        customThemes: [
+          { configuration, createdAt: 1, id: "clean-light", name: "冒充内置" },
+          { configuration, createdAt: 1, id: "custom-A_1", name: "大写下划线" },
+          { configuration, createdAt: 1, id: "custom-1", name: "   " },
+          {
+            configuration,
+            createdAt: 1,
+            id: "custom-2",
+            name: "超过十二个字的主题名称吧啊",
+          },
+          { configuration, createdAt: 1, id: "custom-3", name: 7 },
+          { configuration, createdAt: 1, id: "custom-4", name: "  留白也算  " },
+        ],
+      }).customThemes
+    ).toEqual([
+      { configuration, createdAt: 1, id: "custom-4", name: "留白也算" },
+    ]);
+  });
+
+  it("恢复时用默认内置主题补齐缺失配置字段", () => {
+    const [restored] = styleSystem.hydrate({
+      customThemes: [
+        {
+          configuration: { density: "spacious", fontId: "kai" },
+          id: "custom-1",
+          name: "只存了两项",
+        },
+      ],
+    }).customThemes;
+
+    expect(restored).toEqual({
+      configuration: {
+        accentColor: "#111827",
+        aspectRatio: "3:4",
+        background: { kind: "preset", preset: "clean-light" },
+        bodyHeadingAlignment: "center",
+        cardFrame: "none",
+        coverLayout: "center-poster",
+        density: "spacious",
+        fontId: "kai",
+      },
+      createdAt: 0,
+      id: "custom-1",
+      name: "只存了两项",
+    });
+  });
+
+  it("恢复时只保留前 8 个自定义主题", () => {
+    const [{ configuration }] = savedState().customThemes;
+    const persisted = Array.from({ length: 11 }, (_, index) => ({
+      configuration,
+      createdAt: index,
+      id: `custom-${index}`,
+      name: `主题 ${index}`,
+    }));
+
+    expect(
+      styleSystem
+        .hydrate({ customThemes: persisted })
+        .customThemes.map(({ id }) => id)
+    ).toEqual([
+      "custom-0",
+      "custom-1",
+      "custom-2",
+      "custom-3",
+      "custom-4",
+      "custom-5",
+      "custom-6",
+      "custom-7",
+    ]);
+  });
+
+  it("恢复时丢弃标识重复的自定义主题", () => {
+    const [{ configuration }] = savedState().customThemes;
+
+    expect(
+      styleSystem
+        .hydrate({
+          customThemes: [
+            { configuration, createdAt: 1, id: "custom-1", name: "先来的" },
+            { configuration, createdAt: 2, id: "custom-1", name: "后来的" },
+          ],
+        })
+        .customThemes.map(({ name }) => name)
+    ).toEqual(["先来的"]);
+  });
+
+  it("当前主题指向被丢弃的自定义主题时回落默认主题并清空覆盖", () => {
+    expect(
+      styleSystem.hydrate({
+        currentThemeId: "custom-9",
+        customThemes: [],
+        overrides: { density: "compact" },
+      })
+    ).toEqual({
+      currentThemeId: "clean-light",
+      customThemes: [],
+      overrides: {},
+    });
+  });
+
+  it("撤销主题切换时保留自定义主题列表", () => {
+    const state = styleSystem.transition(savedState(), {
+      themeId: "reading-mode",
+      type: "select-theme",
+    });
+
+    const restored = styleSystem.transition(state, {
+      type: "undo-theme-selection",
+    });
+
+    expect(restored).toEqual({
+      currentThemeId: "custom-1",
+      customThemes: state.customThemes,
+      overrides: {},
+    });
   });
 });
