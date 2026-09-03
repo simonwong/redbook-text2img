@@ -11,11 +11,11 @@ export const ToolbarButton = ({ icon, label, onClick }: ToolbarButtonProps) => (
   <Tooltip content={label}>
     <button
       aria-label={label}
-      className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95"
+      className="flex size-8 shrink-0 items-center justify-center rounded-[10px] text-ink-2 transition-colors duration-150 ease-out hover:bg-[var(--ds-well)] hover:text-ink"
       onClick={onClick}
       type="button"
     >
-      <HugeiconsIcon className="h-3.5 w-3.5" icon={icon} />
+      <HugeiconsIcon className="size-4" icon={icon} />
     </button>
   </Tooltip>
 );

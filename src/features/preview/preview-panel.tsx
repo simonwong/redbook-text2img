@@ -19,10 +19,10 @@ import { ExportSuccessOverlay } from "./export-success-overlay";
 import { useContentOverflow } from "./hooks/use-content-overflow";
 import { useImageExport } from "./hooks/use-image-export";
 import { ImagePreview } from "./image-preview";
-import { NavArrowButton } from "./nav-arrow-button";
+import { MeshGrain } from "./mesh-grain";
 import { OverflowWarning } from "./overflow-warning";
 import { PreviewActionBar } from "./preview-action-bar";
-import { SegmentFilmstrip } from "./segment-filmstrip";
+import { PreviewPager } from "./preview-pager";
 import "./index.css";
 import { cn, sanitizeFilename } from "@/lib/utils";
 
@@ -75,6 +75,11 @@ export const PreviewPanel = ({
   const segments = useMemo(() => parseMarkdownToImages(markdown), [markdown]);
   const title = useMemo(
     () => sanitizeFilename(segments.find((s) => s.isFirstImage)?.title ?? ""),
+    [segments]
+  );
+
+  const segmentIds = useMemo(
+    () => segments.map((segment) => segment.id),
     [segments]
   );
 
@@ -188,107 +193,94 @@ export const PreviewPanel = ({
 
   if (segments.length === 0) {
     return (
-      <div className={`flex h-full items-center justify-center ${className}`}>
-        <div className="flex h-[500px] w-[375px] flex-col items-center justify-center gap-3 rounded-xl border-2 border-muted-foreground/20 border-dashed px-8">
-          <HugeiconsIcon
-            className="h-10 w-10 text-muted-foreground/30"
-            icon={FileText}
-          />
-          <p className="text-muted-foreground/60 text-sm">
-            在左侧输入 Markdown
-          </p>
-          <p className="text-muted-foreground/40 text-xs">
-            使用 --- 分割不同图片
-          </p>
+      <div className={cn("ds-frame h-full min-h-0", className)}>
+        <div className="ds-pane ds-mesh relative flex min-h-0 flex-col items-center justify-center overflow-hidden">
+          <div aria-hidden="true" className="ds-veil" />
+          <MeshGrain />
+          <div className="ds-card-rim relative flex h-[500px] w-[375px] max-w-full flex-col items-center justify-center gap-3">
+            <HugeiconsIcon className="size-10 text-ink-3" icon={FileText} />
+            <p className="text-[13px] text-ink-2">在左侧输入 Markdown</p>
+            <p className="text-[11.5px] text-ink-3">使用 --- 分割不同图片</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "flex h-full flex-col items-center justify-center gap-3",
-        className
-      )}
-    >
-      <ExportProgressBar
-        current={exportProgress.current}
-        isExporting={isExporting && exportProgress.total > 0}
-        total={exportProgress.total}
-      />
+    <div className={cn("ds-frame h-full min-h-0", className)}>
+      <div className="ds-pane ds-mesh relative flex min-h-0 flex-col overflow-hidden">
+        <div aria-hidden="true" className="ds-veil" />
+        <MeshGrain />
 
-      <div className="flex w-full items-center justify-center gap-3">
-        <div className="hidden sm:block">
-          <NavArrowButton
-            direction="left"
-            disabled={clampedIndex === 0}
-            onClick={goPrev}
-          />
-        </div>
+        <ExportProgressBar
+          current={exportProgress.current}
+          isExporting={isExporting && exportProgress.total > 0}
+          total={exportProgress.total}
+        />
 
-        <div
-          className="relative w-full min-w-0 max-w-[375px] overflow-hidden"
-          ref={scaleContainerRef}
-        >
-          <div
-            className="group relative origin-top-left rounded-lg shadow-md ring-1 ring-black/5 dark:shadow-none dark:ring-white/10"
-            style={{
-              transform: scale < 1 ? `scale(${scale})` : undefined,
-              // 缩小时保持卡片完整布局宽度参与缩放，否则内层 overflow 会先把卡片裁短
-              width: scale < 1 ? PREVIEW_WIDTH : undefined,
-              height: scale < 1 ? `${500 * scale}px` : undefined,
-            }}
-          >
-            <ExportSuccessOverlay
-              onDone={clearExportSuccess}
-              visible={exportSuccess}
-            />
-            {activeSegment && (
-              <div className="overflow-hidden rounded-lg transition-opacity duration-200">
-                <ImagePreview
-                  contentRef={contentRef}
-                  pageNumber={{
-                    current: clampedIndex + 1,
-                    total: segments.length,
-                  }}
-                  ref={imageRef}
-                  segment={activeSegment}
+        <div className="relative flex min-h-0 flex-1 items-center justify-center px-5 pt-[26px] pb-3">
+          <div className="ds-card-rim w-full max-w-[381px]">
+            <div
+              className="relative overflow-hidden rounded-[16px]"
+              ref={scaleContainerRef}
+            >
+              <div
+                className="relative origin-top-left"
+                style={{
+                  height: scale < 1 ? `${500 * scale}px` : undefined,
+                  transform: scale < 1 ? `scale(${scale})` : undefined,
+                  // 缩小时保持卡片完整布局宽度参与缩放，否则内层 overflow 会先把卡片裁短
+                  width: scale < 1 ? PREVIEW_WIDTH : undefined,
+                }}
+              >
+                <ExportSuccessOverlay
+                  onDone={clearExportSuccess}
+                  visible={exportSuccess}
                 />
+                {activeSegment && (
+                  <ImagePreview
+                    contentRef={contentRef}
+                    pageNumber={{
+                      current: clampedIndex + 1,
+                      total: segments.length,
+                    }}
+                    ref={imageRef}
+                    segment={activeSegment}
+                  />
+                )}
+              </div>
+              {/* 卡片内描边画在导出节点之外，避免进入 html2canvas 输出 */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-[16px] shadow-[inset_0_0_0_1px_rgba(17,17,20,0.04)]"
+              />
+            </div>
+            {/* 溢出警告挂在未缩放的外框（scale 元素之外），避免随预览缩放变形，也绝不进导出元素 */}
+            {isOverflowing && (
+              <div className="absolute inset-x-3 bottom-3 z-10">
+                <OverflowWarning />
               </div>
             )}
           </div>
-          {/* 溢出警告挂在未缩放的外框（scale 元素之外），避免随预览缩放变形，也绝不进导出元素 */}
-          {isOverflowing && (
-            <div className="absolute inset-x-2 bottom-2 z-10">
-              <OverflowWarning />
-            </div>
-          )}
         </div>
 
-        <div className="hidden sm:block">
-          <NavArrowButton
-            direction="right"
-            disabled={clampedIndex === segments.length - 1}
-            onClick={goNext}
+        <div className="relative flex flex-col items-center gap-2 px-2.5 pb-3">
+          <PreviewPager
+            activeIndex={clampedIndex}
+            onSelect={setActiveSegmentIndex}
+            segmentIds={segmentIds}
+          />
+          <PreviewActionBar
+            closeDrawerOnSettings={closeDrawerOnOpenSettings}
+            isExporting={isExporting}
+            onExportAll={handleExportAll}
+            onExportCurrent={handleExportCurrent}
+            onToggleSettings={onOpenSettings ?? toggleSettings}
+            segmentCount={segments.length}
           />
         </div>
       </div>
-
-      <SegmentFilmstrip
-        activeIndex={clampedIndex}
-        onSelect={setActiveSegmentIndex}
-        segments={segments}
-      />
-
-      <PreviewActionBar
-        closeDrawerOnSettings={closeDrawerOnOpenSettings}
-        isExporting={isExporting}
-        onExportAll={handleExportAll}
-        onExportCurrent={handleExportCurrent}
-        onToggleSettings={onOpenSettings ?? toggleSettings}
-        segmentCount={segments.length}
-      />
     </div>
   );
 };

@@ -56,7 +56,7 @@ export const ThemeGrid = ({
 }: ThemeGridProps) => (
   <fieldset
     aria-labelledby={labelledBy}
-    className="m-0 grid grid-cols-2 gap-2 border-0 p-0"
+    className="m-0 grid grid-cols-2 gap-[7px] border-0 p-0"
   >
     {themePreviews.map(({ bodyStyles, coverStyles, headerBar, theme }) => {
       const isCurrent = theme.id === currentThemeId;
@@ -64,10 +64,8 @@ export const ThemeGrid = ({
       return (
         <label
           className={cn(
-            "group relative h-24 cursor-pointer overflow-hidden rounded-lg border-2 text-left transition-all has-[:focus-visible]:outline-dashed has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-ring has-[:focus-visible]:outline-offset-2",
-            isCurrent
-              ? "border-primary shadow-sm"
-              : "border-transparent hover:border-muted-foreground/30"
+            "ds-tile relative h-[72px] cursor-pointer rounded-[12px] text-left transition-shadow duration-150 ease-out has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-ink has-[:focus-visible]:outline-offset-2",
+            isCurrent && "ds-ring ds-ring-out ds-tile-on"
           )}
           key={theme.id}
           style={getThemeBackground(coverStyles)}
@@ -90,12 +88,12 @@ export const ThemeGrid = ({
           />
           {isCurrent && (
             <span
-              className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm"
+              className="ds-check absolute top-[5px] right-[5px] z-10 flex size-4 items-center justify-center rounded-full"
               id={statusId}
             >
               <HugeiconsIcon
                 aria-hidden="true"
-                className="size-3"
+                className="size-2.5"
                 icon={Tick02Icon}
               />
               <span className="sr-only">

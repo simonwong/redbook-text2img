@@ -135,6 +135,13 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
           innerStyle.backgroundPosition,
           innerStyle.backgroundSize,
         ],
+        previewTitle: [
+          previewTitleStyle.color,
+          previewTitleStyle.fontFamily,
+          previewTitleStyle.fontWeight,
+          previewTitleStyle.backgroundImage,
+          previewTitleStyle.textAlign,
+        ],
         surface: [
           thumbnailStyle.backgroundColor,
           thumbnailStyle.backgroundImage,
@@ -147,13 +154,6 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
           titleStyle.fontWeight,
           titleStyle.backgroundImage,
           titleStyle.textAlign,
-        ],
-        previewTitle: [
-          previewTitleStyle.color,
-          previewTitleStyle.fontFamily,
-          previewTitleStyle.fontWeight,
-          previewTitleStyle.backgroundImage,
-          previewTitleStyle.textAlign,
         ],
       };
     });
@@ -177,7 +177,7 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
   const keyboardTheme = page.getByRole("radio", { name: "阅读模式" });
   const keyboardCard = keyboardTheme.locator("..");
   await expect(keyboardTheme).toBeFocused();
-  await expect(keyboardCard).toHaveCSS("outline-style", "dashed");
+  await expect(keyboardCard).toHaveCSS("outline-style", "solid");
   await expect(keyboardCard).toHaveCSS("outline-width", "2px");
 
   const currentCard = await selectTheme(page, "Apple 备忘录");

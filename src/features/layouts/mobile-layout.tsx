@@ -39,11 +39,11 @@ export const MobileLayout = () => {
 
   return (
     <div className="flex h-full flex-col">
-      <EditorCard className="flex-1 [&_.cm-scroller]:pb-16" />
+      <EditorCard className="min-h-0 flex-1 [&_.cm-content]:pb-24" />
 
       <button
         aria-label="预览图片"
-        className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+1rem)] z-20 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95"
+        className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+1rem)] z-20 flex size-12 items-center justify-center rounded-full bg-ink text-[var(--ds-on-ink)] shadow-[0_8px_24px_-8px_rgba(17,17,20,0.5)] transition-colors duration-150 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2"
         onClick={() => setPreviewOpen(true)}
         ref={previewButtonRef}
         type="button"

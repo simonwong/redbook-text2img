@@ -25,17 +25,17 @@ export const SegmentedControl = ({
   <fieldset
     aria-labelledby={labelledBy}
     className={cn(
-      "m-0 inline-flex min-w-0 rounded-lg border-0 bg-muted p-0.5",
+      "ds-well-inset m-0 inline-flex max-w-full flex-wrap gap-0.5 self-start rounded-[11px] border-0 p-0.5",
       className
     )}
   >
     {options.map((option) => (
       <label
         className={cn(
-          "relative flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-2 font-medium text-xs transition-all has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-inset",
+          "relative flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-[9px] px-2.5 font-semibold text-[12px] transition-colors duration-150 ease-out has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-ink has-[:focus-visible]:outline-offset-2 md:h-7 md:min-h-7",
           option.value === value
-            ? "bg-background text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
+            ? "ds-chip-on text-ink"
+            : "text-ink-2 hover:text-ink"
         )}
         key={option.value}
       >

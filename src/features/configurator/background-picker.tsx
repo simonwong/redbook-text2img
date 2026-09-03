@@ -84,9 +84,9 @@ export const BackgroundPicker = ({
   return (
     <fieldset
       aria-labelledby={labelledBy}
-      className="m-0 min-w-0 space-y-2 border-0 p-0"
+      className="m-0 flex min-w-0 flex-col gap-2 border-0 p-0"
     >
-      <div className="grid grid-cols-4 gap-1.5">
+      <div className="grid grid-cols-4 gap-2">
         <BackgroundSwatch
           active={canvasBackgroundsEqual(value, themeBackground)}
           label="主题背景"
@@ -138,7 +138,7 @@ export const BackgroundPicker = ({
                 }}
               />
             ) : (
-              <span className="flex size-full items-center justify-center bg-muted/60">
+              <span className="ds-well flex size-full items-center justify-center text-ink-2">
                 <HugeiconsIcon className="size-4" icon={Image02Icon} />
               </span>
             )
@@ -147,15 +147,15 @@ export const BackgroundPicker = ({
       </div>
 
       {value.kind === "solid" && (
-        <div className="flex h-11 items-center justify-between gap-3 rounded-lg border px-3">
+        <div className="ds-input flex h-11 items-center justify-between gap-3 px-3 md:h-[34px]">
           <label
-            className="text-muted-foreground text-xs"
+            className="font-semibold text-[12px] text-ink-2"
             htmlFor="solid-background-color"
           >
             颜色
           </label>
           <input
-            className="h-8 w-14 cursor-pointer rounded border-0 bg-transparent p-0"
+            className="h-6 w-14 cursor-pointer rounded-[6px] border-0 bg-transparent p-0"
             id="solid-background-color"
             onChange={(event) =>
               onChange({ color: event.target.value, kind: "solid" })
@@ -167,16 +167,16 @@ export const BackgroundPicker = ({
       )}
 
       {value.kind === "custom-gradient" && (
-        <div className="space-y-2">
-          <div className="flex h-11 items-center gap-2 rounded-lg border px-3">
+        <div className="flex flex-col items-start gap-2">
+          <div className="ds-input flex h-11 w-full items-center gap-2 px-3 md:h-[34px]">
             <label
-              className="shrink-0 text-muted-foreground text-xs"
+              className="shrink-0 font-semibold text-[12px] text-ink-2"
               htmlFor="gradient-from-color"
             >
               从
             </label>
             <input
-              className="h-8 w-full min-w-0 cursor-pointer rounded border-0 bg-transparent p-0"
+              className="h-6 w-full min-w-0 cursor-pointer rounded-[6px] border-0 bg-transparent p-0"
               id="gradient-from-color"
               onChange={(event) =>
                 onChange({ ...gradient, from: event.target.value })
@@ -185,13 +185,13 @@ export const BackgroundPicker = ({
               value={gradient.from}
             />
             <label
-              className="shrink-0 text-muted-foreground text-xs"
+              className="shrink-0 font-semibold text-[12px] text-ink-2"
               htmlFor="gradient-to-color"
             >
               到
             </label>
             <input
-              className="h-8 w-full min-w-0 cursor-pointer rounded border-0 bg-transparent p-0"
+              className="h-6 w-full min-w-0 cursor-pointer rounded-[6px] border-0 bg-transparent p-0"
               id="gradient-to-color"
               onChange={(event) =>
                 onChange({ ...gradient, to: event.target.value })
@@ -204,7 +204,6 @@ export const BackgroundPicker = ({
             渐变方向
           </span>
           <SegmentedControl
-            className="w-full"
             labelledBy={gradientDirectionLabelId}
             onChange={(direction) =>
               onChange({
@@ -219,23 +218,23 @@ export const BackgroundPicker = ({
       )}
 
       {value.kind === "image" && (
-        <div className="space-y-1.5">
+        <div className="flex flex-col gap-1.5">
           <Button
-            className="min-h-11 w-full"
+            className="min-h-11 w-full md:min-h-9"
             disabled={isUploading}
             onClick={openFileDialog}
             type="button"
-            variant="outline"
+            variant="raised"
           >
             {isUploading ? "处理中…" : "更换图片"}
           </Button>
-          <p className="text-muted-foreground text-xs">
-            图片仅保存在本地浏览器
-          </p>
+          <p className="text-[11.5px] text-ink-3">图片仅保存在本地浏览器</p>
         </div>
       )}
 
-      {uploadError && <p className="text-destructive text-xs">{uploadError}</p>}
+      {uploadError && (
+        <p className="text-[11.5px] text-destructive">{uploadError}</p>
+      )}
 
       <input
         accept="image/*"

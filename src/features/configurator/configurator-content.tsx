@@ -18,8 +18,8 @@ import { SettingsSection } from "./settings-section";
 import { ThemeGrid } from "./theme-grid";
 
 const pageNumberOptions = [
-  { value: "show", label: "显示" },
-  { value: "hide", label: "隐藏" },
+  { label: "显示", value: "show" },
+  { label: "隐藏", value: "hide" },
 ];
 
 const optionValues = styleSystem.configurationOptions();
@@ -112,7 +112,7 @@ export const ConfiguratorContent = () => {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col">
       <SettingsSection headingId={sectionHeadingIds.theme} title="主题">
         <ThemeGrid
           currentThemeId={currentThemeId}
@@ -146,7 +146,6 @@ export const ConfiguratorContent = () => {
           onReset={() => resetConfigurationField("density")}
         >
           <SegmentedControl
-            className="w-full"
             labelledBy={fieldLabelIds.density}
             onChange={(value) =>
               setDensity(value as typeof configuration.density)
@@ -163,7 +162,6 @@ export const ConfiguratorContent = () => {
           onReset={() => resetConfigurationField("fontId")}
         >
           <SegmentedControl
-            className="w-full"
             labelledBy={fieldLabelIds.font}
             onChange={(fontId) =>
               setFont(fontId as StyleConfiguration["fontId"])
@@ -185,7 +183,6 @@ export const ConfiguratorContent = () => {
           onReset={() => resetConfigurationField("bodyHeadingAlignment")}
         >
           <SegmentedControl
-            className="w-full"
             labelledBy={fieldLabelIds.bodyHeadingAlignment}
             onChange={(value) =>
               setBodyHeadingAlignment(
@@ -215,12 +212,12 @@ export const ConfiguratorContent = () => {
 
       {isModified && (
         <button
-          className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg px-3 text-muted-foreground text-xs transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="my-1 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-[11px] px-3 font-semibold text-[12px] text-ink-2 transition-colors duration-150 ease-out hover:bg-[var(--ds-well)] hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2 md:min-h-9"
           onClick={resetConfiguration}
           type="button"
         >
           <HugeiconsIcon
-            className="h-3.5 w-3.5"
+            className="size-[13px]"
             icon={ArrowReloadHorizontalIcon}
           />
           恢复“{theme.name}”主题配置
@@ -228,16 +225,15 @@ export const ConfiguratorContent = () => {
       )}
 
       <SettingsSection headingId={sectionHeadingIds.cardMark} title="卡片标记">
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <Label
-            className="font-medium text-xs"
+            className="font-semibold text-[12px] text-ink-2"
             htmlFor="card-signature"
             id={fieldLabelIds.signature}
           >
             署名
           </Label>
           <Input
-            className="h-11"
             id="card-signature"
             onChange={(event) => setSignature(event.target.value)}
             placeholder="@你的小红书名"
@@ -245,12 +241,14 @@ export const ConfiguratorContent = () => {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label className="font-medium text-xs" id={fieldLabelIds.pageNumber}>
+        <div className="flex flex-col items-start gap-2">
+          <Label
+            className="font-semibold text-[12px] text-ink-2"
+            id={fieldLabelIds.pageNumber}
+          >
             正文页码
           </Label>
           <SegmentedControl
-            className="w-full"
             labelledBy={fieldLabelIds.pageNumber}
             onChange={(value) => setShowPageNumber(value === "show")}
             options={pageNumberOptions}

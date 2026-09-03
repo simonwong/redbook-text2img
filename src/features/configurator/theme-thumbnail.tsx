@@ -20,19 +20,16 @@ export const ThemeThumbnail = ({
   headerBar,
   theme,
 }: ThemeThumbnailProps) => {
-  const density = Number.parseFloat(
-    String(bodyStyles.container.fontSize ?? "16px")
-  );
   const barStyle = {
     backgroundColor: bodyStyles.p.color,
-    height: density > 16 ? 4 : 3,
-    opacity: 0.48,
+    height: 2.5,
+    opacity: 0.45,
   };
 
   return (
     <div
       aria-hidden="true"
-      className="absolute inset-0 flex h-full w-full flex-col"
+      className="absolute inset-0 flex h-full w-full flex-col overflow-hidden rounded-[10px]"
       data-cover-align={coverStyles.content.alignItems}
       data-cover-vertical={coverStyles.content.justifyContent}
       data-density={bodyStyles.container.fontSize}
@@ -67,12 +64,11 @@ export const ThemeThumbnail = ({
         }}
       >
         <span
-          className="max-w-full truncate leading-tight"
+          className="max-w-full truncate text-[11px] leading-tight"
           data-theme-title="true"
           style={{
             color: coverStyles.h1.color,
             fontFamily: coverStyles.container.fontFamily,
-            fontSize: `${Math.max(10, Math.min(12, density * 0.7))}px`,
             fontWeight: coverStyles.h1.fontWeight,
             letterSpacing: coverStyles.h1.letterSpacing,
             textAlign: coverStyles.h1.textAlign,
@@ -80,10 +76,7 @@ export const ThemeThumbnail = ({
         >
           {theme.name}
         </span>
-        <div
-          className="mt-2 flex w-3/5 flex-col"
-          style={{ gap: density > 16 ? 4 : 3 }}
-        >
+        <div className="mt-2 flex w-3/5 flex-col gap-[3px]">
           <div className="w-full rounded-full" style={barStyle} />
           <div className="w-3/4 rounded-full" style={barStyle} />
         </div>

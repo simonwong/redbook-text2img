@@ -31,9 +31,11 @@ export const ExportSuccessOverlay = ({
   }
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-black/30 backdrop-blur-sm transition-opacity duration-300">
-      <div className="zoom-in-75 fade-in flex h-16 w-16 animate-in items-center justify-center rounded-full bg-white shadow-xl duration-300">
-        <HugeiconsIcon className="h-8 w-8 text-emerald-500" icon={Tick01Icon} />
+    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[16px] bg-white/45 backdrop-blur-[2px] transition-opacity duration-300">
+      <div className="ds-sheet zoom-in-75 fade-in animate-in rounded-full duration-300">
+        <div className="ds-sheet-in flex size-16 items-center justify-center rounded-full">
+          <HugeiconsIcon className="size-8 text-ink" icon={Tick01Icon} />
+        </div>
       </div>
     </div>
   );

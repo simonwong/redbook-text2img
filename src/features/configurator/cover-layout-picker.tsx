@@ -24,9 +24,9 @@ const layouts = styleSystem.configurationOptions().coverLayout.map((value) => ({
 }));
 
 const previewAlignment: Record<CoverLayout, string> = {
-  "bottom-left": "items-start justify-end text-left",
-  "center-poster": "items-center justify-center text-center",
-  "top-left": "items-start justify-start text-left",
+  "bottom-left": "items-end justify-start",
+  "center-poster": "items-center justify-center",
+  "top-left": "items-start justify-start",
 };
 
 export const CoverLayoutPicker = ({
@@ -42,9 +42,10 @@ export const CoverLayoutPicker = ({
       <button
         aria-pressed={layout.value === value}
         className={cn(
-          "flex min-h-24 flex-col items-center gap-2 rounded-lg border p-2 text-muted-foreground text-xs transition-colors hover:border-muted-foreground/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          layout.value === value &&
-            "border-primary bg-primary/5 text-foreground ring-1 ring-primary"
+          "ds-layout-card relative flex flex-col items-center gap-1.5 rounded-[11px] px-1.5 py-2 text-[11px] transition-colors duration-150 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
+          layout.value === value
+            ? "ds-ring font-semibold text-ink"
+            : "text-ink-2 hover:text-ink"
         )}
         key={layout.value}
         onClick={() => onChange(layout.value)}
@@ -53,11 +54,11 @@ export const CoverLayoutPicker = ({
         <span
           aria-hidden="true"
           className={cn(
-            "flex aspect-[3/4] h-12 rounded border bg-background p-1.5",
+            "ds-well flex h-[42px] w-8 rounded-[5px] p-1",
             previewAlignment[layout.value]
           )}
         >
-          <span className="block h-1 w-5 rounded-full bg-current" />
+          <span className="block h-[2.5px] w-3.5 rounded-full bg-current" />
         </span>
         <span>{layout.label}</span>
       </button>

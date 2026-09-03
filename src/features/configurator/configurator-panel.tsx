@@ -29,22 +29,26 @@ export const ConfiguratorPanel = ({ presentation }: ConfiguratorPanelProps) => {
   }
 
   return (
-    <div className="fade-in slide-in-from-right-2 flex h-full w-[300px] shrink-0 animate-in flex-col border-border border-l duration-200">
-      <div className="flex items-center justify-between px-4 pt-4 pb-3">
-        <span className="font-medium text-sm">样式设置</span>
+    <div className="ds-panel fade-in slide-in-from-right-2 relative flex h-full w-[312px] shrink-0 animate-in flex-col overflow-hidden duration-200">
+      <div className="flex shrink-0 items-center justify-between pt-2.5 pr-2 pb-1.5 pl-4">
+        <span className="font-bold text-[13px] text-ink">样式设置</span>
         <Button
           aria-label="关闭样式设置"
-          className="size-11"
+          className="size-11 md:size-8"
           onClick={() => setIsOpen(false)}
           size="icon"
           variant="ghost"
         >
-          <HugeiconsIcon icon={Cancel01Icon} />
+          <HugeiconsIcon className="size-[13px]" icon={Cancel01Icon} />
         </Button>
       </div>
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-0.5 pb-16">
         <ConfiguratorContent />
       </div>
+      <div
+        aria-hidden="true"
+        className="ds-fade-bottom absolute inset-x-0 bottom-0 h-16"
+      />
     </div>
   );
 };

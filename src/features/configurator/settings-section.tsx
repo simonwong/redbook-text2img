@@ -19,11 +19,11 @@ export const SettingsSection = ({
 }: SettingsSectionProps) => (
   <section
     aria-labelledby={headingId}
-    className="space-y-2.5 border-t pt-3 first:border-t-0 first:pt-0"
+    className="flex flex-col gap-2 border-[var(--ds-line)] border-t py-3 first:border-t-0 first:pt-0"
   >
     <div className="flex items-center justify-between gap-2">
       <h2
-        className="flex items-center gap-1.5 font-semibold text-sm"
+        className="flex items-center gap-1.5 font-bold text-[12px] text-ink tracking-[0.02em]"
         id={headingId}
       >
         {title}
@@ -31,7 +31,7 @@ export const SettingsSection = ({
           <>
             <span
               aria-hidden="true"
-              className="size-1.5 rounded-full bg-primary"
+              className="size-[5px] rounded-full bg-ink-2"
             />
             <span className="sr-only">（已调整）</span>
           </>
@@ -40,13 +40,13 @@ export const SettingsSection = ({
       {isModified && onReset && (
         <button
           aria-label={`${title}已调整，恢复主题值`}
-          className="-my-2 -mr-2.5 flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="-my-2 -mr-2 flex size-11 items-center justify-center rounded-[9px] text-ink-2 transition-colors duration-150 ease-out hover:bg-[var(--ds-well)] hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2 md:size-8"
           onClick={onReset}
           title="恢复主题值"
           type="button"
         >
           <HugeiconsIcon
-            className="size-3.5"
+            className="size-[13px]"
             icon={ArrowReloadHorizontalIcon}
           />
         </button>

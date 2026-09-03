@@ -49,9 +49,11 @@ export const SettingsDrawer = ({
           closeButtonRef.current?.focus();
         }}
       >
-        <DrawerHeader className="flex-row items-center justify-between text-left">
+        <DrawerHeader className="flex-row items-center justify-between px-4 pt-2.5 pb-1.5 text-left">
           <div>
-            <DrawerTitle>样式设置</DrawerTitle>
+            <DrawerTitle className="font-bold text-[13px] text-ink">
+              样式设置
+            </DrawerTitle>
             <DrawerDescription className="sr-only">
               选择主题并调整图片样式
             </DrawerDescription>
@@ -64,7 +66,7 @@ export const SettingsDrawer = ({
             size="icon"
             variant="ghost"
           >
-            <HugeiconsIcon icon={Cancel01Icon} />
+            <HugeiconsIcon className="size-[13px]" icon={Cancel01Icon} />
           </Button>
         </DrawerHeader>
         <div

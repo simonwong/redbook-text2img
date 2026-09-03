@@ -1,7 +1,7 @@
 import {
   Download,
   ImageDownloadIcon,
-  PaintBoardIcon,
+  SparklesIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Tooltip } from "@/components/tooltip";
@@ -28,42 +28,43 @@ export const PreviewActionBar = ({
   const settingsButton = (
     <Button
       aria-label="设置样式"
-      className="h-11"
+      className="h-11 pr-[13px] pl-[11px] md:h-8"
       onClick={onToggleSettings}
-      size="sm"
-      variant="outline"
+      variant="mesh-glass"
     >
-      <HugeiconsIcon className="h-3.5 w-3.5" icon={PaintBoardIcon} />
+      <HugeiconsIcon className="size-[13px]" icon={SparklesIcon} />
       主题
     </Button>
   );
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="ds-raised flex h-13 items-center gap-0.5 rounded-full pr-1 pl-1.5 md:h-10">
       <Tooltip content="导出当前图片">
         <Button
-          className="h-11"
+          className="h-11 px-3 md:h-8"
           disabled={segmentCount === 0 || isExporting}
           onClick={onExportCurrent}
-          size="sm"
-          variant="outline"
+          variant="ghost"
         >
-          <HugeiconsIcon className="h-3.5 w-3.5" icon={Download} />
+          <HugeiconsIcon className="size-[13px]" icon={Download} />
           导出
         </Button>
       </Tooltip>
       <Tooltip content={`打包下载全部 (${segmentCount} 张)`}>
         <Button
-          className="h-11"
+          className="h-11 px-3 md:h-8"
           disabled={segmentCount === 0 || isExporting}
           onClick={onExportAll}
-          size="sm"
-          variant="outline"
+          variant="ghost"
         >
-          <HugeiconsIcon className="h-3.5 w-3.5" icon={ImageDownloadIcon} />
+          <HugeiconsIcon className="size-[13px]" icon={ImageDownloadIcon} />
           全部
         </Button>
       </Tooltip>
+      <div
+        aria-hidden="true"
+        className="mx-1 h-4 w-px shrink-0 bg-[var(--ds-line-strong)]"
+      />
       <Tooltip content="设置样式">
         {closeDrawerOnSettings ? (
           <DrawerClose asChild>{settingsButton}</DrawerClose>

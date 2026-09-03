@@ -17,16 +17,16 @@ export const BackgroundSwatch = ({
   <button
     aria-pressed={active}
     className={cn(
-      "group flex min-w-0 flex-col items-center gap-1.5 rounded-md text-muted-foreground text-xs transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-      active && "text-foreground"
+      "group flex min-w-0 flex-col items-center gap-[5px] rounded-[9px] text-[11px] transition-colors duration-150 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
+      active ? "font-semibold text-ink" : "text-ink-2 hover:text-ink"
     )}
     onClick={onSelect}
     type="button"
   >
     <span
       className={cn(
-        "block h-11 w-full overflow-hidden rounded-md border transition-colors group-hover:border-muted-foreground/40",
-        active ? "border-primary ring-2 ring-primary/30" : "border-border/70"
+        "ds-hairline relative block h-[38px] w-full overflow-hidden rounded-[11px]",
+        active && "ds-ring"
       )}
     >
       {preview}
