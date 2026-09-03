@@ -140,7 +140,8 @@ export const canvasBackgroundsEqual = (
     );
   }
   if (first.kind === "image" && second.kind === "image") {
-    return first.dataUrl === second.dataUrl;
+    // 磨砂档位是图片背景的一部分：只切档也要算作背景被修改
+    return first.dataUrl === second.dataUrl && first.frost === second.frost;
   }
   return false;
 };

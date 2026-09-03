@@ -6,6 +6,7 @@
 import type { Properties as CSSProperties } from "csstype";
 import type { AdjustedStyle } from "./adjustments";
 import type { CardStyle } from "./card";
+import type { FrostLayers } from "./frost";
 import { typography } from "./tokens";
 import type { CoverStyleOverride } from "./types";
 
@@ -20,6 +21,11 @@ export interface GeneratedStyles {
   content: CSSProperties;
   em: CSSProperties;
   footer: CSSProperties;
+  /**
+   * 图片背景磨砂两层：模糊图片层与纯色蒙层，都铺在容器内、内容下方。
+   * 无磨砂时缺省，容器直接铺背景图。
+   */
+  frost?: FrostLayers;
   h1: CSSProperties;
   h2: CSSProperties;
   h3: CSSProperties;
@@ -116,6 +122,15 @@ export function generateStyles(
     backgroundStyle = { backgroundImage: style.background.value };
   }
 
+  // 磨砂开启时容器不再直接铺背景图：图片交给模糊层，容器只负责裁切与层叠
+  const canvasBackground: CSSProperties = style.frost
+    ? {}
+    : {
+        ...backgroundStyle,
+        backgroundPosition: "center",
+        backgroundSize: style.background.size ?? "cover",
+      };
+
   // 列表符号由 `.img-preview ul li::before` 绘制，只能经自定义属性拿到强调色；
   // 导出前 getComputedStyle 已把它解析成实色，html2canvas-pro 照常还原
   const listStyle: CSSProperties & Record<"--marker-color", string> = {
@@ -149,14 +164,14 @@ export function generateStyles(
   return {
     card: card.card,
 
+    ...(style.frost ? { frost: style.frost } : {}),
+
     container: {
       width: `${card.content.width}px`,
       minWidth: `${card.content.width}px`,
       height: `${card.content.height}px`,
       minHeight: `${card.content.height}px`,
-      ...backgroundStyle,
-      backgroundSize: style.background.size ?? "cover",
-      backgroundPosition: "center",
+      ...canvasBackground,
       borderRadius: `${card.content.radius}px`,
       overflow: "hidden",
       fontFamily,

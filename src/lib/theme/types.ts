@@ -29,6 +29,9 @@ export type BackgroundPreset =
 /** 自定义渐变方向（封闭集合，双色线性渐变） */
 export type GradientDirection = "vertical" | "horizontal" | "diagonal";
 
+/** 图片背景磨砂档位（封闭集合）；每档是模糊半径与蒙层透明度的固定组合 */
+export type BackgroundFrost = "none" | "light" | "medium" | "strong";
+
 export type CanvasBackground =
   | { readonly kind: "preset"; readonly preset: BackgroundPreset }
   | { readonly color: string; readonly kind: "solid" }
@@ -41,6 +44,8 @@ export type CanvasBackground =
   | {
       /** 本地图片 data URL（上传时压缩，禁止远程资源） */
       readonly dataUrl: string;
+      /** 磨砂档位；只有图片背景有可模糊的内容 */
+      readonly frost: BackgroundFrost;
       readonly kind: "image";
       /** 上传时采样的明暗基调，用于选取可读语义色 */
       readonly tone: "light" | "dark";

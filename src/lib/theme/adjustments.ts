@@ -7,6 +7,7 @@ import { ensureAccentContrast } from "./accent";
 import { applyCanvasConfiguration } from "./canvas";
 import { type CardLayout, resolveCardLayout } from "./card";
 import { defaultFontId, getFontFamily } from "./fonts";
+import { type FrostLayers, resolveFrostLayers } from "./frost";
 import { spacing, typography } from "./tokens";
 import type {
   Density,
@@ -92,6 +93,7 @@ export function applyAdjustments(
     adjustments.accentColor,
     adjustments.background
   );
+  const frost = resolveFrostLayers(adjustments.background);
 
   return {
     ...canvasStyle,
@@ -116,6 +118,8 @@ export function applyAdjustments(
     fontFamily,
     bodyHeadingAlignment: adjustments.bodyHeadingAlignment,
     card: resolveCardLayout(adjustments.aspectRatio, adjustments.cardFrame),
+    // 无磨砂时不带这个字段，渲染样式与没有磨砂功能时完全一致
+    ...(frost ? { frost } : {}),
     headingScale: 1,
     letterSpacing: {},
   };
@@ -128,6 +132,8 @@ export type AdjustedStyle = FullStyle & {
   bodyHeadingAlignment: StyleAdjustments["bodyHeadingAlignment"];
   card: CardLayout;
   fontFamily: string;
+  /** 图片背景磨砂两层；无磨砂时缺省 */
+  frost?: FrostLayers;
   headingScale: number;
   letterSpacing: { body?: string; heading?: string };
 };

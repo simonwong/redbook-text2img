@@ -5,6 +5,7 @@ import { resolveStyleFoundation } from "../theme/foundation";
 import { generateStyles } from "../theme/generator";
 import { defaultTheme, getThemeById, presetThemes } from "../theme/themes";
 import type {
+  BackgroundFrost,
   BackgroundPreset,
   CoverStyleOverride,
   GradientDirection,
@@ -53,6 +54,7 @@ const configurationOptions = {
   coverLayout: ["center-poster", "top-left", "bottom-left"],
   density: ["compact", "snug", "normal", "relaxed", "spacious"],
   fontId: fontPresets.map(({ id }) => id),
+  frost: ["none", "light", "medium", "strong"],
 } satisfies StyleConfigurationOptions;
 
 const diffConfiguration = (
@@ -122,6 +124,7 @@ const gradientDirections = new Set<string>([
   "diagonal",
 ]);
 const fontIds = new Set<string>(configurationOptions.fontId);
+const frostLevels = new Set<string>(configurationOptions.frost);
 const densities = new Set<string>(configurationOptions.density);
 // 旧三档持久化值中仅 balanced 消失，按像素等价迁移到 normal；
 // 五档新值（含 compact/spacious）恒等保留，保证界面可选且刷新稳定。
@@ -176,7 +179,16 @@ const sanitizeBackground = (
     value.dataUrl.length <= maxImageDataUrlLength &&
     (value.tone === "light" || value.tone === "dark")
   ) {
-    return { dataUrl: value.dataUrl, kind: "image", tone: value.tone };
+    return {
+      dataUrl: value.dataUrl,
+      // 旧持久化数据没有磨砂字段，非法值同样回落无磨砂
+      frost:
+        typeof value.frost === "string" && frostLevels.has(value.frost)
+          ? (value.frost as BackgroundFrost)
+          : "none",
+      kind: "image",
+      tone: value.tone,
+    };
   }
   if (
     value.kind === "solid" &&

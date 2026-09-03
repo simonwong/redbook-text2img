@@ -93,17 +93,28 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
     </>
   );
 
+  // 磨砂：模糊图片层与蒙层铺在卡片容器内、内容之下，全部属于导出节点
+  const canvasBody = styles.frost ? (
+    <>
+      <div style={styles.frost.blurLayer} />
+      <div style={styles.frost.veil} />
+      <div style={styles.frost.contentLayer}>{cardBody}</div>
+    </>
+  ) : (
+    cardBody
+  );
+
   if (styles.card.frame) {
     return (
       <div className="img-preview" ref={ref} style={styles.card.frame}>
-        <div style={styles.container}>{cardBody}</div>
+        <div style={styles.container}>{canvasBody}</div>
       </div>
     );
   }
 
   return (
     <div className="img-preview" ref={ref} style={styles.container}>
-      {cardBody}
+      {canvasBody}
     </div>
   );
 };

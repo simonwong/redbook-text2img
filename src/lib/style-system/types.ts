@@ -1,5 +1,6 @@
 import type { GeneratedStyles } from "../theme/generator";
 import type {
+  BackgroundFrost,
   CanvasBackground,
   CardAspectRatio,
   CardFrame,
@@ -28,6 +29,8 @@ export interface StyleConfigurationOptions {
   readonly coverLayout: readonly StyleConfiguration["coverLayout"][];
   readonly density: readonly StyleConfiguration["density"][];
   readonly fontId: readonly string[];
+  /** 图片背景的磨砂档位；不是顶层字段，随 background 一起改 */
+  readonly frost: readonly BackgroundFrost[];
 }
 
 export interface StyleSystemState {

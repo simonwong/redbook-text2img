@@ -15,6 +15,7 @@ import { BackgroundPicker } from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
 import { ConfigurationSegmentRow } from "./configuration-segment-row";
 import { CoverLayoutPicker } from "./cover-layout-picker";
+import { FrostRow } from "./frost-row";
 import { ResetThemeButton } from "./reset-theme-button";
 import { SettingsGroup } from "./settings-group";
 import { SettingsSection } from "./settings-section";
@@ -78,6 +79,7 @@ const fieldLabelIds = {
   coverLayout: "cover-layout-label",
   density: "density-label",
   font: "font-label",
+  frost: "frost-label",
 } as const;
 
 const sectionHeadingIds = {
@@ -165,6 +167,10 @@ export const ConfiguratorContent = () => {
             value={configuration.background}
           />
         </ConfigurationField>
+
+        {configuration.background.kind === "image" && (
+          <FrostRow label="磨砂" labelId={fieldLabelIds.frost} />
+        )}
       </SettingsGroup>
 
       <SettingsGroup headingId={sectionHeadingIds.card} title="卡片">

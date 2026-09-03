@@ -79,3 +79,10 @@ await new Promise<void>((resolve) => {
 html2canvas-pro 2.4 把 CSS `filter`（`blur()`、`brightness()`、`saturate()`、`drop-shadow()` 等）直接写入 Canvas 2D 的 `ctx.filter`；`backdrop-filter` 没有属性描述符，导出时被整体忽略。
 
 磨砂效果必须写成"独立的模糊图片层 + 半透明纯色蒙层"，两层都在导出节点内；任何 `backdrop-filter` 都只能留在导出节点之外的界面装饰层。模糊层要略微放大（约 1.08 倍）并被父容器裁切，否则边缘会露出透明发白。
+
+2.4.1 的 `filter` 映射还有两处必须在导出侧抹平，否则预览有模糊、导出没有：
+
+- 它把长度参数的单位写了两遍（`blur(12px)` → `blur(12pxpx)`）。Canvas 2D 遇到非法 filter 字符串会整体丢弃（`ctx.filter` 变回 `none`），模糊被静默吃掉。
+- `ctx.filter` 在设备像素空间生效，不随 `scale` 选项放大。导出 3 倍图时模糊半径要同步乘 3，两端才一样模糊。
+
+两条都由 `src/lib/export/canvas-filter.ts` 在一次导出的调用期间临时接管 `CanvasRenderingContext2D.prototype.filter` 完成，导出结束立刻还原；升级 html2canvas-pro 时先回归这两条。

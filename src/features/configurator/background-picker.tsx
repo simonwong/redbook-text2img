@@ -84,7 +84,8 @@ export const BackgroundPicker = ({
     setIsUploading(true);
     try {
       const processed = await processBackgroundImageFile(file);
-      onChange({ kind: "image", ...processed });
+      // 换图按新图片重新开始：磨砂回到无，避免旧档位套到新图上
+      onChange({ frost: "none", kind: "image", ...processed });
     } catch {
       setUploadError("图片过大或无法读取，请换一张试试");
     } finally {

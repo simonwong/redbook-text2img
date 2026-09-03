@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { type StyleConfiguration, styleSystem } from "./style-system";
 
 const unsafeCssValuePattern = /https?:|javascript:/i;
+// 磨砂只能用 filter，backdrop-filter 在导出链路里被整体忽略
+const backdropPattern = /backdrop/i;
 // 四种系统字体栈都必须给中文留回退，否则中文会掉进纯拉丁字库的兜底
 const chineseFallbackPattern =
   /PingFang SC|Microsoft YaHei|Noto Sans SC|Noto Serif SC|Source Han Serif SC|SimSun|Kaiti SC|STKaiti|KaiTi|AR PL UKai CN|Noto Serif CJK SC/;
@@ -60,6 +62,7 @@ describe("Style System Interface", () => {
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "snug", "normal", "relaxed", "spacious"],
       fontId: ["sans", "serif", "kai", "mono"],
+      frost: ["none", "light", "medium", "strong"],
     });
   });
 
@@ -275,6 +278,13 @@ describe("Style System Interface", () => {
     },
     {
       dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+      frost: "none",
+      kind: "image",
+      tone: "light",
+    },
+    {
+      dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+      frost: "medium",
       kind: "image",
       tone: "light",
     },
@@ -363,6 +373,7 @@ describe("Style System Interface", () => {
   it("图片背景按 cover 居中铺放并按采样基调选取可读语义色", () => {
     const darkImage = {
       dataUrl: "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
+      frost: "none",
       kind: "image",
       tone: "dark",
     } as const;
@@ -390,6 +401,13 @@ describe("Style System Interface", () => {
       },
       {
         dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+        frost: "none",
+        kind: "image",
+        tone: "light",
+      },
+      {
+        dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+        frost: "strong",
         kind: "image",
         tone: "light",
       },
@@ -1315,5 +1333,261 @@ describe("强调色", () => {
     });
     expect(reset.overrides).toEqual({ density: "compact" });
     expect(styleSystem.read(reset).configuration.accentColor).toBe("#44403c");
+  });
+});
+
+describe("图片背景磨砂", () => {
+  const imageDataUrl = "data:image/png;base64,iVBORw0KGgo=";
+  const imageBackground = (
+    frost: "none" | "light" | "medium" | "strong",
+    tone: "dark" | "light" = "light"
+  ) => ({ dataUrl: imageDataUrl, frost, kind: "image", tone }) as const;
+  const resolveWith = (
+    background: ReturnType<typeof imageBackground>,
+    patch: Partial<StyleConfiguration> = {}
+  ) =>
+    styleSystem.resolve(
+      styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { background, ...patch },
+        type: "update-configuration",
+      }),
+      { page: "body" }
+    ).styles;
+
+  it("无磨砂时渲染样式与磨砂上线前完全一致", () => {
+    const styles = resolveWith(imageBackground("none"));
+
+    expect(styles).not.toHaveProperty("frost");
+    // 逐字段固定为磨砂上线前（a677ac2）的容器样式
+    expect(styles.container).toEqual({
+      backgroundImage: `url("${imageDataUrl}")`,
+      backgroundPosition: "center",
+      backgroundSize: "cover",
+      borderRadius: "12px",
+      boxSizing: "border-box",
+      fontFamily:
+        '"Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
+      fontSize: "16px",
+      height: "500px",
+      minHeight: "500px",
+      minWidth: "375px",
+      overflow: "hidden",
+      position: "relative",
+      width: "375px",
+    });
+  });
+
+  it.each([
+    ["light", "blur(6px)", "rgba(255, 255, 255, 0.28)"],
+    ["medium", "blur(12px)", "rgba(255, 255, 255, 0.42)"],
+    ["strong", "blur(20px)", "rgba(255, 255, 255, 0.56)"],
+  ] as const)(
+    "磨砂 %s 解析为 %s 的模糊层与 %s 的蒙层",
+    (frost, blur, veilColor) => {
+      const { frost: layers } = resolveWith(imageBackground(frost));
+
+      expect(layers?.blurLayer).toMatchObject({
+        backgroundImage: `url("${imageDataUrl}")`,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        filter: blur,
+        position: "absolute",
+        transform: "scale(1.08)",
+      });
+      expect(layers?.veil.backgroundColor).toBe(veilColor);
+      // 两层都铺满容器，靠容器的 overflow 与圆角裁切
+      for (const layer of [layers?.blurLayer, layers?.veil]) {
+        expect(layer).toMatchObject({
+          bottom: 0,
+          left: 0,
+          position: "absolute",
+          right: 0,
+          top: 0,
+        });
+      }
+      // 内容层压在两层之上
+      expect(layers?.contentLayer).toMatchObject({
+        position: "relative",
+        zIndex: 1,
+      });
+    }
+  );
+
+  it.each([
+    ["light", "rgb(255, 255, 255)", "rgba(255, 255, 255, 0.42)"],
+    ["dark", "rgb(11, 11, 15)", "rgba(11, 11, 15, 0.42)"],
+  ] as const)(
+    "%s 基调的蒙层与兜底底色取对应实色",
+    (tone, baseColor, veilColor) => {
+      const { frost: layers } = resolveWith(imageBackground("medium", tone));
+
+      expect(layers?.blurLayer.backgroundColor).toBe(baseColor);
+      expect(layers?.veil.backgroundColor).toBe(veilColor);
+    }
+  );
+
+  it("磨砂开启时容器把背景图交给模糊层", () => {
+    const styles = resolveWith(imageBackground("medium"));
+
+    expect(styles.container.backgroundImage).toBeUndefined();
+    expect(styles.container.backgroundColor).toBeUndefined();
+    expect(styles.container).toMatchObject({
+      borderRadius: "12px",
+      overflow: "hidden",
+      position: "relative",
+    });
+  });
+
+  it("白边下模糊层裁在白边内侧的内圆角里", () => {
+    const styles = resolveWith(imageBackground("strong"), {
+      cardFrame: "white",
+    });
+
+    expect(styles.card.frame).toMatchObject({
+      overflow: "hidden",
+      padding: "3px",
+    });
+    expect(styles.container).toMatchObject({
+      borderRadius: "13px",
+      height: "494px",
+      overflow: "hidden",
+      width: "369px",
+    });
+    expect(styles.frost?.blurLayer.filter).toBe("blur(20px)");
+  });
+
+  it("8 个主题的三档磨砂都不含 backdrop-filter 与 transparent 色标", () => {
+    let auditedContexts = 0;
+
+    for (const theme of styleSystem.catalog()) {
+      for (const frost of ["light", "medium", "strong"] as const) {
+        for (const tone of ["light", "dark"] as const) {
+          const state = styleSystem.transition(
+            styleSystem.hydrate({ currentThemeId: theme.id }),
+            {
+              patch: { background: imageBackground(frost, tone) },
+              type: "update-configuration",
+            }
+          );
+          for (const page of ["cover", "body"] as const) {
+            const { styles } = styleSystem.resolve(state, { page });
+            const serialized = JSON.stringify(styles);
+
+            expect(serialized).not.toMatch(backdropPattern);
+            expect(serialized).not.toContain("transparent");
+            expect(styles.frost?.blurLayer).not.toHaveProperty(
+              "backdropFilter"
+            );
+            for (const value of Object.values(styles.frost?.blurLayer ?? {})) {
+              if (typeof value === "string" && value.includes("url(")) {
+                expect(value).toContain("data:image/");
+              }
+            }
+            auditedContexts += 1;
+          }
+        }
+      }
+    }
+
+    expect(auditedContexts).toBe(96);
+  });
+
+  it("切换磨砂档位产生背景覆盖并保留图片与基调", () => {
+    const uploaded = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { background: imageBackground("none", "dark") },
+      type: "update-configuration",
+    });
+    const frosted = styleSystem.transition(uploaded, {
+      patch: { background: imageBackground("medium", "dark") },
+      type: "update-configuration",
+    });
+
+    expect(styleSystem.read(frosted).overridden.background).toBe(true);
+    expect(styleSystem.read(frosted).configuration.background).toEqual({
+      dataUrl: imageDataUrl,
+      frost: "medium",
+      kind: "image",
+      tone: "dark",
+    });
+    // 只把磨砂调回无，图片与基调仍在
+    const cleared = styleSystem.transition(frosted, {
+      patch: { background: imageBackground("none", "dark") },
+      type: "update-configuration",
+    });
+    expect(styleSystem.read(cleared).configuration.background).toEqual({
+      dataUrl: imageDataUrl,
+      frost: "none",
+      kind: "image",
+      tone: "dark",
+    });
+    expect(
+      styleSystem.resolve(cleared, { page: "body" }).styles
+    ).not.toHaveProperty("frost");
+  });
+
+  it.each([undefined, "blurred", 3, null])(
+    "持久化数据中缺失或非法的磨砂档位回落无磨砂 %#",
+    (frost) => {
+      const state = styleSystem.hydrate({
+        currentThemeId: "clean-light",
+        overrides: {
+          background: {
+            dataUrl: imageDataUrl,
+            frost,
+            kind: "image",
+            tone: "light",
+          },
+        },
+      });
+
+      expect(styleSystem.read(state).configuration.background).toEqual({
+        dataUrl: imageDataUrl,
+        frost: "none",
+        kind: "image",
+        tone: "light",
+      });
+    }
+  );
+
+  it("合法磨砂档位在刷新后原样恢复", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "clean-light",
+      overrides: {
+        background: {
+          dataUrl: imageDataUrl,
+          frost: "strong",
+          kind: "image",
+          tone: "light",
+        },
+      },
+    });
+
+    expect(state.overrides.background).toEqual({
+      dataUrl: imageDataUrl,
+      frost: "strong",
+      kind: "image",
+      tone: "light",
+    });
+  });
+
+  it("非图片背景不产生磨砂层", () => {
+    for (const background of [
+      { color: "#ffffff", kind: "solid" },
+      {
+        direction: "diagonal",
+        from: "#e0e7ff",
+        kind: "custom-gradient",
+        to: "#fef3c7",
+      },
+    ] as const) {
+      const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { background },
+        type: "update-configuration",
+      });
+
+      expect(
+        styleSystem.resolve(state, { page: "body" }).styles
+      ).not.toHaveProperty("frost");
+    }
   });
 });
