@@ -73,3 +73,9 @@ await new Promise<void>((resolve) => {
 - 实际导出含非空正文的 PNG；可见 DOM 或背景色不能代替内容验证。
 - 对像素敏感改动，以 Playwright 元素截图作 ground truth，解码导出 PNG 并比较内容、背景和页脚采样点。
 - 运行命中改动的 `tests/e2e/theme-presets-*.spec.ts` 或 `tests/e2e/background-picker.spec.ts`。
+
+## 7. `filter` 可以导出，`backdrop-filter` 不行
+
+html2canvas-pro 2.4 把 CSS `filter`（`blur()`、`brightness()`、`saturate()`、`drop-shadow()` 等）直接写入 Canvas 2D 的 `ctx.filter`；`backdrop-filter` 没有属性描述符，导出时被整体忽略。
+
+磨砂效果必须写成"独立的模糊图片层 + 半透明纯色蒙层"，两层都在导出节点内；任何 `backdrop-filter` 都只能留在导出节点之外的界面装饰层。模糊层要略微放大（约 1.08 倍）并被父容器裁切，否则边缘会露出透明发白。
