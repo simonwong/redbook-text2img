@@ -4,11 +4,15 @@ import { Image02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { type ChangeEvent, type CSSProperties, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ColorPopover } from "@/components/ui/color-popover";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import type { StyleConfiguration } from "@/lib/style-system/style-system";
 import { canvasBackgroundsEqual, customGradientValue } from "@/lib/theme";
 import { processBackgroundImageFile } from "./background-image";
 import { BackgroundSwatch } from "./background-swatch";
+import { backgroundColorPresets } from "./color-presets";
+import { GradientPresetRow } from "./gradient-preset-row";
+import { GradientStopRow } from "./gradient-stop-row";
 
 type BackgroundChoice = StyleConfiguration["background"];
 type CustomGradient = Extract<BackgroundChoice, { kind: "custom-gradient" }>;
@@ -57,6 +61,13 @@ export const BackgroundPicker = ({
   const gradient = value.kind === "custom-gradient" ? value : defaultGradient;
 
   const openFileDialog = () => fileInputRef.current?.click();
+
+  const changeSolidColor = (color: string) => onChange({ color, kind: "solid" });
+  const changeGradientStops = (
+    stops: Partial<Pick<CustomGradient, "from" | "to">>
+  ) => onChange({ ...gradient, ...stops });
+  const changeGradientFrom = (from: string) => changeGradientStops({ from });
+  const changeGradientTo = (to: string) => changeGradientStops({ to });
 
   const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -148,19 +159,11 @@ export const BackgroundPicker = ({
 
       {value.kind === "solid" && (
         <div className="ds-input flex h-11 items-center justify-between gap-3 px-3 md:h-[34px]">
-          <label
-            className="font-semibold text-[12px] text-ink-2"
-            htmlFor="solid-background-color"
-          >
-            颜色
-          </label>
-          <input
-            className="h-6 w-14 cursor-pointer rounded-[6px] border-0 bg-transparent p-0"
-            id="solid-background-color"
-            onChange={(event) =>
-              onChange({ color: event.target.value, kind: "solid" })
-            }
-            type="color"
+          <span className="font-semibold text-[12px] text-ink-2">颜色</span>
+          <ColorPopover
+            label="纯色背景颜色"
+            onChange={changeSolidColor}
+            presets={backgroundColorPresets}
             value={solidColor}
           />
         </div>
@@ -168,38 +171,18 @@ export const BackgroundPicker = ({
 
       {value.kind === "custom-gradient" && (
         <div className="flex flex-col items-start gap-2">
-          <div className="ds-input flex h-11 w-full items-center gap-2 px-3 md:h-[34px]">
-            <label
-              className="shrink-0 font-semibold text-[12px] text-ink-2"
-              htmlFor="gradient-from-color"
-            >
-              从
-            </label>
-            <input
-              className="h-6 w-full min-w-0 cursor-pointer rounded-[6px] border-0 bg-transparent p-0"
-              id="gradient-from-color"
-              onChange={(event) =>
-                onChange({ ...gradient, from: event.target.value })
-              }
-              type="color"
-              value={gradient.from}
-            />
-            <label
-              className="shrink-0 font-semibold text-[12px] text-ink-2"
-              htmlFor="gradient-to-color"
-            >
-              到
-            </label>
-            <input
-              className="h-6 w-full min-w-0 cursor-pointer rounded-[6px] border-0 bg-transparent p-0"
-              id="gradient-to-color"
-              onChange={(event) =>
-                onChange({ ...gradient, to: event.target.value })
-              }
-              type="color"
-              value={gradient.to}
-            />
-          </div>
+          <GradientPresetRow
+            direction={gradient.direction}
+            onSelect={changeGradientStops}
+            value={gradient}
+          />
+          <GradientStopRow
+            direction={gradient.direction}
+            from={gradient.from}
+            onChangeFrom={changeGradientFrom}
+            onChangeTo={changeGradientTo}
+            to={gradient.to}
+          />
           <span className="sr-only" id={gradientDirectionLabelId}>
             渐变方向
           </span>

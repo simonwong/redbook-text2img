@@ -636,3 +636,30 @@
     );
   }
 }
+
+/*
+ * 取色弹层里的 react-colorful。
+ * 库的样式是运行时注入的无层级（unlayered）规则，胜过任何 @layer，
+ * 所以这里也放在层外，用包裹类提升特异性来覆盖尺寸、圆角与滑块。
+ */
+.color-picker-surface .react-colorful {
+  width: 100%;
+  height: 120px;
+}
+
+.color-picker-surface .react-colorful__saturation {
+  border-bottom: 8px solid transparent;
+  border-radius: 10px;
+}
+
+.color-picker-surface .react-colorful__hue {
+  height: 14px;
+  border-radius: 10px;
+}
+
+.color-picker-surface .react-colorful__pointer {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 35%);
+}

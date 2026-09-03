@@ -3,6 +3,8 @@ import { expect, type Page, test } from "@playwright/test";
 const radialGradientPattern = /radial-gradient/;
 const diagonalGradientPattern = /linear-gradient\(135deg/;
 const horizontalGradientPattern = /linear-gradient\(90deg/;
+const nightGradientPattern = /rgb\(15, 23, 42\).+rgb\(30, 58, 95\)/;
+const pinkStopPattern = /rgb\(255, 232, 236\)/;
 const jpegDataUrlPattern = /url\("data:image\/jpeg/;
 const pngFilenamePattern = /\.png$/;
 
@@ -35,7 +37,9 @@ test("自定义背景：主题背景、纯色、渐变、图片上传并刷新�
   await expect(preview).toHaveCSS("background-image", radialGradientPattern);
 
   // 自定义渐变：双色 + 方向
-  await backgroundSection.getByRole("button", { name: "渐变" }).click();
+  await backgroundSection
+    .getByRole("button", { exact: true, name: "渐变" })
+    .click();
   await expect(preview).toHaveCSS("background-image", diagonalGradientPattern);
   await expect(preview).toHaveCSS("background-size", "cover");
   await backgroundSection
@@ -47,14 +51,43 @@ test("自定义背景：主题背景、纯色、渐变、图片上传并刷新�
     horizontalGradientPattern
   );
 
+  // 预设渐变 chip 直接写入色标
+  await backgroundSection
+    .getByRole("button", { name: "预设渐变 #0f172a 到 #1e3a5f" })
+    .click();
+  await expect(preview).toHaveCSS("background-image", nightGradientPattern);
+
+  // 渐变色标共用取色弹层：终点走色板预设
+  await backgroundSection.getByRole("button", { name: "渐变终点颜色" }).click();
+  await page.getByRole("button", { exact: true, name: "#ffe8ec" }).click();
+  await expect(preview).toHaveCSS("background-image", pinkStopPattern);
+  await page.keyboard.press("Escape");
+
   // 纯色：默认白色，调色后跟随
   await backgroundSection
     .getByRole("button", { name: "纯色", exact: true })
     .click();
   await expect(preview).toHaveCSS("background-color", "rgb(255, 255, 255)");
   await expect(preview).toHaveCSS("background-image", "none");
-  await backgroundSection.locator("#solid-background-color").fill("#111827");
+
+  // 面板内不再有原生取色控件
+  await expect(page.locator('input[type="color"]')).toHaveCount(0);
+
+  // 取色弹层：非法十六进制不写入配置，合法值实时生效
+  await backgroundSection.getByRole("button", { name: "纯色背景颜色" }).click();
+  const hexInput = page.getByRole("textbox", {
+    name: "纯色背景颜色十六进制值",
+  });
+  await hexInput.fill("zzzzzz");
+  await hexInput.press("Enter");
+  await expect(preview).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await hexInput.fill("111827");
+  await hexInput.press("Enter");
   await expect(preview).toHaveCSS("background-color", "rgb(17, 24, 39)");
+
+  // Esc 关闭弹层
+  await page.keyboard.press("Escape");
+  await expect(hexInput).toBeHidden();
 
   // 图片：上传后压缩为本地 data URL
   await backgroundSection.locator('input[type="file"]').setInputFiles({
@@ -106,7 +139,9 @@ test("自定义渐变与图片背景导出 PNG 成功", async ({ page }) => {
     expect(size).toBeGreaterThan(10_000);
   };
 
-  await backgroundSection.getByRole("button", { name: "渐变" }).click();
+  await backgroundSection
+    .getByRole("button", { exact: true, name: "渐变" })
+    .click();
   await expect(preview).toHaveCSS("background-image", diagonalGradientPattern);
   await exportAndExpectPng();
 
