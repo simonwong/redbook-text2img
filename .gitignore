@@ -48,3 +48,5 @@ next-env.d.ts
 
 
 .impeccable/
+# agent worktrees
+.claude/worktrees/
