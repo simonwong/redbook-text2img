@@ -1,6 +1,7 @@
 {
   "name": "redbook-text2img",
   "private": true,
+  "version": "2.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
