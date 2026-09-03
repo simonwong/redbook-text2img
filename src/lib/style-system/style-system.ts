@@ -63,6 +63,9 @@ const diffConfiguration = (
     -readonly [Field in keyof StyleConfiguration]?: StyleConfiguration[Field];
   } = {};
 
+  if (configuration.accentColor !== themeConfiguration.accentColor) {
+    overrides.accentColor = configuration.accentColor;
+  }
   if (configuration.aspectRatio !== themeConfiguration.aspectRatio) {
     overrides.aspectRatio = configuration.aspectRatio;
   }
@@ -185,6 +188,12 @@ const sanitizeBackground = (
   // 旧版受控渐变/图案背景已下线，持久化旧值按非法值丢弃，回落主题背景
 };
 
+// 强调色是开放色值（与背景色一致），只做 6 位十六进制白名单，不列封闭选项
+const sanitizeAccentColor = (value: unknown): string | undefined =>
+  typeof value === "string" && hexColorPattern.test(value)
+    ? value.toLowerCase()
+    : undefined;
+
 const sanitizeDensity = (
   value: unknown
 ): StyleConfiguration["density"] | undefined => {
@@ -216,11 +225,13 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
 
   const bodyHeadingAlignment =
     value.bodyHeadingAlignment ?? value.headingAlignment;
+  const accentColor = sanitizeAccentColor(value.accentColor);
   const background = sanitizeBackground(value.background);
   const density = sanitizeDensity(value.density);
   const fontId = sanitizeFontId(value.fontId);
 
   return {
+    ...(accentColor ? { accentColor } : {}),
     ...(typeof value.aspectRatio === "string" &&
     aspectRatios.has(value.aspectRatio)
       ? { aspectRatio: value.aspectRatio as StyleConfiguration["aspectRatio"] }
@@ -338,6 +349,7 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
     configuration,
     isModified: Object.keys(state.overrides).length > 0,
     overridden: {
+      accentColor: "accentColor" in state.overrides,
       aspectRatio: "aspectRatio" in state.overrides,
       background: "background" in state.overrides,
       bodyHeadingAlignment: "bodyHeadingAlignment" in state.overrides,

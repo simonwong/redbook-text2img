@@ -144,6 +144,8 @@ export type CardFrame = "none" | "white";
 
 /** Internal shape matching the resolved public style configuration */
 export interface StyleAdjustments {
+  /** 强调色（6 位十六进制）：正文标题、加粗、列表标记、引用边线与链接共用 */
+  readonly accentColor: string;
   readonly aspectRatio: CardAspectRatio;
   readonly background: CanvasBackground;
   readonly bodyHeadingAlignment: HeadingAlignment;

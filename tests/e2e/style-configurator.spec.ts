@@ -1,7 +1,15 @@
 import { expect, type Page, test } from "@playwright/test";
 
 // 扁平面板：只有「主题」是可见标题，其余分组只保留 sr-only 语义
-const groupNames = ["主题", "背景", "排版", "正文标题", "封面", "卡片标记"];
+const groupNames = [
+  "主题",
+  "背景",
+  "排版",
+  "正文标题",
+  "封面",
+  "颜色",
+  "卡片标记",
+];
 const fieldLabels = [
   "背景",
   "比例",
@@ -10,6 +18,7 @@ const fieldLabels = [
   "字体",
   "标题对齐",
   "封面版式",
+  "强调色",
 ];
 
 const resetState = async (page: Page) => {

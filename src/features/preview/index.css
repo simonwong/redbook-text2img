@@ -5,7 +5,7 @@
 .img-preview ul li::before {
   content: "•";
   margin-right: 0.5em;
-  color: inherit;
+  color: var(--marker-color, inherit);
   font-size: 1.2em;
   font-weight: bold;
 }

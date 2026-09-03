@@ -9,12 +9,13 @@ import type {
   GradientDirection,
 } from "./types";
 
-type Tone = "dark" | "light";
+/** 背景明暗基调：决定语义色取深底还是浅底，也决定强调色向哪个方向调整 */
+export type CanvasTone = "dark" | "light";
 const lightToneLuminanceThreshold = 0.179;
 
 interface BackgroundDefinition {
   background: BackgroundStyle;
-  tone: Tone;
+  tone: CanvasTone;
 }
 
 export const backgroundPresetIds: readonly BackgroundPreset[] = [
@@ -70,12 +71,12 @@ const backgroundDefinitions: Record<BackgroundPreset, BackgroundDefinition> = {
   },
 };
 
-const getSolidTone = (color: string): Tone =>
+const getSolidTone = (color: string): CanvasTone =>
   relativeLuminance(hexToRgb(color)) > lightToneLuminanceThreshold
     ? "light"
     : "dark";
 
-const getGradientTone = (from: string, to: string): Tone =>
+const getGradientTone = (from: string, to: string): CanvasTone =>
   (relativeLuminance(hexToRgb(from)) + relativeLuminance(hexToRgb(to))) / 2 >
   lightToneLuminanceThreshold
     ? "light"
@@ -107,6 +108,10 @@ const getBackgroundDefinition = (
     tone: getSolidTone(choice.color),
   };
 };
+
+/** 背景的明暗基调；强调色的对比度保障按它取代表色 */
+export const canvasTone = (choice: CanvasBackground): CanvasTone =>
+  getBackgroundDefinition(choice).tone;
 
 const sameBackgroundStyle = (
   first: BackgroundStyle,
@@ -140,7 +145,7 @@ export const canvasBackgroundsEqual = (
   return false;
 };
 
-const applySemanticPalette = (style: FullStyle, tone: Tone): FullStyle => {
+const applySemanticPalette = (style: FullStyle, tone: CanvasTone): FullStyle => {
   if (tone === "dark") {
     return {
       ...style,

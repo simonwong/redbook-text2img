@@ -21,6 +21,18 @@ export const backgroundColorPresets: readonly string[] = [
   "#0f1d2e",
 ];
 
+/** 强调色的 8 个预设色，覆盖红橙黄绿青蓝紫，深浅都能压出可读对比。 */
+export const accentColorPresets: readonly string[] = [
+  "#e8604c",
+  "#d94f7a",
+  "#e58a2f",
+  "#c9a227",
+  "#4f8f5b",
+  "#2f8f9d",
+  "#3f5fbf",
+  "#7b56c9",
+];
+
 /** 自定义渐变的 6 个预设色标对，点选直接写入 from / to。 */
 export const gradientPresets: readonly Pick<CustomGradient, "from" | "to">[] = [
   { from: "#ffe6c7", to: "#ffd1dc" },

@@ -123,7 +123,9 @@ describe("content theme store", () => {
       overrides: state.overrides,
     }).toEqual({
       currentThemeId: "clean-light",
+      // 强调色重新成为配置字段，v2 里存过的合法色值直接生效
       overrides: {
+        accentColor: "#e64f7a",
         bodyHeadingAlignment: "left",
         density: "compact",
       },

@@ -10,6 +10,8 @@ import type {
 } from "../theme/types";
 
 export interface StyleConfiguration {
+  /** 强调色（6 位十六进制）：正文标题、加粗、列表标记、引用边线与链接共用 */
+  readonly accentColor: string;
   readonly aspectRatio: CardAspectRatio;
   readonly background: CanvasBackground;
   readonly bodyHeadingAlignment: HeadingAlignment;

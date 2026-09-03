@@ -10,6 +10,7 @@ import {
   styleSystem,
 } from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
+import { AccentColorRow } from "./accent-color-row";
 import { BackgroundPicker } from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
 import { ConfigurationSegmentRow } from "./configuration-segment-row";
@@ -69,6 +70,7 @@ const fontOptions = optionValues.fontId.map((value) => ({
 }));
 
 const fieldLabelIds = {
+  accentColor: "accent-color-label",
   aspectRatio: "aspect-ratio-label",
   background: "background-field-label",
   bodyHeadingAlignment: "body-heading-alignment-label",
@@ -79,6 +81,7 @@ const fieldLabelIds = {
 } as const;
 
 const sectionHeadingIds = {
+  accent: "accent-section-heading",
   background: "background-section-heading",
   bodyHeading: "body-heading-section-heading",
   card: "card-section-heading",
@@ -240,6 +243,13 @@ export const ConfiguratorContent = () => {
             value={configuration.coverLayout}
           />
         </ConfigurationField>
+      </SettingsGroup>
+
+      <SettingsGroup headingId={sectionHeadingIds.accent} title="颜色">
+        <AccentColorRow
+          label="强调色"
+          labelId={fieldLabelIds.accentColor}
+        />
       </SettingsGroup>
 
       <SettingsGroup headingId={sectionHeadingIds.cardMark} title="卡片标记">

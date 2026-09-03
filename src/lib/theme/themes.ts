@@ -3,6 +3,7 @@ import type { PresetTheme } from "./types";
 export const presetThemes: readonly PresetTheme[] = [
   {
     configuration: {
+      accentColor: "#111827",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
@@ -17,6 +18,7 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      accentColor: "#0f172a",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "trianglify-gray" },
       bodyHeadingAlignment: "left",
@@ -31,6 +33,7 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      accentColor: "#f5f5f7",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "night-aurora" },
       bodyHeadingAlignment: "left",
@@ -45,6 +48,7 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      accentColor: "#4a2a15",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "warm-sun" },
       bodyHeadingAlignment: "center",
@@ -59,6 +63,7 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      accentColor: "#172b45",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "cool-mist" },
       bodyHeadingAlignment: "center",
@@ -73,6 +78,7 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      accentColor: "#64152d",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "cherry-cream" },
       bodyHeadingAlignment: "center",
@@ -87,6 +93,7 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      accentColor: "#44403c",
       aspectRatio: "3:4",
       background: { color: "#fefcf3", kind: "solid" },
       bodyHeadingAlignment: "left",
@@ -101,6 +108,7 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      accentColor: "#1d1d1f",
       aspectRatio: "3:4",
       background: { color: "#fbfbfb", kind: "solid" },
       bodyHeadingAlignment: "left",

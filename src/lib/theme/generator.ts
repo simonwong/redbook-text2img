@@ -116,6 +116,15 @@ export function generateStyles(
     backgroundStyle = { backgroundImage: style.background.value };
   }
 
+  // 列表符号由 `.img-preview ul li::before` 绘制，只能经自定义属性拿到强调色；
+  // 导出前 getComputedStyle 已把它解析成实色，html2canvas-pro 照常还原
+  const listStyle: CSSProperties & Record<"--marker-color", string> = {
+    marginBottom: `${paragraphGap / baseFontSize}em`,
+    paddingLeft: 0,
+    color: style.list.color,
+    "--marker-color": style.list.markerColor,
+  };
+
   // Helper for heading styles
   // isDisplay: h1–h3 为展示级标题
   const createHeadingStyle = (
@@ -128,7 +137,8 @@ export function generateStyles(
     lineHeight: 1.2,
     fontWeight: style.heading.fontWeight,
     marginBottom: `${headingGap / baseFontSize}em`,
-    color: style.heading.color,
+    // 展示级标题（h1–h3）取强调色，h4 保持基础标题色
+    color: isDisplay ? style.accent : style.heading.color,
     textAlign: useHeadingAlignment ? effectiveHeadingAlignment : "left",
     letterSpacing: isDisplay ? letterSpacing.heading : undefined,
     // 长标题换行时两行字数均衡（避免"8+1"式孤字尾行）
@@ -223,11 +233,7 @@ export function generateStyles(
       borderRadius: "0.2em",
     },
 
-    ul: {
-      marginBottom: `${paragraphGap / baseFontSize}em`,
-      paddingLeft: 0,
-      color: style.list.color,
-    },
+    ul: listStyle,
 
     li: {
       marginBottom: `${paragraphGap / 2 / baseFontSize}em`,

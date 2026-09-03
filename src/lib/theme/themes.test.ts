@@ -7,6 +7,7 @@ import { contrastRatio, hexToRgb } from "./color-contrast";
 
 const firstFourConfigurations = {
   "clean-dark": {
+    accentColor: "#f5f5f7",
     aspectRatio: "3:4",
     background: { kind: "preset", preset: "night-aurora" },
     bodyHeadingAlignment: "left",
@@ -16,6 +17,7 @@ const firstFourConfigurations = {
     fontId: "sans",
   },
   "clean-light": {
+    accentColor: "#111827",
     aspectRatio: "3:4",
     background: { kind: "preset", preset: "clean-light" },
     bodyHeadingAlignment: "center",
@@ -25,6 +27,7 @@ const firstFourConfigurations = {
     fontId: "sans",
   },
   "gradient-warm": {
+    accentColor: "#4a2a15",
     aspectRatio: "3:4",
     background: { kind: "preset", preset: "warm-sun" },
     bodyHeadingAlignment: "center",
@@ -34,6 +37,7 @@ const firstFourConfigurations = {
     fontId: "sans",
   },
   "trianglify-minimalist": {
+    accentColor: "#0f172a",
     aspectRatio: "3:4",
     background: { kind: "preset", preset: "trianglify-gray" },
     bodyHeadingAlignment: "left",
@@ -46,6 +50,7 @@ const firstFourConfigurations = {
 
 const secondFourConfigurations = {
   "apple-notes": {
+    accentColor: "#1d1d1f",
     aspectRatio: "3:4",
     background: { color: "#fbfbfb", kind: "solid" },
     bodyHeadingAlignment: "left",
@@ -55,6 +60,7 @@ const secondFourConfigurations = {
     fontId: "sans",
   },
   "gradient-cool": {
+    accentColor: "#172b45",
     aspectRatio: "3:4",
     background: { kind: "preset", preset: "cool-mist" },
     bodyHeadingAlignment: "center",
@@ -64,6 +70,7 @@ const secondFourConfigurations = {
     fontId: "serif",
   },
   "reading-mode": {
+    accentColor: "#44403c",
     aspectRatio: "3:4",
     background: { color: "#fefcf3", kind: "solid" },
     bodyHeadingAlignment: "left",
@@ -73,6 +80,7 @@ const secondFourConfigurations = {
     fontId: "serif",
   },
   "xiaohongshu-pink": {
+    accentColor: "#64152d",
     aspectRatio: "3:4",
     background: { kind: "preset", preset: "cherry-cream" },
     bodyHeadingAlignment: "center",

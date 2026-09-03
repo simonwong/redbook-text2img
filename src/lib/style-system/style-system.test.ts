@@ -68,11 +68,11 @@ describe("Style System Interface", () => {
       .configuration as unknown as Record<string, unknown>;
 
     expect(configuration).toMatchObject({
+      accentColor: "#111827",
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
       coverLayout: "center-poster",
     });
-    expect(configuration).not.toHaveProperty("accentColor");
     expect(configuration).not.toHaveProperty("bodyHeadingSize");
     expect(configuration).not.toHaveProperty("contentSurface");
     expect(configuration).not.toHaveProperty("decorationColor");
@@ -124,6 +124,7 @@ describe("Style System Interface", () => {
     }).toEqual({
       density: "compact",
       overridden: {
+        accentColor: false,
         aspectRatio: false,
         background: false,
         bodyHeadingAlignment: false,
@@ -151,6 +152,7 @@ describe("Style System Interface", () => {
       overrides: reset.overrides,
     }).toEqual({
       configuration: {
+        accentColor: "#111827",
         aspectRatio: "3:4",
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
@@ -720,6 +722,7 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
+        accentColor: "#44403c",
         aspectRatio: "3:4",
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
@@ -751,6 +754,7 @@ describe("Style System Interface", () => {
       state: selected,
     }).toEqual({
       configuration: {
+        accentColor: "#44403c",
         aspectRatio: "3:4",
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
@@ -788,6 +792,7 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
+        accentColor: "#111827",
         aspectRatio: "3:4",
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
@@ -818,6 +823,7 @@ describe("Style System Interface", () => {
       state: reset,
     }).toEqual({
       configuration: {
+        accentColor: "#44403c",
         aspectRatio: "3:4",
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
@@ -1173,5 +1179,141 @@ describe("Style System Interface", () => {
       aspectRatio: "3:4",
       cardFrame: "none",
     });
+  });
+});
+
+// 改动前生成器为 8 个主题派生的展示级标题色，也是各主题声明的强调色；
+// 强调色未被覆盖时这些值必须一字不差
+const themeAccentColors = [
+  ["clean-light", "#111827"],
+  ["trianglify-minimalist", "#0f172a"],
+  ["clean-dark", "#f5f5f7"],
+  ["gradient-warm", "#4a2a15"],
+  ["gradient-cool", "#172b45"],
+  ["xiaohongshu-pink", "#64152d"],
+  ["reading-mode", "#44403c"],
+  ["apple-notes", "#1d1d1f"],
+] as const;
+
+describe("强调色", () => {
+  it.each(themeAccentColors)(
+    "%s 的默认强调色即改动前的标题与加粗色",
+    (themeId, accentColor) => {
+      const state = styleSystem.hydrate({ currentThemeId: themeId });
+      const { styles } = styleSystem.resolve(state, { page: "body" });
+
+      expect(styleSystem.read(state).configuration.accentColor).toBe(
+        accentColor
+      );
+      expect(styles.h1.color).toBe(accentColor);
+      expect(styles.h2.color).toBe(accentColor);
+      expect(styles.h3.color).toBe(accentColor);
+      expect(styles.strong.color).toBe(accentColor);
+    }
+  );
+
+  it("只作用于标题、加粗、列表标记、引用边线与链接", () => {
+    const accentColor = "#7b56c9";
+    const before = styleSystem.resolve(styleSystem.hydrate(undefined), {
+      page: "body",
+    }).styles;
+    const after = styleSystem.resolve(
+      styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { accentColor },
+        type: "update-configuration",
+      }),
+      { page: "body" }
+    ).styles;
+    expect(after.h1.color).toBe(accentColor);
+    expect(after.h2.color).toBe(accentColor);
+    expect(after.h3.color).toBe(accentColor);
+    expect(after.strong.color).toBe(accentColor);
+    expect(after.a.color).toBe(accentColor);
+    expect(after.blockquote.borderLeft).toBe(`3px solid ${accentColor}`);
+    expect(Object.entries(after.ul)).toContainEqual([
+      "--marker-color",
+      accentColor,
+    ]);
+
+    // 段落、次级标题、斜体、代码与引用文字色仍由样式基础按背景派生
+    expect(after.p.color).toBe(before.p.color);
+    expect(after.h4.color).toBe(before.h4.color);
+    expect(after.h5.color).toBe(before.h5.color);
+    expect(after.h6.color).toBe(before.h6.color);
+    expect(after.em.color).toBe(before.em.color);
+    expect(after.code.color).toBe(before.code.color);
+    expect(after.blockquote.color).toBe(before.blockquote.color);
+    expect(after.ul.color).toBe(before.ul.color);
+  });
+
+  it.each([
+    // 浅背景上的浅粉被压暗
+    { accentColor: "#ffd1dc", background: "#ffffff", expected: "darker" },
+    // 深背景上的深紫被提亮
+    { accentColor: "#2b2540", background: "#1c1c21", expected: "lighter" },
+    // 已达标的颜色原样返回
+    { accentColor: "#3f5fbf", background: "#ffffff", expected: "same" },
+  ] as const)(
+    "在 $background 上把 $accentColor 调整为 $expected",
+    ({ accentColor, background, expected }) => {
+      const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { accentColor, background: { color: background, kind: "solid" } },
+        type: "update-configuration",
+      });
+      const applied = String(
+        styleSystem.resolve(state, { page: "body" }).styles.h1.color
+      );
+
+      if (expected === "same") {
+        expect(applied).toBe(accentColor);
+      } else {
+        expect(applied).not.toBe(accentColor);
+        expect(
+          expected === "darker"
+            ? relativeLuminance(applied) < relativeLuminance(accentColor)
+            : relativeLuminance(applied) > relativeLuminance(accentColor)
+        ).toBe(true);
+      }
+      expect(contrastRatio(applied, background)).toBeGreaterThanOrEqual(4.5);
+    }
+  );
+
+  it("非法强调色被丢弃，缺失时取主题默认", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "clean-dark",
+      overrides: { accentColor: "#12g", density: "compact" },
+    });
+
+    expect(state.overrides).toEqual({ density: "compact" });
+    expect(styleSystem.read(state).configuration.accentColor).toBe("#f5f5f7");
+    expect(
+      styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { accentColor: "red" } as unknown as Partial<StyleConfiguration>,
+        type: "update-configuration",
+      }).overrides
+    ).not.toHaveProperty("accentColor");
+  });
+
+  it("强调色可识别、可单项恢复且不牵连其他字段", () => {
+    const modified = styleSystem.transition(
+      styleSystem.hydrate({ currentThemeId: "reading-mode" }),
+      { patch: { accentColor: "#E8604C", density: "compact" }, type: "update-configuration" }
+    );
+    const reset = styleSystem.transition(modified, {
+      field: "accentColor",
+      type: "reset-field",
+    });
+
+    // 大写十六进制规范化为小写，与持久化白名单一致
+    expect(modified.overrides).toEqual({
+      accentColor: "#e8604c",
+      density: "compact",
+    });
+    expect(styleSystem.read(modified).overridden).toMatchObject({
+      accentColor: true,
+      density: true,
+    });
+    expect(reset.overrides).toEqual({ density: "compact" });
+    expect(styleSystem.read(reset).configuration.accentColor).toBe("#44403c");
   });
 });
