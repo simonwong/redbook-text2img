@@ -543,21 +543,19 @@
   }
 
   /* ---- 预览卡片外框 ---- */
+  /* 卡片外框：只有阴影与 1px 极淡描边。
+     白边是样式配置 cardFrame 的一部分，画在导出节点内，这里不再叠装饰白边。
+     圆角随渲染样式内联设置（无白边 12px、白边 16px）。 */
   .ds-card-rim {
     position: relative;
-    padding: 3px;
-    background: #ffffff;
-    border-radius: 19px;
     box-shadow:
-      0 0 0 1px rgba(17, 17, 20, 0.03),
+      0 0 0 1px rgba(17, 17, 20, 0.05),
       0 2px 4px rgba(60, 40, 120, 0.06),
       0 44px 80px -32px rgba(60, 40, 120, 0.55);
   }
   .dark .ds-card-rim {
-    /* 暗色模式下卡片白边保持白色（用户明确要求） */
-    background: #ffffff;
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(255, 255, 255, 0.07),
       0 2px 4px rgba(0, 0, 0, 0.4),
       0 44px 80px -32px rgba(0, 0, 0, 0.85);
   }

@@ -51,7 +51,9 @@ describe("Style System Interface", () => {
 
   it("通过公共接口列出封闭配置选项", () => {
     expect(styleSystem.configurationOptions()).toEqual({
+      aspectRatio: ["3:4", "1:1", "9:16"],
       bodyHeadingAlignment: ["center", "left"],
+      cardFrame: ["none", "white"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "snug", "normal", "relaxed", "spacious"],
       fontId: ["sans", "serif"],
@@ -119,8 +121,10 @@ describe("Style System Interface", () => {
     }).toEqual({
       density: "compact",
       overridden: {
+        aspectRatio: false,
         background: false,
         bodyHeadingAlignment: false,
+        cardFrame: false,
         coverLayout: false,
         density: true,
         fontId: false,
@@ -144,8 +148,10 @@ describe("Style System Interface", () => {
       overrides: reset.overrides,
     }).toEqual({
       configuration: {
+        aspectRatio: "3:4",
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
+        cardFrame: "none",
         coverLayout: "center-poster",
         density: "normal",
         fontId: "serif",
@@ -701,8 +707,10 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
+        aspectRatio: "3:4",
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
+        cardFrame: "none",
         coverLayout: "top-left",
         density: "compact",
         fontId: "serif",
@@ -730,8 +738,10 @@ describe("Style System Interface", () => {
       state: selected,
     }).toEqual({
       configuration: {
+        aspectRatio: "3:4",
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
+        cardFrame: "none",
         coverLayout: "top-left",
         density: "normal",
         fontId: "serif",
@@ -765,8 +775,10 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
+        aspectRatio: "3:4",
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
+        cardFrame: "none",
         coverLayout: "center-poster",
         density: "compact",
         fontId: "sans",
@@ -793,8 +805,10 @@ describe("Style System Interface", () => {
       state: reset,
     }).toEqual({
       configuration: {
+        aspectRatio: "3:4",
         background: { color: "#fefcf3", kind: "solid" },
         bodyHeadingAlignment: "left",
+        cardFrame: "none",
         coverLayout: "top-left",
         density: "normal",
         fontId: "serif",
@@ -973,5 +987,164 @@ describe("Style System Interface", () => {
     }
 
     expect(resolvedContexts).toBe(16);
+  });
+
+  it.each([
+    ["3:4", 500],
+    ["1:1", 375],
+    ["9:16", 667],
+  ] as const)("卡片比例 %s 解析为 375×%d 的渲染尺寸", (aspectRatio, height) => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { aspectRatio },
+      type: "update-configuration",
+    });
+    const { styles } = styleSystem.resolve(state, { page: "body" });
+
+    expect(styles.card).toEqual({ frame: null, height, width: 375 });
+    expect(styles.container).toMatchObject({
+      height: `${height}px`,
+      minHeight: `${height}px`,
+      minWidth: "375px",
+      width: "375px",
+    });
+  });
+
+  it("封面与正文共用同一张卡片尺寸", () => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { aspectRatio: "9:16" },
+      type: "update-configuration",
+    });
+
+    expect(styleSystem.resolve(state, { page: "cover" }).styles.card).toEqual(
+      styleSystem.resolve(state, { page: "body" }).styles.card
+    );
+  });
+
+  it.each(styleSystem.catalog())(
+    "内置主题 $id 默认输出 3:4 无边框卡片",
+    (theme) => {
+      const state = styleSystem.hydrate({ currentThemeId: theme.id });
+      const snapshot = styleSystem.read(state);
+      const { styles } = styleSystem.resolve(state, { page: "body" });
+
+      expect(snapshot.configuration).toMatchObject({
+        aspectRatio: "3:4",
+        cardFrame: "none",
+      });
+      expect(styles.card).toEqual({ frame: null, height: 500, width: 375 });
+      expect(styles.container).toMatchObject({
+        borderRadius: "12px",
+        height: "500px",
+        minHeight: "500px",
+        minWidth: "375px",
+        overflow: "hidden",
+        width: "375px",
+      });
+    }
+  );
+
+  it("白边把导出节点包成 3px 白色内边距的外层", () => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { cardFrame: "white" },
+      type: "update-configuration",
+    });
+    const { styles } = styleSystem.resolve(state, { page: "body" });
+
+    expect(styles.card).toEqual({
+      frame: {
+        backgroundColor: "#ffffff",
+        borderRadius: "16px",
+        boxSizing: "border-box",
+        height: "500px",
+        minHeight: "500px",
+        minWidth: "375px",
+        overflow: "hidden",
+        padding: "3px",
+        width: "375px",
+      },
+      height: 500,
+      width: 375,
+    });
+    // 内层退到白边内侧：圆角 13，尺寸各减 6
+    expect(styles.container).toMatchObject({
+      borderRadius: "13px",
+      height: "494px",
+      minHeight: "494px",
+      minWidth: "369px",
+      width: "369px",
+    });
+  });
+
+  it("白边层只用 html2canvas 可还原的盒模型属性", () => {
+    const allowedFrameProperties = new Set([
+      "backgroundColor",
+      "borderRadius",
+      "boxSizing",
+      "height",
+      "minHeight",
+      "minWidth",
+      "overflow",
+      "padding",
+      "width",
+    ]);
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { aspectRatio: "1:1", cardFrame: "white" },
+      type: "update-configuration",
+    });
+
+    for (const page of ["body", "cover"] as const) {
+      const { frame } = styleSystem.resolve(state, { page }).styles.card;
+      expect(frame).not.toBeNull();
+      for (const [property, value] of Object.entries(frame ?? {})) {
+        expect(allowedFrameProperties).toContain(property);
+        expect(String(value)).not.toMatch(unsafeCssValuePattern);
+      }
+      expect(frame).not.toHaveProperty("backdropFilter");
+      expect(frame).not.toHaveProperty("boxShadow");
+      expect(frame).not.toHaveProperty("filter");
+    }
+  });
+
+  it("比例与边框可识别、可单项恢复且不牵连其他字段", () => {
+    const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { aspectRatio: "9:16", cardFrame: "white" },
+      type: "update-configuration",
+    });
+    const reset = styleSystem.transition(modified, {
+      field: "aspectRatio",
+      type: "reset-field",
+    });
+
+    expect(modified.overrides).toEqual({
+      aspectRatio: "9:16",
+      cardFrame: "white",
+    });
+    expect(styleSystem.read(modified).overridden).toMatchObject({
+      aspectRatio: true,
+      cardFrame: true,
+      density: false,
+    });
+    expect(reset.overrides).toEqual({ cardFrame: "white" });
+    expect(styleSystem.read(reset).configuration).toMatchObject({
+      aspectRatio: "3:4",
+      cardFrame: "white",
+    });
+  });
+
+  it("丢弃非法的比例与边框并对缺失字段取主题默认", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "reading-mode",
+      overrides: {
+        aspectRatio: "4:3",
+        cardFrame: "black",
+        density: "compact",
+      },
+    });
+
+    expect(state.overrides).toEqual({ density: "compact" });
+    expect(styleSystem.read(state).configuration).toMatchObject({
+      aspectRatio: "3:4",
+      cardFrame: "none",
+    });
   });
 });

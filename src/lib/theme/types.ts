@@ -136,10 +136,18 @@ export type HeadingAlignment = "left" | "center";
 
 export type CoverLayout = "center-poster" | "top-left" | "bottom-left";
 
+/** 卡片比例（封闭集合）；逻辑宽度固定 375px，高度由比例决定 */
+export type CardAspectRatio = "3:4" | "1:1" | "9:16";
+
+/** 卡片边框（封闭集合）；white 为 3px 白色内边距，属于导出内容 */
+export type CardFrame = "none" | "white";
+
 /** Internal shape matching the resolved public style configuration */
 export interface StyleAdjustments {
+  readonly aspectRatio: CardAspectRatio;
   readonly background: CanvasBackground;
   readonly bodyHeadingAlignment: HeadingAlignment;
+  readonly cardFrame: CardFrame;
   readonly coverLayout: CoverLayout;
   readonly density: Density;
   readonly fontId: "sans" | "serif";

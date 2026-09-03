@@ -12,6 +12,7 @@ import {
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
 import { BackgroundPicker } from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
+import { ConfigurationSegmentRow } from "./configuration-segment-row";
 import { CoverLayoutPicker } from "./cover-layout-picker";
 import { ResetThemeButton } from "./reset-theme-button";
 import { SettingsGroup } from "./settings-group";
@@ -20,6 +21,15 @@ import { ThemeGrid } from "./theme-grid";
 
 const optionValues = styleSystem.configurationOptions();
 type BackgroundChoice = StyleConfiguration["background"];
+const aspectRatioLabels: Record<StyleConfiguration["aspectRatio"], string> = {
+  "1:1": "1:1",
+  "3:4": "3:4",
+  "9:16": "9:16",
+};
+const cardFrameLabels: Record<StyleConfiguration["cardFrame"], string> = {
+  none: "无",
+  white: "白边",
+};
 const bodyHeadingAlignmentLabels: Record<
   StyleConfiguration["bodyHeadingAlignment"],
   string
@@ -36,9 +46,17 @@ const fontLabels: Record<string, string> = {
   serif: "衬线",
 };
 
+const aspectRatioOptions = optionValues.aspectRatio.map((value) => ({
+  label: aspectRatioLabels[value],
+  value,
+}));
 const bodyHeadingAlignmentOptions = optionValues.bodyHeadingAlignment.map(
   (value) => ({ label: bodyHeadingAlignmentLabels[value], value })
 );
+const cardFrameOptions = optionValues.cardFrame.map((value) => ({
+  label: cardFrameLabels[value],
+  value,
+}));
 const densityOptions = optionValues.density.map((value) => ({
   label: densityLabels[value],
   value,
@@ -49,8 +67,10 @@ const fontOptions = optionValues.fontId.map((value) => ({
 }));
 
 const fieldLabelIds = {
+  aspectRatio: "aspect-ratio-label",
   background: "background-field-label",
   bodyHeadingAlignment: "body-heading-alignment-label",
+  cardFrame: "card-frame-label",
   coverLayout: "cover-layout-label",
   density: "density-label",
   font: "font-label",
@@ -59,6 +79,7 @@ const fieldLabelIds = {
 const sectionHeadingIds = {
   background: "background-section-heading",
   bodyHeading: "body-heading-section-heading",
+  card: "card-section-heading",
   cardMark: "card-mark-section-heading",
   cover: "cover-section-heading",
   theme: "theme-section-heading",
@@ -139,6 +160,21 @@ export const ConfiguratorContent = () => {
             value={configuration.background}
           />
         </ConfigurationField>
+      </SettingsGroup>
+
+      <SettingsGroup headingId={sectionHeadingIds.card} title="卡片">
+        <ConfigurationSegmentRow
+          field="aspectRatio"
+          label="比例"
+          labelId={fieldLabelIds.aspectRatio}
+          options={aspectRatioOptions}
+        />
+        <ConfigurationSegmentRow
+          field="cardFrame"
+          label="边框"
+          labelId={fieldLabelIds.cardFrame}
+          options={cardFrameOptions}
+        />
       </SettingsGroup>
 
       <SettingsGroup headingId={sectionHeadingIds.typography} title="排版">

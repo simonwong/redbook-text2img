@@ -5,6 +5,7 @@
 
 import type { Properties as CSSProperties } from "csstype";
 import type { AdjustedStyle } from "./adjustments";
+import type { CardStyle } from "./card";
 import { typography } from "./tokens";
 import type { CoverStyleOverride } from "./types";
 
@@ -12,6 +13,8 @@ import type { CoverStyleOverride } from "./types";
 export interface GeneratedStyles {
   a: CSSProperties;
   blockquote: CSSProperties;
+  /** 卡片尺寸与白边层：预览、溢出判定、缩放与导出都从这里读取 */
+  card: CardStyle;
   code: CSSProperties;
   container: CSSProperties;
   content: CSSProperties;
@@ -79,8 +82,13 @@ export function generateStyles(
 ): GeneratedStyles {
   const { baseFontSize, lineHeight } = style.typography;
   const { padding, paragraphGap, headingGap } = style.spacing;
-  const { bodyHeadingAlignment, fontFamily, headingScale, letterSpacing } =
-    style;
+  const {
+    bodyHeadingAlignment,
+    card,
+    fontFamily,
+    headingScale,
+    letterSpacing,
+  } = style;
   const coverStyle = options?.coverStyle;
 
   // 封面标题对齐：优先使用 coverStyle 中的设置,覆盖用户调整
@@ -129,15 +137,17 @@ export function generateStyles(
   });
 
   return {
+    card: card.card,
+
     container: {
-      width: "375px",
-      minWidth: "375px",
-      height: "500px",
-      minHeight: "500px",
+      width: `${card.content.width}px`,
+      minWidth: `${card.content.width}px`,
+      height: `${card.content.height}px`,
+      minHeight: `${card.content.height}px`,
       ...backgroundStyle,
       backgroundSize: style.background.size ?? "cover",
       backgroundPosition: "center",
-      borderRadius: "12px",
+      borderRadius: `${card.content.radius}px`,
       overflow: "hidden",
       fontFamily,
       position: "relative",

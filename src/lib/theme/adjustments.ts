@@ -4,6 +4,7 @@
  */
 
 import { applyCanvasConfiguration } from "./canvas";
+import { type CardLayout, resolveCardLayout } from "./card";
 import { defaultFontId, getFontFamily } from "./fonts";
 import { spacing, typography } from "./tokens";
 import type {
@@ -46,8 +47,10 @@ export const densityPresets: Record<Density, DensityValues> = {
 // ============================================================
 
 export const defaultAdjustments: StyleAdjustments = {
+  aspectRatio: "3:4",
   background: { kind: "preset", preset: "clean-light" },
   bodyHeadingAlignment: "center",
+  cardFrame: "none",
   coverLayout: "center-poster",
   density: "normal",
   fontId: defaultFontId,
@@ -100,6 +103,7 @@ export function applyAdjustments(
     },
     fontFamily,
     bodyHeadingAlignment: adjustments.bodyHeadingAlignment,
+    card: resolveCardLayout(adjustments.aspectRatio, adjustments.cardFrame),
     headingScale: 1,
     letterSpacing: {},
   };
@@ -108,6 +112,7 @@ export function applyAdjustments(
 /** 应用调整后的完整样式类型 */
 export type AdjustedStyle = FullStyle & {
   bodyHeadingAlignment: StyleAdjustments["bodyHeadingAlignment"];
+  card: CardLayout;
   fontFamily: string;
   headingScale: number;
   letterSpacing: { body?: string; heading?: string };

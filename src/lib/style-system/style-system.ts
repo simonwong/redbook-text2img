@@ -47,7 +47,9 @@ const imageDataUrlPattern = /^data:image\//;
 // 图片背景经上传压缩（JPEG ≤1600px）后持久化在 localStorage，留出配额余量
 const maxImageDataUrlLength = 4_000_000;
 const configurationOptions = {
+  aspectRatio: ["3:4", "1:1", "9:16"],
   bodyHeadingAlignment: ["center", "left"],
+  cardFrame: ["none", "white"],
   coverLayout: ["center-poster", "top-left", "bottom-left"],
   density: ["compact", "snug", "normal", "relaxed", "spacious"],
   fontId: fontPresets.map(({ id }) => id),
@@ -61,6 +63,9 @@ const diffConfiguration = (
     -readonly [Field in keyof StyleConfiguration]?: StyleConfiguration[Field];
   } = {};
 
+  if (configuration.aspectRatio !== themeConfiguration.aspectRatio) {
+    overrides.aspectRatio = configuration.aspectRatio;
+  }
   if (
     !canvasBackgroundsEqual(
       configuration.background,
@@ -74,6 +79,9 @@ const diffConfiguration = (
     themeConfiguration.bodyHeadingAlignment
   ) {
     overrides.bodyHeadingAlignment = configuration.bodyHeadingAlignment;
+  }
+  if (configuration.cardFrame !== themeConfiguration.cardFrame) {
+    overrides.cardFrame = configuration.cardFrame;
   }
   if (configuration.coverLayout !== themeConfiguration.coverLayout) {
     overrides.coverLayout = configuration.coverLayout;
@@ -98,9 +106,11 @@ const cloneConfiguration = (
   background: { ...configuration.background },
 });
 
+const aspectRatios = new Set<string>(configurationOptions.aspectRatio);
 const bodyHeadingAlignments = new Set<string>(
   configurationOptions.bodyHeadingAlignment
 );
+const cardFrames = new Set<string>(configurationOptions.cardFrame);
 const coverLayouts = new Set<string>(configurationOptions.coverLayout);
 const backgroundPresets = new Set<string>(backgroundPresetIds);
 const gradientDirections = new Set<string>([
@@ -212,6 +222,10 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
   const fontId = sanitizeFontId(value.fontId);
 
   return {
+    ...(typeof value.aspectRatio === "string" &&
+    aspectRatios.has(value.aspectRatio)
+      ? { aspectRatio: value.aspectRatio as StyleConfiguration["aspectRatio"] }
+      : {}),
     ...(background ? { background } : {}),
     ...(typeof bodyHeadingAlignment === "string" &&
     bodyHeadingAlignments.has(bodyHeadingAlignment)
@@ -219,6 +233,9 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
           bodyHeadingAlignment:
             bodyHeadingAlignment as StyleConfiguration["bodyHeadingAlignment"],
         }
+      : {}),
+    ...(typeof value.cardFrame === "string" && cardFrames.has(value.cardFrame)
+      ? { cardFrame: value.cardFrame as StyleConfiguration["cardFrame"] }
       : {}),
     ...(typeof value.coverLayout === "string" &&
     coverLayouts.has(value.coverLayout)
@@ -322,8 +339,10 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
     configuration,
     isModified: Object.keys(state.overrides).length > 0,
     overridden: {
+      aspectRatio: "aspectRatio" in state.overrides,
       background: "background" in state.overrides,
       bodyHeadingAlignment: "bodyHeadingAlignment" in state.overrides,
+      cardFrame: "cardFrame" in state.overrides,
       coverLayout: "coverLayout" in state.overrides,
       density: "density" in state.overrides,
       fontId: "fontId" in state.overrides,

@@ -37,8 +37,9 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   const watermarkPage =
     showPageNumber && !segment.isCover ? pageNumber : undefined;
 
-  return (
-    <div className="img-preview" ref={ref} style={styles.container}>
+  // 白边（cardFrame = white）是导出内容的一部分：导出节点变为白边层，卡片画布退到内层
+  const cardBody = (
+    <>
       {headerBar && <HeaderBar config={headerBar} />}
       <div
         style={{
@@ -89,6 +90,20 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
           style={styles.footer}
         />
       </div>
+    </>
+  );
+
+  if (styles.card.frame) {
+    return (
+      <div className="img-preview" ref={ref} style={styles.card.frame}>
+        <div style={styles.container}>{cardBody}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="img-preview" ref={ref} style={styles.container}>
+      {cardBody}
     </div>
   );
 };

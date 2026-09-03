@@ -1,6 +1,8 @@
 import type { GeneratedStyles } from "../theme/generator";
 import type {
   CanvasBackground,
+  CardAspectRatio,
+  CardFrame,
   CoverLayout,
   Density,
   HeadingAlignment,
@@ -8,15 +10,19 @@ import type {
 } from "../theme/types";
 
 export interface StyleConfiguration {
+  readonly aspectRatio: CardAspectRatio;
   readonly background: CanvasBackground;
   readonly bodyHeadingAlignment: HeadingAlignment;
+  readonly cardFrame: CardFrame;
   readonly coverLayout: CoverLayout;
   readonly density: Density;
   readonly fontId: StyleAdjustments["fontId"];
 }
 
 export interface StyleConfigurationOptions {
+  readonly aspectRatio: readonly StyleConfiguration["aspectRatio"][];
   readonly bodyHeadingAlignment: readonly StyleConfiguration["bodyHeadingAlignment"][];
+  readonly cardFrame: readonly StyleConfiguration["cardFrame"][];
   readonly coverLayout: readonly StyleConfiguration["coverLayout"][];
   readonly density: readonly StyleConfiguration["density"][];
   readonly fontId: readonly string[];

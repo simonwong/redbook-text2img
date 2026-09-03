@@ -3,8 +3,10 @@ import type { PresetTheme } from "./types";
 export const presetThemes: readonly PresetTheme[] = [
   {
     configuration: {
+      aspectRatio: "3:4",
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
+      cardFrame: "none",
       coverLayout: "center-poster",
       density: "normal",
       fontId: "sans",
@@ -15,8 +17,10 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      aspectRatio: "3:4",
       background: { kind: "preset", preset: "trianglify-gray" },
       bodyHeadingAlignment: "left",
+      cardFrame: "none",
       coverLayout: "top-left",
       density: "snug",
       fontId: "sans",
@@ -27,8 +31,10 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      aspectRatio: "3:4",
       background: { kind: "preset", preset: "night-aurora" },
       bodyHeadingAlignment: "left",
+      cardFrame: "none",
       coverLayout: "bottom-left",
       density: "normal",
       fontId: "sans",
@@ -39,8 +45,10 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      aspectRatio: "3:4",
       background: { kind: "preset", preset: "warm-sun" },
       bodyHeadingAlignment: "center",
+      cardFrame: "none",
       coverLayout: "center-poster",
       density: "normal",
       fontId: "sans",
@@ -51,8 +59,10 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      aspectRatio: "3:4",
       background: { kind: "preset", preset: "cool-mist" },
       bodyHeadingAlignment: "center",
+      cardFrame: "none",
       coverLayout: "center-poster",
       density: "normal",
       fontId: "serif",
@@ -63,8 +73,10 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      aspectRatio: "3:4",
       background: { kind: "preset", preset: "cherry-cream" },
       bodyHeadingAlignment: "center",
+      cardFrame: "none",
       coverLayout: "center-poster",
       density: "normal",
       fontId: "sans",
@@ -75,8 +87,10 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      aspectRatio: "3:4",
       background: { color: "#fefcf3", kind: "solid" },
       bodyHeadingAlignment: "left",
+      cardFrame: "none",
       coverLayout: "top-left",
       density: "normal",
       fontId: "serif",
@@ -87,8 +101,10 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
+      aspectRatio: "3:4",
       background: { color: "#fbfbfb", kind: "solid" },
       bodyHeadingAlignment: "left",
+      cardFrame: "none",
       coverLayout: "center-poster",
       density: "snug",
       fontId: "sans",
