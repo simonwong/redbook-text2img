@@ -66,15 +66,19 @@ export default function RootLayout({
         ))}
         <link href="/icon-512.png" rel="apple-touch-icon" sizes="512x512" />
       </head>
-      <body className="flex h-dvh max-h-dvh flex-col gap-2 px-3 pt-2 pb-3">
-        <ThemeProvider>
-          <TooltipProvider>
-            <Header />
-            <main className="flex-1 overflow-y-auto" id="main-content">
-              {children}
-            </main>
-          </TooltipProvider>
-        </ThemeProvider>
+      <body>
+        {/* 布局壳单独一层：弹层 Portal 会往 body 末尾追加容器，
+            若 body 本身是 flex-col + gap，容器出现/消失会让整页多出一格 gap 而闪动 */}
+        <div className="flex h-dvh max-h-dvh flex-col gap-2 px-3 pt-2 pb-3">
+          <ThemeProvider>
+            <TooltipProvider>
+              <Header />
+              <main className="flex-1 overflow-y-auto" id="main-content">
+                {children}
+              </main>
+            </TooltipProvider>
+          </ThemeProvider>
+        </div>
         <Analytics />
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
       </body>

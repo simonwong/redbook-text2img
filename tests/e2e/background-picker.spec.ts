@@ -4,7 +4,7 @@ const radialGradientPattern = /radial-gradient/;
 const diagonalGradientPattern = /linear-gradient\(135deg/;
 const horizontalGradientPattern = /linear-gradient\(90deg/;
 const nightGradientPattern = /rgb\(15, 23, 42\).+rgb\(30, 58, 95\)/;
-const pinkStopPattern = /rgb\(255, 232, 236\)/;
+const pinkStopPattern = /rgb\(255, 217, 223\)/;
 const jpegDataUrlPattern = /url\("data:image\/jpeg/;
 const pngFilenamePattern = /\.png$/;
 
@@ -59,7 +59,7 @@ test("自定义背景：主题背景、纯色、渐变、图片上传并刷新�
 
   // 渐变色标共用取色弹层：终点走色板预设
   await backgroundSection.getByRole("button", { name: "渐变终点颜色" }).click();
-  await page.getByRole("button", { exact: true, name: "#ffe8ec" }).click();
+  await page.getByRole("button", { exact: true, name: "#ffd9df" }).click();
   await expect(preview).toHaveCSS("background-image", pinkStopPattern);
   await page.keyboard.press("Escape");
 

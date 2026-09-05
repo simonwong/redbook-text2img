@@ -116,6 +116,8 @@
   --ds-sh-layout:
     0 0 0 1px rgba(17, 17, 20, 0.05), 0 1px 2px rgba(17, 17, 20, 0.04);
   --ds-hairline: 0 0 0 1px rgba(17, 17, 20, 0.06);
+  /* 圆形色块的内描边：比 hairline 深一档，浅色色块在白底上才有清晰边缘 */
+  --ds-swatch-rim: inset 0 0 0 1px rgba(17, 17, 20, 0.12);
 }
 
 .dark {
@@ -218,6 +220,7 @@
   --ds-sh-layout:
     0 0 0 1px rgba(255, 255, 255, 0.05), 0 1px 2px rgba(0, 0, 0, 0.3);
   --ds-hairline: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --ds-swatch-rim: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
 @theme inline {
@@ -587,6 +590,10 @@
   /* ---- 极淡描边（背景块 / 版式块） ---- */
   .ds-hairline {
     box-shadow: var(--ds-hairline);
+  }
+  /* 圆形色块 */
+  .ds-swatch {
+    box-shadow: var(--ds-swatch-rim);
   }
   /* 主题块 */
   .ds-tile {
