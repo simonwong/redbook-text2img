@@ -1,9 +1,10 @@
+import { readingBackgroundColor } from "./foundation";
 import type { PresetTheme } from "./types";
 
 export const presetThemes: readonly PresetTheme[] = [
   {
     configuration: {
-      accentColor: "#111827",
+      accentColor: "#1b2540",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
@@ -18,7 +19,7 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
-      accentColor: "#0f172a",
+      accentColor: "#f4f6fb",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "trianglify-gray" },
       bodyHeadingAlignment: "left",
@@ -27,13 +28,13 @@ export const presetThemes: readonly PresetTheme[] = [
       density: "snug",
       fontId: "sans",
     },
-    description: "抽象三角形为背景的极简风格",
+    description: "石墨低多边形背景，冷硬的极简风格",
     id: "trianglify-minimalist",
     name: "三角极简",
   },
   {
     configuration: {
-      accentColor: "#f5f5f7",
+      accentColor: "#8fe3c8",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "night-aurora" },
       bodyHeadingAlignment: "left",
@@ -42,13 +43,13 @@ export const presetThemes: readonly PresetTheme[] = [
       density: "normal",
       fontId: "sans",
     },
-    description: "深邃墨色配紫蓝极光，沉静而有呼吸感",
+    description: "墨蓝黑配青绿极光，沉静而有呼吸感",
     id: "clean-dark",
     name: "墨夜极光",
   },
   {
     configuration: {
-      accentColor: "#4a2a15",
+      accentColor: "#92530c",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "warm-sun" },
       bodyHeadingAlignment: "center",
@@ -63,7 +64,7 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
-      accentColor: "#172b45",
+      accentColor: "#2c5aad",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "cool-mist" },
       bodyHeadingAlignment: "center",
@@ -72,13 +73,13 @@ export const presetThemes: readonly PresetTheme[] = [
       density: "normal",
       fontId: "serif",
     },
-    description: "雾蓝与薰衣草交织，清晨薄雾的清雅微光",
+    description: "近白雾底托住居中衬线标题，清晨薄雾的清雅微光",
     id: "gradient-cool",
     name: "晨雾微光",
   },
   {
     configuration: {
-      accentColor: "#64152d",
+      accentColor: "#b32259",
       aspectRatio: "3:4",
       background: { kind: "preset", preset: "cherry-cream" },
       bodyHeadingAlignment: "center",
@@ -93,9 +94,9 @@ export const presetThemes: readonly PresetTheme[] = [
   },
   {
     configuration: {
-      accentColor: "#44403c",
+      accentColor: "#6b4a2e",
       aspectRatio: "3:4",
-      background: { color: "#fefcf3", kind: "solid" },
+      background: { color: readingBackgroundColor, kind: "solid" },
       bodyHeadingAlignment: "left",
       cardFrame: "none",
       coverLayout: "top-left",

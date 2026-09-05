@@ -20,7 +20,9 @@ const toneReferenceColor: Record<CanvasTone, string> = {
  * 对比度比对的背景代表色。纯色背景取自身，中间调灰底才不会漏判；
  * 渐变、图案与图片没有单一颜色，取所在基调的代表色。
  */
-const referenceColor = (background: CanvasBackground): string =>
+export const backgroundReferenceColor = (
+  background: CanvasBackground
+): string =>
   background.kind === "solid"
     ? background.color
     : toneReferenceColor[canvasTone(background)];
@@ -88,7 +90,7 @@ export const ensureAccentContrast = (
   accentColor: string,
   background: CanvasBackground
 ): string => {
-  const reference = hexToRgb(referenceColor(background));
+  const reference = hexToRgb(backgroundReferenceColor(background));
   const isReadable = (color: string): boolean =>
     contrastRatio(hexToRgb(color), reference) >= minimumContrast;
 

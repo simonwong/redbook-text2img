@@ -1,4 +1,4 @@
-import { TrianglifyGary } from "./backgroundSet";
+import { GraphiteLowPoly } from "./backgroundSet";
 import { hexToRgb, relativeLuminance } from "./color-contrast";
 import { gradients } from "./tokens";
 import type {
@@ -61,9 +61,10 @@ const backgroundDefinitions: Record<BackgroundPreset, BackgroundDefinition> = {
     background: { type: "gradient", value: gradients.darkNight },
     tone: "dark",
   },
+  // 石墨低多边形是深色图案：基调 dark，语义色与强调色都按深底派生
   "trianglify-gray": {
-    background: { type: "image", value: TrianglifyGary },
-    tone: "light",
+    background: { type: "image", value: GraphiteLowPoly },
+    tone: "dark",
   },
   "warm-sun": {
     background: { type: "gradient", value: gradients.warmSun },

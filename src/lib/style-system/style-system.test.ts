@@ -31,7 +31,7 @@ const themeBackgrounds = [
   ["gradient-warm", { kind: "preset", preset: "warm-sun" }],
   ["gradient-cool", { kind: "preset", preset: "cool-mist" }],
   ["xiaohongshu-pink", { kind: "preset", preset: "cherry-cream" }],
-  ["reading-mode", { color: "#fefcf3", kind: "solid" }],
+  ["reading-mode", { color: "#f9f5ea", kind: "solid" }],
   ["apple-notes", { color: "#fbfbfb", kind: "solid" }],
 ] as const;
 const coverVerticalAlignments = {
@@ -71,7 +71,7 @@ describe("Style System Interface", () => {
       .configuration as unknown as Record<string, unknown>;
 
     expect(configuration).toMatchObject({
-      accentColor: "#111827",
+      accentColor: "#1b2540",
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
       coverLayout: "center-poster",
@@ -156,7 +156,7 @@ describe("Style System Interface", () => {
       overrides: reset.overrides,
     }).toEqual({
       configuration: {
-        accentColor: "#111827",
+        accentColor: "#1b2540",
         aspectRatio: "3:4",
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
@@ -689,7 +689,7 @@ describe("Style System Interface", () => {
   });
 
   it.each([
-    { color: "#fefcf3", kind: "solid" },
+    { color: "#f9f5ea", kind: "solid" },
     { color: "#fbfbfb", kind: "solid" },
     { kind: "preset", preset: "warm-sun" },
   ] as const)("只改背景 %# 不改变排版或顶栏", (background) => {
@@ -746,9 +746,9 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
-        accentColor: "#44403c",
+        accentColor: "#6b4a2e",
         aspectRatio: "3:4",
-        background: { color: "#fefcf3", kind: "solid" },
+        background: { color: "#f9f5ea", kind: "solid" },
         bodyHeadingAlignment: "left",
         cardFrame: "none",
         coverLayout: "top-left",
@@ -779,9 +779,9 @@ describe("Style System Interface", () => {
       state: selected,
     }).toEqual({
       configuration: {
-        accentColor: "#44403c",
+        accentColor: "#6b4a2e",
         aspectRatio: "3:4",
-        background: { color: "#fefcf3", kind: "solid" },
+        background: { color: "#f9f5ea", kind: "solid" },
         bodyHeadingAlignment: "left",
         cardFrame: "none",
         coverLayout: "top-left",
@@ -818,7 +818,7 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
-        accentColor: "#111827",
+        accentColor: "#1b2540",
         aspectRatio: "3:4",
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
@@ -850,9 +850,9 @@ describe("Style System Interface", () => {
       state: reset,
     }).toEqual({
       configuration: {
-        accentColor: "#44403c",
+        accentColor: "#6b4a2e",
         aspectRatio: "3:4",
-        background: { color: "#fefcf3", kind: "solid" },
+        background: { color: "#f9f5ea", kind: "solid" },
         bodyHeadingAlignment: "left",
         cardFrame: "none",
         coverLayout: "top-left",
@@ -1213,16 +1213,16 @@ describe("Style System Interface", () => {
   });
 });
 
-// 改动前生成器为 8 个主题派生的展示级标题色，也是各主题声明的强调色；
+// 各主题声明的强调色（同时是展示级标题、加粗、列表标记、引用边线与链接色）；
 // 强调色未被覆盖时这些值必须一字不差
 const themeAccentColors = [
-  ["clean-light", "#111827"],
-  ["trianglify-minimalist", "#0f172a"],
-  ["clean-dark", "#f5f5f7"],
-  ["gradient-warm", "#4a2a15"],
-  ["gradient-cool", "#172b45"],
-  ["xiaohongshu-pink", "#64152d"],
-  ["reading-mode", "#44403c"],
+  ["clean-light", "#1b2540"],
+  ["trianglify-minimalist", "#f4f6fb"],
+  ["clean-dark", "#8fe3c8"],
+  ["gradient-warm", "#92530c"],
+  ["gradient-cool", "#2c5aad"],
+  ["xiaohongshu-pink", "#b32259"],
+  ["reading-mode", "#6b4a2e"],
   ["apple-notes", "#1d1d1f"],
 ] as const;
 
@@ -1316,7 +1316,7 @@ describe("强调色", () => {
     });
 
     expect(state.overrides).toEqual({ density: "compact" });
-    expect(styleSystem.read(state).configuration.accentColor).toBe("#f5f5f7");
+    expect(styleSystem.read(state).configuration.accentColor).toBe("#8fe3c8");
     expect(
       styleSystem.transition(styleSystem.hydrate(undefined), {
         patch: { accentColor: "red" } as unknown as Partial<StyleConfiguration>,
@@ -1345,7 +1345,7 @@ describe("强调色", () => {
       density: true,
     });
     expect(reset.overrides).toEqual({ density: "compact" });
-    expect(styleSystem.read(reset).configuration.accentColor).toBe("#44403c");
+    expect(styleSystem.read(reset).configuration.accentColor).toBe("#6b4a2e");
   });
 });
 
@@ -1623,7 +1623,7 @@ describe("自定义主题", () => {
       customThemes: [
         {
           configuration: {
-            accentColor: "#111827",
+            accentColor: "#1b2540",
             aspectRatio: "1:1",
             background: { kind: "preset", preset: "clean-light" },
             bodyHeadingAlignment: "center",
@@ -1868,7 +1868,7 @@ describe("自定义主题", () => {
 
     expect(restored).toEqual({
       configuration: {
-        accentColor: "#111827",
+        accentColor: "#1b2540",
         aspectRatio: "3:4",
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
