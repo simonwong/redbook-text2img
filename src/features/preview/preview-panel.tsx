@@ -21,7 +21,7 @@ import { useContentOverflow } from "./hooks/use-content-overflow";
 import { useImageExport } from "./hooks/use-image-export";
 import { ImagePreview } from "./image-preview";
 import { MeshGrain } from "./mesh-grain";
-import { OverflowWarning } from "./overflow-warning";
+import { OverflowCutLine } from "./overflow-cut-line";
 import { PreviewActionBar } from "./preview-action-bar";
 import { PreviewPager } from "./preview-pager";
 import "./index.css";
@@ -215,10 +215,7 @@ export const PreviewPanel = ({
 
   const clampedIndex = Math.min(activeSegmentIndex, segments.length - 1);
   const activeSegment = segments[clampedIndex];
-  const isOverflowing = useContentOverflow(
-    contentRef,
-    activeSegment?.content ?? ""
-  );
+  const overflow = useContentOverflow(contentRef, activeSegment?.content ?? "");
 
   if (segments.length === 0) {
     return (
@@ -292,14 +289,12 @@ export const PreviewPanel = ({
                     segment={activeSegment}
                   />
                 )}
+                {/* 裁切线贴着内容区底边，在缩放层内随卡片缩放，但是导出节点的兄弟，绝不进导出图 */}
+                {overflow.isOverflowing ? (
+                  <OverflowCutLine top={overflow.cutOffset} />
+                ) : null}
               </div>
             </div>
-            {/* 溢出警告挂在未缩放的外框（scale 元素之外），避免随预览缩放变形，也绝不进导出元素 */}
-            {isOverflowing && (
-              <div className="absolute inset-x-3 bottom-3 z-10">
-                <OverflowWarning />
-              </div>
-            )}
           </div>
         </div>
 

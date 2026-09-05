@@ -5,16 +5,19 @@ type CustomGradient = Extract<
   { kind: "custom-gradient" }
 >;
 
-/** 取色弹层的 12 个背景预设色，6×2 排布，偏小红书审美的柔和色。 */
+/**
+ * 取色弹层的 12 个背景预设色，6×2 排布：上排浅色、下排薄荷 / 浅灰 + 4 个深色。
+ * 浅色取明度 92–95% 的柔和色而不是接近纯白的 97%+，色块之间才分得开，作卡片背景依然干净。
+ */
 export const backgroundColorPresets: readonly string[] = [
   "#ffffff",
-  "#fefcf3",
-  "#fff5e6",
-  "#ffe8ec",
-  "#f3e8ff",
-  "#e8f1ff",
-  "#e6f7f0",
-  "#f4f4f7",
+  "#fbf1d8",
+  "#ffe3c9",
+  "#ffd9df",
+  "#ead9ff",
+  "#d7e5ff",
+  "#d3f1e2",
+  "#e6e6ec",
   "#1c1c21",
   "#2b2540",
   "#3a2a2a",

@@ -206,7 +206,7 @@ test("8 个主题在超长正文上给出不进入导出卡片的分页提示", 
   await page.getByRole("button", { name: "第 2 张图片" }).click();
   await page.getByRole("button", { name: "设置样式" }).click();
 
-  const warningText = "内容超出卡片，导出将被截断，用 --- 分页";
+  const warningText = "以下内容导出时被截断，用 --- 分页";
   for (const name of themeNames) {
     await selectTheme(page, name);
     await expect(page.getByText(warningText, { exact: true })).toBeVisible();
