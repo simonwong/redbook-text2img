@@ -2,6 +2,11 @@ import { describe, expect, it } from "vitest";
 import { type StyleConfiguration, styleSystem } from "./style-system";
 
 const unsafeCssValuePattern = /https?:|javascript:/i;
+// 磨砂只能用 filter，backdrop-filter 在导出链路里被整体忽略
+const backdropPattern = /backdrop/i;
+// 四种系统字体栈都必须给中文留回退，否则中文会掉进纯拉丁字库的兜底
+const chineseFallbackPattern =
+  /PingFang SC|Microsoft YaHei|Noto Sans SC|Noto Serif SC|Source Han Serif SC|SimSun|Kaiti SC|STKaiti|KaiTi|AR PL UKai CN|Noto Serif CJK SC/;
 
 const relativeLuminance = (hex: string): number => {
   const channels = [1, 3, 5].map((start) => {
@@ -26,7 +31,7 @@ const themeBackgrounds = [
   ["gradient-warm", { kind: "preset", preset: "warm-sun" }],
   ["gradient-cool", { kind: "preset", preset: "cool-mist" }],
   ["xiaohongshu-pink", { kind: "preset", preset: "cherry-cream" }],
-  ["reading-mode", { color: "#fefcf3", kind: "solid" }],
+  ["reading-mode", { color: "#f9f5ea", kind: "solid" }],
   ["apple-notes", { color: "#fbfbfb", kind: "solid" }],
 ] as const;
 const coverVerticalAlignments = {
@@ -51,10 +56,13 @@ describe("Style System Interface", () => {
 
   it("通过公共接口列出封闭配置选项", () => {
     expect(styleSystem.configurationOptions()).toEqual({
+      aspectRatio: ["3:4", "1:1", "9:16"],
       bodyHeadingAlignment: ["center", "left"],
+      cardFrame: ["none", "white"],
       coverLayout: ["center-poster", "top-left", "bottom-left"],
       density: ["compact", "snug", "normal", "relaxed", "spacious"],
-      fontId: ["sans", "serif"],
+      fontId: ["sans", "serif", "kai", "mono"],
+      frost: ["none", "light", "medium", "strong"],
     });
   });
 
@@ -63,11 +71,11 @@ describe("Style System Interface", () => {
       .configuration as unknown as Record<string, unknown>;
 
     expect(configuration).toMatchObject({
+      accentColor: "#1b2540",
       background: { kind: "preset", preset: "clean-light" },
       bodyHeadingAlignment: "center",
       coverLayout: "center-poster",
     });
-    expect(configuration).not.toHaveProperty("accentColor");
     expect(configuration).not.toHaveProperty("bodyHeadingSize");
     expect(configuration).not.toHaveProperty("contentSurface");
     expect(configuration).not.toHaveProperty("decorationColor");
@@ -78,6 +86,7 @@ describe("Style System Interface", () => {
   it("从空持久化数据恢复默认主题状态", () => {
     expect(styleSystem.hydrate(undefined)).toEqual({
       currentThemeId: "clean-light",
+      customThemes: [],
       overrides: {},
     });
   });
@@ -119,8 +128,11 @@ describe("Style System Interface", () => {
     }).toEqual({
       density: "compact",
       overridden: {
+        accentColor: false,
+        aspectRatio: false,
         background: false,
         bodyHeadingAlignment: false,
+        cardFrame: false,
         coverLayout: false,
         density: true,
         fontId: false,
@@ -144,8 +156,11 @@ describe("Style System Interface", () => {
       overrides: reset.overrides,
     }).toEqual({
       configuration: {
+        accentColor: "#1b2540",
+        aspectRatio: "3:4",
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
+        cardFrame: "none",
         coverLayout: "center-poster",
         density: "normal",
         fontId: "serif",
@@ -195,6 +210,7 @@ describe("Style System Interface", () => {
       })
     ).toEqual({
       currentThemeId: "clean-light",
+      customThemes: [],
       overrides: {},
     });
   });
@@ -264,6 +280,13 @@ describe("Style System Interface", () => {
     },
     {
       dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+      frost: "none",
+      kind: "image",
+      tone: "light",
+    },
+    {
+      dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+      frost: "medium",
       kind: "image",
       tone: "light",
     },
@@ -352,6 +375,7 @@ describe("Style System Interface", () => {
   it("图片背景按 cover 居中铺放并按采样基调选取可读语义色", () => {
     const darkImage = {
       dataUrl: "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
+      frost: "none",
       kind: "image",
       tone: "dark",
     } as const;
@@ -379,6 +403,13 @@ describe("Style System Interface", () => {
       },
       {
         dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+        frost: "none",
+        kind: "image",
+        tone: "light",
+      },
+      {
+        dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+        frost: "strong",
         kind: "image",
         tone: "light",
       },
@@ -484,6 +515,7 @@ describe("Style System Interface", () => {
       })
     ).toEqual({
       currentThemeId: "reading-mode",
+      customThemes: [],
       overrides: { density: "compact" },
     });
   });
@@ -517,8 +549,6 @@ describe("Style System Interface", () => {
   it.each([
     ["system", "sans"],
     ["rounded", "sans"],
-    ["kai", "serif"],
-    ["mono", "sans"],
   ] as const)("把旧字体 %s 迁移到可靠字体 %s", (legacy, expected) => {
     const state = styleSystem.hydrate({
       currentThemeId: "clean-light",
@@ -527,6 +557,18 @@ describe("Style System Interface", () => {
 
     expect(styleSystem.read(state).configuration.fontId).toBe(expected);
   });
+
+  it.each(["sans", "serif", "kai", "mono"] as const)(
+    "旧持久化字体 %s 直接生效",
+    (fontId) => {
+      const state = styleSystem.hydrate({
+        currentThemeId: "clean-light",
+        overrides: { fontId },
+      });
+
+      expect(styleSystem.read(state).configuration.fontId).toBe(fontId);
+    }
+  );
 
   it("丢弃会命中对象原型的非法密度", () => {
     const state = styleSystem.hydrate({
@@ -551,6 +593,7 @@ describe("Style System Interface", () => {
 
     expect(state).toEqual({
       currentThemeId: "clean-light",
+      customThemes: [],
       overrides: { density: "compact" },
     });
     const configuration = styleSystem.read(state)
@@ -600,6 +643,7 @@ describe("Style System Interface", () => {
 
     expect(state).toEqual({
       currentThemeId: "gradient-warm",
+      customThemes: [],
       overrides: { density: "compact" },
     });
     expect(styleSystem.read(state).configuration).not.toHaveProperty(
@@ -615,6 +659,7 @@ describe("Style System Interface", () => {
 
     expect(state).toEqual({
       currentThemeId: "clean-light",
+      customThemes: [],
       overrides: { density: "compact" },
     });
     expect(styleSystem.read(state).configuration).not.toHaveProperty(
@@ -644,7 +689,7 @@ describe("Style System Interface", () => {
   });
 
   it.each([
-    { color: "#fefcf3", kind: "solid" },
+    { color: "#f9f5ea", kind: "solid" },
     { color: "#fbfbfb", kind: "solid" },
     { kind: "preset", preset: "warm-sun" },
   ] as const)("只改背景 %# 不改变排版或顶栏", (background) => {
@@ -701,14 +746,18 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
-        background: { color: "#fefcf3", kind: "solid" },
+        accentColor: "#6b4a2e",
+        aspectRatio: "3:4",
+        background: { color: "#f9f5ea", kind: "solid" },
         bodyHeadingAlignment: "left",
+        cardFrame: "none",
         coverLayout: "top-left",
         density: "compact",
         fontId: "serif",
       },
       state: {
         currentThemeId: "reading-mode",
+        customThemes: [],
         overrides: { density: "compact" },
       },
     });
@@ -730,14 +779,18 @@ describe("Style System Interface", () => {
       state: selected,
     }).toEqual({
       configuration: {
-        background: { color: "#fefcf3", kind: "solid" },
+        accentColor: "#6b4a2e",
+        aspectRatio: "3:4",
+        background: { color: "#f9f5ea", kind: "solid" },
         bodyHeadingAlignment: "left",
+        cardFrame: "none",
         coverLayout: "top-left",
         density: "normal",
         fontId: "serif",
       },
       state: {
         currentThemeId: "reading-mode",
+        customThemes: [],
         overrides: {},
         previousSelection: {
           currentThemeId: "clean-light",
@@ -765,14 +818,18 @@ describe("Style System Interface", () => {
       state: restored,
     }).toEqual({
       configuration: {
+        accentColor: "#1b2540",
+        aspectRatio: "3:4",
         background: { kind: "preset", preset: "clean-light" },
         bodyHeadingAlignment: "center",
+        cardFrame: "none",
         coverLayout: "center-poster",
         density: "compact",
         fontId: "sans",
       },
       state: {
         currentThemeId: "clean-light",
+        customThemes: [],
         overrides: { density: "compact" },
       },
     });
@@ -793,13 +850,20 @@ describe("Style System Interface", () => {
       state: reset,
     }).toEqual({
       configuration: {
-        background: { color: "#fefcf3", kind: "solid" },
+        accentColor: "#6b4a2e",
+        aspectRatio: "3:4",
+        background: { color: "#f9f5ea", kind: "solid" },
         bodyHeadingAlignment: "left",
+        cardFrame: "none",
         coverLayout: "top-left",
         density: "normal",
         fontId: "serif",
       },
-      state: { currentThemeId: "reading-mode", overrides: {} },
+      state: {
+        currentThemeId: "reading-mode",
+        customThemes: [],
+        overrides: {},
+      },
     });
   });
 
@@ -914,6 +978,20 @@ describe("Style System Interface", () => {
     expect(styles.container.fontSize).toBe(fontSize);
   });
 
+  it.each(styleSystem.configurationOptions().fontId)(
+    "字体 %s 的 font-family 栈保留中文回退",
+    (fontId) => {
+      const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { fontId: fontId as StyleConfiguration["fontId"] },
+        type: "update-configuration",
+      });
+
+      expect(
+        styleSystem.resolve(state, { page: "body" }).styles.container.fontFamily
+      ).toMatch(chineseFallbackPattern);
+    }
+  );
+
   it.each(styleSystem.catalog())("解析内置主题 $id", (theme) => {
     const state = styleSystem.hydrate({ currentThemeId: theme.id });
     const configuration = styleSystem.read(state).configuration;
@@ -973,5 +1051,906 @@ describe("Style System Interface", () => {
     }
 
     expect(resolvedContexts).toBe(16);
+  });
+
+  it.each([
+    ["3:4", 500],
+    ["1:1", 375],
+    ["9:16", 667],
+  ] as const)("卡片比例 %s 解析为 375×%d 的渲染尺寸", (aspectRatio, height) => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { aspectRatio },
+      type: "update-configuration",
+    });
+    const { styles } = styleSystem.resolve(state, { page: "body" });
+
+    expect(styles.card).toEqual({ frame: null, height, width: 375 });
+    expect(styles.container).toMatchObject({
+      height: `${height}px`,
+      minHeight: `${height}px`,
+      minWidth: "375px",
+      width: "375px",
+    });
+  });
+
+  it("封面与正文共用同一张卡片尺寸", () => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { aspectRatio: "9:16" },
+      type: "update-configuration",
+    });
+
+    expect(styleSystem.resolve(state, { page: "cover" }).styles.card).toEqual(
+      styleSystem.resolve(state, { page: "body" }).styles.card
+    );
+  });
+
+  it.each(styleSystem.catalog())(
+    "内置主题 $id 默认输出 3:4 无边框卡片",
+    (theme) => {
+      const state = styleSystem.hydrate({ currentThemeId: theme.id });
+      const snapshot = styleSystem.read(state);
+      const { styles } = styleSystem.resolve(state, { page: "body" });
+
+      expect(snapshot.configuration).toMatchObject({
+        aspectRatio: "3:4",
+        cardFrame: "none",
+      });
+      expect(styles.card).toEqual({ frame: null, height: 500, width: 375 });
+      expect(styles.container).toMatchObject({
+        borderRadius: "12px",
+        height: "500px",
+        minHeight: "500px",
+        minWidth: "375px",
+        overflow: "hidden",
+        width: "375px",
+      });
+    }
+  );
+
+  it("白边把导出节点包成 3px 白色内边距的外层", () => {
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { cardFrame: "white" },
+      type: "update-configuration",
+    });
+    const { styles } = styleSystem.resolve(state, { page: "body" });
+
+    expect(styles.card).toEqual({
+      frame: {
+        backgroundColor: "#ffffff",
+        borderRadius: "16px",
+        boxSizing: "border-box",
+        height: "500px",
+        minHeight: "500px",
+        minWidth: "375px",
+        overflow: "hidden",
+        padding: "3px",
+        width: "375px",
+      },
+      height: 500,
+      width: 375,
+    });
+    // 内层退到白边内侧：圆角 13，尺寸各减 6
+    expect(styles.container).toMatchObject({
+      borderRadius: "13px",
+      height: "494px",
+      minHeight: "494px",
+      minWidth: "369px",
+      width: "369px",
+    });
+  });
+
+  it("白边层只用 html2canvas 可还原的盒模型属性", () => {
+    const allowedFrameProperties = new Set([
+      "backgroundColor",
+      "borderRadius",
+      "boxSizing",
+      "height",
+      "minHeight",
+      "minWidth",
+      "overflow",
+      "padding",
+      "width",
+    ]);
+    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { aspectRatio: "1:1", cardFrame: "white" },
+      type: "update-configuration",
+    });
+
+    for (const page of ["body", "cover"] as const) {
+      const { frame } = styleSystem.resolve(state, { page }).styles.card;
+      expect(frame).not.toBeNull();
+      for (const [property, value] of Object.entries(frame ?? {})) {
+        expect(allowedFrameProperties).toContain(property);
+        expect(String(value)).not.toMatch(unsafeCssValuePattern);
+      }
+      expect(frame).not.toHaveProperty("backdropFilter");
+      expect(frame).not.toHaveProperty("boxShadow");
+      expect(frame).not.toHaveProperty("filter");
+    }
+  });
+
+  it("比例与边框可识别、可单项恢复且不牵连其他字段", () => {
+    const modified = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { aspectRatio: "9:16", cardFrame: "white" },
+      type: "update-configuration",
+    });
+    const reset = styleSystem.transition(modified, {
+      field: "aspectRatio",
+      type: "reset-field",
+    });
+
+    expect(modified.overrides).toEqual({
+      aspectRatio: "9:16",
+      cardFrame: "white",
+    });
+    expect(styleSystem.read(modified).overridden).toMatchObject({
+      aspectRatio: true,
+      cardFrame: true,
+      density: false,
+    });
+    expect(reset.overrides).toEqual({ cardFrame: "white" });
+    expect(styleSystem.read(reset).configuration).toMatchObject({
+      aspectRatio: "3:4",
+      cardFrame: "white",
+    });
+  });
+
+  it("丢弃非法的比例与边框并对缺失字段取主题默认", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "reading-mode",
+      overrides: {
+        aspectRatio: "4:3",
+        cardFrame: "black",
+        density: "compact",
+      },
+    });
+
+    expect(state.overrides).toEqual({ density: "compact" });
+    expect(styleSystem.read(state).configuration).toMatchObject({
+      aspectRatio: "3:4",
+      cardFrame: "none",
+    });
+  });
+});
+
+// 各主题声明的强调色（同时是展示级标题、加粗、列表标记、引用边线与链接色）；
+// 强调色未被覆盖时这些值必须一字不差
+const themeAccentColors = [
+  ["clean-light", "#1b2540"],
+  ["trianglify-minimalist", "#f4f6fb"],
+  ["clean-dark", "#8fe3c8"],
+  ["gradient-warm", "#92530c"],
+  ["gradient-cool", "#2c5aad"],
+  ["xiaohongshu-pink", "#b32259"],
+  ["reading-mode", "#6b4a2e"],
+  ["apple-notes", "#1d1d1f"],
+] as const;
+
+describe("强调色", () => {
+  it.each(themeAccentColors)(
+    "%s 的默认强调色即改动前的标题与加粗色",
+    (themeId, accentColor) => {
+      const state = styleSystem.hydrate({ currentThemeId: themeId });
+      const { styles } = styleSystem.resolve(state, { page: "body" });
+
+      expect(styleSystem.read(state).configuration.accentColor).toBe(
+        accentColor
+      );
+      expect(styles.h1.color).toBe(accentColor);
+      expect(styles.h2.color).toBe(accentColor);
+      expect(styles.h3.color).toBe(accentColor);
+      expect(styles.strong.color).toBe(accentColor);
+    }
+  );
+
+  it("只作用于标题、加粗、列表标记、引用边线与链接", () => {
+    const accentColor = "#7b56c9";
+    const before = styleSystem.resolve(styleSystem.hydrate(undefined), {
+      page: "body",
+    }).styles;
+    const after = styleSystem.resolve(
+      styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { accentColor },
+        type: "update-configuration",
+      }),
+      { page: "body" }
+    ).styles;
+    expect(after.h1.color).toBe(accentColor);
+    expect(after.h2.color).toBe(accentColor);
+    expect(after.h3.color).toBe(accentColor);
+    expect(after.strong.color).toBe(accentColor);
+    expect(after.a.color).toBe(accentColor);
+    expect(after.blockquote.borderLeft).toBe(`3px solid ${accentColor}`);
+    expect(Object.entries(after.ul)).toContainEqual([
+      "--marker-color",
+      accentColor,
+    ]);
+
+    // 段落、次级标题、斜体、代码与引用文字色仍由样式基础按背景派生
+    expect(after.p.color).toBe(before.p.color);
+    expect(after.h4.color).toBe(before.h4.color);
+    expect(after.h5.color).toBe(before.h5.color);
+    expect(after.h6.color).toBe(before.h6.color);
+    expect(after.em.color).toBe(before.em.color);
+    expect(after.code.color).toBe(before.code.color);
+    expect(after.blockquote.color).toBe(before.blockquote.color);
+    expect(after.ul.color).toBe(before.ul.color);
+  });
+
+  it.each([
+    // 浅背景上的浅粉被压暗
+    { accentColor: "#ffd1dc", background: "#ffffff", expected: "darker" },
+    // 深背景上的深紫被提亮
+    { accentColor: "#2b2540", background: "#1c1c21", expected: "lighter" },
+    // 已达标的颜色原样返回
+    { accentColor: "#3f5fbf", background: "#ffffff", expected: "same" },
+  ] as const)(
+    "在 $background 上把 $accentColor 调整为 $expected",
+    ({ accentColor, background, expected }) => {
+      const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { accentColor, background: { color: background, kind: "solid" } },
+        type: "update-configuration",
+      });
+      const applied = String(
+        styleSystem.resolve(state, { page: "body" }).styles.h1.color
+      );
+
+      if (expected === "same") {
+        expect(applied).toBe(accentColor);
+      } else {
+        expect(applied).not.toBe(accentColor);
+        expect(
+          expected === "darker"
+            ? relativeLuminance(applied) < relativeLuminance(accentColor)
+            : relativeLuminance(applied) > relativeLuminance(accentColor)
+        ).toBe(true);
+      }
+      expect(contrastRatio(applied, background)).toBeGreaterThanOrEqual(4.5);
+    }
+  );
+
+  it("非法强调色被丢弃，缺失时取主题默认", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "clean-dark",
+      overrides: { accentColor: "#12g", density: "compact" },
+    });
+
+    expect(state.overrides).toEqual({ density: "compact" });
+    expect(styleSystem.read(state).configuration.accentColor).toBe("#8fe3c8");
+    expect(
+      styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { accentColor: "red" } as unknown as Partial<StyleConfiguration>,
+        type: "update-configuration",
+      }).overrides
+    ).not.toHaveProperty("accentColor");
+  });
+
+  it("强调色可识别、可单项恢复且不牵连其他字段", () => {
+    const modified = styleSystem.transition(
+      styleSystem.hydrate({ currentThemeId: "reading-mode" }),
+      { patch: { accentColor: "#E8604C", density: "compact" }, type: "update-configuration" }
+    );
+    const reset = styleSystem.transition(modified, {
+      field: "accentColor",
+      type: "reset-field",
+    });
+
+    // 大写十六进制规范化为小写，与持久化白名单一致
+    expect(modified.overrides).toEqual({
+      accentColor: "#e8604c",
+      density: "compact",
+    });
+    expect(styleSystem.read(modified).overridden).toMatchObject({
+      accentColor: true,
+      density: true,
+    });
+    expect(reset.overrides).toEqual({ density: "compact" });
+    expect(styleSystem.read(reset).configuration.accentColor).toBe("#6b4a2e");
+  });
+});
+
+describe("图片背景磨砂", () => {
+  const imageDataUrl = "data:image/png;base64,iVBORw0KGgo=";
+  const imageBackground = (
+    frost: "none" | "light" | "medium" | "strong",
+    tone: "dark" | "light" = "light"
+  ) => ({ dataUrl: imageDataUrl, frost, kind: "image", tone }) as const;
+  const resolveWith = (
+    background: ReturnType<typeof imageBackground>,
+    patch: Partial<StyleConfiguration> = {}
+  ) =>
+    styleSystem.resolve(
+      styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { background, ...patch },
+        type: "update-configuration",
+      }),
+      { page: "body" }
+    ).styles;
+
+  it("无磨砂时渲染样式与磨砂上线前完全一致", () => {
+    const styles = resolveWith(imageBackground("none"));
+
+    expect(styles).not.toHaveProperty("frost");
+    // 逐字段固定为磨砂上线前（a677ac2）的容器样式
+    expect(styles.container).toEqual({
+      backgroundImage: `url("${imageDataUrl}")`,
+      backgroundPosition: "center",
+      backgroundSize: "cover",
+      borderRadius: "12px",
+      boxSizing: "border-box",
+      fontFamily:
+        '"Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
+      fontSize: "16px",
+      height: "500px",
+      minHeight: "500px",
+      minWidth: "375px",
+      overflow: "hidden",
+      position: "relative",
+      width: "375px",
+    });
+  });
+
+  it.each([
+    ["light", "blur(6px)", "rgba(255, 255, 255, 0.28)"],
+    ["medium", "blur(12px)", "rgba(255, 255, 255, 0.42)"],
+    ["strong", "blur(20px)", "rgba(255, 255, 255, 0.56)"],
+  ] as const)(
+    "磨砂 %s 解析为 %s 的模糊层与 %s 的蒙层",
+    (frost, blur, veilColor) => {
+      const { frost: layers } = resolveWith(imageBackground(frost));
+
+      expect(layers?.blurLayer).toMatchObject({
+        backgroundImage: `url("${imageDataUrl}")`,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        filter: blur,
+        position: "absolute",
+        transform: "scale(1.08)",
+      });
+      expect(layers?.veil.backgroundColor).toBe(veilColor);
+      // 两层都铺满容器，靠容器的 overflow 与圆角裁切
+      for (const layer of [layers?.blurLayer, layers?.veil]) {
+        expect(layer).toMatchObject({
+          bottom: 0,
+          left: 0,
+          position: "absolute",
+          right: 0,
+          top: 0,
+        });
+      }
+      // 内容层压在两层之上
+      expect(layers?.contentLayer).toMatchObject({
+        position: "relative",
+        zIndex: 1,
+      });
+    }
+  );
+
+  it.each([
+    ["light", "rgb(255, 255, 255)", "rgba(255, 255, 255, 0.42)"],
+    ["dark", "rgb(11, 11, 15)", "rgba(11, 11, 15, 0.42)"],
+  ] as const)(
+    "%s 基调的蒙层与兜底底色取对应实色",
+    (tone, baseColor, veilColor) => {
+      const { frost: layers } = resolveWith(imageBackground("medium", tone));
+
+      expect(layers?.blurLayer.backgroundColor).toBe(baseColor);
+      expect(layers?.veil.backgroundColor).toBe(veilColor);
+    }
+  );
+
+  it("磨砂开启时容器把背景图交给模糊层", () => {
+    const styles = resolveWith(imageBackground("medium"));
+
+    expect(styles.container.backgroundImage).toBeUndefined();
+    expect(styles.container.backgroundColor).toBeUndefined();
+    expect(styles.container).toMatchObject({
+      borderRadius: "12px",
+      overflow: "hidden",
+      position: "relative",
+    });
+  });
+
+  it("白边下模糊层裁在白边内侧的内圆角里", () => {
+    const styles = resolveWith(imageBackground("strong"), {
+      cardFrame: "white",
+    });
+
+    expect(styles.card.frame).toMatchObject({
+      overflow: "hidden",
+      padding: "3px",
+    });
+    expect(styles.container).toMatchObject({
+      borderRadius: "13px",
+      height: "494px",
+      overflow: "hidden",
+      width: "369px",
+    });
+    expect(styles.frost?.blurLayer.filter).toBe("blur(20px)");
+  });
+
+  it("8 个主题的三档磨砂都不含 backdrop-filter 与 transparent 色标", () => {
+    let auditedContexts = 0;
+
+    for (const theme of styleSystem.catalog()) {
+      for (const frost of ["light", "medium", "strong"] as const) {
+        for (const tone of ["light", "dark"] as const) {
+          const state = styleSystem.transition(
+            styleSystem.hydrate({ currentThemeId: theme.id }),
+            {
+              patch: { background: imageBackground(frost, tone) },
+              type: "update-configuration",
+            }
+          );
+          for (const page of ["cover", "body"] as const) {
+            const { styles } = styleSystem.resolve(state, { page });
+            const serialized = JSON.stringify(styles);
+
+            expect(serialized).not.toMatch(backdropPattern);
+            expect(serialized).not.toContain("transparent");
+            expect(styles.frost?.blurLayer).not.toHaveProperty(
+              "backdropFilter"
+            );
+            for (const value of Object.values(styles.frost?.blurLayer ?? {})) {
+              if (typeof value === "string" && value.includes("url(")) {
+                expect(value).toContain("data:image/");
+              }
+            }
+            auditedContexts += 1;
+          }
+        }
+      }
+    }
+
+    expect(auditedContexts).toBe(96);
+  });
+
+  it("切换磨砂档位产生背景覆盖并保留图片与基调", () => {
+    const uploaded = styleSystem.transition(styleSystem.hydrate(undefined), {
+      patch: { background: imageBackground("none", "dark") },
+      type: "update-configuration",
+    });
+    const frosted = styleSystem.transition(uploaded, {
+      patch: { background: imageBackground("medium", "dark") },
+      type: "update-configuration",
+    });
+
+    expect(styleSystem.read(frosted).overridden.background).toBe(true);
+    expect(styleSystem.read(frosted).configuration.background).toEqual({
+      dataUrl: imageDataUrl,
+      frost: "medium",
+      kind: "image",
+      tone: "dark",
+    });
+    // 只把磨砂调回无，图片与基调仍在
+    const cleared = styleSystem.transition(frosted, {
+      patch: { background: imageBackground("none", "dark") },
+      type: "update-configuration",
+    });
+    expect(styleSystem.read(cleared).configuration.background).toEqual({
+      dataUrl: imageDataUrl,
+      frost: "none",
+      kind: "image",
+      tone: "dark",
+    });
+    expect(
+      styleSystem.resolve(cleared, { page: "body" }).styles
+    ).not.toHaveProperty("frost");
+  });
+
+  it.each([undefined, "blurred", 3, null])(
+    "持久化数据中缺失或非法的磨砂档位回落无磨砂 %#",
+    (frost) => {
+      const state = styleSystem.hydrate({
+        currentThemeId: "clean-light",
+        overrides: {
+          background: {
+            dataUrl: imageDataUrl,
+            frost,
+            kind: "image",
+            tone: "light",
+          },
+        },
+      });
+
+      expect(styleSystem.read(state).configuration.background).toEqual({
+        dataUrl: imageDataUrl,
+        frost: "none",
+        kind: "image",
+        tone: "light",
+      });
+    }
+  );
+
+  it("合法磨砂档位在刷新后原样恢复", () => {
+    const state = styleSystem.hydrate({
+      currentThemeId: "clean-light",
+      overrides: {
+        background: {
+          dataUrl: imageDataUrl,
+          frost: "strong",
+          kind: "image",
+          tone: "light",
+        },
+      },
+    });
+
+    expect(state.overrides.background).toEqual({
+      dataUrl: imageDataUrl,
+      frost: "strong",
+      kind: "image",
+      tone: "light",
+    });
+  });
+
+  it("非图片背景不产生磨砂层", () => {
+    for (const background of [
+      { color: "#ffffff", kind: "solid" },
+      {
+        direction: "diagonal",
+        from: "#e0e7ff",
+        kind: "custom-gradient",
+        to: "#fef3c7",
+      },
+    ] as const) {
+      const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { background },
+        type: "update-configuration",
+      });
+
+      expect(
+        styleSystem.resolve(state, { page: "body" }).styles
+      ).not.toHaveProperty("frost");
+    }
+  });
+});
+
+describe("自定义主题", () => {
+  const savedState = (name = "我的主题 1", now = 1) =>
+    styleSystem.transition(
+      styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { aspectRatio: "1:1", density: "compact" },
+        type: "update-configuration",
+      }),
+      { name, now, type: "save-custom-theme" }
+    );
+
+  it("保存后切换到新主题并清空覆盖", () => {
+    const state = savedState();
+
+    expect(state).toEqual({
+      currentThemeId: "custom-1",
+      customThemes: [
+        {
+          configuration: {
+            accentColor: "#1b2540",
+            aspectRatio: "1:1",
+            background: { kind: "preset", preset: "clean-light" },
+            bodyHeadingAlignment: "center",
+            cardFrame: "none",
+            coverLayout: "center-poster",
+            density: "compact",
+            fontId: "sans",
+          },
+          createdAt: 1,
+          id: "custom-1",
+          name: "我的主题 1",
+        },
+      ],
+      overrides: {},
+      previousSelection: {
+        currentThemeId: "clean-light",
+        overrides: { aspectRatio: "1:1", density: "compact" },
+      },
+    });
+    expect(styleSystem.read(state)).toMatchObject({
+      isModified: false,
+      theme: { id: "custom-1", name: "我的主题 1", source: "custom" },
+    });
+  });
+
+  it("保存的配置成为解析与缩略图的起点", () => {
+    const state = savedState();
+    const resolved = styleSystem.resolve(state, { page: "body" });
+
+    expect(resolved.theme).toEqual({
+      id: "custom-1",
+      name: "我的主题 1",
+      source: "custom",
+    });
+    expect(resolved.styles.card).toMatchObject({ height: 375, width: 375 });
+  });
+
+  it("拒绝空白名称与超长名称", () => {
+    const base = styleSystem.hydrate(undefined);
+
+    for (const name of ["", "   ", "超过十二个字的主题名称吧啊"]) {
+      expect(
+        styleSystem.transition(base, {
+          name,
+          now: 1,
+          type: "save-custom-theme",
+        })
+      ).toBe(base);
+    }
+  });
+
+  it("达到上限后保存不改变状态", () => {
+    let state = styleSystem.hydrate(undefined);
+    for (let index = 0; index < 8; index += 1) {
+      state = styleSystem.transition(state, {
+        name: `主题 ${index}`,
+        now: index + 1,
+        type: "save-custom-theme",
+      });
+    }
+
+    expect(state.customThemes).toHaveLength(8);
+    expect(
+      styleSystem.transition(state, {
+        name: "第九个",
+        now: 9,
+        type: "save-custom-theme",
+      })
+    ).toBe(state);
+  });
+
+  it("同毫秒内连续保存生成不重复的标识", () => {
+    const first = styleSystem.transition(styleSystem.hydrate(undefined), {
+      name: "一",
+      now: 7,
+      type: "save-custom-theme",
+    });
+    const second = styleSystem.transition(first, {
+      name: "二",
+      now: 7,
+      type: "save-custom-theme",
+    });
+
+    expect(second.customThemes.map(({ id }) => id)).toEqual([
+      "custom-7",
+      "custom-71",
+    ]);
+  });
+
+  it("更新用当前有效配置覆盖自定义主题并清空覆盖", () => {
+    const modified = styleSystem.transition(savedState(), {
+      patch: { density: "spacious" },
+      type: "update-configuration",
+    });
+
+    const updated = styleSystem.transition(modified, {
+      type: "update-custom-theme",
+    });
+
+    expect(updated.overrides).toEqual({});
+    expect(updated.customThemes[0]).toMatchObject({
+      configuration: { aspectRatio: "1:1", density: "spacious" },
+      createdAt: 1,
+      id: "custom-1",
+      name: "我的主题 1",
+    });
+    expect(styleSystem.read(updated).isModified).toBe(false);
+  });
+
+  it("当前是内置主题时更新命令无操作", () => {
+    const state = styleSystem.transition(savedState(), {
+      themeId: "reading-mode",
+      type: "select-theme",
+    });
+
+    expect(styleSystem.transition(state, { type: "update-custom-theme" })).toBe(
+      state
+    );
+  });
+
+  it("删除当前自定义主题时回落默认主题", () => {
+    const modified = styleSystem.transition(savedState(), {
+      patch: { density: "spacious" },
+      type: "update-configuration",
+    });
+
+    const deleted = styleSystem.transition(modified, {
+      id: "custom-1",
+      type: "delete-custom-theme",
+    });
+
+    expect(deleted).toEqual({
+      currentThemeId: "clean-light",
+      customThemes: [],
+      overrides: {},
+      previousSelection: undefined,
+    });
+  });
+
+  it("删除其他自定义主题时保留当前选择", () => {
+    const first = savedState("主题一", 1);
+    const second = styleSystem.transition(first, {
+      name: "主题二",
+      now: 2,
+      type: "save-custom-theme",
+    });
+
+    const deleted = styleSystem.transition(second, {
+      id: "custom-1",
+      type: "delete-custom-theme",
+    });
+
+    expect(deleted.currentThemeId).toBe("custom-2");
+    expect(deleted.customThemes.map(({ id }) => id)).toEqual(["custom-2"]);
+  });
+
+  it("删除不存在的标识不改变状态", () => {
+    const state = savedState();
+
+    expect(
+      styleSystem.transition(state, {
+        id: "custom-missing",
+        type: "delete-custom-theme",
+      })
+    ).toBe(state);
+  });
+
+  it("目录按状态返回内置与自定义主题并带来源", () => {
+    const state = savedState();
+
+    expect(styleSystem.catalog().map(({ source }) => source)).toEqual(
+      new Array(8).fill("built-in")
+    );
+    expect(styleSystem.catalog(state).at(-1)).toEqual({
+      id: "custom-1",
+      name: "我的主题 1",
+      source: "custom",
+    });
+    expect(styleSystem.catalog(state)).toHaveLength(9);
+  });
+
+  it("刷新后保留自定义主题与当前选择", () => {
+    const state = savedState();
+    const persisted = JSON.parse(
+      JSON.stringify({
+        currentThemeId: state.currentThemeId,
+        customThemes: state.customThemes,
+        overrides: state.overrides,
+      })
+    );
+
+    expect(styleSystem.hydrate(persisted)).toEqual({
+      currentThemeId: "custom-1",
+      customThemes: state.customThemes,
+      overrides: {},
+    });
+  });
+
+  it("恢复时把 customThemes 非数组当作空列表", () => {
+    for (const customThemes of [undefined, null, "custom", 3, {}]) {
+      expect(
+        styleSystem.hydrate({ currentThemeId: "clean-light", customThemes })
+          .customThemes
+      ).toEqual([]);
+    }
+  });
+
+  it("恢复时丢弃标识或名称非法的自定义主题", () => {
+    const [{ configuration }] = savedState().customThemes;
+
+    expect(
+      styleSystem.hydrate({
+        customThemes: [
+          { configuration, createdAt: 1, id: "clean-light", name: "冒充内置" },
+          { configuration, createdAt: 1, id: "custom-A_1", name: "大写下划线" },
+          { configuration, createdAt: 1, id: "custom-1", name: "   " },
+          {
+            configuration,
+            createdAt: 1,
+            id: "custom-2",
+            name: "超过十二个字的主题名称吧啊",
+          },
+          { configuration, createdAt: 1, id: "custom-3", name: 7 },
+          { configuration, createdAt: 1, id: "custom-4", name: "  留白也算  " },
+        ],
+      }).customThemes
+    ).toEqual([
+      { configuration, createdAt: 1, id: "custom-4", name: "留白也算" },
+    ]);
+  });
+
+  it("恢复时用默认内置主题补齐缺失配置字段", () => {
+    const [restored] = styleSystem.hydrate({
+      customThemes: [
+        {
+          configuration: { density: "spacious", fontId: "kai" },
+          id: "custom-1",
+          name: "只存了两项",
+        },
+      ],
+    }).customThemes;
+
+    expect(restored).toEqual({
+      configuration: {
+        accentColor: "#1b2540",
+        aspectRatio: "3:4",
+        background: { kind: "preset", preset: "clean-light" },
+        bodyHeadingAlignment: "center",
+        cardFrame: "none",
+        coverLayout: "center-poster",
+        density: "spacious",
+        fontId: "kai",
+      },
+      createdAt: 0,
+      id: "custom-1",
+      name: "只存了两项",
+    });
+  });
+
+  it("恢复时只保留前 8 个自定义主题", () => {
+    const [{ configuration }] = savedState().customThemes;
+    const persisted = Array.from({ length: 11 }, (_, index) => ({
+      configuration,
+      createdAt: index,
+      id: `custom-${index}`,
+      name: `主题 ${index}`,
+    }));
+
+    expect(
+      styleSystem
+        .hydrate({ customThemes: persisted })
+        .customThemes.map(({ id }) => id)
+    ).toEqual([
+      "custom-0",
+      "custom-1",
+      "custom-2",
+      "custom-3",
+      "custom-4",
+      "custom-5",
+      "custom-6",
+      "custom-7",
+    ]);
+  });
+
+  it("恢复时丢弃标识重复的自定义主题", () => {
+    const [{ configuration }] = savedState().customThemes;
+
+    expect(
+      styleSystem
+        .hydrate({
+          customThemes: [
+            { configuration, createdAt: 1, id: "custom-1", name: "先来的" },
+            { configuration, createdAt: 2, id: "custom-1", name: "后来的" },
+          ],
+        })
+        .customThemes.map(({ name }) => name)
+    ).toEqual(["先来的"]);
+  });
+
+  it("当前主题指向被丢弃的自定义主题时回落默认主题并清空覆盖", () => {
+    expect(
+      styleSystem.hydrate({
+        currentThemeId: "custom-9",
+        customThemes: [],
+        overrides: { density: "compact" },
+      })
+    ).toEqual({
+      currentThemeId: "clean-light",
+      customThemes: [],
+      overrides: {},
+    });
+  });
+
+  it("撤销主题切换时保留自定义主题列表", () => {
+    const state = styleSystem.transition(savedState(), {
+      themeId: "reading-mode",
+      type: "select-theme",
+    });
+
+    const restored = styleSystem.transition(state, {
+      type: "undo-theme-selection",
+    });
+
+    expect(restored).toEqual({
+      currentThemeId: "custom-1",
+      customThemes: state.customThemes,
+      overrides: {},
+    });
   });
 });

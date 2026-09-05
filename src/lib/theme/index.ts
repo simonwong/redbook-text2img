@@ -23,6 +23,7 @@ export {
   getFontFamily,
   getFontPreset,
 } from "./fonts";
+export type { FrostLayers } from "./frost";
 export type { GeneratedStyles, GenerateStylesOptions } from "./generator";
 // Generator
 export { generateStyles } from "./generator";
@@ -37,6 +38,7 @@ export {
 export { colors, gradients, spacing, typography } from "./tokens";
 // Types
 export type {
+  BackgroundFrost,
   CoverLayout,
   CoverStyleOverride,
   Density,

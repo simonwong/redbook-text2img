@@ -19,125 +19,124 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export const Header = () => {
   return (
-    <header className="sticky top-0 z-10 border border-b bg-background">
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex h-12 items-center gap-4">
-          <div className="flex flex-1 items-center gap-3">
-            <Link aria-label="Home" href="/">
-              <div className="flex items-center gap-2">
-                <Image
-                  alt="Logo"
-                  className="h-6 w-6"
-                  height={24}
-                  src="/logo.svg"
-                  width={24}
-                />
-                <span className="hidden font-bold text-foreground text-xl sm:inline-flex">
-                  小红书图片生成器
-                </span>
-              </div>
-            </Link>
-          </div>
-          <nav aria-label="Main Navigation" className="flex items-center gap-3">
-            <Button
-              className="text-accent-foreground"
-              nativeButton={false}
-              render={<Link href="/faq" />}
-              variant="link"
-            >
-              常见问题
-            </Button>
-            <Button
-              className="text-accent-foreground"
-              nativeButton={false}
-              render={<Link href="/changelog" />}
-              variant="link"
-            >
-              更新日志
-            </Button>
+    <header className="flex h-10 shrink-0 items-center gap-3 px-1">
+      <Link aria-label="Home" className="flex items-center gap-2.5" href="/">
+        <span className="ds-raised flex size-[30px] items-center justify-center rounded-full shadow-[var(--ds-sh-raised),0_6px_14px_-6px_rgba(255,59,74,0.5)]">
+          <Image alt="Logo" height={15} src="/logo.svg" width={15} />
+        </span>
+        <span className="hidden font-bold text-[14px] text-ink tracking-[-0.01em] sm:inline-flex">
+          小红书图片生成器
+        </span>
+      </Link>
 
-            {/* 联系作者 Popover */}
-            <Popover>
-              <PopoverTrigger
-                render={
-                  <Button size="icon" title="联系作者" variant="outline" />
-                }
-              >
-                <HugeiconsIcon className="h-4 w-4" icon={ContactIcon} />
-              </PopoverTrigger>
-              <PopoverContent className="w-64">
-                <div className="space-y-3">
-                  <p className="text-sm">
-                    <span>嗨，我是 Simon，一名独立开发者。这是我的</span>
-                    <Link
-                      className="mx-0.5 font-medium text-primary underline underline-offset-4"
-                      href={PERSONAL_SITE_LINK}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      个人网站
-                    </Link>
-                    <span>，你还可以在下面的地方找到我：</span>
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <Link
-                      className="flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-accent"
-                      href={TWITTER_LINK}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      title="X (Twitter)"
-                    >
-                      <HugeiconsIcon
-                        className="h-5 w-5"
-                        icon={NewTwitterIcon}
-                      />
-                    </Link>
-                    <Link
-                      className="flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-accent"
-                      href={GITHUB_LINK}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      title="GitHub"
-                    >
-                      <HugeiconsIcon className="h-5 w-5" icon={GithubIcon} />
-                    </Link>
-                    <Link
-                      className="flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-accent"
-                      href={XIAO_HONG_SHU_LINK}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      title="小红书"
-                    >
-                      <XiaohongshuIcon className="h-8 w-8 text-red-500" />
-                    </Link>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+      <div className="flex-1" />
 
-            <ThemeToggle />
-            <Button
-              nativeButton={false}
-              render={
+      <nav
+        aria-label="Main Navigation"
+        className="flex items-center gap-0.5 sm:gap-1"
+      >
+        <Button
+          nativeButton={false}
+          render={<Link href="/faq" />}
+          size="sm"
+          variant="ghost"
+        >
+          常见问题
+        </Button>
+        <Button
+          nativeButton={false}
+          render={<Link href="/changelog" />}
+          size="sm"
+          variant="ghost"
+        >
+          更新日志
+        </Button>
+      </nav>
+
+      <div className="ml-1 flex items-center gap-1.5">
+        {/* 联系作者 Popover */}
+        <Popover>
+          <PopoverTrigger
+            render={
+              <Button
+                aria-label="联系作者"
+                size="icon-sm"
+                title="联系作者"
+                variant="raised"
+              />
+            }
+          >
+            <HugeiconsIcon className="size-[13px]" icon={ContactIcon} />
+          </PopoverTrigger>
+          <PopoverContent className="w-64">
+            <div className="space-y-3">
+              <p className="text-[13px] text-ink">
+                <span>嗨，我是 Simon，一名独立开发者。这是我的</span>
                 <Link
-                  aria-label="GitHub"
-                  href="https://github.com/simonwong/redbook-text2img"
+                  className="mx-0.5 font-semibold underline underline-offset-4"
+                  href={PERSONAL_SITE_LINK}
                   rel="noopener noreferrer"
                   target="_blank"
-                />
-              }
-              size="icon"
-              title="GitHub Repository"
-              variant="outline"
-            >
-              <HugeiconsIcon
-                aria-hidden="true"
-                className="h-4 w-4"
-                icon={GithubIcon}
-              />
-            </Button>
-          </nav>
-        </div>
+                >
+                  个人网站
+                </Link>
+                <span>，你还可以在下面的地方找到我：</span>
+              </p>
+              <div className="flex items-center gap-2">
+                <Link
+                  className="flex size-9 items-center justify-center rounded-[11px] text-ink-2 transition-colors hover:bg-[var(--ds-well)] hover:text-ink"
+                  href={TWITTER_LINK}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="X (Twitter)"
+                >
+                  <HugeiconsIcon className="size-4" icon={NewTwitterIcon} />
+                </Link>
+                <Link
+                  className="flex size-9 items-center justify-center rounded-[11px] text-ink-2 transition-colors hover:bg-[var(--ds-well)] hover:text-ink"
+                  href={GITHUB_LINK}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="GitHub"
+                >
+                  <HugeiconsIcon className="size-4" icon={GithubIcon} />
+                </Link>
+                <Link
+                  className="flex size-9 items-center justify-center rounded-[11px] transition-colors hover:bg-[var(--ds-well)]"
+                  href={XIAO_HONG_SHU_LINK}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="小红书"
+                >
+                  <XiaohongshuIcon className="size-6 text-[#ff3b4a]" />
+                </Link>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        <ThemeToggle />
+
+        <Button
+          nativeButton={false}
+          render={
+            <Link
+              aria-label="GitHub"
+              href="https://github.com/simonwong/redbook-text2img"
+              rel="noopener noreferrer"
+              target="_blank"
+            />
+          }
+          size="icon-sm"
+          title="GitHub Repository"
+          variant="raised"
+        >
+          <HugeiconsIcon
+            aria-hidden="true"
+            className="size-[13px]"
+            icon={GithubIcon}
+          />
+        </Button>
       </div>
     </header>
   );

@@ -5,6 +5,8 @@
 
 import type { Properties as CSSProperties } from "csstype";
 import type { AdjustedStyle } from "./adjustments";
+import type { CardStyle } from "./card";
+import type { FrostLayers } from "./frost";
 import { typography } from "./tokens";
 import type { CoverStyleOverride } from "./types";
 
@@ -12,11 +14,18 @@ import type { CoverStyleOverride } from "./types";
 export interface GeneratedStyles {
   a: CSSProperties;
   blockquote: CSSProperties;
+  /** 卡片尺寸与白边层：预览、溢出判定、缩放与导出都从这里读取 */
+  card: CardStyle;
   code: CSSProperties;
   container: CSSProperties;
   content: CSSProperties;
   em: CSSProperties;
   footer: CSSProperties;
+  /**
+   * 图片背景磨砂两层：模糊图片层与纯色蒙层，都铺在容器内、内容下方。
+   * 无磨砂时缺省，容器直接铺背景图。
+   */
+  frost?: FrostLayers;
   h1: CSSProperties;
   h2: CSSProperties;
   h3: CSSProperties;
@@ -79,8 +88,13 @@ export function generateStyles(
 ): GeneratedStyles {
   const { baseFontSize, lineHeight } = style.typography;
   const { padding, paragraphGap, headingGap } = style.spacing;
-  const { bodyHeadingAlignment, fontFamily, headingScale, letterSpacing } =
-    style;
+  const {
+    bodyHeadingAlignment,
+    card,
+    fontFamily,
+    headingScale,
+    letterSpacing,
+  } = style;
   const coverStyle = options?.coverStyle;
 
   // 封面标题对齐：优先使用 coverStyle 中的设置,覆盖用户调整
@@ -108,6 +122,24 @@ export function generateStyles(
     backgroundStyle = { backgroundImage: style.background.value };
   }
 
+  // 磨砂开启时容器不再直接铺背景图：图片交给模糊层，容器只负责裁切与层叠
+  const canvasBackground: CSSProperties = style.frost
+    ? {}
+    : {
+        ...backgroundStyle,
+        backgroundPosition: "center",
+        backgroundSize: style.background.size ?? "cover",
+      };
+
+  // 列表符号由 `.img-preview ul li::before` 绘制，只能经自定义属性拿到强调色；
+  // 导出前 getComputedStyle 已把它解析成实色，html2canvas-pro 照常还原
+  const listStyle: CSSProperties & Record<"--marker-color", string> = {
+    marginBottom: `${paragraphGap / baseFontSize}em`,
+    paddingLeft: 0,
+    color: style.list.color,
+    "--marker-color": style.list.markerColor,
+  };
+
   // Helper for heading styles
   // isDisplay: h1–h3 为展示级标题
   const createHeadingStyle = (
@@ -120,7 +152,8 @@ export function generateStyles(
     lineHeight: 1.2,
     fontWeight: style.heading.fontWeight,
     marginBottom: `${headingGap / baseFontSize}em`,
-    color: style.heading.color,
+    // 展示级标题（h1–h3）取强调色，h4 保持基础标题色
+    color: isDisplay ? style.accent : style.heading.color,
     textAlign: useHeadingAlignment ? effectiveHeadingAlignment : "left",
     letterSpacing: isDisplay ? letterSpacing.heading : undefined,
     // 长标题换行时两行字数均衡（避免"8+1"式孤字尾行）
@@ -129,15 +162,17 @@ export function generateStyles(
   });
 
   return {
+    card: card.card,
+
+    ...(style.frost ? { frost: style.frost } : {}),
+
     container: {
-      width: "375px",
-      minWidth: "375px",
-      height: "500px",
-      minHeight: "500px",
-      ...backgroundStyle,
-      backgroundSize: style.background.size ?? "cover",
-      backgroundPosition: "center",
-      borderRadius: "12px",
+      width: `${card.content.width}px`,
+      minWidth: `${card.content.width}px`,
+      height: `${card.content.height}px`,
+      minHeight: `${card.content.height}px`,
+      ...canvasBackground,
+      borderRadius: `${card.content.radius}px`,
       overflow: "hidden",
       fontFamily,
       position: "relative",
@@ -213,11 +248,7 @@ export function generateStyles(
       borderRadius: "0.2em",
     },
 
-    ul: {
-      marginBottom: `${paragraphGap / baseFontSize}em`,
-      paddingLeft: 0,
-      color: style.list.color,
-    },
+    ul: listStyle,
 
     li: {
       marginBottom: `${paragraphGap / 2 / baseFontSize}em`,

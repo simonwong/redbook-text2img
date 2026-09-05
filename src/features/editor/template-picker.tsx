@@ -26,30 +26,30 @@ export const TemplatePicker = () => {
       <Tooltip content="模板">
         <PopoverTrigger
           aria-label="模板"
-          className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95"
+          className="flex size-8 shrink-0 items-center justify-center rounded-[10px] text-ink-2 transition-colors duration-150 ease-out hover:bg-[var(--ds-well)] hover:text-ink aria-expanded:bg-[var(--ds-chip-bg)] aria-expanded:text-ink aria-expanded:shadow-[var(--ds-sh-chip)]"
         >
-          <HugeiconsIcon className="h-3.5 w-3.5" icon={NoteIcon} />
+          <HugeiconsIcon className="size-4" icon={NoteIcon} />
         </PopoverTrigger>
       </Tooltip>
-      <PopoverContent align="start" className="w-64 p-2" side="bottom">
-        <div className="mb-1 px-2 pt-1 font-medium text-muted-foreground text-xs">
+      <PopoverContent align="start" className="w-64 gap-1 p-1.5" side="bottom">
+        <div className="px-2 pt-1 pb-0.5 font-semibold text-[11px] text-ink-3">
           选择模板
         </div>
         <div className="flex flex-col">
           {templates.map((t) => (
             <button
-              className="flex items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-accent"
+              className="flex items-center gap-2.5 rounded-[10px] px-[9px] py-[7px] text-left transition-colors duration-150 ease-out hover:bg-[var(--ds-well)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2"
               key={t.id}
               onClick={() => handleSelect(t)}
               type="button"
             >
-              <span className="text-base">{t.emoji}</span>
-              <div className="min-w-0">
-                <div className="font-medium text-sm">{t.name}</div>
-                <div className="text-muted-foreground text-xs">
-                  {t.description}
-                </div>
-              </div>
+              <span className="text-[15px] leading-none">{t.emoji}</span>
+              <span className="flex min-w-0 flex-col gap-px">
+                <span className="font-semibold text-[12.5px] text-ink">
+                  {t.name}
+                </span>
+                <span className="text-[11px] text-ink-3">{t.description}</span>
+              </span>
             </button>
           ))}
         </div>

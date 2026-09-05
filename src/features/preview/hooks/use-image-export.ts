@@ -2,16 +2,23 @@
 
 import type JSZip from "jszip";
 import { useCallback } from "react";
+import { withCanvasFilterCompatibility } from "@/lib/export/canvas-filter";
+
+/** 导出倍率：3 倍图既清晰又不至于让 Canvas 过大 */
+const exportScale = 3;
 
 const generateCanvas = async (element: HTMLElement) => {
   const { default: html2canvas } = await import("html2canvas-pro");
-  const canvas = await html2canvas(element, {
-    allowTaint: true,
-    backgroundColor: null,
-    useCORS: true,
-    logging: false,
-    scale: 3,
-  });
+  // 磨砂用的 CSS filter 在导出链路上要补兼容（见 docs/html2canvas-pitfalls.md 第 7 条）
+  const canvas = await withCanvasFilterCompatibility(exportScale, () =>
+    html2canvas(element, {
+      allowTaint: true,
+      backgroundColor: null,
+      useCORS: true,
+      logging: false,
+      scale: exportScale,
+    })
+  );
 
   return canvas;
 };

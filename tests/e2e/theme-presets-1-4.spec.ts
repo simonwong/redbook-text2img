@@ -22,7 +22,7 @@ const themeProfiles: readonly ThemeProfile[] = [
     fontFamily: sansFontPattern,
     fontSize: "15px",
     name: "三角极简",
-    tone: "light",
+    tone: "dark",
   },
   {
     bodyAlign: "left",

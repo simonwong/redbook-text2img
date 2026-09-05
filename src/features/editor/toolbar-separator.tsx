@@ -1,3 +1,6 @@
 export const ToolbarSeparator = () => (
-  <div className="mx-0.5 h-4 w-px bg-border" />
+  <div
+    aria-hidden="true"
+    className="mx-[5px] h-4 w-px shrink-0 bg-[var(--ds-line-strong)]"
+  />
 );

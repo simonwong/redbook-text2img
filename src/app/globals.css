@@ -16,7 +16,7 @@
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.955 0.002 80);
-  --muted-foreground: oklch(0.50 0 0);
+  --muted-foreground: oklch(0.5 0 0);
   --accent: oklch(0.955 0.002 80);
   --accent-foreground: oklch(0.22 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -39,6 +39,83 @@
   --sidebar-ring: oklch(0.708 0 0);
   --background: oklch(0.99 0.002 80);
   --foreground: oklch(0.18 0 0);
+
+  /* ---- 视觉重设计 token（轻拟物 · 磨砂彩色玻璃） ---- */
+  --ds-ground: #ebebee;
+  --ds-ink: #111114;
+  --ds-ink-2: #6b6b73;
+  --ds-ink-3: #a0a0a8;
+  --ds-line: rgba(17, 17, 20, 0.06);
+  --ds-line-strong: rgba(17, 17, 20, 0.1);
+  --ds-well: rgba(17, 17, 20, 0.05);
+
+  /* 面与可点击控件 */
+  --ds-surface: #fff;
+  --ds-panel-top: #f8f8fa;
+  --ds-panel-bottom: #f4f4f7;
+  --ds-pane-bottom: #f3f3f6;
+  --ds-pane-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 0 1px rgba(17, 17, 20, 0.035);
+  --ds-panel-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 0 1px rgba(17, 17, 20, 0.04), 0 1px 2px rgba(17, 17, 20, 0.03),
+    0 14px 32px -24px rgba(17, 17, 20, 0.2);
+  --ds-chip-bg: #fff;
+  --ds-input-bg: #fff;
+  --ds-input-shadow:
+    inset 0 0 0 1px rgba(17, 17, 20, 0.06),
+    inset 0 1px 2px rgba(17, 17, 20, 0.04);
+  --ds-pop-bg: rgba(255, 255, 255, 0.92);
+  --ds-pop-ring: rgba(17, 17, 20, 0.04);
+  --ds-sheet-in-bg: rgba(255, 255, 255, 0.94);
+  --ds-sheet-in-highlight: inset 0 1px 0 #fff;
+
+  /* 渐隐遮罩 */
+  --ds-fade: rgba(243, 243, 246, 0.95);
+  --ds-fade-0: rgba(243, 243, 246, 0);
+
+  /* 渐变 */
+  --ds-grad-rim: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 190, 205, 0.85) 45%,
+    #a49dff 100%
+  );
+  --ds-grad-ring: linear-gradient(
+    135deg,
+    #ffd6a8 0%,
+    #ffbfcc 50%,
+    #c9c2ff 100%
+  );
+  --ds-check-ink: #3a2a3e;
+  --ds-check-rim: #fff;
+  --ds-on-ink: #fff;
+
+  /* 阴影 */
+  --ds-sh-frame:
+    0 0 0 1px rgba(17, 17, 20, 0.025), 0 1px 2px rgba(17, 17, 20, 0.04),
+    0 18px 40px -26px rgba(17, 17, 20, 0.28);
+  --ds-sh-raised:
+    0 1px 1px rgba(17, 17, 20, 0.04), 0 1px 3px rgba(17, 17, 20, 0.06),
+    0 8px 18px -10px rgba(17, 17, 20, 0.14);
+  --ds-sh-pop:
+    0 1px 2px rgba(17, 17, 20, 0.04), 0 18px 40px -16px rgba(17, 17, 20, 0.22);
+  --ds-sh-sheet:
+    0 1px 2px rgba(60, 40, 120, 0.06), 0 20px 40px -20px rgba(80, 60, 160, 0.35);
+  --ds-sh-chip:
+    0 0 0 1px rgba(17, 17, 20, 0.04), 0 1px 1px rgba(17, 17, 20, 0.05),
+    0 3px 8px -3px rgba(17, 17, 20, 0.18);
+  --ds-sh-tile:
+    0 0 0 1px rgba(17, 17, 20, 0.05), 0 1px 2px rgba(17, 17, 20, 0.04),
+    0 8px 16px -12px rgba(17, 17, 20, 0.2);
+  --ds-sh-tile-on:
+    0 0 0 1px rgba(17, 17, 20, 0.05), 0 8px 18px -10px rgba(180, 160, 255, 0.55);
+  --ds-tile-border: #fff;
+  --ds-layout-bg: #fff;
+  --ds-sh-layout:
+    0 0 0 1px rgba(17, 17, 20, 0.05), 0 1px 2px rgba(17, 17, 20, 0.04);
+  --ds-hairline: 0 0 0 1px rgba(17, 17, 20, 0.06);
 }
 
 .dark {
@@ -74,6 +151,73 @@
   --sidebar-accent-foreground: oklch(0.93 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* ---- 视觉重设计 token · 暗色（SPEC 第 9 节） ---- */
+  --ds-ground: #121215;
+  --ds-ink: #f2f2f5;
+  --ds-ink-2: #a3a3ad;
+  --ds-ink-3: #6b6b75;
+  --ds-line: rgba(255, 255, 255, 0.07);
+  --ds-line-strong: rgba(255, 255, 255, 0.12);
+  --ds-well: rgba(255, 255, 255, 0.06);
+
+  --ds-surface: #2a2a31;
+  --ds-panel-top: #1c1c21;
+  --ds-panel-bottom: #18181c;
+  --ds-pane-bottom: #17171b;
+  --ds-pane-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --ds-panel-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 1px 2px rgba(0, 0, 0, 0.3),
+    0 14px 32px -24px rgba(0, 0, 0, 0.6);
+  --ds-chip-bg: #34343c;
+  --ds-input-bg: #1f1f24;
+  --ds-input-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ds-pop-bg: rgba(38, 38, 44, 0.92);
+  --ds-pop-ring: rgba(255, 255, 255, 0.06);
+  --ds-sheet-in-bg: rgba(30, 30, 36, 0.94);
+  --ds-sheet-in-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  --ds-fade: rgba(24, 24, 28, 0.95);
+  --ds-fade-0: rgba(24, 24, 28, 0);
+
+  --ds-grad-rim: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 178, 196, 0.5) 45%,
+    #7c78e8 100%
+  );
+  --ds-check-rim: #1c1c21;
+  --ds-on-ink: #111114;
+
+  --ds-sh-frame:
+    0 0 0 1px rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.3),
+    0 18px 40px -26px rgba(0, 0, 0, 0.7);
+  --ds-sh-raised:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 1px 1px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.3),
+    0 8px 18px -10px rgba(0, 0, 0, 0.6);
+  --ds-sh-pop:
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -16px rgba(0, 0, 0, 0.7);
+  --ds-sh-sheet:
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 40px -20px rgba(0, 0, 0, 0.7);
+  --ds-sh-chip:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 1px rgba(0, 0, 0, 0.3),
+    0 3px 8px -3px rgba(0, 0, 0, 0.5);
+  --ds-sh-tile:
+    0 0 0 1px rgba(255, 255, 255, 0.05), 0 1px 2px rgba(0, 0, 0, 0.3),
+    0 8px 16px -12px rgba(0, 0, 0, 0.6);
+  --ds-sh-tile-on:
+    0 0 0 1px rgba(255, 255, 255, 0.05), 0 8px 18px -10px rgba(0, 0, 0, 0.7);
+  --ds-tile-border: #2a2a31;
+  --ds-layout-bg: #24242a;
+  --ds-sh-layout:
+    0 0 0 1px rgba(255, 255, 255, 0.05), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ds-hairline: 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
@@ -118,6 +262,12 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-ink: var(--ds-ink);
+  --color-ink-2: var(--ds-ink-2);
+  --color-ink-3: var(--ds-ink-3);
+  --color-ground: var(--ds-ground);
+  --color-line: var(--ds-line);
+  --color-surface: var(--ds-surface);
 }
 
 @layer base {
@@ -125,7 +275,9 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    font-size: 13px;
+
+    @apply bg-ground text-ink;
   }
   html {
     @apply font-sans;
@@ -137,4 +289,377 @@
       @apply cursor-not-allowed;
     }
   }
+}
+
+@layer components {
+  /* ---- 材质 1：frame（3px 窄边）+ pane（磨砂内面） ---- */
+  .ds-frame {
+    display: flex;
+    padding: 3px;
+    background: var(--ds-surface);
+    border-radius: 24px;
+    box-shadow: var(--ds-sh-frame);
+  }
+  .ds-pane {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    background: linear-gradient(
+      180deg,
+      var(--ds-panel-top) 0%,
+      var(--ds-pane-bottom) 100%
+    );
+    border-radius: 21px;
+    box-shadow: var(--ds-pane-shadow);
+  }
+
+  /* ---- 材质 2：panel（无边磨砂面，编辑器 / 设置面板） ---- */
+  .ds-panel {
+    background: linear-gradient(
+      180deg,
+      var(--ds-panel-top) 0%,
+      var(--ds-panel-bottom) 100%
+    );
+    border-radius: 20px;
+    box-shadow: var(--ds-panel-shadow);
+  }
+
+  /* ---- 材质 3：raised（可点击面） ---- */
+  .ds-raised {
+    background: var(--ds-surface);
+    box-shadow: var(--ds-sh-raised);
+  }
+  /* 凸起小块：工具栏激活项、分段选中项 */
+  .ds-chip-on {
+    background: var(--ds-chip-bg);
+    box-shadow: var(--ds-sh-chip);
+  }
+
+  /* ---- 材质 4：well（凹槽） ---- */
+  .ds-well {
+    background: var(--ds-well);
+  }
+  .ds-well-inset {
+    background: var(--ds-well);
+    box-shadow: inset 0 1px 1px rgba(17, 17, 20, 0.04);
+  }
+  .dark .ds-well-inset {
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ---- 材质 5：mesh（带颗粒的彩色场，只在预览内面） ---- */
+  .ds-mesh {
+    position: relative;
+    background-color: #fcfcfd;
+    background-image:
+      radial-gradient(
+        ellipse 52% 46% at 10% 6%,
+        rgba(255, 176, 82, 0.85) 0%,
+        rgba(255, 176, 82, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 40% 36% at 42% 42%,
+        rgba(255, 140, 160, 0.42) 0%,
+        rgba(255, 140, 160, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 48% 42% at 92% 100%,
+        rgba(150, 140, 255, 0.72) 0%,
+        rgba(150, 140, 255, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 38% 40% at 100% 55%,
+        rgba(255, 150, 175, 0.32) 0%,
+        rgba(255, 150, 175, 0) 100%
+      );
+  }
+  .dark .ds-mesh {
+    background-color: #15151a;
+    background-image:
+      radial-gradient(
+        ellipse 52% 46% at 10% 6%,
+        rgba(255, 176, 82, 0.7) 0%,
+        rgba(255, 176, 82, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 40% 36% at 42% 42%,
+        rgba(255, 140, 160, 0.36) 0%,
+        rgba(255, 140, 160, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 48% 42% at 92% 100%,
+        rgba(150, 140, 255, 0.62) 0%,
+        rgba(150, 140, 255, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 38% 40% at 100% 55%,
+        rgba(255, 150, 175, 0.28) 0%,
+        rgba(255, 150, 175, 0) 100%
+      );
+  }
+  /* mesh 之上、噪点之下的磨砂纱 */
+  .ds-veil {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(255, 255, 255, 0.46) 100%
+    );
+    -webkit-backdrop-filter: blur(30px) saturate(1.05);
+    backdrop-filter: blur(30px) saturate(1.05);
+  }
+  .dark .ds-veil {
+    background: linear-gradient(
+      180deg,
+      rgba(18, 18, 22, 0.12) 0%,
+      rgba(18, 18, 22, 0.26) 100%
+    );
+  }
+  .ds-grain {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: 0.07;
+  }
+  .dark .ds-grain {
+    mix-blend-mode: overlay;
+    opacity: 0.1;
+  }
+
+  /* ---- 材质 6：sheet（玻璃 + 2px 渐变边），只用于导出浮层 ---- */
+  .ds-sheet {
+    position: relative;
+    padding: 2px;
+    background: var(--ds-grad-rim);
+    border-radius: 18px;
+    box-shadow: var(--ds-sh-sheet);
+  }
+  .ds-sheet-in {
+    background: var(--ds-sheet-in-bg);
+    border-radius: 16px;
+    box-shadow: var(--ds-sheet-in-highlight);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    backdrop-filter: blur(20px) saturate(1.4);
+  }
+
+  /* ---- mesh-glass：只给「主题」按钮 ---- */
+  .ds-mesh-glass {
+    color: var(--ds-ink);
+    background-color: #fff;
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.3) 100%
+      ),
+      radial-gradient(
+        ellipse 70% 90% at 12% 10%,
+        rgba(255, 176, 82, 0.95) 0%,
+        rgba(255, 176, 82, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 60% 80% at 55% 60%,
+        rgba(255, 140, 160, 0.75) 0%,
+        rgba(255, 140, 160, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 70% 90% at 95% 95%,
+        rgba(150, 140, 255, 0.9) 0%,
+        rgba(150, 140, 255, 0) 100%
+      );
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -6px 12px -8px rgba(150, 120, 255, 0.35),
+      0 1px 2px rgba(17, 17, 20, 0.05),
+      0 8px 18px -10px rgba(200, 150, 255, 0.55);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    backdrop-filter: blur(12px) saturate(1.3);
+  }
+  .dark .ds-mesh-glass {
+    color: #fff;
+    background-color: #1f1f26;
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(24, 24, 30, 0.3) 0%,
+        rgba(24, 24, 30, 0.5) 100%
+      ),
+      radial-gradient(
+        ellipse 70% 90% at 12% 10%,
+        rgba(255, 176, 82, 0.95) 0%,
+        rgba(255, 176, 82, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 60% 80% at 55% 60%,
+        rgba(255, 140, 160, 0.75) 0%,
+        rgba(255, 140, 160, 0) 100%
+      ),
+      radial-gradient(
+        ellipse 70% 90% at 95% 95%,
+        rgba(150, 140, 255, 0.9) 0%,
+        rgba(150, 140, 255, 0) 100%
+      );
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -6px 12px -8px rgba(150, 120, 255, 0.35),
+      0 1px 2px rgba(0, 0, 0, 0.4),
+      0 8px 18px -10px rgba(150, 120, 255, 0.5);
+  }
+
+  /* ---- 选中环：2px 淡彩渐变环（主题块 / 背景块 / 版式块共用） ---- */
+  .ds-ring::after {
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    pointer-events: none;
+    content: "";
+    background: var(--ds-grad-ring);
+    border-radius: inherit;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  /* 覆盖 2px 边框的外扩版本（主题块） */
+  .ds-ring-out::after {
+    inset: -2px;
+  }
+  /* 主题块右上角勾选角标 */
+  .ds-check {
+    color: var(--ds-check-ink);
+    background: var(--ds-grad-ring);
+    box-shadow: 0 0 0 1.5px var(--ds-check-rim);
+  }
+
+  /* ---- 预览卡片外框 ---- */
+  /* 卡片外框：只有阴影与 1px 极淡描边。
+     白边是样式配置 cardFrame 的一部分，画在导出节点内，这里不再叠装饰白边。
+     圆角随渲染样式内联设置（无白边 12px、白边 16px）。 */
+  .ds-card-rim {
+    position: relative;
+    box-shadow:
+      0 0 0 1px rgba(17, 17, 20, 0.05),
+      0 2px 4px rgba(60, 40, 120, 0.06),
+      0 44px 80px -32px rgba(60, 40, 120, 0.55);
+  }
+  .dark .ds-card-rim {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.07),
+      0 2px 4px rgba(0, 0, 0, 0.4),
+      0 44px 80px -32px rgba(0, 0, 0, 0.85);
+  }
+
+  /* ---- 弹层：模板下拉 ---- */
+  .ds-pop {
+    background: var(--ds-pop-bg);
+    border-radius: 16px;
+    box-shadow:
+      var(--ds-sh-pop),
+      0 0 0 1px var(--ds-pop-ring);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
+  }
+
+  /* ---- 输入框 ---- */
+  .ds-input {
+    background: var(--ds-input-bg);
+    border-radius: 11px;
+    box-shadow: var(--ds-input-shadow);
+  }
+  .ds-input:focus-visible,
+  .ds-input:focus-within {
+    box-shadow:
+      inset 0 0 0 1px var(--ds-ink),
+      var(--ds-input-shadow);
+  }
+
+  /* ---- 极淡描边（背景块 / 版式块） ---- */
+  .ds-hairline {
+    box-shadow: var(--ds-hairline);
+  }
+  /* 主题块 */
+  .ds-tile {
+    background-clip: padding-box;
+    border: 2px solid var(--ds-tile-border);
+    box-shadow: var(--ds-sh-tile);
+  }
+  .ds-tile-on {
+    box-shadow: var(--ds-sh-tile-on);
+  }
+  /* 封面版式块 */
+  .ds-layout-card {
+    background: var(--ds-layout-bg);
+    box-shadow: var(--ds-sh-layout);
+  }
+
+  /* ---- 滚动条与渐隐 ---- */
+  .ds-scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .ds-scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .ds-fade-x {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 12px,
+      #000 calc(100% - 12px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 12px,
+      #000 calc(100% - 12px),
+      transparent 100%
+    );
+  }
+  .ds-fade-bottom {
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      var(--ds-fade-0) 0%,
+      var(--ds-fade) 100%
+    );
+  }
+}
+
+/*
+ * 取色弹层里的 react-colorful。
+ * 库的样式是运行时注入的无层级（unlayered）规则，胜过任何 @layer，
+ * 所以这里也放在层外，用包裹类提升特异性来覆盖尺寸、圆角与滑块。
+ */
+.color-picker-surface .react-colorful {
+  width: 100%;
+  height: 120px;
+}
+
+.color-picker-surface .react-colorful__saturation {
+  border-bottom: 8px solid transparent;
+  border-radius: 10px;
+}
+
+.color-picker-surface .react-colorful__hue {
+  height: 14px;
+  border-radius: 10px;
+}
+
+.color-picker-surface .react-colorful__pointer {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 35%);
 }

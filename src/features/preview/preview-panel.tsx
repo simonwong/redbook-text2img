@@ -11,44 +11,61 @@ import {
   useState,
 } from "react";
 import { parseMarkdownToImages } from "@/lib/markdown-parser";
+import { styleSystem } from "@/lib/style-system/style-system";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 import { usePreviewNavigationStore } from "@/store/preview-navigation";
-import { useSettingsPanelStore } from "@/store/theme";
+import { useContentThemeStore, useSettingsPanelStore } from "@/store/theme";
 import { ExportProgressBar } from "./export-progress-bar";
 import { ExportSuccessOverlay } from "./export-success-overlay";
 import { useContentOverflow } from "./hooks/use-content-overflow";
 import { useImageExport } from "./hooks/use-image-export";
 import { ImagePreview } from "./image-preview";
-import { NavArrowButton } from "./nav-arrow-button";
+import { MeshGrain } from "./mesh-grain";
 import { OverflowWarning } from "./overflow-warning";
 import { PreviewActionBar } from "./preview-action-bar";
-import { SegmentFilmstrip } from "./segment-filmstrip";
+import { PreviewPager } from "./preview-pager";
 import "./index.css";
 import { cn, sanitizeFilename } from "@/lib/utils";
 
-const PREVIEW_WIDTH = 375;
+interface AvailableBox {
+  height: number;
+  width: number;
+}
 
-function usePreviewScale(containerRef: React.RefObject<HTMLDivElement | null>) {
-  const [scale, setScale] = useState(1);
+/** 预览缩放：卡片尺寸来自渲染样式，按可用区域等比缩小，9:16 也能完整显示 */
+function usePreviewScale(
+  areaRef: React.RefObject<HTMLDivElement | null>,
+  cardWidth: number,
+  cardHeight: number
+) {
+  const [available, setAvailable] = useState<AvailableBox | null>(null);
 
   useLayoutEffect(() => {
-    const el = containerRef.current;
+    const el = areaRef.current;
     if (!el) {
       return;
     }
 
     const observer = new ResizeObserver(([entry]) => {
-      const availableWidth = entry.contentRect.width;
-      setScale(
-        availableWidth < PREVIEW_WIDTH ? availableWidth / PREVIEW_WIDTH : 1
-      );
+      setAvailable({
+        height: entry.contentRect.height,
+        width: entry.contentRect.width,
+      });
     });
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [containerRef]);
+  }, [areaRef]);
 
-  return scale;
+  if (!available || available.height <= 0 || available.width <= 0) {
+    return 1;
+  }
+
+  return Math.min(
+    1,
+    available.width / cardWidth,
+    available.height / cardHeight
+  );
 }
 
 interface PreviewPanelProps {
@@ -78,14 +95,31 @@ export const PreviewPanel = ({
     [segments]
   );
 
+  const segmentIds = useMemo(
+    () => segments.map((segment) => segment.id),
+    [segments]
+  );
+
   useEffect(() => {
     setSegmentCount(segments.length);
   }, [segments.length, setSegmentCount]);
 
+  const { currentThemeId, customThemes, overrides } = useContentThemeStore();
+  // 卡片尺寸与圆角由渲染样式决定（比例与白边），预览不再写死
+  const { card, container } = useMemo(
+    () =>
+      styleSystem.resolve(
+        { currentThemeId, customThemes, overrides },
+        { page: "body" }
+      ).styles,
+    [currentThemeId, customThemes, overrides]
+  );
+  const cardRadius = String(card.frame?.borderRadius ?? container.borderRadius);
+
   const imageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const scaleContainerRef = useRef<HTMLDivElement>(null);
-  const scale = usePreviewScale(scaleContainerRef);
+  const previewAreaRef = useRef<HTMLDivElement>(null);
+  const scale = usePreviewScale(previewAreaRef, card.width, card.height);
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
   const [exportProgress, setExportProgress] = useState({
@@ -188,107 +222,103 @@ export const PreviewPanel = ({
 
   if (segments.length === 0) {
     return (
-      <div className={`flex h-full items-center justify-center ${className}`}>
-        <div className="flex h-[500px] w-[375px] flex-col items-center justify-center gap-3 rounded-xl border-2 border-muted-foreground/20 border-dashed px-8">
-          <HugeiconsIcon
-            className="h-10 w-10 text-muted-foreground/30"
-            icon={FileText}
-          />
-          <p className="text-muted-foreground/60 text-sm">
-            在左侧输入 Markdown
-          </p>
-          <p className="text-muted-foreground/40 text-xs">
-            使用 --- 分割不同图片
-          </p>
+      <div className={cn("ds-frame h-full min-h-0", className)}>
+        <div className="ds-pane ds-mesh relative flex min-h-0 flex-col items-center justify-center overflow-hidden">
+          <div aria-hidden="true" className="ds-veil" />
+          <MeshGrain />
+          <div
+            className="ds-card-rim relative flex max-h-full max-w-full flex-col items-center justify-center gap-3 bg-white"
+            style={{
+              borderRadius: cardRadius,
+              height: card.height,
+              width: card.width,
+            }}
+          >
+            <HugeiconsIcon className="size-10 text-ink-3" icon={FileText} />
+            <p className="text-[13px] text-ink-2">在左侧输入 Markdown</p>
+            <p className="text-[11.5px] text-ink-3">使用 --- 分割不同图片</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "flex h-full flex-col items-center justify-center gap-3",
-        className
-      )}
-    >
-      <ExportProgressBar
-        current={exportProgress.current}
-        isExporting={isExporting && exportProgress.total > 0}
-        total={exportProgress.total}
-      />
+    <div className={cn("ds-frame h-full min-h-0", className)}>
+      <div className="ds-pane ds-mesh relative flex min-h-0 flex-col overflow-hidden">
+        <div aria-hidden="true" className="ds-veil" />
+        <MeshGrain />
 
-      <div className="flex w-full items-center justify-center gap-3">
-        <div className="hidden sm:block">
-          <NavArrowButton
-            direction="left"
-            disabled={clampedIndex === 0}
-            onClick={goPrev}
-          />
-        </div>
+        <ExportProgressBar
+          current={exportProgress.current}
+          isExporting={isExporting && exportProgress.total > 0}
+          total={exportProgress.total}
+        />
 
         <div
-          className="relative w-full min-w-0 max-w-[375px] overflow-hidden"
-          ref={scaleContainerRef}
+          className="relative flex min-h-0 flex-1 items-center justify-center px-5 pt-[26px] pb-3"
+          ref={previewAreaRef}
         >
+          {/* 外框只有阴影与 1px 极淡描边；白边由 cardFrame 配置进入导出节点 */}
           <div
-            className="group relative origin-top-left rounded-lg shadow-md ring-1 ring-black/5 dark:shadow-none dark:ring-white/10"
-            style={{
-              transform: scale < 1 ? `scale(${scale})` : undefined,
-              // 缩小时保持卡片完整布局宽度参与缩放，否则内层 overflow 会先把卡片裁短
-              width: scale < 1 ? PREVIEW_WIDTH : undefined,
-              height: scale < 1 ? `${500 * scale}px` : undefined,
-            }}
+            className="ds-card-rim relative"
+            style={{ borderRadius: cardRadius, width: card.width * scale }}
           >
-            <ExportSuccessOverlay
-              onDone={clearExportSuccess}
-              visible={exportSuccess}
-            />
-            {activeSegment && (
-              <div className="overflow-hidden rounded-lg transition-opacity duration-200">
-                <ImagePreview
-                  contentRef={contentRef}
-                  pageNumber={{
-                    current: clampedIndex + 1,
-                    total: segments.length,
-                  }}
-                  ref={imageRef}
-                  segment={activeSegment}
+            <div
+              className="relative w-full overflow-hidden"
+              style={{ borderRadius: cardRadius }}
+            >
+              <div
+                className="relative origin-top-left"
+                style={{
+                  height: card.height * scale,
+                  transform: scale < 1 ? `scale(${scale})` : undefined,
+                  // 缩小时保持卡片完整布局宽度参与缩放，否则内层 overflow 会先把卡片裁短
+                  width: card.width,
+                }}
+              >
+                <ExportSuccessOverlay
+                  onDone={clearExportSuccess}
+                  visible={exportSuccess}
                 />
+                {activeSegment && (
+                  <ImagePreview
+                    contentRef={contentRef}
+                    pageNumber={{
+                      current: clampedIndex + 1,
+                      total: segments.length,
+                    }}
+                    ref={imageRef}
+                    segment={activeSegment}
+                  />
+                )}
+              </div>
+            </div>
+            {/* 溢出警告挂在未缩放的外框（scale 元素之外），避免随预览缩放变形，也绝不进导出元素 */}
+            {isOverflowing && (
+              <div className="absolute inset-x-3 bottom-3 z-10">
+                <OverflowWarning />
               </div>
             )}
           </div>
-          {/* 溢出警告挂在未缩放的外框（scale 元素之外），避免随预览缩放变形，也绝不进导出元素 */}
-          {isOverflowing && (
-            <div className="absolute inset-x-2 bottom-2 z-10">
-              <OverflowWarning />
-            </div>
-          )}
         </div>
 
-        <div className="hidden sm:block">
-          <NavArrowButton
-            direction="right"
-            disabled={clampedIndex === segments.length - 1}
-            onClick={goNext}
+        <div className="relative flex flex-col items-center gap-2 px-2.5 pb-3">
+          <PreviewPager
+            activeIndex={clampedIndex}
+            onSelect={setActiveSegmentIndex}
+            segmentIds={segmentIds}
+          />
+          <PreviewActionBar
+            closeDrawerOnSettings={closeDrawerOnOpenSettings}
+            isExporting={isExporting}
+            onExportAll={handleExportAll}
+            onExportCurrent={handleExportCurrent}
+            onToggleSettings={onOpenSettings ?? toggleSettings}
+            segmentCount={segments.length}
           />
         </div>
       </div>
-
-      <SegmentFilmstrip
-        activeIndex={clampedIndex}
-        onSelect={setActiveSegmentIndex}
-        segments={segments}
-      />
-
-      <PreviewActionBar
-        closeDrawerOnSettings={closeDrawerOnOpenSettings}
-        isExporting={isExporting}
-        onExportAll={handleExportAll}
-        onExportCurrent={handleExportCurrent}
-        onToggleSettings={onOpenSettings ?? toggleSettings}
-        segmentCount={segments.length}
-      />
     </div>
   );
 };

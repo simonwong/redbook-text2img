@@ -3,33 +3,46 @@ import {
   type StyleConfiguration,
   styleSystem,
 } from "../style-system/style-system";
+import { backgroundReferenceColor } from "./accent";
 import { contrastRatio, hexToRgb } from "./color-contrast";
 
 const firstFourConfigurations = {
   "clean-dark": {
+    accentColor: "#8fe3c8",
+    aspectRatio: "3:4",
     background: { kind: "preset", preset: "night-aurora" },
     bodyHeadingAlignment: "left",
+    cardFrame: "none",
     coverLayout: "bottom-left",
     density: "normal",
     fontId: "sans",
   },
   "clean-light": {
+    accentColor: "#1b2540",
+    aspectRatio: "3:4",
     background: { kind: "preset", preset: "clean-light" },
     bodyHeadingAlignment: "center",
+    cardFrame: "none",
     coverLayout: "center-poster",
     density: "normal",
     fontId: "sans",
   },
   "gradient-warm": {
+    accentColor: "#92530c",
+    aspectRatio: "3:4",
     background: { kind: "preset", preset: "warm-sun" },
     bodyHeadingAlignment: "center",
+    cardFrame: "none",
     coverLayout: "center-poster",
     density: "normal",
     fontId: "sans",
   },
   "trianglify-minimalist": {
+    accentColor: "#f4f6fb",
+    aspectRatio: "3:4",
     background: { kind: "preset", preset: "trianglify-gray" },
     bodyHeadingAlignment: "left",
+    cardFrame: "none",
     coverLayout: "top-left",
     density: "snug",
     fontId: "sans",
@@ -38,29 +51,41 @@ const firstFourConfigurations = {
 
 const secondFourConfigurations = {
   "apple-notes": {
+    accentColor: "#1d1d1f",
+    aspectRatio: "3:4",
     background: { color: "#fbfbfb", kind: "solid" },
     bodyHeadingAlignment: "left",
+    cardFrame: "none",
     coverLayout: "center-poster",
     density: "snug",
     fontId: "sans",
   },
   "gradient-cool": {
+    accentColor: "#2c5aad",
+    aspectRatio: "3:4",
     background: { kind: "preset", preset: "cool-mist" },
     bodyHeadingAlignment: "center",
+    cardFrame: "none",
     coverLayout: "center-poster",
     density: "normal",
     fontId: "serif",
   },
   "reading-mode": {
-    background: { color: "#fefcf3", kind: "solid" },
+    accentColor: "#6b4a2e",
+    aspectRatio: "3:4",
+    background: { color: "#f9f5ea", kind: "solid" },
     bodyHeadingAlignment: "left",
+    cardFrame: "none",
     coverLayout: "top-left",
     density: "normal",
     fontId: "serif",
   },
   "xiaohongshu-pink": {
+    accentColor: "#b32259",
+    aspectRatio: "3:4",
     background: { kind: "preset", preset: "cherry-cream" },
     bodyHeadingAlignment: "center",
+    cardFrame: "none",
     coverLayout: "center-poster",
     density: "normal",
     fontId: "sans",
@@ -223,5 +248,42 @@ describe("内置主题 5–8", () => {
     });
     expect(resolved.styles.container.padding).toBeUndefined();
     expect(resolved.styles.innerContainer.backgroundColor).toBeUndefined();
+  });
+});
+
+// 强调色的对比度保障只覆盖强调色本身；正文、标记等仍由 Foundation 声明。
+// 这条守卫按 accent.ts 的背景代表色（纯色取自身，渐变/图片取基调代表色）
+// 统一复核 8 个主题在封面与正文两页上直接落在背景上的文字。
+const onBackgroundColors = (
+  styles: ReturnType<typeof styleSystem.resolve>["styles"]
+): readonly [string, string][] => [
+  ["标题", String(styles.h1.color)],
+  ["正文", String(styles.p.color)],
+  ["加粗", String(styles.strong.color)],
+  // 列表符号由 ::before 绘制，强调色只在自定义属性里
+  ["列表标记", String((styles.ul as Record<string, unknown>)["--marker-color"])],
+  ["链接", String(styles.a.color)],
+];
+
+describe("内置主题落在背景上的文字对比度", () => {
+  it.each(
+    styleSystem.catalog().flatMap((theme) =>
+      (["cover", "body"] as const).map(
+        (page) => [theme.id, page] as [string, "body" | "cover"]
+      )
+    )
+  )("%s 的 %s 页文字对背景代表色不低于 4.5:1", (themeId, page) => {
+    const state = styleSystem.hydrate({ currentThemeId: themeId });
+    const reference = backgroundReferenceColor(
+      styleSystem.read(state).configuration.background
+    );
+    const { styles } = styleSystem.resolve(state, { page });
+
+    for (const [field, color] of onBackgroundColors(styles)) {
+      expect({ field, ratio: ratio(color, reference) >= 4.5 }).toEqual({
+        field,
+        ratio: true,
+      });
+    }
   });
 });

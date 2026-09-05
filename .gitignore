@@ -45,3 +45,8 @@ next-env.d.ts
 .claude/settings.local.json
 
 .playwright-cli
+
+
+.impeccable/
+# agent worktrees
+.claude/worktrees/

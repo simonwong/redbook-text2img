@@ -1,29 +1,38 @@
 "use client";
 
-import { ArrowReloadHorizontalIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import type { CSSProperties } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import { Switch } from "@/components/ui/switch";
 import {
   type StyleConfiguration,
   styleSystem,
 } from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
+import { AccentColorRow } from "./accent-color-row";
 import { BackgroundPicker } from "./background-picker";
 import { ConfigurationField } from "./configuration-field";
+import { ConfigurationSegmentRow } from "./configuration-segment-row";
 import { CoverLayoutPicker } from "./cover-layout-picker";
+import { CustomThemeActions } from "./custom-theme-actions";
+import { FrostRow } from "./frost-row";
+import { ResetThemeButton } from "./reset-theme-button";
+import { SettingsGroup } from "./settings-group";
 import { SettingsSection } from "./settings-section";
 import { ThemeGrid } from "./theme-grid";
 
-const pageNumberOptions = [
-  { value: "show", label: "显示" },
-  { value: "hide", label: "隐藏" },
-];
-
 const optionValues = styleSystem.configurationOptions();
 type BackgroundChoice = StyleConfiguration["background"];
+const aspectRatioLabels: Record<StyleConfiguration["aspectRatio"], string> = {
+  "1:1": "1:1",
+  "3:4": "3:4",
+  "9:16": "9:16",
+};
+const cardFrameLabels: Record<StyleConfiguration["cardFrame"], string> = {
+  none: "无",
+  white: "白边",
+};
 const bodyHeadingAlignmentLabels: Record<
   StyleConfiguration["bodyHeadingAlignment"],
   string
@@ -36,13 +45,23 @@ const densityLabels: Record<StyleConfiguration["density"], string> = {
   spacious: "宽松",
 };
 const fontLabels: Record<string, string> = {
+  kai: "楷体",
+  mono: "等宽",
   sans: "无衬线",
   serif: "衬线",
 };
 
+const aspectRatioOptions = optionValues.aspectRatio.map((value) => ({
+  label: aspectRatioLabels[value],
+  value,
+}));
 const bodyHeadingAlignmentOptions = optionValues.bodyHeadingAlignment.map(
   (value) => ({ label: bodyHeadingAlignmentLabels[value], value })
 );
+const cardFrameOptions = optionValues.cardFrame.map((value) => ({
+  label: cardFrameLabels[value],
+  value,
+}));
 const densityOptions = optionValues.density.map((value) => ({
   label: densityLabels[value],
   value,
@@ -53,17 +72,22 @@ const fontOptions = optionValues.fontId.map((value) => ({
 }));
 
 const fieldLabelIds = {
+  accentColor: "accent-color-label",
+  aspectRatio: "aspect-ratio-label",
+  background: "background-field-label",
   bodyHeadingAlignment: "body-heading-alignment-label",
+  cardFrame: "card-frame-label",
   coverLayout: "cover-layout-label",
   density: "density-label",
   font: "font-label",
-  pageNumber: "page-number-label",
-  signature: "signature-label",
+  frost: "frost-label",
 } as const;
 
 const sectionHeadingIds = {
+  accent: "accent-section-heading",
   background: "background-section-heading",
   bodyHeading: "body-heading-section-heading",
+  card: "card-section-heading",
   cardMark: "card-mark-section-heading",
   cover: "cover-section-heading",
   theme: "theme-section-heading",
@@ -73,13 +97,10 @@ const sectionHeadingIds = {
 export const ConfiguratorContent = () => {
   const {
     currentThemeId,
+    customThemes,
     overrides,
     selectPresetTheme,
-    setBackground,
-    setBodyHeadingAlignment,
-    setCoverLayout,
-    setDensity,
-    setFont,
+    updateConfiguration,
     resetConfiguration,
     resetConfigurationField,
   } = useContentThemeStore();
@@ -89,11 +110,12 @@ export const ConfiguratorContent = () => {
   const { configuration, isModified, overridden, theme, themeConfiguration } =
     styleSystem.read({
       currentThemeId,
+      customThemes,
       overrides,
     });
   const backgroundPreview = (background: BackgroundChoice): CSSProperties => {
     const previewState = styleSystem.transition(
-      { currentThemeId, overrides },
+      { currentThemeId, customThemes, overrides },
       {
         patch: { background },
         type: "update-configuration",
@@ -112,33 +134,65 @@ export const ConfiguratorContent = () => {
   };
 
   return (
-    <div className="space-y-3">
-      <SettingsSection headingId={sectionHeadingIds.theme} title="主题">
+    <div className="flex flex-col gap-3.5">
+      <SettingsSection
+        action={
+          <ResetThemeButton
+            disabled={!isModified}
+            onReset={resetConfiguration}
+            themeName={theme.name}
+          />
+        }
+        headingId={sectionHeadingIds.theme}
+        title="主题"
+      >
         <ThemeGrid
           currentThemeId={currentThemeId}
+          customThemes={customThemes}
           isModified={isModified}
           labelledBy={sectionHeadingIds.theme}
           onSelect={selectPresetTheme}
         />
       </SettingsSection>
 
-      <SettingsSection
-        headingId={sectionHeadingIds.background}
-        isModified={overridden.background}
-        onReset={() => resetConfigurationField("background")}
-        title="背景"
-      >
-        <BackgroundPicker
-          labelledBy={sectionHeadingIds.background}
-          onChange={setBackground}
-          onResetToTheme={() => resetConfigurationField("background")}
-          themeBackground={themeConfiguration.background}
-          themePreviewStyle={backgroundPreview(themeConfiguration.background)}
-          value={configuration.background}
-        />
-      </SettingsSection>
+      <SettingsGroup headingId={sectionHeadingIds.background} title="背景">
+        <ConfigurationField
+          isModified={overridden.background}
+          label="背景"
+          labelId={fieldLabelIds.background}
+          onReset={() => resetConfigurationField("background")}
+        >
+          <BackgroundPicker
+            labelledBy={fieldLabelIds.background}
+            onChange={(background) => updateConfiguration({ background })}
+            onResetToTheme={() => resetConfigurationField("background")}
+            themeBackground={themeConfiguration.background}
+            themePreviewStyle={backgroundPreview(themeConfiguration.background)}
+            value={configuration.background}
+          />
+        </ConfigurationField>
 
-      <SettingsSection headingId={sectionHeadingIds.typography} title="排版">
+        {configuration.background.kind === "image" && (
+          <FrostRow label="磨砂" labelId={fieldLabelIds.frost} />
+        )}
+      </SettingsGroup>
+
+      <SettingsGroup headingId={sectionHeadingIds.card} title="卡片">
+        <ConfigurationSegmentRow
+          field="aspectRatio"
+          label="比例"
+          labelId={fieldLabelIds.aspectRatio}
+          options={aspectRatioOptions}
+        />
+        <ConfigurationSegmentRow
+          field="cardFrame"
+          label="边框"
+          labelId={fieldLabelIds.cardFrame}
+          options={cardFrameOptions}
+        />
+      </SettingsGroup>
+
+      <SettingsGroup headingId={sectionHeadingIds.typography} title="排版">
         <ConfigurationField
           isModified={overridden.density}
           label="密度"
@@ -146,59 +200,47 @@ export const ConfiguratorContent = () => {
           onReset={() => resetConfigurationField("density")}
         >
           <SegmentedControl
-            className="w-full"
             labelledBy={fieldLabelIds.density}
-            onChange={(value) =>
-              setDensity(value as typeof configuration.density)
+            onChange={(density) =>
+              updateConfiguration({
+                density: density as StyleConfiguration["density"],
+              })
             }
             options={densityOptions}
             value={configuration.density}
           />
         </ConfigurationField>
 
-        <ConfigurationField
-          isModified={overridden.fontId}
+        <ConfigurationSegmentRow
+          field="fontId"
           label="字体"
           labelId={fieldLabelIds.font}
-          onReset={() => resetConfigurationField("fontId")}
-        >
-          <SegmentedControl
-            className="w-full"
-            labelledBy={fieldLabelIds.font}
-            onChange={(fontId) =>
-              setFont(fontId as StyleConfiguration["fontId"])
-            }
-            options={fontOptions}
-            value={configuration.fontId}
-          />
-        </ConfigurationField>
-      </SettingsSection>
+          options={fontOptions}
+        />
+      </SettingsGroup>
 
-      <SettingsSection
-        headingId={sectionHeadingIds.bodyHeading}
-        title="正文标题"
-      >
+      <SettingsGroup headingId={sectionHeadingIds.bodyHeading} title="正文标题">
         <ConfigurationField
           isModified={overridden.bodyHeadingAlignment}
-          label="正文标题对齐"
+          label="标题对齐"
           labelId={fieldLabelIds.bodyHeadingAlignment}
           onReset={() => resetConfigurationField("bodyHeadingAlignment")}
         >
           <SegmentedControl
-            className="w-full"
             labelledBy={fieldLabelIds.bodyHeadingAlignment}
-            onChange={(value) =>
-              setBodyHeadingAlignment(
-                value as typeof configuration.bodyHeadingAlignment
-              )
+            onChange={(alignment) =>
+              updateConfiguration({
+                bodyHeadingAlignment:
+                  alignment as StyleConfiguration["bodyHeadingAlignment"],
+              })
             }
             options={bodyHeadingAlignmentOptions}
             value={configuration.bodyHeadingAlignment}
           />
         </ConfigurationField>
-      </SettingsSection>
+      </SettingsGroup>
 
-      <SettingsSection headingId={sectionHeadingIds.cover} title="封面">
+      <SettingsGroup headingId={sectionHeadingIds.cover} title="封面">
         <ConfigurationField
           isModified={overridden.coverLayout}
           label="封面版式"
@@ -207,57 +249,37 @@ export const ConfiguratorContent = () => {
         >
           <CoverLayoutPicker
             labelledBy={fieldLabelIds.coverLayout}
-            onChange={setCoverLayout}
+            onChange={(coverLayout) => updateConfiguration({ coverLayout })}
             value={configuration.coverLayout}
           />
         </ConfigurationField>
-      </SettingsSection>
+      </SettingsGroup>
 
-      {isModified && (
-        <button
-          className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg px-3 text-muted-foreground text-xs transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          onClick={resetConfiguration}
-          type="button"
-        >
-          <HugeiconsIcon
-            className="h-3.5 w-3.5"
-            icon={ArrowReloadHorizontalIcon}
-          />
-          恢复“{theme.name}”主题配置
-        </button>
-      )}
+      <SettingsGroup headingId={sectionHeadingIds.accent} title="颜色">
+        <AccentColorRow
+          label="强调色"
+          labelId={fieldLabelIds.accentColor}
+        />
+      </SettingsGroup>
 
-      <SettingsSection headingId={sectionHeadingIds.cardMark} title="卡片标记">
-        <div className="space-y-2">
-          <Label
-            className="font-medium text-xs"
-            htmlFor="card-signature"
-            id={fieldLabelIds.signature}
-          >
-            署名
-          </Label>
-          <Input
-            className="h-11"
-            id="card-signature"
-            onChange={(event) => setSignature(event.target.value)}
-            placeholder="@你的小红书名"
-            value={signature}
-          />
-        </div>
+      <SettingsGroup headingId={sectionHeadingIds.cardMark} title="卡片标记">
+        <Label className="sr-only" htmlFor="card-signature">
+          署名
+        </Label>
+        <Input
+          id="card-signature"
+          onChange={(event) => setSignature(event.target.value)}
+          placeholder="署名，如 @你的小红书名"
+          value={signature}
+        />
+        <Switch
+          checked={showPageNumber}
+          label="正文页码"
+          onCheckedChange={setShowPageNumber}
+        />
+      </SettingsGroup>
 
-        <div className="space-y-2">
-          <Label className="font-medium text-xs" id={fieldLabelIds.pageNumber}>
-            正文页码
-          </Label>
-          <SegmentedControl
-            className="w-full"
-            labelledBy={fieldLabelIds.pageNumber}
-            onChange={(value) => setShowPageNumber(value === "show")}
-            options={pageNumberOptions}
-            value={showPageNumber ? "show" : "hide"}
-          />
-        </div>
-      </SettingsSection>
+      <CustomThemeActions />
     </div>
   );
 };

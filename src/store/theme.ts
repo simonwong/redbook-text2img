@@ -1,28 +1,32 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import {
+  maxCustomThemes,
   type StyleConfiguration,
   type StyleSystemCommand,
   type StyleSystemState,
   styleSystem,
 } from "@/lib/style-system/style-system";
+import { estimatePersistedSize, maxPersistedSize } from "./persist-size";
 
 // ============================================================
 // Content Theme (Image/Markdown styling)
 // ============================================================
 
+/** 保存失败的原因：已达上限、名称非法、本地存储放不下 */
+export type SaveCustomThemeResult =
+  | { readonly ok: true }
+  | { readonly ok: false; readonly reason: "limit" | "name" | "quota" };
+
 interface ContentThemeState extends StyleSystemState {
+  deleteCustomTheme: (id: string) => void;
   resetConfiguration: () => void;
   resetConfigurationField: (field: keyof StyleConfiguration) => void;
+  saveCustomTheme: (name: string) => SaveCustomThemeResult;
   selectPresetTheme: (themeId: string) => void;
-  setBackground: (background: StyleConfiguration["background"]) => void;
-  setBodyHeadingAlignment: (
-    alignment: StyleConfiguration["bodyHeadingAlignment"]
-  ) => void;
-  setCoverLayout: (layout: StyleConfiguration["coverLayout"]) => void;
-  setDensity: (density: StyleConfiguration["density"]) => void;
-  setFont: (fontId: StyleConfiguration["fontId"]) => void;
   undoThemeSelection: () => void;
+  updateConfiguration: (patch: Partial<StyleConfiguration>) => void;
+  updateCustomTheme: () => void;
 }
 
 const initialStyleState = styleSystem.hydrate(undefined);
@@ -30,29 +34,17 @@ const initialStyleState = styleSystem.hydrate(undefined);
 export const useContentThemeStore = create<ContentThemeState>()(
   devtools(
     persist(
-      (set) => {
+      (set, get) => {
+        const toStyleState = (next: StyleSystemState) => ({
+          currentThemeId: next.currentThemeId,
+          customThemes: next.customThemes,
+          overrides: next.overrides,
+          previousSelection: next.previousSelection,
+        });
         const applyTransition = (
           state: ContentThemeState,
           command: StyleSystemCommand
-        ) => {
-          const next = styleSystem.transition(state, command);
-          return {
-            currentThemeId: next.currentThemeId,
-            overrides: next.overrides,
-            previousSelection: next.previousSelection,
-          };
-        };
-
-        const updateConfiguration = (
-          patch: Partial<StyleConfiguration>
-        ): void => {
-          set((state) =>
-            applyTransition(state, {
-              patch,
-              type: "update-configuration",
-            })
-          );
-        };
+        ) => toStyleState(styleSystem.transition(state, command));
 
         return {
           ...initialStyleState,
@@ -62,21 +54,10 @@ export const useContentThemeStore = create<ContentThemeState>()(
               applyTransition(state, { themeId, type: "select-theme" })
             ),
 
-          setDensity: (density: StyleConfiguration["density"]) =>
-            updateConfiguration({ density }),
-
-          setFont: (fontId: StyleConfiguration["fontId"]) =>
-            updateConfiguration({ fontId }),
-
-          setBackground: (background: StyleConfiguration["background"]) =>
-            updateConfiguration({ background }),
-
-          setBodyHeadingAlignment: (
-            bodyHeadingAlignment: StyleConfiguration["bodyHeadingAlignment"]
-          ) => updateConfiguration({ bodyHeadingAlignment }),
-
-          setCoverLayout: (coverLayout: StyleConfiguration["coverLayout"]) =>
-            updateConfiguration({ coverLayout }),
+          updateConfiguration: (patch: Partial<StyleConfiguration>) =>
+            set((state) =>
+              applyTransition(state, { patch, type: "update-configuration" })
+            ),
 
           resetConfiguration: () =>
             set((state) =>
@@ -92,6 +73,37 @@ export const useContentThemeStore = create<ContentThemeState>()(
             set((state) =>
               applyTransition(state, { type: "undo-theme-selection" })
             ),
+
+          // 保存前先算出「保存之后」的持久化体积：写进去再失败无法回滚，
+          // persist 中间件会吞掉 localStorage 的配额异常
+          saveCustomTheme: (name: string): SaveCustomThemeResult => {
+            const state = get();
+            if (state.customThemes.length >= maxCustomThemes) {
+              return { ok: false, reason: "limit" };
+            }
+            const next = styleSystem.transition(state, {
+              name,
+              type: "save-custom-theme",
+            });
+            if (next.customThemes.length === state.customThemes.length) {
+              return { ok: false, reason: "name" };
+            }
+            if (estimatePersistedSize(next) > maxPersistedSize) {
+              return { ok: false, reason: "quota" };
+            }
+            set(toStyleState(next));
+            return { ok: true };
+          },
+
+          updateCustomTheme: () =>
+            set((state) =>
+              applyTransition(state, { type: "update-custom-theme" })
+            ),
+
+          deleteCustomTheme: (id: string) =>
+            set((state) =>
+              applyTransition(state, { id, type: "delete-custom-theme" })
+            ),
         };
       },
       {
@@ -104,6 +116,7 @@ export const useContentThemeStore = create<ContentThemeState>()(
         }),
         partialize: (state) => ({
           currentThemeId: state.currentThemeId,
+          customThemes: state.customThemes,
           overrides: state.overrides,
         }),
       }

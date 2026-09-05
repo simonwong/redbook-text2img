@@ -3,8 +3,11 @@
  * 风格调整模块 - 配合 Layer 1 预设主题的微调
  */
 
+import { ensureAccentContrast } from "./accent";
 import { applyCanvasConfiguration } from "./canvas";
+import { type CardLayout, resolveCardLayout } from "./card";
 import { defaultFontId, getFontFamily } from "./fonts";
+import { type FrostLayers, resolveFrostLayers } from "./frost";
 import { spacing, typography } from "./tokens";
 import type {
   Density,
@@ -46,8 +49,11 @@ export const densityPresets: Record<Density, DensityValues> = {
 // ============================================================
 
 export const defaultAdjustments: StyleAdjustments = {
+  accentColor: "#111827",
+  aspectRatio: "3:4",
   background: { kind: "preset", preset: "clean-light" },
   bodyHeadingAlignment: "center",
+  cardFrame: "none",
   coverLayout: "center-poster",
   density: "normal",
   fontId: defaultFontId,
@@ -81,14 +87,25 @@ export function applyAdjustments(
     adjustments.background
   );
   const foundationWeight = typography.fontWeight.semibold;
+  // 强调色统一供给展示级标题、加粗、列表标记、引用边线与链接，
+  // 落到背景上读不清时先由对比度保障调亮或压暗
+  const accent = ensureAccentContrast(
+    adjustments.accentColor,
+    adjustments.background
+  );
+  const frost = resolveFrostLayers(adjustments.background);
 
   return {
     ...canvasStyle,
+    accent,
+    blockquote: { ...canvasStyle.blockquote, borderColor: accent },
     emphasis: {
       ...canvasStyle.emphasis,
-      bold: { ...canvasStyle.emphasis.bold, fontWeight: foundationWeight },
+      bold: { color: accent, fontWeight: foundationWeight },
     },
     heading: { ...canvasStyle.heading, fontWeight: foundationWeight },
+    link: { ...canvasStyle.link, color: accent },
+    list: { ...canvasStyle.list, markerColor: accent },
     typography: {
       baseFontSize,
       lineHeight: density.lineHeight,
@@ -100,6 +117,9 @@ export function applyAdjustments(
     },
     fontFamily,
     bodyHeadingAlignment: adjustments.bodyHeadingAlignment,
+    card: resolveCardLayout(adjustments.aspectRatio, adjustments.cardFrame),
+    // 无磨砂时不带这个字段，渲染样式与没有磨砂功能时完全一致
+    ...(frost ? { frost } : {}),
     headingScale: 1,
     letterSpacing: {},
   };
@@ -107,8 +127,13 @@ export function applyAdjustments(
 
 /** 应用调整后的完整样式类型 */
 export type AdjustedStyle = FullStyle & {
+  /** 对比度保障后的强调色；h1–h3 用它，h4 及以下仍用基础标题色 */
+  accent: string;
   bodyHeadingAlignment: StyleAdjustments["bodyHeadingAlignment"];
+  card: CardLayout;
   fontFamily: string;
+  /** 图片背景磨砂两层；无磨砂时缺省 */
+  frost?: FrostLayers;
   headingScale: number;
   letterSpacing: { body?: string; heading?: string };
 };

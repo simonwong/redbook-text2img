@@ -8,6 +8,21 @@ import CodeMirror from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 
+const editorClassName = [
+  "h-full",
+  "[&_.cm-editor]:h-full [&_.cm-editor]:bg-transparent",
+  "[&_.cm-gutters]:bg-transparent [&_.cm-gutters]:border-0",
+  "[&_.cm-scroller]:overflow-auto [&_.cm-scroller]:font-mono",
+  "[&_.cm-content]:font-mono [&_.cm-content]:text-[12.5px] [&_.cm-content]:leading-[1.85]",
+].join(" ");
+
+// 内边距通过 EditorView.theme 注入：CodeMirror 自带的 .cm-content / .cm-line
+// 样式晚于 Tailwind 注入，同等优先级下会盖掉 className 里的 padding。
+const editorLayoutTheme = EditorView.theme({
+  ".cm-content": { padding: "14px 20px 56px" },
+  ".cm-line": { padding: "0" },
+});
+
 interface MarkdownEditorProps {
   onEditorViewReady?: (view: EditorView) => void;
   placeholder?: string;
@@ -25,14 +40,15 @@ export function MarkdownEditor({
     <div className="h-full overflow-hidden">
       <CodeMirror
         basicSetup={{
-          lineNumbers: false,
           foldGutter: false,
           highlightActiveLine: false,
+          lineNumbers: false,
         }}
-        className="h-full text-sm [&_.cm-content]:font-mono [&_.cm-content]:leading-relaxed [&_.cm-editor]:h-full [&_.cm-editor]:bg-transparent [&_.cm-scroller]:overflow-auto"
+        className={editorClassName}
         extensions={[
           markdown({ base: markdownLanguage, codeLanguages: languages }),
           EditorView.lineWrapping,
+          editorLayoutTheme,
         ]}
         onChange={setContent}
         onCreateEditor={(view) => onEditorViewReady?.(view)}

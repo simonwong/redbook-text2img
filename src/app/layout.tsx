@@ -22,23 +22,23 @@ export const metadata: Metadata = {
     telephone: false,
   },
   other: {
-    "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
-    "application-name": "小红书图片生成器",
     "apple-mobile-web-app-title": "小红书图片生成器",
+    "application-name": "小红书图片生成器",
+    "mobile-web-app-capable": "yes",
   },
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
+  colorScheme: "light dark",
   initialScale: 1,
   maximumScale: 5,
-  viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { color: "#ebebee", media: "(prefers-color-scheme: light)" },
+    { color: "#121215", media: "(prefers-color-scheme: dark)" },
   ],
-  colorScheme: "light dark",
+  viewportFit: "cover",
+  width: "device-width",
 };
 
 export default function RootLayout({
@@ -66,7 +66,7 @@ export default function RootLayout({
         ))}
         <link href="/icon-512.png" rel="apple-touch-icon" sizes="512x512" />
       </head>
-      <body className="flex h-dvh max-h-dvh flex-col bg-background">
+      <body className="flex h-dvh max-h-dvh flex-col gap-2 px-3 pt-2 pb-3">
         <ThemeProvider>
           <TooltipProvider>
             <Header />

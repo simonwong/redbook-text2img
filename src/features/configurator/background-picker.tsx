@@ -4,11 +4,15 @@ import { Image02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { type ChangeEvent, type CSSProperties, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ColorPopover } from "@/components/ui/color-popover";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import type { StyleConfiguration } from "@/lib/style-system/style-system";
 import { canvasBackgroundsEqual, customGradientValue } from "@/lib/theme";
 import { processBackgroundImageFile } from "./background-image";
 import { BackgroundSwatch } from "./background-swatch";
+import { backgroundColorPresets } from "./color-presets";
+import { GradientPresetRow } from "./gradient-preset-row";
+import { GradientStopRow } from "./gradient-stop-row";
 
 type BackgroundChoice = StyleConfiguration["background"];
 type CustomGradient = Extract<BackgroundChoice, { kind: "custom-gradient" }>;
@@ -58,6 +62,13 @@ export const BackgroundPicker = ({
 
   const openFileDialog = () => fileInputRef.current?.click();
 
+  const changeSolidColor = (color: string) => onChange({ color, kind: "solid" });
+  const changeGradientStops = (
+    stops: Partial<Pick<CustomGradient, "from" | "to">>
+  ) => onChange({ ...gradient, ...stops });
+  const changeGradientFrom = (from: string) => changeGradientStops({ from });
+  const changeGradientTo = (to: string) => changeGradientStops({ to });
+
   const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     // 允许连续选择同一文件
@@ -73,7 +84,8 @@ export const BackgroundPicker = ({
     setIsUploading(true);
     try {
       const processed = await processBackgroundImageFile(file);
-      onChange({ kind: "image", ...processed });
+      // 换图按新图片重新开始：磨砂回到无，避免旧档位套到新图上
+      onChange({ frost: "none", kind: "image", ...processed });
     } catch {
       setUploadError("图片过大或无法读取，请换一张试试");
     } finally {
@@ -84,9 +96,9 @@ export const BackgroundPicker = ({
   return (
     <fieldset
       aria-labelledby={labelledBy}
-      className="m-0 min-w-0 space-y-2 border-0 p-0"
+      className="m-0 flex min-w-0 flex-col gap-2 border-0 p-0"
     >
-      <div className="grid grid-cols-4 gap-1.5">
+      <div className="grid grid-cols-4 gap-2">
         <BackgroundSwatch
           active={canvasBackgroundsEqual(value, themeBackground)}
           label="主题背景"
@@ -138,7 +150,7 @@ export const BackgroundPicker = ({
                 }}
               />
             ) : (
-              <span className="flex size-full items-center justify-center bg-muted/60">
+              <span className="ds-well flex size-full items-center justify-center text-ink-2">
                 <HugeiconsIcon className="size-4" icon={Image02Icon} />
               </span>
             )
@@ -147,64 +159,35 @@ export const BackgroundPicker = ({
       </div>
 
       {value.kind === "solid" && (
-        <div className="flex h-11 items-center justify-between gap-3 rounded-lg border px-3">
-          <label
-            className="text-muted-foreground text-xs"
-            htmlFor="solid-background-color"
-          >
-            颜色
-          </label>
-          <input
-            className="h-8 w-14 cursor-pointer rounded border-0 bg-transparent p-0"
-            id="solid-background-color"
-            onChange={(event) =>
-              onChange({ color: event.target.value, kind: "solid" })
-            }
-            type="color"
+        <div className="ds-input flex h-11 items-center justify-between gap-3 px-3 md:h-[34px]">
+          <span className="font-semibold text-[12px] text-ink-2">颜色</span>
+          <ColorPopover
+            label="纯色背景颜色"
+            onChange={changeSolidColor}
+            presets={backgroundColorPresets}
             value={solidColor}
           />
         </div>
       )}
 
       {value.kind === "custom-gradient" && (
-        <div className="space-y-2">
-          <div className="flex h-11 items-center gap-2 rounded-lg border px-3">
-            <label
-              className="shrink-0 text-muted-foreground text-xs"
-              htmlFor="gradient-from-color"
-            >
-              从
-            </label>
-            <input
-              className="h-8 w-full min-w-0 cursor-pointer rounded border-0 bg-transparent p-0"
-              id="gradient-from-color"
-              onChange={(event) =>
-                onChange({ ...gradient, from: event.target.value })
-              }
-              type="color"
-              value={gradient.from}
-            />
-            <label
-              className="shrink-0 text-muted-foreground text-xs"
-              htmlFor="gradient-to-color"
-            >
-              到
-            </label>
-            <input
-              className="h-8 w-full min-w-0 cursor-pointer rounded border-0 bg-transparent p-0"
-              id="gradient-to-color"
-              onChange={(event) =>
-                onChange({ ...gradient, to: event.target.value })
-              }
-              type="color"
-              value={gradient.to}
-            />
-          </div>
+        <div className="flex flex-col items-start gap-2">
+          <GradientPresetRow
+            direction={gradient.direction}
+            onSelect={changeGradientStops}
+            value={gradient}
+          />
+          <GradientStopRow
+            direction={gradient.direction}
+            from={gradient.from}
+            onChangeFrom={changeGradientFrom}
+            onChangeTo={changeGradientTo}
+            to={gradient.to}
+          />
           <span className="sr-only" id={gradientDirectionLabelId}>
             渐变方向
           </span>
           <SegmentedControl
-            className="w-full"
             labelledBy={gradientDirectionLabelId}
             onChange={(direction) =>
               onChange({
@@ -219,23 +202,23 @@ export const BackgroundPicker = ({
       )}
 
       {value.kind === "image" && (
-        <div className="space-y-1.5">
+        <div className="flex flex-col gap-1.5">
           <Button
-            className="min-h-11 w-full"
+            className="min-h-11 w-full md:min-h-9"
             disabled={isUploading}
             onClick={openFileDialog}
             type="button"
-            variant="outline"
+            variant="raised"
           >
             {isUploading ? "处理中…" : "更换图片"}
           </Button>
-          <p className="text-muted-foreground text-xs">
-            图片仅保存在本地浏览器
-          </p>
+          <p className="text-[11.5px] text-ink-3">图片仅保存在本地浏览器</p>
         </div>
       )}
 
-      {uploadError && <p className="text-destructive text-xs">{uploadError}</p>}
+      {uploadError && (
+        <p className="text-[11.5px] text-destructive">{uploadError}</p>
+      )}
 
       <input
         accept="image/*"

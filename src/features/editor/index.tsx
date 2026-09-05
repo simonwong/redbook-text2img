@@ -13,12 +13,12 @@ const MarkdownEditor = dynamic(
       default: mod.MarkdownEditor,
     })),
   {
-    ssr: false,
     loading: () => (
-      <div className="flex h-full items-center justify-center text-muted-foreground/60 text-sm">
+      <div className="flex h-full items-center justify-center text-ink-3 text-xs">
         编辑器加载中...
       </div>
     ),
+    ssr: false,
   }
 );
 
@@ -36,10 +36,19 @@ export const EditorCard = ({ className }: EditorCardProps) => {
   }, []);
 
   return (
-    <div className={cn("flex h-full flex-col", className)}>
+    <div
+      className={cn(
+        "ds-panel flex h-full min-h-0 flex-col overflow-hidden",
+        className
+      )}
+    >
       <EditorToolbar editorView={editorView} />
-      <div className="flex-1 overflow-hidden">
+      <div className="relative min-h-0 flex-1 overflow-hidden">
         <MarkdownEditor onEditorViewReady={handleEditorViewReady} />
+        <div
+          aria-hidden="true"
+          className="ds-fade-bottom absolute inset-x-0 bottom-0 h-14"
+        />
       </div>
     </div>
   );

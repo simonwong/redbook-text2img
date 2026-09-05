@@ -25,22 +25,22 @@ export function ThemeToggle() {
   };
 
   const icons = {
-    system: Monitor,
-    light: Sun03Icon,
     dark: Moon02Icon,
+    light: Sun03Icon,
+    system: Monitor,
   };
 
   const labels = {
-    system: "跟随系统",
-    light: "浅色模式",
     dark: "深色模式",
+    light: "浅色模式",
+    system: "跟随系统",
   };
 
   // Wait for hydration
   if (!mounted) {
     return (
-      <Button aria-label="Theme toggle" size="icon" variant="outline">
-        <HugeiconsIcon className="h-4 w-4" icon={Monitor} />
+      <Button aria-label="Theme toggle" size="icon-sm" variant="raised">
+        <HugeiconsIcon className="size-[13px]" icon={Monitor} />
       </Button>
     );
   }
@@ -53,10 +53,10 @@ export function ThemeToggle() {
       <Button
         aria-label={labels[currentTheme]}
         onClick={cycleTheme}
-        size="icon"
-        variant="outline"
+        size="icon-sm"
+        variant="raised"
       >
-        <HugeiconsIcon className="h-4 w-4" icon={iconData} />
+        <HugeiconsIcon className="size-[13px]" icon={iconData} />
       </Button>
     </Tooltip>
   );

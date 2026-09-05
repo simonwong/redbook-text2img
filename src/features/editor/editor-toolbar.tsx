@@ -16,6 +16,7 @@ import {
   TextItalicIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Button } from "@/components/ui/button";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 import {
   insertHeading,
@@ -44,8 +45,8 @@ export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
   };
 
   return (
-    <div className="flex h-10 items-center justify-between border-border border-b px-3">
-      <div className="flex items-center gap-0.5">
+    <div className="flex items-center justify-between gap-2 px-2.5 pt-2.5">
+      <div className="ds-raised inline-flex h-[42px] shrink-0 items-center rounded-full px-[6px]">
         <ToolbarButton
           icon={TextBoldIcon}
           label="加粗"
@@ -103,21 +104,15 @@ export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
         <TemplatePicker />
       </div>
 
-      <div className="flex items-center gap-2">
-        {isChange && (
-          <button
-            className="flex items-center gap-1 rounded px-2 py-1 text-muted-foreground text-xs transition-colors hover:bg-accent hover:text-foreground"
-            onClick={resetContent}
-            type="button"
-          >
-            <HugeiconsIcon
-              className="h-3 w-3"
-              icon={ArrowReloadHorizontalIcon}
-            />
-            重置
-          </button>
-        )}
-      </div>
+      {isChange && (
+        <Button onClick={resetContent} size="sm" variant="ghost">
+          <HugeiconsIcon
+            className="size-[13px]"
+            icon={ArrowReloadHorizontalIcon}
+          />
+          重置
+        </Button>
+      )}
     </div>
   );
 };
