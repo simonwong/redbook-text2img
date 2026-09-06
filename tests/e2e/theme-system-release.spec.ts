@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { expect, type Locator, type Page, test } from "@playwright/test";
 
 const themeNames = [
@@ -214,4 +215,86 @@ test("8 个主题在超长正文上给出不进入导出卡片的分页提示", 
   await expect(
     page.locator(".img-preview").getByText(warningText, { exact: true })
   ).toHaveCount(0);
+});
+
+const gradientThemeNames = [
+  "清新白",
+  "蜜光暖阳",
+  "晨雾微光",
+  "樱花奶霜",
+  "墨夜极光",
+] as const;
+
+/** 沿左右 3% 两列扫描 5%–95% 高度，返回相邻两行 RGB 差之和的最大值：硬接缝会远超渐变的逐行变化 */
+const maxMarginRowJump = (
+  page: Page,
+  png: Buffer
+): Promise<{ height: number; maxJump: number }> =>
+  page.evaluate(async (base64) => {
+    const bytes = Uint8Array.from(atob(base64), (value) => value.charCodeAt(0));
+    const bitmap = await createImageBitmap(
+      new Blob([bytes], { type: "image/png" })
+    );
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("Canvas 2D context unavailable");
+    }
+    context.drawImage(bitmap, 0, 0);
+    const { data } = context.getImageData(0, 0, bitmap.width, bitmap.height);
+    const columns = [
+      Math.round(bitmap.width * 0.03),
+      Math.round(bitmap.width * 0.97),
+    ];
+    const rgbAt = (x: number, y: number) => {
+      const offset = (y * bitmap.width + x) * 4;
+      return [data[offset], data[offset + 1], data[offset + 2]];
+    };
+    let maxJump = 0;
+    const first = Math.round(bitmap.height * 0.05);
+    const last = Math.round(bitmap.height * 0.95);
+    for (let y = first + 1; y < last; y += 1) {
+      let jump = 0;
+      for (const x of columns) {
+        const current = rgbAt(x, y);
+        const previous = rgbAt(x, y - 1);
+        jump +=
+          Math.abs(current[0] - previous[0]) +
+          Math.abs(current[1] - previous[1]) +
+          Math.abs(current[2] - previous[2]);
+      }
+      maxJump = Math.max(maxJump, jump);
+    }
+    return { height: bitmap.height, maxJump };
+  }, png.toString("base64"));
+
+test("渐变主题 9:16 导出的椭圆光晕没有水平接缝", async ({ page }) => {
+  await resetState(page, releaseContent);
+  await page.setViewportSize({ height: 1000, width: 1440 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "设置样式" }).click();
+
+  for (const name of gradientThemeNames) {
+    // 切主题会清空覆盖，比例要在选完主题之后再选
+    await selectTheme(page, name);
+    await page
+      .getByRole("radio", { exact: true, name: "9:16" })
+      .locator("..")
+      .click();
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { exact: true, name: "导出" }).click();
+    const downloadPath = await (await downloadPromise).path();
+    expect(downloadPath).not.toBeNull();
+    if (!downloadPath) {
+      throw new Error("导出没有产生文件");
+    }
+    const result = await maxMarginRowJump(page, await readFile(downloadPath));
+    expect(result.height).toBe(2001);
+    // 未打补丁时 html2canvas-pro 的接缝跳变在 100 以上，正常渐变逐行变化不超过个位数
+    expect(result.maxJump, `${name} 9:16 导出图出现接缝`).toBeLessThanOrEqual(
+      12
+    );
+  }
 });
