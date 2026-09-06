@@ -12,3 +12,5 @@ minimumReleaseAgeExclude:
   - '@next/third-parties@16.3.4'
   - html2canvas-pro@2.4.1
   - next@16.3.4
+patchedDependencies:
+  html2canvas-pro@2.4.1: patches/html2canvas-pro@2.4.1.patch

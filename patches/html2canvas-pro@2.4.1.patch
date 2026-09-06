@@ -1,0 +1,162 @@
+diff --git a/dist/html2canvas-pro.cjs b/dist/html2canvas-pro.cjs
+index 8dcf7cac545d51a799c3e490b18bb2d11389b996..422767ce07b50ff130dbdbb646b0e17bf8fb6dd8 100644
+--- a/dist/html2canvas-pro.cjs
++++ b/dist/html2canvas-pro.cjs
+@@ -9734,20 +9734,26 @@ var BackgroundRenderer = class {
+ 		if (rx > 0 && ry > 0) {
+ 			const cacheKey = `rg|${Math.round(x)}x${Math.round(y)}|${Math.round(rx)}x${Math.round(ry)}|${JSON.stringify(backgroundImage.stops)}`;
+ 			let pattern = this.patternCache.get(cacheKey);
++			// Patched (redbook-text2img): the upstream code rendered the ellipse into a
++			// max(rx, ry) square and then scaled Y by ry / rx. When ry > rx that stretches the
++			// gradient past the square's edge, so it gets cut off before fading out and leaves a
++			// hard horizontal seam (e.g. tall 9:16 cards). Draw a circle of radius rx into a
++			// 2rx × 2ry box scaled by ry / rx instead, and fill the rest of the area with the last
++			// color stop the way the browser extends a radial gradient beyond its ending shape.
++			const stops = processColorStops(backgroundImage.stops, rx * 2);
++			const lastStop = stops[stops.length - 1];
+ 			if (!pattern) {
+ 				const ownerDocument = this.canvas.ownerDocument ?? document;
+-				const size = Math.ceil(Math.max(rx, ry) * 2);
+ 				const offscreen = ownerDocument.createElement("canvas");
+-				offscreen.width = size;
+-				offscreen.height = size;
++				offscreen.width = Math.ceil(rx * 2);
++				offscreen.height = Math.ceil(ry * 2);
+ 				const offCtx = offscreen.getContext("2d");
+ 				if (offCtx) {
+-					const offRadius = Math.max(rx, ry);
+-					const gradient = offCtx.createRadialGradient(offRadius, offRadius, 0, offRadius, offRadius, offRadius);
+-					processColorStops(backgroundImage.stops, offRadius * 2).forEach((s) => gradient.addColorStop(s.stop, asString(s.color)));
++					const gradient = offCtx.createRadialGradient(rx, rx, 0, rx, rx, rx);
++					stops.forEach((s) => gradient.addColorStop(s.stop, asString(s.color)));
+ 					offCtx.fillStyle = gradient;
+ 					if (rx !== ry) offCtx.scale(1, ry / rx);
+-					offCtx.fillRect(0, 0, offRadius * 2, offRadius * 2);
++					offCtx.fillRect(0, 0, rx * 2, rx * 2);
+ 					pattern = this.ctx.createPattern(offscreen, "no-repeat");
+ 					this.patternCache.set(cacheKey, pattern);
+ 				}
+@@ -9756,9 +9762,13 @@ var BackgroundRenderer = class {
+ 				this.path(path);
+ 				this.ctx.save();
+ 				this.ctx.clip();
+-				this.ctx.translate(left + x - Math.max(rx, ry), top + y - Math.max(rx, ry));
++				if (lastStop) {
++					this.ctx.fillStyle = asString(lastStop.color);
++					this.ctx.fill();
++				}
++				this.ctx.translate(left + x - rx, top + y - ry);
+ 				this.ctx.fillStyle = pattern;
+-				this.ctx.fillRect(0, 0, Math.max(rx, ry) * 2, Math.max(rx, ry) * 2);
++				this.ctx.fillRect(0, 0, rx * 2, ry * 2);
+ 				this.ctx.restore();
+ 			}
+ 		}
+diff --git a/dist/html2canvas-pro.esm.js b/dist/html2canvas-pro.esm.js
+index 4e795fca83ac33075ee6c3737400718753bd3f63..2cd9bc5872fdd57bde68d3e0a45f22cd479f47fc 100644
+--- a/dist/html2canvas-pro.esm.js
++++ b/dist/html2canvas-pro.esm.js
+@@ -9730,20 +9730,26 @@ var BackgroundRenderer = class {
+ 		if (rx > 0 && ry > 0) {
+ 			const cacheKey = `rg|${Math.round(x)}x${Math.round(y)}|${Math.round(rx)}x${Math.round(ry)}|${JSON.stringify(backgroundImage.stops)}`;
+ 			let pattern = this.patternCache.get(cacheKey);
++			// Patched (redbook-text2img): the upstream code rendered the ellipse into a
++			// max(rx, ry) square and then scaled Y by ry / rx. When ry > rx that stretches the
++			// gradient past the square's edge, so it gets cut off before fading out and leaves a
++			// hard horizontal seam (e.g. tall 9:16 cards). Draw a circle of radius rx into a
++			// 2rx × 2ry box scaled by ry / rx instead, and fill the rest of the area with the last
++			// color stop the way the browser extends a radial gradient beyond its ending shape.
++			const stops = processColorStops(backgroundImage.stops, rx * 2);
++			const lastStop = stops[stops.length - 1];
+ 			if (!pattern) {
+ 				const ownerDocument = this.canvas.ownerDocument ?? document;
+-				const size = Math.ceil(Math.max(rx, ry) * 2);
+ 				const offscreen = ownerDocument.createElement("canvas");
+-				offscreen.width = size;
+-				offscreen.height = size;
++				offscreen.width = Math.ceil(rx * 2);
++				offscreen.height = Math.ceil(ry * 2);
+ 				const offCtx = offscreen.getContext("2d");
+ 				if (offCtx) {
+-					const offRadius = Math.max(rx, ry);
+-					const gradient = offCtx.createRadialGradient(offRadius, offRadius, 0, offRadius, offRadius, offRadius);
+-					processColorStops(backgroundImage.stops, offRadius * 2).forEach((s) => gradient.addColorStop(s.stop, asString(s.color)));
++					const gradient = offCtx.createRadialGradient(rx, rx, 0, rx, rx, rx);
++					stops.forEach((s) => gradient.addColorStop(s.stop, asString(s.color)));
+ 					offCtx.fillStyle = gradient;
+ 					if (rx !== ry) offCtx.scale(1, ry / rx);
+-					offCtx.fillRect(0, 0, offRadius * 2, offRadius * 2);
++					offCtx.fillRect(0, 0, rx * 2, rx * 2);
+ 					pattern = this.ctx.createPattern(offscreen, "no-repeat");
+ 					this.patternCache.set(cacheKey, pattern);
+ 				}
+@@ -9752,9 +9758,13 @@ var BackgroundRenderer = class {
+ 				this.path(path);
+ 				this.ctx.save();
+ 				this.ctx.clip();
+-				this.ctx.translate(left + x - Math.max(rx, ry), top + y - Math.max(rx, ry));
++				if (lastStop) {
++					this.ctx.fillStyle = asString(lastStop.color);
++					this.ctx.fill();
++				}
++				this.ctx.translate(left + x - rx, top + y - ry);
+ 				this.ctx.fillStyle = pattern;
+-				this.ctx.fillRect(0, 0, Math.max(rx, ry) * 2, Math.max(rx, ry) * 2);
++				this.ctx.fillRect(0, 0, rx * 2, ry * 2);
+ 				this.ctx.restore();
+ 			}
+ 		}
+diff --git a/dist/html2canvas-pro.js b/dist/html2canvas-pro.js
+index 6856b82c590db9541cba6e84a9f4111ce285c7da..f8411983d693a42bedc4e01cc94aa2a464c9456b 100644
+--- a/dist/html2canvas-pro.js
++++ b/dist/html2canvas-pro.js
+@@ -9737,20 +9737,26 @@
+ 			if (rx > 0 && ry > 0) {
+ 				const cacheKey = `rg|${Math.round(x)}x${Math.round(y)}|${Math.round(rx)}x${Math.round(ry)}|${JSON.stringify(backgroundImage.stops)}`;
+ 				let pattern = this.patternCache.get(cacheKey);
++				// Patched (redbook-text2img): the upstream code rendered the ellipse into a
++				// max(rx, ry) square and then scaled Y by ry / rx. When ry > rx that stretches the
++				// gradient past the square's edge, so it gets cut off before fading out and leaves a
++				// hard horizontal seam (e.g. tall 9:16 cards). Draw a circle of radius rx into a
++				// 2rx × 2ry box scaled by ry / rx instead, and fill the rest of the area with the last
++				// color stop the way the browser extends a radial gradient beyond its ending shape.
++				const stops = processColorStops(backgroundImage.stops, rx * 2);
++				const lastStop = stops[stops.length - 1];
+ 				if (!pattern) {
+ 					const ownerDocument = this.canvas.ownerDocument ?? document;
+-					const size = Math.ceil(Math.max(rx, ry) * 2);
+ 					const offscreen = ownerDocument.createElement("canvas");
+-					offscreen.width = size;
+-					offscreen.height = size;
++					offscreen.width = Math.ceil(rx * 2);
++					offscreen.height = Math.ceil(ry * 2);
+ 					const offCtx = offscreen.getContext("2d");
+ 					if (offCtx) {
+-						const offRadius = Math.max(rx, ry);
+-						const gradient = offCtx.createRadialGradient(offRadius, offRadius, 0, offRadius, offRadius, offRadius);
+-						processColorStops(backgroundImage.stops, offRadius * 2).forEach((s) => gradient.addColorStop(s.stop, asString(s.color)));
++						const gradient = offCtx.createRadialGradient(rx, rx, 0, rx, rx, rx);
++						stops.forEach((s) => gradient.addColorStop(s.stop, asString(s.color)));
+ 						offCtx.fillStyle = gradient;
+ 						if (rx !== ry) offCtx.scale(1, ry / rx);
+-						offCtx.fillRect(0, 0, offRadius * 2, offRadius * 2);
++						offCtx.fillRect(0, 0, rx * 2, rx * 2);
+ 						pattern = this.ctx.createPattern(offscreen, "no-repeat");
+ 						this.patternCache.set(cacheKey, pattern);
+ 					}
+@@ -9759,9 +9765,13 @@
+ 					this.path(path);
+ 					this.ctx.save();
+ 					this.ctx.clip();
+-					this.ctx.translate(left + x - Math.max(rx, ry), top + y - Math.max(rx, ry));
++					if (lastStop) {
++						this.ctx.fillStyle = asString(lastStop.color);
++						this.ctx.fill();
++					}
++					this.ctx.translate(left + x - rx, top + y - ry);
+ 					this.ctx.fillStyle = pattern;
+-					this.ctx.fillRect(0, 0, Math.max(rx, ry) * 2, Math.max(rx, ry) * 2);
++					this.ctx.fillRect(0, 0, rx * 2, ry * 2);
+ 					this.ctx.restore();
+ 				}
+ 			}

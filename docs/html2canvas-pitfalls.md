@@ -86,3 +86,11 @@ html2canvas-pro 2.4 把 CSS `filter`（`blur()`、`brightness()`、`saturate()`�
 - `ctx.filter` 在设备像素空间生效，不随 `scale` 选项放大。导出 3 倍图时模糊半径要同步乘 3，两端才一样模糊。
 
 两条都由 `src/lib/export/canvas-filter.ts` 在一次导出的调用期间临时接管 `CanvasRenderingContext2D.prototype.filter` 完成，导出结束立刻还原；升级 html2canvas-pro 时先回归这两条。
+
+## 8. 椭圆径向渐变在"高比宽长"时会出现水平接缝（已打补丁）
+
+html2canvas-pro 2.4.1 的 `renderRadialGradient` 把椭圆渐变先画进一张 `max(rx, ry)` 见方的离屏画布，再把纵向按 `ry / rx` 缩放。横向半径更大时（`rx ≥ ry`）结果正确；纵向半径更大时（`ry > rx`，例如 9:16 卡片上 `ellipse 72% 52%` 解析成 270 × 347px）渐变被拉出画布边缘，还没淡到透明就被截断，导出图在圆心下方 `ry` 处出现一条横贯整宽的硬接缝。预览由浏览器绘制，不受影响，所以只有导出图"分层"。
+
+主题背景的光晕几乎都是这种写法，1:1 与 9:16 全部中招，3:4 上蜜光暖阳、樱花奶霜也会。仓库用 `patches/html2canvas-pro@2.4.1.patch` 修正了算法：以横向半径 `rx` 画圆形渐变，离屏画布取 `2rx × 2ry` 的完整包围盒再按 `ry / rx` 缩放，并先用最后一个色标填满整个区域（浏览器就是这样把径向渐变延伸到结束形状之外的）。
+
+升级 html2canvas-pro 时先确认上游是否已修，未修则重新生成补丁；`tests/e2e/theme-system-release.spec.ts` 的 9:16 接缝测试会在补丁失效时失败。
