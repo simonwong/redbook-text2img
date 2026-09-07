@@ -41,6 +41,14 @@ function cache(id: string, blob: Blob | null) {
 }
 
 export const imageAssets = {
+  async delete(id: string): Promise<void> {
+    await pending.get(id);
+    const store = await database();
+    await store?.delete(id);
+    await memory.delete(id);
+    snapshots.delete(id);
+    cache(id, null);
+  },
   async import(file: Blob): Promise<string> {
     const blob = await compressContentImage(file);
     const store = await database();
@@ -55,6 +63,12 @@ export const imageAssets = {
     return id;
   },
   isSessionOnly: () => sessionOnly,
+  async list(): Promise<string[]> {
+    const store = await database();
+    return [
+      ...new Set([...(await memory.list()), ...((await store?.list()) ?? [])]),
+    ];
+  },
   load(id: string): Promise<void> {
     if (snapshots.has(id)) {
       return Promise.resolve();

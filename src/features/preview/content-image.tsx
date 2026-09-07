@@ -4,13 +4,21 @@ import { type CSSProperties, useEffect, useSyncExternalStore } from "react";
 import { imageAssets } from "@/lib/image-assets/image-assets";
 import { imageReference } from "@/lib/image-reference";
 
+import { RemoteImageImport } from "./remote-image-import";
+
 interface ContentImageProps {
   alt?: string;
+  remoteSource?: string;
   src?: string | Blob;
   style: CSSProperties;
 }
 
-export function ContentImage({ alt, src, style }: ContentImageProps) {
+export function ContentImage({
+  alt,
+  src,
+  style,
+  remoteSource,
+}: ContentImageProps) {
   const reference = typeof src === "string" ? imageReference.parse(src) : null;
   const id = reference?.id ?? "";
   const snapshot = useSyncExternalStore(
@@ -45,6 +53,9 @@ export function ContentImage({ alt, src, style }: ContentImageProps) {
       }}
     >
       {message}：{alt || "内容图片"}
+      {Boolean(remoteSource) && (
+        <RemoteImageImport key={remoteSource} url={remoteSource ?? ""} />
+      )}
     </span>
   );
 }

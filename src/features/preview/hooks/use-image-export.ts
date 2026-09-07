@@ -39,6 +39,11 @@ const generateCanvas = async (element: HTMLElement) => {
       backgroundColor: null,
       logging: false,
       onclone: (_document, clonedElement) => {
+        for (const control of clonedElement.querySelectorAll(
+          "[data-export-ignore]"
+        )) {
+          control.remove();
+        }
         // html2canvas clips img shadows with the browser's default overflow: clip.
         // Its image painter already clips pixels to the rounded padding box.
         for (const img of clonedElement.querySelectorAll("img")) {

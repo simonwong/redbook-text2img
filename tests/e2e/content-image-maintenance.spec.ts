@@ -1,0 +1,147 @@
+import { readFile } from "node:fs/promises";
+import { expect, type Page, test } from "@playwright/test";
+
+const importWord = /导入/g;
+const remote = "https://images.example/a.png";
+async function open(page: Page) {
+  await page.addInitScript((url) => {
+    localStorage.setItem(
+      "redbook-markdown-content",
+      JSON.stringify({
+        state: { content: `正文\n\n![远程配图](${url})`, isChange: true },
+        version: 0,
+      })
+    );
+  }, remote);
+  await page.goto("/");
+  await expect(page.locator(".cm-content")).toBeVisible();
+}
+async function fixture(page: Page) {
+  const base64 = await page.evaluate(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 32;
+    canvas.height = 16;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("Canvas unavailable");
+    }
+    context.fillStyle = "#ed2040";
+    context.fillRect(0, 0, 32, 16);
+    return canvas.toDataURL("image/png").split(",")[1];
+  });
+  await page.route("https://images.example/**", (route) =>
+    route.fulfill({
+      body: Buffer.from(base64, "base64"),
+      contentType: "image/png",
+    })
+  );
+}
+async function edit(page: Page, markdown: string) {
+  await page.locator(".cm-content").fill(markdown);
+}
+
+test("手写外链只显示占位；失败显示原因，重试入库后改写正文并出图", async ({
+  page,
+}) => {
+  await open(page);
+  const preview = page.locator(".img-preview");
+  await expect(preview).toContainText("图片未导入");
+  await expect(preview.locator("img")).toHaveCount(0);
+  await page.route("https://images.example/**", (route) => route.abort());
+  await page.route("**/api/image-proxy?*", (route) =>
+    route.fulfill({ json: { error: "TOO_LARGE" }, status: 413 })
+  );
+  await preview.getByRole("button", { exact: true, name: "导入" }).click();
+  await expect(preview.getByRole("alert")).toContainText("图片过大");
+  await expect(page.locator(".cm-content")).toContainText(remote);
+  await fixture(page);
+  await preview.getByRole("button", { exact: true, name: "导入" }).click();
+  await expect(page.locator(".cm-content")).toContainText("image:");
+  await expect(page.locator(".cm-content")).not.toContainText(remote);
+  await expect(preview.locator("img")).toBeVisible();
+  expect(
+    await preview
+      .locator("img")
+      .evaluate((img: HTMLImageElement) => img.naturalWidth)
+  ).toBe(32);
+});
+
+test("清理列出差集、取消保留资产，确认删除后恢复引用显示缺失占位", async ({
+  page,
+}) => {
+  await open(page);
+  await fixture(page);
+  await page
+    .locator(".img-preview")
+    .getByRole("button", { exact: true, name: "导入" })
+    .click();
+  const editor = page.locator(".cm-content");
+  await expect(editor).toContainText("image:");
+  const content = await editor.innerText();
+  await edit(page, "正文");
+  await page.getByRole("button", { name: "设置样式" }).click();
+  await page
+    .getByRole("button", { exact: true, name: "清理未使用图片" })
+    .click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "发现 1 张" })
+  ).toContainText("多标签页只以当前内容为准");
+  await page.getByRole("button", { exact: true, name: "取消" }).click();
+  await page.getByRole("button", { exact: true, name: "关闭样式设置" }).click();
+  await edit(page, content);
+  await expect(page.locator(".img-preview img")).toBeVisible();
+  await edit(page, "正文");
+  await page.getByRole("button", { name: "设置样式" }).click();
+  await page
+    .getByRole("button", { exact: true, name: "清理未使用图片" })
+    .click();
+  await page.getByRole("button", { exact: true, name: "确认清理" }).click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "已清理 1 张图片" })
+  ).toBeVisible();
+  await page.getByRole("button", { exact: true, name: "关闭样式设置" }).click();
+  await edit(page, content);
+  await expect(page.locator(".img-preview")).toContainText("图片未找到");
+  await expect(page.locator(".img-preview img")).toHaveCount(0);
+});
+
+test("未导入占位随 PNG 导出，操作按钮不进入克隆画布", async ({ page }) => {
+  await open(page);
+  await page.evaluate(() => {
+    const painted: string[] = [];
+    Object.assign(window, { painted });
+    const original = CanvasRenderingContext2D.prototype.fillText;
+    CanvasRenderingContext2D.prototype.fillText = function (
+      text,
+      x,
+      y,
+      maxWidth
+    ) {
+      painted.push(text);
+      if (maxWidth === undefined) {
+        original.call(this, text, x, y);
+      } else {
+        original.call(this, text, x, y, maxWidth);
+      }
+    };
+  });
+  const pending = page.waitForEvent("download");
+  await page.getByRole("button", { exact: true, name: "导出" }).click();
+  const path = await (await pending).path();
+  if (!path) {
+    throw new Error("Download missing");
+  }
+  const png = await readFile(path);
+  expect(png.length).toBeGreaterThan(10_000);
+  const painted = await page.evaluate(() =>
+    (window as unknown as { painted: string[] }).painted.join("")
+  );
+  expect(painted).toContain("图片未导入");
+  expect(painted).toContain("远程配图");
+  expect(painted.match(importWord)).toHaveLength(1);
+  await expect(
+    page
+      .locator(".img-preview")
+      .getByRole("button", { exact: true, name: "导入" })
+  ).toBeVisible();
+});

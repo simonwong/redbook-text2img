@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
+import ReactMarkdown, {
+  defaultUrlTransform,
+  type UrlTransform,
+} from "react-markdown";
 import type { ImageSegment } from "@/lib/markdown-parser";
 import { styleSystem } from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
@@ -10,12 +13,17 @@ import { ContentImage } from "./content-image";
 import { HeaderBar } from "./header-bar";
 import { ImageParagraph } from "./image-paragraph";
 
-function transformImageUrl(url: string, key: string): string {
+const remoteImagePattern = /^https?:\/\//i;
+
+const transformImageUrl: UrlTransform = (url, key, node) => {
   if (key === "src") {
+    if (remoteImagePattern.test(url)) {
+      node.properties["data-image-source"] = url;
+    }
     return url.startsWith("image:") ? url : "";
   }
   return defaultUrlTransform(url);
-}
+};
 
 interface ImagePreviewProps {
   contentRef?: React.Ref<HTMLDivElement>;
@@ -98,7 +106,15 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
               h4: ({ children }) => <h4 style={styles.h4}>{children}</h4>,
               h5: ({ children }) => <h5 style={styles.h5}>{children}</h5>,
               h6: ({ children }) => <h6 style={styles.h6}>{children}</h6>,
-              img: (props) => <ContentImage {...props} style={styles.img} />,
+              img: ({ node, ...props }) => (
+                <ContentImage
+                  {...props}
+                  remoteSource={String(
+                    node?.properties["data-image-source"] ?? ""
+                  )}
+                  style={styles.img}
+                />
+              ),
               li: ({ children }) => <li style={styles.li}>{children}</li>,
               p: (props) => (
                 <ImageParagraph
