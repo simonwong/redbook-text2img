@@ -100,3 +100,11 @@ html2canvas-pro 2.4.1 的 `renderRadialGradient` 把椭圆渐变先画进一张 
 html2canvas-pro 等待图片像素加载，不保证预览 DOM 已按图片尺寸完成布局。`use-image-export.ts` 在单张与批量共用的绘制入口等待资产占位更新，再 await 所有 img.decode()。不要把等待移到某个按钮或仅保留批量切页的两帧等待。
 
 react-markdown 的默认 URL 过滤会清空 `image:`，内容图片需显式放行该协议。仅含图片的 p 必须替换为全宽 figure，否则收缩段落无法按内容区居中；图片使用 auto 宽高与 max-width/max-height 双约束。外链图片没有 CORS 时可能被静默跳过，因此必须先导入资产库；缺失资产以文字占位导出。
+
+## 10. `box-shadow` 的 Canvas 参数必须按导出倍率缩放（已打补丁）
+
+html2canvas-pro 2.4.1 支持图片圆角与阴影，但绘制 box-shadow 时直接把 CSS 长度赋给 `ctx.shadowOffsetX/Y` 和 `ctx.shadowBlur`。这些属性使用设备像素，不随 `ctx.scale` 缩放；用于隐藏原始填充的横向遮罩偏移也必须同步缩放，否则 3 倍导出时阴影会错位到画布外。
+
+`patches/html2canvas-pro@2.4.1.patch` 将三个参数（含遮罩偏移）乘导出倍率，保留原有径向渐变修复。`tests/e2e/content-image.spec.ts` 比较导出前预览截图与 PNG 的图片中心、圆角和下沿阴影采样点。截图必须在触发导出前获取，导出成功蒙层会覆盖可见预览，但不属于导出节点。
+
+浏览器默认给 img 设置 `overflow: clip`，库会把这个裁切同时用于图片背景与阴影，导致自身阴影被截掉。导出模块只在 html2canvas 的克隆节点上将 img 设为 `overflow: visible`，圆角由库的 padding-box 绘制路径裁切。预览保留浏览器的 `overflow: clip`，否则浏览器会让图片像素越过圆角。

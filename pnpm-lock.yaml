@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  html2canvas-pro@2.4.1: 20cf14fb8ef2df887523c383852081fa1c284aaa21bfe3cb8c8c92209895b7b9
+  html2canvas-pro@2.4.1: 154d2b049b5e03d949fccb1f440cdd7a083bf34b85be7e5f79e2128962e8c8c0
 
 importers:
 
@@ -52,7 +52,7 @@ importers:
         version: 2.1.1
       html2canvas-pro:
         specifier: ^2.4.1
-        version: 2.4.1(patch_hash=20cf14fb8ef2df887523c383852081fa1c284aaa21bfe3cb8c8c92209895b7b9)
+        version: 2.4.1(patch_hash=154d2b049b5e03d949fccb1f440cdd7a083bf34b85be7e5f79e2128962e8c8c0)
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
@@ -5374,7 +5374,7 @@ snapshots:
 
   html-url-attributes@3.0.1: {}
 
-  html2canvas-pro@2.4.1(patch_hash=20cf14fb8ef2df887523c383852081fa1c284aaa21bfe3cb8c8c92209895b7b9):
+  html2canvas-pro@2.4.1(patch_hash=154d2b049b5e03d949fccb1f440cdd7a083bf34b85be7e5f79e2128962e8c8c0):
     dependencies:
       css-line-break: 2.1.0
       text-segmentation: 1.0.3

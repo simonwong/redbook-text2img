@@ -174,6 +174,7 @@ export function generateStyles(
       width: "100%",
     },
     img: {
+      ...style.image,
       display: "block",
       height: "auto",
       maxHeight: `${card.card.height / 2}px`,

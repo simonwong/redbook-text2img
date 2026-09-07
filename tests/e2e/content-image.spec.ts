@@ -2,6 +2,9 @@ import { readFile } from "node:fs/promises";
 import { expect, type Page, test } from "@playwright/test";
 import JSZip from "jszip";
 
+const radiusLabel = /^圆角/;
+const shadowLabel = /^阴影/;
+
 async function seed(page: Page, content = "正文前\n\n正文后") {
   await page.addInitScript((markdown) => {
     if (localStorage.getItem("redbook-markdown-content")) {
@@ -273,4 +276,122 @@ test("导出等待图片 decode 完成后才生成 PNG", async ({ page }) => {
     throw new Error("Download missing");
   }
   expect(await redPixels(page, await readFile(path))).toBeGreaterThan(50_000);
+});
+
+async function expectImageExportParity(page: Page) {
+  const card = page.locator(".img-preview");
+  const points = await card.evaluate((element) => {
+    const image = element.querySelector("img");
+    if (!image) {
+      throw new Error("Content image missing");
+    }
+    const frame = element.getBoundingClientRect();
+    const box = image.getBoundingClientRect();
+    const scale = box.width / image.offsetWidth;
+    return [
+      [box.x + box.width / 2, box.y + box.height / 2],
+      [box.x + 2 * scale, box.y + 2 * scale],
+      [box.x + box.width / 2, box.bottom + 5 * scale],
+    ].map(([x, y]) => [
+      (x - frame.x) / frame.width,
+      (y - frame.y) / frame.height,
+    ]);
+  });
+  const screenshot = await card.screenshot();
+  const png = await download(page, "导出");
+  expect(await redPixels(page, png)).toBeGreaterThan(50_000);
+  const [preview, exported] = await page.evaluate(
+    async ({ images, samples }) =>
+      Promise.all(
+        images.map(async (base64) => {
+          const bitmap = await createImageBitmap(
+            new Blob([Uint8Array.from(atob(base64), (c) => c.charCodeAt(0))], {
+              type: "image/png",
+            })
+          );
+          const canvas = document.createElement("canvas");
+          canvas.width = bitmap.width;
+          canvas.height = bitmap.height;
+          const context = canvas.getContext("2d");
+          if (!context) {
+            throw new Error("Canvas 2D unavailable");
+          }
+          context.drawImage(bitmap, 0, 0);
+          const pixels = samples.map(([x, y]) =>
+            Array.from(
+              context.getImageData(
+                Math.floor(x * bitmap.width),
+                Math.floor(y * bitmap.height),
+                1,
+                1
+              ).data
+            ).slice(0, 3)
+          );
+          bitmap.close();
+          return pixels;
+        })
+      ),
+    {
+      images: [screenshot.toString("base64"), png.toString("base64")],
+      samples: points,
+    }
+  );
+  expect(exported[0][0]).toBeGreaterThan(210);
+  expect(exported[0][1]).toBeLessThan(65);
+  expect(exported[1][1]).toBeGreaterThan(150);
+  for (const [index, pixel] of preview.entries()) {
+    for (const [channel, value] of pixel.entries()) {
+      expect(
+        Math.abs(value - exported[index][channel]),
+        JSON.stringify({ channel, exported, index, points, preview })
+      ).toBeLessThan(20);
+    }
+  }
+}
+
+test("图片设置随正文显隐，圆角阴影即时预览、导出并持久化", async ({ page }) => {
+  await page.setViewportSize({ height: 1000, width: 1440 });
+  await seed(page);
+  await page.getByRole("button", { name: "设置样式" }).click();
+  const group = page.getByRole("region", { exact: true, name: "图片" });
+  await expect(group).toHaveCount(0);
+  await upload(page);
+  await expect(group).toBeVisible();
+  const radius = group.getByRole("group", { name: radiusLabel });
+  const shadow = group.getByRole("group", { name: shadowLabel });
+  const img = page.locator(".img-preview figure img");
+  await radius.getByText("无", { exact: true }).click();
+  await shadow.getByText("无", { exact: true }).click();
+  await expect(img).toHaveCSS("border-radius", "0px");
+  await expect(img).toHaveCSS("box-shadow", "none");
+  await radius.getByText("大", { exact: true }).click();
+  await shadow.getByText("重", { exact: true }).click();
+  await expect(img).toHaveCSS("border-radius", "20px");
+  await expect(img).toHaveCSS(
+    "box-shadow",
+    "rgba(27, 37, 64, 0.24) 0px 6px 20px 0px"
+  );
+  await expectImageExportParity(page);
+  const editor = page.locator(".cm-content");
+  const markdown = await editor.innerText();
+  await editor.fill("无图正文");
+  await expect(group).toHaveCount(0);
+  await page.reload();
+  await page.getByRole("button", { name: "设置样式" }).click();
+  await expect(group).toHaveCount(0);
+  await editor.fill(markdown);
+  await expect(group).toBeVisible();
+  await expect(radius.getByLabel("大", { exact: true })).toBeChecked();
+  await expect(shadow.getByLabel("重", { exact: true })).toBeChecked();
+  await expect(img).toHaveCSS("border-radius", "20px");
+  await expect(img).toHaveCSS(
+    "box-shadow",
+    "rgba(27, 37, 64, 0.24) 0px 6px 20px 0px"
+  );
+  await editor.fill(`# 配图封面\n\n${markdown}`);
+  await expect(img).toHaveCSS("border-radius", "20px");
+  await expect(img).toHaveCSS(
+    "box-shadow",
+    "rgba(27, 37, 64, 0.24) 0px 6px 20px 0px"
+  );
 });

@@ -20,6 +20,8 @@ export interface StyleConfiguration {
   readonly coverLayout: CoverLayout;
   readonly density: Density;
   readonly fontId: StyleAdjustments["fontId"];
+  readonly imageRadius: StyleAdjustments["imageRadius"];
+  readonly imageShadow: StyleAdjustments["imageShadow"];
 }
 
 export interface StyleConfigurationOptions {
@@ -31,6 +33,8 @@ export interface StyleConfigurationOptions {
   readonly fontId: readonly string[];
   /** 图片背景的磨砂档位；不是顶层字段，随 background 一起改 */
   readonly frost: readonly BackgroundFrost[];
+  readonly imageRadius: readonly StyleConfiguration["imageRadius"][];
+  readonly imageShadow: readonly StyleConfiguration["imageShadow"][];
 }
 
 export interface StyleSystemState {
@@ -113,15 +117,15 @@ export interface ResolvedStyle {
 }
 
 export interface StyleSystem {
-  catalog(state?: StyleSystemState): readonly ThemeCatalogItem[];
-  configurationOptions(): StyleConfigurationOptions;
-  hydrate(persisted: unknown): StyleSystemState;
-  read(state: StyleSystemState): StyleSystemSnapshot;
-  resolve(state: StyleSystemState, context: RenderContext): ResolvedStyle;
-  transition(
+  catalog: (state?: StyleSystemState) => readonly ThemeCatalogItem[];
+  configurationOptions: () => StyleConfigurationOptions;
+  hydrate: (persisted: unknown) => StyleSystemState;
+  read: (state: StyleSystemState) => StyleSystemSnapshot;
+  resolve: (state: StyleSystemState, context: RenderContext) => ResolvedStyle;
+  transition: (
     state: StyleSystemState,
     command: StyleSystemCommand
-  ): StyleSystemState;
+  ) => StyleSystemState;
 }
 
 export interface ThemeCatalogItem {

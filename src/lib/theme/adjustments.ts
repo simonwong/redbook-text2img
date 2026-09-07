@@ -4,7 +4,7 @@
  */
 
 import { ensureAccentContrast } from "./accent";
-import { applyCanvasConfiguration } from "./canvas";
+import { applyCanvasConfiguration, canvasTone } from "./canvas";
 import { type CardLayout, resolveCardLayout } from "./card";
 import { defaultFontId, getFontFamily } from "./fonts";
 import { type FrostLayers, resolveFrostLayers } from "./frost";
@@ -30,17 +30,17 @@ interface DensityValues {
 
 const densityValues = (d: Density): DensityValues => ({
   baseFontSize: typography.fontSize[d],
+  headingGap: spacing.headingGap[d],
   lineHeight: typography.lineHeight[d],
   padding: spacing.padding[d],
   paragraphGap: spacing.paragraphGap[d],
-  headingGap: spacing.headingGap[d],
 });
 
 export const densityPresets: Record<Density, DensityValues> = {
   compact: densityValues("compact"),
-  snug: densityValues("snug"),
   normal: densityValues("normal"),
   relaxed: densityValues("relaxed"),
+  snug: densityValues("snug"),
   spacious: densityValues("spacious"),
 };
 
@@ -57,6 +57,8 @@ export const defaultAdjustments: StyleAdjustments = {
   coverLayout: "center-poster",
   density: "normal",
   fontId: defaultFontId,
+  imageRadius: "small",
+  imageShadow: "light",
 };
 
 /**
@@ -81,7 +83,7 @@ export function applyAdjustments(
 ): AdjustedStyle {
   const density = densityPresets[adjustments.density];
   const fontFamily = getFontFamily(adjustments.fontId);
-  const baseFontSize = density.baseFontSize;
+  const { baseFontSize } = density;
   const canvasStyle = applyCanvasConfiguration(
     baseStyle,
     adjustments.background
@@ -94,30 +96,45 @@ export function applyAdjustments(
     adjustments.background
   );
   const frost = resolveFrostLayers(adjustments.background);
+  const shadowColor =
+    canvasTone(adjustments.background) === "dark"
+      ? "203, 213, 225"
+      : "27, 37, 64";
+  const image = {
+    borderRadius: { large: "20px", none: "0px", small: "8px" }[
+      adjustments.imageRadius
+    ],
+    boxShadow: {
+      light: `0 2px 8px rgba(${shadowColor}, 0.12)`,
+      none: "none",
+      strong: `0 6px 20px rgba(${shadowColor}, 0.24)`,
+    }[adjustments.imageShadow],
+  };
 
   return {
     ...canvasStyle,
     accent,
     blockquote: { ...canvasStyle.blockquote, borderColor: accent },
+    bodyHeadingAlignment: adjustments.bodyHeadingAlignment,
+    card: resolveCardLayout(adjustments.aspectRatio, adjustments.cardFrame),
     emphasis: {
       ...canvasStyle.emphasis,
       bold: { color: accent, fontWeight: foundationWeight },
     },
+    fontFamily,
     heading: { ...canvasStyle.heading, fontWeight: foundationWeight },
+    image,
     link: { ...canvasStyle.link, color: accent },
     list: { ...canvasStyle.list, markerColor: accent },
+    spacing: {
+      headingGap: density.headingGap,
+      padding: density.padding,
+      paragraphGap: density.paragraphGap,
+    },
     typography: {
       baseFontSize,
       lineHeight: density.lineHeight,
     },
-    spacing: {
-      padding: density.padding,
-      paragraphGap: density.paragraphGap,
-      headingGap: density.headingGap,
-    },
-    fontFamily,
-    bodyHeadingAlignment: adjustments.bodyHeadingAlignment,
-    card: resolveCardLayout(adjustments.aspectRatio, adjustments.cardFrame),
     // 无磨砂时不带这个字段，渲染样式与没有磨砂功能时完全一致
     ...(frost ? { frost } : {}),
     headingScale: 1,
@@ -135,5 +152,6 @@ export type AdjustedStyle = FullStyle & {
   /** 图片背景磨砂两层；无磨砂时缺省 */
   frost?: FrostLayers;
   headingScale: number;
+  image: { borderRadius: string; boxShadow: string };
   letterSpacing: { body?: string; heading?: string };
 };

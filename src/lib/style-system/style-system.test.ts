@@ -40,7 +40,43 @@ const coverVerticalAlignments = {
   "top-left": "flex-start",
 } as const;
 
+const nonDefaultConfiguration = {
+  accentColor: "#123456",
+  aspectRatio: "1:1",
+  background: { color: "#abcdef", kind: "solid" },
+  bodyHeadingAlignment: "left",
+  cardFrame: "white",
+  coverLayout: "top-left",
+  density: "compact",
+  fontId: "mono",
+  imageRadius: "large",
+  imageShadow: "strong",
+} satisfies StyleConfiguration;
+
 describe("Style System Interface", () => {
+  it.each(Object.keys(nonDefaultConfiguration) as (keyof StyleConfiguration)[])(
+    "%s 非默认值产生覆盖且 hydrate 往返保留",
+    (field) => {
+      const initial = styleSystem.hydrate(undefined);
+      expect(Object.keys(nonDefaultConfiguration).sort()).toEqual(
+        Object.keys(styleSystem.read(initial).configuration).sort()
+      );
+      const value = nonDefaultConfiguration[field];
+      expect(value).not.toEqual(styleSystem.read(initial).configuration[field]);
+      const changed = styleSystem.transition(initial, {
+        patch: { [field]: value },
+        type: "update-configuration",
+      });
+      for (const state of [
+        changed,
+        styleSystem.hydrate(JSON.parse(JSON.stringify(changed))),
+      ]) {
+        expect(styleSystem.read(state).overridden[field]).toBe(true);
+        expect(styleSystem.read(state).configuration[field]).toEqual(value);
+      }
+    }
+  );
+
   it("列出 8 个稳定的内置主题", () => {
     expect(styleSystem.catalog().map((theme) => theme.id)).toEqual([
       "clean-light",
@@ -63,6 +99,8 @@ describe("Style System Interface", () => {
       density: ["compact", "snug", "normal", "relaxed", "spacious"],
       fontId: ["sans", "serif", "kai", "mono"],
       frost: ["none", "light", "medium", "strong"],
+      imageRadius: ["none", "small", "large"],
+      imageShadow: ["none", "light", "strong"],
     });
   });
 
@@ -136,6 +174,8 @@ describe("Style System Interface", () => {
         coverLayout: false,
         density: true,
         fontId: false,
+        imageRadius: false,
+        imageShadow: false,
       },
       overrides: { density: "compact" },
     });
@@ -164,6 +204,8 @@ describe("Style System Interface", () => {
         coverLayout: "center-poster",
         density: "normal",
         fontId: "serif",
+        imageRadius: "small",
+        imageShadow: "light",
       },
       overrides: { fontId: "serif" },
     });
@@ -222,8 +264,8 @@ describe("Style System Interface", () => {
     { kind: "preset", preset: "https://example.com/image.png" },
     { kind: "preset", preset: "linear-gradient(red, blue)" },
     // 旧版受控渐变/图案种类已下线，旧值一律丢弃
-    { kind: "gradient", gradient: "warm-light" },
-    { kind: "gradient", gradient: "https://example.com/x.css" },
+    { gradient: "warm-light", kind: "gradient" },
+    { gradient: "https://example.com/x.css", kind: "gradient" },
     { kind: "pattern", pattern: "dots" },
     {
       direction: "diagonal",
@@ -256,14 +298,15 @@ describe("Style System Interface", () => {
     ).not.toHaveProperty("background");
   });
 
-  it.each(
-    themeBackgrounds
-  )("主题 %s 的背景可由样式配置表达", (themeId, background) => {
-    expect(
-      styleSystem.read(styleSystem.hydrate({ currentThemeId: themeId }))
-        .configuration.background
-    ).toEqual(background);
-  });
+  it.each(themeBackgrounds)(
+    "主题 %s 的背景可由样式配置表达",
+    (themeId, background) => {
+      expect(
+        styleSystem.read(styleSystem.hydrate({ currentThemeId: themeId }))
+          .configuration.background
+      ).toEqual(background);
+    }
+  );
 
   it.each([
     {
@@ -344,7 +387,7 @@ describe("Style System Interface", () => {
       },
       type: "update-configuration",
     });
-    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+    const { styles } = styleSystem.resolve(state, { page: "body" });
 
     expect(styles.container.backgroundImage).toBe(
       "linear-gradient(90deg, #e0e7ff 0%, #fef3c7 100%)"
@@ -367,7 +410,7 @@ describe("Style System Interface", () => {
       },
       type: "update-configuration",
     });
-    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+    const { styles } = styleSystem.resolve(state, { page: "body" });
 
     expect(styles.p.color).toBe("#ffffff");
   });
@@ -383,7 +426,7 @@ describe("Style System Interface", () => {
       patch: { background: darkImage },
       type: "update-configuration",
     });
-    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+    const { styles } = styleSystem.resolve(state, { page: "body" });
 
     expect(styles.container.backgroundImage).toBe(
       `url("${darkImage.dataUrl}")`
@@ -418,7 +461,7 @@ describe("Style System Interface", () => {
         patch: { background },
         type: "update-configuration",
       });
-      const styles = styleSystem.resolve(state, { page: "body" }).styles;
+      const { styles } = styleSystem.resolve(state, { page: "body" });
 
       for (const style of Object.values(styles)) {
         if (typeof style !== "object" || style === null) {
@@ -446,7 +489,7 @@ describe("Style System Interface", () => {
       patch: { background: { color, kind: "solid" } },
       type: "update-configuration",
     });
-    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+    const { styles } = styleSystem.resolve(state, { page: "body" });
 
     expect(styles.container).toMatchObject({ backgroundColor: color });
     expect(styles.container.backgroundImage).toBeUndefined();
@@ -754,6 +797,8 @@ describe("Style System Interface", () => {
         coverLayout: "top-left",
         density: "compact",
         fontId: "serif",
+        imageRadius: "none",
+        imageShadow: "none",
       },
       state: {
         currentThemeId: "reading-mode",
@@ -787,6 +832,8 @@ describe("Style System Interface", () => {
         coverLayout: "top-left",
         density: "normal",
         fontId: "serif",
+        imageRadius: "none",
+        imageShadow: "none",
       },
       state: {
         currentThemeId: "reading-mode",
@@ -826,6 +873,8 @@ describe("Style System Interface", () => {
         coverLayout: "center-poster",
         density: "compact",
         fontId: "sans",
+        imageRadius: "small",
+        imageShadow: "light",
       },
       state: {
         currentThemeId: "clean-light",
@@ -858,6 +907,8 @@ describe("Style System Interface", () => {
         coverLayout: "top-left",
         density: "normal",
         fontId: "serif",
+        imageRadius: "none",
+        imageShadow: "none",
       },
       state: {
         currentThemeId: "reading-mode",
@@ -945,38 +996,44 @@ describe("Style System Interface", () => {
     ["center-poster", "center", "center", "center"],
     ["top-left", "flex-start", "flex-start", "left"],
     ["bottom-left", "flex-end", "flex-start", "left"],
-  ] as const)("封面版式 %s 不改变正文标题对齐", (coverLayout, vertical, horizontal, coverHeadingAlignment) => {
-    const state = styleSystem.transition(styleSystem.hydrate(undefined), {
-      patch: { coverLayout },
-      type: "update-configuration",
-    });
-    const body = styleSystem.resolve(state, { page: "body" }).styles;
-    const cover = styleSystem.resolve(state, { page: "cover" }).styles;
+  ] as const)(
+    "封面版式 %s 不改变正文标题对齐",
+    (coverLayout, vertical, horizontal, coverHeadingAlignment) => {
+      const state = styleSystem.transition(styleSystem.hydrate(undefined), {
+        patch: { coverLayout },
+        type: "update-configuration",
+      });
+      const body = styleSystem.resolve(state, { page: "body" }).styles;
+      const cover = styleSystem.resolve(state, { page: "cover" }).styles;
 
-    expect({
-      bodyHeadingAlignment: body.h1.textAlign,
-      coverHeadingAlignment: cover.h1.textAlign,
-      horizontal: cover.content.alignItems,
-      vertical: cover.content.justifyContent,
-    }).toEqual({
-      bodyHeadingAlignment: "center",
-      coverHeadingAlignment,
-      horizontal,
-      vertical,
-    });
-  });
+      expect({
+        bodyHeadingAlignment: body.h1.textAlign,
+        coverHeadingAlignment: cover.h1.textAlign,
+        horizontal: cover.content.alignItems,
+        vertical: cover.content.justifyContent,
+      }).toEqual({
+        bodyHeadingAlignment: "center",
+        coverHeadingAlignment,
+        horizontal,
+        vertical,
+      });
+    }
+  );
 
   it.each([
     ["clean-light", "normal", "16px"],
     ["trianglify-minimalist", "snug", "15px"],
-  ] as const)("主题 %s 由密度 %s 推导正文基础字号 %s", (themeId, density, fontSize) => {
-    const state = styleSystem.hydrate({ currentThemeId: themeId });
-    const snapshot = styleSystem.read(state);
-    const styles = styleSystem.resolve(state, { page: "body" }).styles;
+  ] as const)(
+    "主题 %s 由密度 %s 推导正文基础字号 %s",
+    (themeId, density, fontSize) => {
+      const state = styleSystem.hydrate({ currentThemeId: themeId });
+      const snapshot = styleSystem.read(state);
+      const { styles } = styleSystem.resolve(state, { page: "body" });
 
-    expect(snapshot.configuration.density).toBe(density);
-    expect(styles.container.fontSize).toBe(fontSize);
-  });
+      expect(snapshot.configuration.density).toBe(density);
+      expect(styles.container.fontSize).toBe(fontSize);
+    }
+  );
 
   it.each(styleSystem.configurationOptions().fontId)(
     "字体 %s 的 font-family 栈保留中文回退",
@@ -994,7 +1051,7 @@ describe("Style System Interface", () => {
 
   it.each(styleSystem.catalog())("解析内置主题 $id", (theme) => {
     const state = styleSystem.hydrate({ currentThemeId: theme.id });
-    const configuration = styleSystem.read(state).configuration;
+    const { configuration } = styleSystem.read(state);
     const body = styleSystem.resolve(state, { page: "body" });
     const cover = styleSystem.resolve(state, { page: "cover" });
     const expectedCoverVerticalAlign =
@@ -1288,7 +1345,10 @@ describe("强调色", () => {
     "在 $background 上把 $accentColor 调整为 $expected",
     ({ accentColor, background, expected }) => {
       const state = styleSystem.transition(styleSystem.hydrate(undefined), {
-        patch: { accentColor, background: { color: background, kind: "solid" } },
+        patch: {
+          accentColor,
+          background: { color: background, kind: "solid" },
+        },
         type: "update-configuration",
       });
       const applied = String(
@@ -1328,7 +1388,10 @@ describe("强调色", () => {
   it("强调色可识别、可单项恢复且不牵连其他字段", () => {
     const modified = styleSystem.transition(
       styleSystem.hydrate({ currentThemeId: "reading-mode" }),
-      { patch: { accentColor: "#E8604C", density: "compact" }, type: "update-configuration" }
+      {
+        patch: { accentColor: "#E8604C", density: "compact" },
+        type: "update-configuration",
+      }
     );
     const reset = styleSystem.transition(modified, {
       field: "accentColor",
@@ -1631,6 +1694,8 @@ describe("自定义主题", () => {
             coverLayout: "center-poster",
             density: "compact",
             fontId: "sans",
+            imageRadius: "small",
+            imageShadow: "light",
           },
           createdAt: 1,
           id: "custom-1",
@@ -1876,6 +1941,8 @@ describe("自定义主题", () => {
         coverLayout: "center-poster",
         density: "spacious",
         fontId: "kai",
+        imageRadius: "small",
+        imageShadow: "light",
       },
       createdAt: 0,
       id: "custom-1",

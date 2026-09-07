@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { type ChangeEvent, type CSSProperties, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
@@ -17,6 +17,7 @@ import { ConfigurationSegmentRow } from "./configuration-segment-row";
 import { CoverLayoutPicker } from "./cover-layout-picker";
 import { CustomThemeActions } from "./custom-theme-actions";
 import { FrostRow } from "./frost-row";
+import { ImageSettingsGroup } from "./image-settings-group";
 import { ResetThemeButton } from "./reset-theme-button";
 import { SettingsGroup } from "./settings-group";
 import { SettingsSection } from "./settings-section";
@@ -107,6 +108,51 @@ export const ConfiguratorContent = () => {
   const { signature, showPageNumber, setSignature, setShowPageNumber } =
     useWatermarkStore();
 
+  const resetBackground = useCallback(
+    () => resetConfigurationField("background"),
+    [resetConfigurationField]
+  );
+  const resetDensity = useCallback(
+    () => resetConfigurationField("density"),
+    [resetConfigurationField]
+  );
+  const resetHeading = useCallback(
+    () => resetConfigurationField("bodyHeadingAlignment"),
+    [resetConfigurationField]
+  );
+  const resetCover = useCallback(
+    () => resetConfigurationField("coverLayout"),
+    [resetConfigurationField]
+  );
+  const changeBackground = useCallback(
+    (background: BackgroundChoice) => updateConfiguration({ background }),
+    [updateConfiguration]
+  );
+  const changeDensity = useCallback(
+    (density: string) =>
+      updateConfiguration({
+        density: density as StyleConfiguration["density"],
+      }),
+    [updateConfiguration]
+  );
+  const changeHeading = useCallback(
+    (alignment: string) =>
+      updateConfiguration({
+        bodyHeadingAlignment:
+          alignment as StyleConfiguration["bodyHeadingAlignment"],
+      }),
+    [updateConfiguration]
+  );
+  const changeCover = useCallback(
+    (coverLayout: StyleConfiguration["coverLayout"]) =>
+      updateConfiguration({ coverLayout }),
+    [updateConfiguration]
+  );
+  const changeSignature = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => setSignature(event.target.value),
+    [setSignature]
+  );
+
   const { configuration, isModified, overridden, theme, themeConfiguration } =
     styleSystem.read({
       currentThemeId,
@@ -160,12 +206,12 @@ export const ConfiguratorContent = () => {
           isModified={overridden.background}
           label="背景"
           labelId={fieldLabelIds.background}
-          onReset={() => resetConfigurationField("background")}
+          onReset={resetBackground}
         >
           <BackgroundPicker
             labelledBy={fieldLabelIds.background}
-            onChange={(background) => updateConfiguration({ background })}
-            onResetToTheme={() => resetConfigurationField("background")}
+            onChange={changeBackground}
+            onResetToTheme={resetBackground}
             themeBackground={themeConfiguration.background}
             themePreviewStyle={backgroundPreview(themeConfiguration.background)}
             value={configuration.background}
@@ -197,15 +243,11 @@ export const ConfiguratorContent = () => {
           isModified={overridden.density}
           label="密度"
           labelId={fieldLabelIds.density}
-          onReset={() => resetConfigurationField("density")}
+          onReset={resetDensity}
         >
           <SegmentedControl
             labelledBy={fieldLabelIds.density}
-            onChange={(density) =>
-              updateConfiguration({
-                density: density as StyleConfiguration["density"],
-              })
-            }
+            onChange={changeDensity}
             options={densityOptions}
             value={configuration.density}
           />
@@ -219,21 +261,18 @@ export const ConfiguratorContent = () => {
         />
       </SettingsGroup>
 
+      <ImageSettingsGroup />
+
       <SettingsGroup headingId={sectionHeadingIds.bodyHeading} title="正文标题">
         <ConfigurationField
           isModified={overridden.bodyHeadingAlignment}
           label="标题对齐"
           labelId={fieldLabelIds.bodyHeadingAlignment}
-          onReset={() => resetConfigurationField("bodyHeadingAlignment")}
+          onReset={resetHeading}
         >
           <SegmentedControl
             labelledBy={fieldLabelIds.bodyHeadingAlignment}
-            onChange={(alignment) =>
-              updateConfiguration({
-                bodyHeadingAlignment:
-                  alignment as StyleConfiguration["bodyHeadingAlignment"],
-              })
-            }
+            onChange={changeHeading}
             options={bodyHeadingAlignmentOptions}
             value={configuration.bodyHeadingAlignment}
           />
@@ -245,21 +284,18 @@ export const ConfiguratorContent = () => {
           isModified={overridden.coverLayout}
           label="封面版式"
           labelId={fieldLabelIds.coverLayout}
-          onReset={() => resetConfigurationField("coverLayout")}
+          onReset={resetCover}
         >
           <CoverLayoutPicker
             labelledBy={fieldLabelIds.coverLayout}
-            onChange={(coverLayout) => updateConfiguration({ coverLayout })}
+            onChange={changeCover}
             value={configuration.coverLayout}
           />
         </ConfigurationField>
       </SettingsGroup>
 
       <SettingsGroup headingId={sectionHeadingIds.accent} title="颜色">
-        <AccentColorRow
-          label="强调色"
-          labelId={fieldLabelIds.accentColor}
-        />
+        <AccentColorRow label="强调色" labelId={fieldLabelIds.accentColor} />
       </SettingsGroup>
 
       <SettingsGroup headingId={sectionHeadingIds.cardMark} title="卡片标记">
@@ -268,7 +304,7 @@ export const ConfiguratorContent = () => {
         </Label>
         <Input
           id="card-signature"
-          onChange={(event) => setSignature(event.target.value)}
+          onChange={changeSignature}
           placeholder="署名，如 @你的小红书名"
           value={signature}
         />
