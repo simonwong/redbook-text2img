@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 import { EditorToolbar } from "./editor-toolbar";
+import { ImageOptionsRow } from "./image-options-row";
+import { useCursorLine } from "./use-cursor-line";
 import { useCursorSegment } from "./use-cursor-segment";
 
 const MarkdownEditor = dynamic(
@@ -29,7 +31,8 @@ interface EditorCardProps {
 export const EditorCard = ({ className }: EditorCardProps) => {
   const [editorView, setEditorView] = useState<EditorView | null>(null);
 
-  useCursorSegment(editorView);
+  const cursor = useCursorLine(editorView);
+  useCursorSegment(cursor);
 
   const handleEditorViewReady = useCallback((view: EditorView) => {
     setEditorView(view);
@@ -43,6 +46,7 @@ export const EditorCard = ({ className }: EditorCardProps) => {
       )}
     >
       <EditorToolbar editorView={editorView} />
+      <ImageOptionsRow editorView={editorView} line={cursor?.text ?? ""} />
       <div className="relative min-h-0 flex-1 overflow-hidden">
         <MarkdownEditor onEditorViewReady={handleEditorViewReady} />
         <div

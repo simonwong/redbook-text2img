@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { expect, type Page, test } from "@playwright/test";
 import JSZip from "jszip";
 
+const smallWidth = /width: 40%/;
 const radiusLabel = /^圆角/;
 const shadowLabel = /^阴影/;
 
@@ -394,4 +395,83 @@ test("图片设置随正文显隐，圆角阴影即时预览、导出并持久�
     "box-shadow",
     "rgba(27, 37, 64, 0.24) 0px 6px 20px 0px"
   );
+});
+
+test("图片行选项改写参数、更新布局并逐次撤销，离开即隐藏", async ({ page }) => {
+  await seed(page);
+  const editor = page.locator(".cm-content");
+  await editor.click();
+  await page.keyboard.press("ControlOrMeta+End");
+  await upload(page);
+  await editor.locator(".cm-line").filter({ hasText: "![内容图片]" }).click();
+  const options = page.getByRole("region", { name: "图片选项" });
+  await expect(options).toBeVisible();
+  await expect(
+    options.getByRole("radio", { exact: true, name: "居中" })
+  ).toBeChecked();
+  await expect(
+    options.getByRole("radio", { exact: true, name: "通栏" })
+  ).toBeChecked();
+  const original = await editor.innerText();
+  await options.getByText("靠左", { exact: true }).click();
+  const left = await editor.innerText();
+  await options.getByText("小", { exact: true }).click();
+  await expect(editor).toContainText("?align=left&size=s");
+  const figure = page.locator(".img-preview figure");
+  await expect(figure).toHaveCSS("justify-content", "flex-start");
+  const widthRatio = await figure.evaluate((element) => {
+    const container = element.firstElementChild;
+    if (!container) {
+      throw new Error("Image container missing");
+    }
+    return (
+      container.getBoundingClientRect().width /
+      element.getBoundingClientRect().width
+    );
+  });
+  expect(widthRatio).toBeCloseTo(0.4, 2);
+  expect(await redPixels(page, await download(page, "导出"))).toBeGreaterThan(
+    10_000
+  );
+  await expect(figure.locator(":scope > div")).toHaveAttribute(
+    "style",
+    smallWidth
+  );
+  await expect(
+    options.getByRole("radio", { exact: true, name: "小" })
+  ).toBeChecked();
+  await page.getByRole("button", { exact: true, name: "撤销" }).click();
+  await expect.poll(() => editor.innerText()).toBe(left);
+  await page.getByRole("button", { exact: true, name: "撤销" }).click();
+  await expect.poll(() => editor.innerText()).toBe(original);
+  await expect(figure).toHaveCSS("justify-content", "center");
+  await editor.click();
+  await page.keyboard.press("ControlOrMeta+Home");
+  await expect(options).toBeHidden();
+});
+
+test("窄屏图片选项可滚动、回显显式默认值并省略默认参数", async ({ page }) => {
+  await page.setViewportSize({ height: 844, width: 390 });
+  await seed(
+    page,
+    "正文\n\n![图](image:missing?align=center&size=full)\n\n结尾"
+  );
+  const editor = page.locator(".cm-content");
+  await editor.locator(".cm-line").filter({ hasText: "![图]" }).click();
+  const options = page.getByRole("region", { name: "图片选项" });
+  await expect(options).toBeVisible();
+  await expect(
+    options.getByRole("radio", { exact: true, name: "居中" })
+  ).toBeChecked();
+  await options.getByText("大", { exact: true }).click();
+  await expect(editor).toContainText("image:missing?size=l");
+  await options.getByText("通栏", { exact: true }).click();
+  await expect(editor).toContainText("![图](image:missing)");
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth)
+  ).toBeLessThanOrEqual(390);
+  const box = await options.boundingBox();
+  expect(box?.width).toBeLessThanOrEqual(390);
+  await editor.locator(".cm-line").filter({ hasText: "结尾" }).click();
+  await expect(options).toBeHidden();
 });

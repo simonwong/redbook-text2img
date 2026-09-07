@@ -86,7 +86,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
               p: (props) => (
                 <ImageParagraph
                   {...props}
-                  figureStyle={styles.figure}
+                  imageLayout={styles.imageLayout}
                   style={styles.p}
                 />
               ),

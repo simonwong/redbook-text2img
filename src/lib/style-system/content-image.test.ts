@@ -152,3 +152,40 @@ describe("图片圆角与阴影", () => {
     }
   });
 });
+
+describe("逐图布局", () => {
+  it.each([
+    ["left", "flex-start"],
+    ["center", "center"],
+    ["right", "flex-end"],
+  ] as const)("%s 对齐与四档尺寸在正文和封面生效", (align, justifyContent) => {
+    for (const page of ["body", "cover"] as const) {
+      const { styles } = styleSystem.resolve(styleSystem.hydrate(undefined), {
+        page,
+      });
+      for (const [size, width] of [
+        ["s", "40%"],
+        ["m", "60%"],
+        ["l", "80%"],
+        ["full", "100%"],
+      ] as const) {
+        const layout = styles.imageLayout[align][size];
+        expect(layout.figure).toMatchObject({
+          display: "flex",
+          justifyContent,
+          width: "100%",
+        });
+        expect(layout.container).toMatchObject({
+          display: "flex",
+          justifyContent,
+          width,
+        });
+        expect(styles.img).toMatchObject({
+          height: "auto",
+          maxWidth: "100%",
+          width: "auto",
+        });
+      }
+    }
+  });
+});

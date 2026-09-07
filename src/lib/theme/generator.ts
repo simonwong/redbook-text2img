@@ -4,6 +4,7 @@
  */
 
 import type { Properties as CSSProperties } from "csstype";
+import type { ContentImageReference } from "../image-reference";
 import type { AdjustedStyle } from "./adjustments";
 import type { CardStyle } from "./card";
 import type { FrostLayers } from "./frost";
@@ -33,6 +34,13 @@ export interface GeneratedStyles {
   h4: CSSProperties;
   h5: CSSProperties;
   h6: CSSProperties;
+  imageLayout: Record<
+    ContentImageReference["align"],
+    Record<
+      ContentImageReference["size"],
+      { figure: CSSProperties; container: CSSProperties }
+    >
+  >;
   img: CSSProperties;
   innerContainer: CSSProperties;
   li: CSSProperties;
@@ -41,6 +49,27 @@ export interface GeneratedStyles {
   pre: CSSProperties;
   strong: CSSProperties;
   ul: CSSProperties;
+}
+
+function imageSizes(
+  justifyContent: CSSProperties["justifyContent"],
+  figure: CSSProperties
+) {
+  const layout = (width: string) => ({
+    container: {
+      display: "flex",
+      justifyContent,
+      minWidth: 0,
+      width,
+    } satisfies CSSProperties,
+    figure: { ...figure, justifyContent },
+  });
+  return {
+    full: layout("100%"),
+    l: layout("80%"),
+    m: layout("60%"),
+    s: layout("40%"),
+  };
 }
 
 /** 封面图样式覆盖选项 */
@@ -163,15 +192,21 @@ export function generateStyles(
     width: "100%",
   });
 
+  const figure: CSSProperties = {
+    display: "flex",
+    flexShrink: 0,
+    justifyContent: "center",
+    margin: 0,
+    marginBottom: `${paragraphGap / baseFontSize}em`,
+    width: "100%",
+  };
   return {
     card: card.card,
-    figure: {
-      display: "flex",
-      flexShrink: 0,
-      justifyContent: "center",
-      margin: 0,
-      marginBottom: `${paragraphGap / baseFontSize}em`,
-      width: "100%",
+    figure,
+    imageLayout: {
+      center: imageSizes("center", figure),
+      left: imageSizes("flex-start", figure),
+      right: imageSizes("flex-end", figure),
     },
     img: {
       ...style.image,
