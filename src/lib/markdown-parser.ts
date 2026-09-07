@@ -1,12 +1,16 @@
+import { imageReference } from "./image-reference";
+
 const SEPARATOR_PATTERN = /^-{3,}$/;
 const H1_PATTERN = /^#\s+(.+)$/m;
 
 export interface ImageSegment {
-  id: string;
-  title: string;
   content: string;
-  isFirstImage: boolean;
+  id: string;
+  image: { alt: string; source: string } | null;
   isCover: boolean;
+  isFirstImage: boolean;
+  isImagePage: boolean;
+  title: string;
   type: "content" | "separator";
 }
 
@@ -15,11 +19,13 @@ const createSegment = (
   segmentId: number,
   type: "content" | "separator"
 ): ImageSegment => ({
-  id: `segment-${segmentId}`,
-  title: `图片 ${segmentId}`,
   content: "",
-  isFirstImage: false,
+  id: `segment-${segmentId}`,
+  image: null,
   isCover: false,
+  isFirstImage: false,
+  isImagePage: false,
+  title: `图片 ${segmentId}`,
   type,
 });
 
@@ -68,12 +74,21 @@ const handleContentLine = (
 // 辅助函数：标记首图并提取标题
 const processSegmentTitles = (segments: ImageSegment[]): void => {
   for (const segment of segments) {
-    const hasH1 = segment.content.trim().startsWith("# ");
+    const lines = segment.content.split("\n").filter((line) => line.trim());
+    const image = lines.length === 1 ? imageReference.single(lines[0]) : null;
+    segment.image = image ? { alt: image.alt, source: image.source } : null;
+    segment.isImagePage = Boolean(image);
+    if (segment.isImagePage) {
+      segment.title = "图片页";
+    }
+    const firstText =
+      lines.find((line) => !imageReference.single(line))?.trim() ?? "";
+    const hasH1 = firstText.startsWith("# ");
     segment.isFirstImage = hasH1;
     segment.isCover = hasH1; // 包含 # 一级标题的视为封面
 
     if (hasH1) {
-      const h1Match = segment.content.match(H1_PATTERN);
+      const h1Match = firstText.match(H1_PATTERN);
       if (h1Match) {
         segment.title = h1Match[1].trim();
       }

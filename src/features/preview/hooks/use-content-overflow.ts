@@ -43,7 +43,12 @@ export function useContentOverflow(
         root.offsetWidth > 0 ? rootRect.width / root.offsetWidth : 1;
       const cutOffset =
         (el.getBoundingClientRect().bottom - rootRect.top) / scale;
-      setOverflow({ cutOffset, isOverflowing });
+      setOverflow((current) =>
+        current.cutOffset === cutOffset &&
+        current.isOverflowing === isOverflowing
+          ? current
+          : { cutOffset, isOverflowing }
+      );
     };
     measure();
     el.addEventListener("load", measure, true);

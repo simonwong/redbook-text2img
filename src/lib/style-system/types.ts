@@ -95,7 +95,7 @@ export interface StyleSystemSnapshot {
 }
 
 export interface RenderContext {
-  readonly page: "body" | "cover";
+  readonly page: "body" | "cover" | "image";
 }
 
 export interface RenderHeader {

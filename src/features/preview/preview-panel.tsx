@@ -116,9 +116,9 @@ export const PreviewPanel = ({
   );
   const cardRadius = String(card.frame?.borderRadius ?? container.borderRadius);
 
-  const imageRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const previewAreaRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const previewAreaRef = useRef<HTMLDivElement | null>(null);
   const scale = usePreviewScale(previewAreaRef, card.width, card.height);
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
@@ -132,6 +132,7 @@ export const PreviewPanel = ({
 
   const handleExportCurrent = useCallback(async () => {
     const element = imageRef.current;
+    // biome-ignore lint/suspicious/noUnnecessaryConditions: React may clear the DOM ref before export.
     if (!element) {
       return;
     }
@@ -155,15 +156,17 @@ export const PreviewPanel = ({
       const total = segments.length;
       const zip = new JSZip();
 
-      for (let i = 0; i < total; i++) {
+      for (let i = 0; i < total; i += 1) {
         setExportProgress({ current: i + 1, total });
         setActiveSegmentIndex(i);
+        // biome-ignore lint/performance/noAwaitInLoops: Each export needs the current page DOM before advancing.
         await new Promise<void>((resolve) => {
           requestAnimationFrame(() => {
             requestAnimationFrame(() => resolve());
           });
         });
         const el = imageRef.current;
+        // biome-ignore lint/suspicious/noUnnecessaryConditions: React assigns this DOM ref after rendering the selected page.
         if (el) {
           const blob = await generateImageBlob(el);
           zip.file(`${title}-${i + 1}.png`, blob);
@@ -278,7 +281,7 @@ export const PreviewPanel = ({
                   onDone={clearExportSuccess}
                   visible={exportSuccess}
                 />
-                {activeSegment && (
+                {activeSegment ? (
                   <ImagePreview
                     contentRef={contentRef}
                     pageNumber={{
@@ -288,9 +291,9 @@ export const PreviewPanel = ({
                     ref={imageRef}
                     segment={activeSegment}
                   />
-                )}
+                ) : null}
                 {/* 裁切线贴着内容区底边，在缩放层内随卡片缩放，但是导出节点的兄弟，绝不进导出图 */}
-                {overflow.isOverflowing ? (
+                {overflow.isOverflowing && !activeSegment?.isImagePage ? (
                   <OverflowCutLine top={overflow.cutOffset} />
                 ) : null}
               </div>

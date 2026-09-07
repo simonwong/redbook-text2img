@@ -41,6 +41,8 @@ export interface GeneratedStyles {
       { figure: CSSProperties; container: CSSProperties }
     >
   >;
+  imagePage: CSSProperties;
+  imagePageFooter: CSSProperties;
   img: CSSProperties;
   innerContainer: CSSProperties;
   li: CSSProperties;
@@ -207,6 +209,23 @@ export function generateStyles(
       center: imageSizes("center", figure),
       left: imageSizes("flex-start", figure),
       right: imageSizes("flex-end", figure),
+    },
+    imagePage: {
+      borderRadius: 0,
+      boxShadow: "none",
+      display: "block",
+      height: "100%",
+      objectFit: "cover",
+      objectPosition: "center",
+      width: "100%",
+    },
+    imagePageFooter: {
+      bottom: "16px",
+      color: "#ffffff",
+      left: "16px",
+      position: "absolute",
+      right: "16px",
+      textShadow: "0 1px 3px rgba(0, 0, 0, 0.6)",
     },
     img: {
       ...style.image,

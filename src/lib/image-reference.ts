@@ -79,4 +79,23 @@ export const imageReference = {
     ];
   },
   parse,
+  single(markdown: string) {
+    const tree = fromMarkdown(markdown);
+    const [paragraph] = tree.children;
+    if (
+      tree.children.length !== 1 ||
+      paragraph?.type !== "paragraph" ||
+      paragraph.children.length !== 1
+    ) {
+      return null;
+    }
+    const [image] = paragraph.children;
+    if (image.type !== "image") {
+      return null;
+    }
+    const reference = parse(image.url);
+    return reference
+      ? { alt: image.alt ?? "", reference, source: image.url }
+      : null;
+  },
 };

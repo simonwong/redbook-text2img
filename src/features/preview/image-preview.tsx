@@ -33,13 +33,17 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   const { currentThemeId, customThemes, overrides } = useContentThemeStore();
   const { signature, showPageNumber } = useWatermarkStore();
 
+  const textPage = segment.isCover ? "cover" : "body";
+  const page = segment.isImagePage ? "image" : textPage;
+  const pageImage = segment.image;
+
   const { styles, headerBar } = useMemo(
     () =>
       styleSystem.resolve(
         { currentThemeId, customThemes, overrides },
-        { page: segment.isCover ? "cover" : "body" }
+        { page }
       ),
-    [currentThemeId, customThemes, overrides, segment.isCover]
+    [currentThemeId, customThemes, overrides, page]
   );
 
   // 页码只在非封面页显示（封面为第 1 张，计数含封面）；署名在所有卡片显示
@@ -47,7 +51,20 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
     showPageNumber && !segment.isCover ? pageNumber : undefined;
 
   // 白边（cardFrame = white）是导出内容的一部分：导出节点变为白边层，卡片画布退到内层
-  const cardBody = (
+  const cardBody = pageImage ? (
+    <>
+      <ContentImage
+        alt={pageImage.alt}
+        src={pageImage.source}
+        style={styles.imagePage}
+      />
+      <CardWatermark
+        pageNumber={watermarkPage}
+        signature={signature.trim()}
+        style={styles.imagePageFooter}
+      />
+    </>
+  ) : (
     <>
       {headerBar ? <HeaderBar config={headerBar} /> : null}
       <div
@@ -111,15 +128,16 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   );
 
   // 磨砂：模糊图片层与蒙层铺在卡片容器内、内容之下，全部属于导出节点
-  const canvasBody = styles.frost ? (
-    <>
-      <div style={styles.frost.blurLayer} />
-      <div style={styles.frost.veil} />
-      <div style={styles.frost.contentLayer}>{cardBody}</div>
-    </>
-  ) : (
-    cardBody
-  );
+  const canvasBody =
+    styles.frost && !pageImage ? (
+      <>
+        <div style={styles.frost.blurLayer} />
+        <div style={styles.frost.veil} />
+        <div style={styles.frost.contentLayer}>{cardBody}</div>
+      </>
+    ) : (
+      cardBody
+    );
 
   if (styles.card.frame) {
     return (

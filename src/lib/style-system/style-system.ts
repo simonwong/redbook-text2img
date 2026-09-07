@@ -643,7 +643,7 @@ const resolve = (
         };
 
   return {
-    headerBar: foundation.headerBar,
+    headerBar: context.page === "image" ? undefined : foundation.headerBar,
     styles: generateStyles(
       adjustedStyle,
       context.page === "cover"

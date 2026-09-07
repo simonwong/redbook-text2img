@@ -189,3 +189,44 @@ describe("逐图布局", () => {
     }
   });
 });
+
+describe("图片页渲染样式", () => {
+  it.each(["3:4", "1:1", "9:16"] as const)(
+    "%s 图片铺满原卡片，保留白边和圆角",
+    (aspectRatio) => {
+      for (const cardFrame of ["none", "white"] as const) {
+        const state = styleSystem.hydrate({
+          currentThemeId: "apple-notes",
+          overrides: {
+            aspectRatio,
+            cardFrame,
+            imageRadius: "large",
+            imageShadow: "strong",
+          },
+        });
+        const body = styleSystem.resolve(state, { page: "body" });
+        const image = styleSystem.resolve(state, { page: "image" });
+        expect(image.headerBar).toBeUndefined();
+        expect(image.styles.card).toEqual(body.styles.card);
+        expect(image.styles.container).toEqual(body.styles.container);
+        expect(image.styles.imagePage).toEqual({
+          borderRadius: 0,
+          boxShadow: "none",
+          display: "block",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: "center",
+          width: "100%",
+        });
+        expect(image.styles.imagePageFooter).toMatchObject({
+          bottom: "16px",
+          color: "#ffffff",
+          left: "16px",
+          position: "absolute",
+          right: "16px",
+          textShadow: "0 1px 3px rgba(0, 0, 0, 0.6)",
+        });
+      }
+    }
+  );
+});
