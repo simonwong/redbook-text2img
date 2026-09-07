@@ -94,9 +94,14 @@ export function insertHorizontalRule(view: EditorView) {
   view.focus();
 }
 
-export function insertContentImage(view: EditorView, source: string) {
-  const { from, to } = view.state.selection.main;
-  const insert = `\n\n![内容图片](${source})\n\n`;
+export function insertContentImage(
+  view: EditorView,
+  source: string | string[],
+  range: { from: number; to: number } = view.state.selection.main
+) {
+  const { from, to } = range;
+  const sources = Array.isArray(source) ? source : [source];
+  const insert = `\n\n${sources.map((url) => `![内容图片](${url})`).join("\n\n")}\n\n`;
   view.dispatch({
     annotations: isolateHistory.of("full"),
     changes: { from, insert, to },

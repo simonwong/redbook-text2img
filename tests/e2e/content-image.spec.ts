@@ -37,8 +37,9 @@ async function upload(page: Page, transparent = false, portrait = false) {
     },
     { alpha: transparent, tall: portrait }
   );
-  const chooser = page.waitForEvent("filechooser");
   await page.getByRole("button", { exact: true, name: "插入图片" }).click();
+  const chooser = page.waitForEvent("filechooser");
+  await page.getByRole("button", { exact: true, name: "选择本地文件" }).click();
   await (await chooser).setFiles({
     buffer: Buffer.from(data, "base64"),
     mimeType: "image/png",

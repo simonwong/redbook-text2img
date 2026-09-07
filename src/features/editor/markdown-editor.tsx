@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/performance/noJsxPropsBind: React Compiler caches event handlers. */
 "use client";
 
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
@@ -6,7 +7,9 @@ import { EditorView } from "@codemirror/view";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import CodeMirror from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
+import { useMemo, useState } from "react";
 import { useMarkdownContentStore } from "@/store/markdownContent";
+import { contentImageEvents } from "./image-input";
 
 const editorClassName = [
   "h-full",
@@ -32,12 +35,22 @@ export function MarkdownEditor({
   placeholder,
   onEditorViewReady,
 }: MarkdownEditorProps) {
+  const [imageError, setImageError] = useState("");
+  const imageEvents = useMemo(() => contentImageEvents(setImageError), []);
   const { content, setContent } = useMarkdownContentStore();
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
 
   return (
     <div className="h-full overflow-hidden">
+      {imageError ? (
+        <p
+          className="pointer-events-none fixed top-20 right-4 left-4 z-50 rounded-lg border bg-background p-3 text-sm shadow-md"
+          role="alert"
+        >
+          {imageError}
+        </p>
+      ) : null}
       <CodeMirror
         basicSetup={{
           foldGutter: false,
@@ -49,6 +62,7 @@ export function MarkdownEditor({
           markdown({ base: markdownLanguage, codeLanguages: languages }),
           EditorView.lineWrapping,
           editorLayoutTheme,
+          imageEvents,
         ]}
         onChange={setContent}
         onCreateEditor={(view) => onEditorViewReady?.(view)}
