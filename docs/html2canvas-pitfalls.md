@@ -94,3 +94,9 @@ html2canvas-pro 2.4.1 的 `renderRadialGradient` 把椭圆渐变先画进一张 
 主题背景的光晕几乎都是这种写法，1:1 与 9:16 全部中招，3:4 上蜜光暖阳、樱花奶霜也会。仓库用 `patches/html2canvas-pro@2.4.1.patch` 修正了算法：以横向半径 `rx` 画圆形渐变，离屏画布取 `2rx × 2ry` 的完整包围盒再按 `ry / rx` 缩放，并先用最后一个色标填满整个区域（浏览器就是这样把径向渐变延伸到结束形状之外的）。
 
 升级 html2canvas-pro 时先确认上游是否已修，未修则重新生成补丁；`tests/e2e/theme-system-release.spec.ts` 的 9:16 接缝测试会在补丁失效时失败。
+
+## 9. 内容图片导出前必须等解码与布局
+
+html2canvas-pro 等待图片像素加载，不保证预览 DOM 已按图片尺寸完成布局。`use-image-export.ts` 在单张与批量共用的绘制入口等待资产占位更新，再 await 所有 img.decode()。不要把等待移到某个按钮或仅保留批量切页的两帧等待。
+
+react-markdown 的默认 URL 过滤会清空 `image:`，内容图片需显式放行该协议。仅含图片的 p 必须替换为全宽 figure，否则收缩段落无法按内容区居中；图片使用 auto 宽高与 max-width/max-height 双约束。外链图片没有 CORS 时可能被静默跳过，因此必须先导入资产库；缺失资产以文字占位导出。

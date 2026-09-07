@@ -1,12 +1,21 @@
 "use client";
 
 import { useMemo } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import type { ImageSegment } from "@/lib/markdown-parser";
 import { styleSystem } from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
 import { CardWatermark } from "./card-watermark";
+import { ContentImage } from "./content-image";
 import { HeaderBar } from "./header-bar";
+import { ImageParagraph } from "./image-paragraph";
+
+function transformImageUrl(url: string, key: string): string {
+  if (key === "src") {
+    return url.startsWith("image:") ? url : "";
+  }
+  return defaultUrlTransform(url);
+}
 
 interface ImagePreviewProps {
   contentRef?: React.Ref<HTMLDivElement>;
@@ -40,7 +49,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   // 白边（cardFrame = white）是导出内容的一部分：导出节点变为白边层，卡片画布退到内层
   const cardBody = (
     <>
-      {headerBar && <HeaderBar config={headerBar} />}
+      {headerBar ? <HeaderBar config={headerBar} /> : null}
       <div
         style={{
           ...styles.innerContainer,
@@ -50,28 +59,14 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
         <div ref={contentRef} style={styles.content}>
           <ReactMarkdown
             components={{
-              h1: ({ children }) => <h1 style={styles.h1}>{children}</h1>,
-              h2: ({ children }) => <h2 style={styles.h2}>{children}</h2>,
-              h3: ({ children }) => <h3 style={styles.h3}>{children}</h3>,
-              h4: ({ children }) => <h4 style={styles.h4}>{children}</h4>,
-              h5: ({ children }) => <h5 style={styles.h5}>{children}</h5>,
-              h6: ({ children }) => <h6 style={styles.h6}>{children}</h6>,
-              p: ({ children }) => <p style={styles.p}>{children}</p>,
-              strong: ({ children }) => (
-                <strong style={styles.strong}>{children}</strong>
-              ),
-              em: ({ children }) => <em style={styles.em}>{children}</em>,
-              ul: ({ children }) => <ul style={styles.ul}>{children}</ul>,
-              li: ({ children }) => <li style={styles.li}>{children}</li>,
-              blockquote: ({ children }) => (
-                <blockquote style={styles.blockquote}>{children}</blockquote>
-              ),
               a: ({ children, href }) => (
                 <a href={href} style={styles.a}>
                   {children}
                 </a>
               ),
-              pre: ({ children }) => <pre style={styles.pre}>{children}</pre>,
+              blockquote: ({ children }) => (
+                <blockquote style={styles.blockquote}>{children}</blockquote>
+              ),
               code: ({ className, children }) => {
                 const isCodeBlock = className?.includes("language-");
                 if (isCodeBlock) {
@@ -79,7 +74,29 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
                 }
                 return <code style={styles.code}>{children}</code>;
               },
+              em: ({ children }) => <em style={styles.em}>{children}</em>,
+              h1: ({ children }) => <h1 style={styles.h1}>{children}</h1>,
+              h2: ({ children }) => <h2 style={styles.h2}>{children}</h2>,
+              h3: ({ children }) => <h3 style={styles.h3}>{children}</h3>,
+              h4: ({ children }) => <h4 style={styles.h4}>{children}</h4>,
+              h5: ({ children }) => <h5 style={styles.h5}>{children}</h5>,
+              h6: ({ children }) => <h6 style={styles.h6}>{children}</h6>,
+              img: (props) => <ContentImage {...props} style={styles.img} />,
+              li: ({ children }) => <li style={styles.li}>{children}</li>,
+              p: (props) => (
+                <ImageParagraph
+                  {...props}
+                  figureStyle={styles.figure}
+                  style={styles.p}
+                />
+              ),
+              pre: ({ children }) => <pre style={styles.pre}>{children}</pre>,
+              strong: ({ children }) => (
+                <strong style={styles.strong}>{children}</strong>
+              ),
+              ul: ({ children }) => <ul style={styles.ul}>{children}</ul>,
             }}
+            urlTransform={transformImageUrl}
           >
             {segment.content}
           </ReactMarkdown>

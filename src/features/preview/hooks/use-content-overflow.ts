@@ -35,13 +35,24 @@ export function useContentOverflow(
       setOverflow(noOverflow);
       return;
     }
-    const isOverflowing =
-      el.scrollHeight - el.clientHeight > OVERFLOW_TOLERANCE;
-    const rootRect = root.getBoundingClientRect();
-    const scale = root.offsetWidth > 0 ? rootRect.width / root.offsetWidth : 1;
-    const cutOffset =
-      (el.getBoundingClientRect().bottom - rootRect.top) / scale;
-    setOverflow({ cutOffset, isOverflowing });
+    const measure = () => {
+      const isOverflowing =
+        el.scrollHeight - el.clientHeight > OVERFLOW_TOLERANCE;
+      const rootRect = root.getBoundingClientRect();
+      const scale =
+        root.offsetWidth > 0 ? rootRect.width / root.offsetWidth : 1;
+      const cutOffset =
+        (el.getBoundingClientRect().bottom - rootRect.top) / scale;
+      setOverflow({ cutOffset, isOverflowing });
+    };
+    measure();
+    el.addEventListener("load", measure, true);
+    const observer = new MutationObserver(measure);
+    observer.observe(el, { childList: true, subtree: true });
+    return () => {
+      el.removeEventListener("load", measure, true);
+      observer.disconnect();
+    };
   }, [
     content,
     currentThemeId,

@@ -20,6 +20,7 @@ export interface GeneratedStyles {
   container: CSSProperties;
   content: CSSProperties;
   em: CSSProperties;
+  figure: CSSProperties;
   footer: CSSProperties;
   /**
    * 图片背景磨砂两层：模糊图片层与纯色蒙层，都铺在容器内、内容下方。
@@ -32,6 +33,7 @@ export interface GeneratedStyles {
   h4: CSSProperties;
   h5: CSSProperties;
   h6: CSSProperties;
+  img: CSSProperties;
   innerContainer: CSSProperties;
   li: CSSProperties;
   mark: CSSProperties;
@@ -134,10 +136,10 @@ export function generateStyles(
   // 列表符号由 `.img-preview ul li::before` 绘制，只能经自定义属性拿到强调色；
   // 导出前 getComputedStyle 已把它解析成实色，html2canvas-pro 照常还原
   const listStyle: CSSProperties & Record<"--marker-color", string> = {
+    "--marker-color": style.list.markerColor,
+    color: style.list.color,
     marginBottom: `${paragraphGap / baseFontSize}em`,
     paddingLeft: 0,
-    color: style.list.color,
-    "--marker-color": style.list.markerColor,
   };
 
   // Helper for heading styles
@@ -148,14 +150,14 @@ export function generateStyles(
     isDisplay = false,
     extraScale = 1
   ): CSSProperties => ({
-    fontSize: `${scale * (isDisplay ? headingScale : 1) * extraScale}em`,
-    lineHeight: 1.2,
-    fontWeight: style.heading.fontWeight,
-    marginBottom: `${headingGap / baseFontSize}em`,
     // 展示级标题（h1–h3）取强调色，h4 保持基础标题色
     color: isDisplay ? style.accent : style.heading.color,
-    textAlign: useHeadingAlignment ? effectiveHeadingAlignment : "left",
+    fontSize: `${scale * (isDisplay ? headingScale : 1) * extraScale}em`,
+    fontWeight: style.heading.fontWeight,
     letterSpacing: isDisplay ? letterSpacing.heading : undefined,
+    lineHeight: 1.2,
+    marginBottom: `${headingGap / baseFontSize}em`,
+    textAlign: useHeadingAlignment ? effectiveHeadingAlignment : "left",
     // 长标题换行时两行字数均衡（避免"8+1"式孤字尾行）
     textWrap: "balance",
     width: "100%",
@@ -163,44 +165,89 @@ export function generateStyles(
 
   return {
     card: card.card,
+    figure: {
+      display: "flex",
+      flexShrink: 0,
+      justifyContent: "center",
+      margin: 0,
+      marginBottom: `${paragraphGap / baseFontSize}em`,
+      width: "100%",
+    },
+    img: {
+      display: "block",
+      height: "auto",
+      maxHeight: `${card.card.height / 2}px`,
+      maxWidth: "100%",
+      width: "auto",
+    },
 
     ...(style.frost ? { frost: style.frost } : {}),
 
-    container: {
-      width: `${card.content.width}px`,
-      minWidth: `${card.content.width}px`,
-      height: `${card.content.height}px`,
-      minHeight: `${card.content.height}px`,
-      ...canvasBackground,
-      borderRadius: `${card.content.radius}px`,
-      overflow: "hidden",
-      fontFamily,
-      position: "relative",
-      fontSize: `${baseFontSize}px`,
-      boxSizing: "border-box",
+    a: {
+      color: style.link.color,
+      textDecoration: style.link.underline ? "underline" : "none",
     },
 
-    innerContainer: {
-      width: "100%",
-      height: "100%",
-      padding: `${padding}px`,
+    blockquote: {
+      backgroundColor: style.blockquote.background,
+      borderLeft: `3px solid ${style.blockquote.borderColor}`,
       boxSizing: "border-box",
-      display: "flex",
-      flexDirection: "column",
+      color: style.blockquote.textColor,
+      fontStyle: "italic",
+      marginBottom: `${paragraphGap / baseFontSize}em`,
+      paddingLeft: "1em",
+      width: "100%",
+      ...(style.blockquote.boxShadow && {
+        boxShadow: style.blockquote.boxShadow,
+      }),
+    },
+
+    code: {
+      backgroundColor: style.code.inline.background,
+      borderRadius: "0.25em",
+      color: style.code.inline.color,
+      display: "inline-block",
+      fontSize: "0.875em",
+      lineHeight: "inherit",
+      padding: "0.15em 0.4em",
+    },
+
+    container: {
+      height: `${card.content.height}px`,
+      minHeight: `${card.content.height}px`,
+      minWidth: `${card.content.width}px`,
+      width: `${card.content.width}px`,
+      ...canvasBackground,
+      borderRadius: `${card.content.radius}px`,
+      boxSizing: "border-box",
+      fontFamily,
+      fontSize: `${baseFontSize}px`,
+      overflow: "hidden",
+      position: "relative",
     },
 
     content: {
-      flex: 1,
-      minHeight: 0,
-      fontSize: "1em",
-      lineHeight,
-      color: style.paragraph.color,
-      wordBreak: "break-word",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: getJustifyContent(coverStyle?.contentVerticalAlign),
       alignItems: getAlignItems(coverStyle?.contentHorizontalAlign),
+      color: style.paragraph.color,
+      display: "flex",
+      flex: 1,
+      flexDirection: "column",
+      fontSize: "1em",
+      justifyContent: getJustifyContent(coverStyle?.contentVerticalAlign),
       letterSpacing: letterSpacing.body,
+      lineHeight,
+      minHeight: 0,
+      wordBreak: "break-word",
+    },
+
+    em: {
+      color: style.emphasis.italic.color,
+      fontStyle: "italic",
+    },
+
+    // 卡片底部水印颜色 token（布局在 CardWatermark 组件内）：主题斜体次要色，8 主题皆可读
+    footer: {
+      color: style.emphasis.italic.color,
     },
 
     // Headings: h1-h4 use heading alignment, h5-h6 always left
@@ -222,85 +269,55 @@ export function generateStyles(
       color: style.paragraph.color,
     },
 
-    p: {
+    innerContainer: {
+      boxSizing: "border-box",
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      padding: `${padding}px`,
+      width: "100%",
+    },
+
+    li: {
       fontSize: "1em",
       lineHeight,
-      marginBottom: `${paragraphGap / baseFontSize}em`,
-      color: style.paragraph.color,
-      textWrap: "pretty",
-      wordBreak: "break-word",
-    },
-
-    strong: {
-      fontWeight: style.emphasis.bold.fontWeight,
-      color: style.emphasis.bold.color,
-    },
-
-    em: {
-      fontStyle: "italic",
-      color: style.emphasis.italic.color,
+      marginBottom: `${paragraphGap / 2 / baseFontSize}em`,
     },
 
     mark: {
       backgroundColor: style.emphasis.highlight.background,
+      borderRadius: "0.2em",
       color: style.emphasis.highlight.color,
       padding: "0.1em 0.3em",
-      borderRadius: "0.2em",
     },
 
-    ul: listStyle,
-
-    li: {
-      marginBottom: `${paragraphGap / 2 / baseFontSize}em`,
+    p: {
+      color: style.paragraph.color,
       fontSize: "1em",
       lineHeight,
-    },
-
-    blockquote: {
-      width: "100%",
       marginBottom: `${paragraphGap / baseFontSize}em`,
-      paddingLeft: "1em",
-      borderLeft: `3px solid ${style.blockquote.borderColor}`,
-      backgroundColor: style.blockquote.background,
-      color: style.blockquote.textColor,
-      fontStyle: "italic",
-      boxSizing: "border-box",
-      ...(style.blockquote.boxShadow && {
-        boxShadow: style.blockquote.boxShadow,
-      }),
+      textWrap: "pretty",
+      wordBreak: "break-word",
     },
 
     pre: {
-      marginBottom: `${paragraphGap / baseFontSize}em`,
-      color: style.code.block.color,
       backgroundColor: style.code.block.background,
-      whiteSpace: "pre-wrap",
+      borderRadius: "0.4em",
+      color: style.code.block.color,
       fontSize: "0.875em",
       lineHeight: 1.5,
-      wordBreak: "break-word",
-      borderRadius: "0.4em",
+      marginBottom: `${paragraphGap / baseFontSize}em`,
       padding: "0.6em 0.8em",
+      whiteSpace: "pre-wrap",
       width: "100%",
+      wordBreak: "break-word",
     },
 
-    code: {
-      color: style.code.inline.color,
-      backgroundColor: style.code.inline.background,
-      fontSize: "0.875em",
-      padding: "0.15em 0.4em",
-      borderRadius: "0.25em",
-      display: "inline-block",
-      lineHeight: "inherit",
+    strong: {
+      color: style.emphasis.bold.color,
+      fontWeight: style.emphasis.bold.fontWeight,
     },
 
-    a: {
-      color: style.link.color,
-      textDecoration: style.link.underline ? "underline" : "none",
-    },
-
-    // 卡片底部水印颜色 token（布局在 CardWatermark 组件内）：主题斜体次要色，8 主题皆可读
-    footer: {
-      color: style.emphasis.italic.color,
-    },
+    ul: listStyle,
   };
 }

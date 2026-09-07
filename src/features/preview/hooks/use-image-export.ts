@@ -8,15 +8,38 @@ import { withCanvasFilterCompatibility } from "@/lib/export/canvas-filter";
 const exportScale = 3;
 
 const generateCanvas = async (element: HTMLElement) => {
+  await new Promise<void>((resolve, reject) => {
+    const observer = new MutationObserver(check);
+    const timeout = setTimeout(() => {
+      observer.disconnect();
+      reject(new Error("图片仍在加载，请稍后重试"));
+    }, 10_000);
+    function check() {
+      if (!element.querySelector('[data-image-loading="true"]')) {
+        observer.disconnect();
+        clearTimeout(timeout);
+        resolve();
+      }
+    }
+    observer.observe(element, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+    check();
+  });
+  await Promise.all(
+    Array.from(element.querySelectorAll("img"), (img) => img.decode())
+  );
   const { default: html2canvas } = await import("html2canvas-pro");
   // 磨砂用的 CSS filter 在导出链路上要补兼容（见 docs/html2canvas-pitfalls.md 第 7 条）
   const canvas = await withCanvasFilterCompatibility(exportScale, () =>
     html2canvas(element, {
       allowTaint: true,
       backgroundColor: null,
-      useCORS: true,
       logging: false,
       scale: exportScale,
+      useCORS: true,
     })
   );
 
@@ -77,8 +100,8 @@ export function useImageExport(title: string) {
   );
 
   return {
+    downloadZip,
     exportSingleImage,
     generateImageBlob,
-    downloadZip,
   };
 }

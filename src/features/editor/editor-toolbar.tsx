@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/performance/noJsxPropsBind: React Compiler caches event handlers. */
 "use client";
 
 import { undo } from "@codemirror/commands";
@@ -18,6 +19,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
 import { useMarkdownContentStore } from "@/store/markdownContent";
+import { InsertImageButton } from "./insert-image-button";
 import {
   insertHeading,
   insertHorizontalRule,
@@ -105,9 +107,10 @@ export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
             label="撤销"
             onClick={() => exec(undo)}
           />
+          <InsertImageButton editorView={editorView} />
           <TemplatePicker />
         </div>
-        {isChange && (
+        {Boolean(isChange) && (
           <Button onClick={resetContent} size="sm" variant="ghost">
             <HugeiconsIcon
               className="size-[13px]"

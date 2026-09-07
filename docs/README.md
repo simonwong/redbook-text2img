@@ -12,6 +12,8 @@
 - [`adr/0005-remove-floating-card-surface.md`](adr/0005-remove-floating-card-surface.md)：浮层卡布局。
 - [`adr/0006-card-frame-ratio-accent-frost-custom-themes.md`](adr/0006-card-frame-ratio-accent-frost-custom-themes.md)：卡片边框与比例、强调色、图片磨砂、系统字体扩充、自定义主题、扁平设置面板。
 
+- [`adr/0007-content-image-assets.md`](adr/0007-content-image-assets.md)：内容图片入库引用、会话缓存、预览与导出一致性。
+
 ADR 记录当时决策；后置 ADR 明示取代的条款优先。`CONTEXT.md` 是当前术语的单一来源。
 
 ## 任务参考
