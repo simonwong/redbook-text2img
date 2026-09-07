@@ -97,8 +97,8 @@ test("清理列出差集、取消保留资产，确认删除后恢复引用显�
     .click();
   await page.getByRole("button", { exact: true, name: "确认清理" }).click();
   await expect(
-    page.getByRole("status").filter({ hasText: "已清理 1 张图片" })
-  ).toBeVisible();
+    page.getByRole("region", { exact: true, name: "图片" })
+  ).toHaveCount(0);
   await page.getByRole("button", { exact: true, name: "关闭样式设置" }).click();
   await edit(page, content);
   await expect(page.locator(".img-preview")).toContainText("图片未找到");
@@ -144,4 +144,40 @@ test("未导入占位随 PNG 导出，操作按钮不进入克隆画布", async 
       .locator(".img-preview")
       .getByRole("button", { exact: true, name: "导入" })
   ).toBeVisible();
+});
+
+test("图片分组随正文与资产库显隐，删引用后仅保留清理入口", async ({ page }) => {
+  await page.setViewportSize({ height: 1000, width: 1440 });
+  await open(page);
+  await edit(page, "正文");
+  await page.getByRole("button", { name: "设置样式" }).click();
+  const group = page.getByRole("region", { exact: true, name: "图片" });
+  const cleanup = page.getByRole("button", {
+    exact: true,
+    name: "清理未使用图片",
+  });
+  await expect(group).toHaveCount(0);
+  await expect(cleanup).toHaveCount(0);
+  await fixture(page);
+  await edit(page, `正文\n\n![远程配图](${remote})`);
+  await expect(group).toBeVisible();
+  await expect(cleanup).toHaveCount(0);
+  await page
+    .locator(".img-preview")
+    .getByRole("button", { exact: true, name: "导入" })
+    .click();
+  await expect(page.locator(".cm-content")).toContainText("image:");
+  await expect(
+    group.getByRole("button", { exact: true, name: "清理未使用图片" })
+  ).toBeVisible();
+  await expect(group.getByRole("group")).toHaveCount(2);
+  await edit(page, "正文");
+  await expect(group).toBeVisible();
+  await expect(group.getByRole("group")).toHaveCount(0);
+  await expect(group.getByRole("button")).toHaveCount(1);
+  await cleanup.click();
+  await expect(group.getByRole("status")).toContainText("发现 1 张");
+  await group.getByRole("button", { exact: true, name: "确认清理" }).click();
+  await expect(group).toHaveCount(0);
+  await expect(cleanup).toHaveCount(0);
 });

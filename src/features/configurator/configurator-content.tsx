@@ -12,7 +12,6 @@ import {
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
 import { AccentColorRow } from "./accent-color-row";
 import { BackgroundPicker } from "./background-picker";
-import { CleanImagesButton } from "./clean-images-button";
 import { ConfigurationField } from "./configuration-field";
 import { ConfigurationSegmentRow } from "./configuration-segment-row";
 import { CoverLayoutPicker } from "./cover-layout-picker";
@@ -263,7 +262,6 @@ export const ConfiguratorContent = () => {
       </SettingsGroup>
 
       <ImageSettingsGroup />
-      <CleanImagesButton />
 
       <SettingsGroup headingId={sectionHeadingIds.bodyHeading} title="正文标题">
         <ConfigurationField

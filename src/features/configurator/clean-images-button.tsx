@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { imageAssets } from "@/lib/image-assets/image-assets";
 import { unusedImageIds } from "@/lib/image-assets/markdown-images";
 import { useMarkdownContentStore } from "@/store/markdownContent";
@@ -50,14 +51,15 @@ export function CleanImagesButton() {
   const cancel = useCallback(() => setCandidates(null), []);
   return (
     <div className="space-y-2 text-ink-2 text-xs">
-      <button
-        className="min-h-9 rounded border px-3 disabled:opacity-50"
+      <Button
         disabled={busy}
         onClick={inspect}
+        size="sm"
         type="button"
+        variant="ghost"
       >
         清理未使用图片
-      </button>
+      </Button>
       {candidates !== null && (
         <div className="space-y-2">
           <p role="status">
@@ -65,22 +67,24 @@ export function CleanImagesButton() {
             张未使用图片。多标签页只以当前内容为准，清理后无法恢复。
           </p>
           <div className="flex gap-2">
-            <button
-              className="min-h-9 rounded border px-3 disabled:opacity-50"
+            <Button
               disabled={busy || candidates.length === 0}
               onClick={clean}
+              size="sm"
               type="button"
+              variant="secondary"
             >
               确认清理
-            </button>
-            <button
-              className="min-h-9 px-3"
+            </Button>
+            <Button
               disabled={busy}
               onClick={cancel}
+              size="sm"
               type="button"
+              variant="ghost"
             >
               取消
-            </button>
+            </Button>
           </div>
         </div>
       )}

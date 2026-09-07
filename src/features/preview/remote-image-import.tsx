@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { imageInputError } from "@/features/editor/image-input";
 import { imageAssets } from "@/lib/image-assets/image-assets";
 import { replaceRemoteImage } from "@/lib/image-assets/markdown-images";
@@ -35,14 +36,15 @@ export function RemoteImageImport({ url }: { url: string }) {
   }, [url]);
   return (
     <span data-export-ignore="true" style={{ display: "block" }}>
-      <button
-        className="rounded border px-3 py-1 text-sm disabled:opacity-50"
+      <Button
         disabled={busy}
         onClick={importImage}
+        size="sm"
         type="button"
+        variant="raised"
       >
         {busy ? "导入中…" : "导入"}
-      </button>
+      </Button>
       {Boolean(error) && (
         <span role="alert" style={{ display: "block" }}>
           {error}

@@ -376,10 +376,20 @@ test("图片设置随正文显隐，圆角阴影即时预览、导出并持久�
   const editor = page.locator(".cm-content");
   const markdown = await editor.innerText();
   await editor.fill("无图正文");
-  await expect(group).toHaveCount(0);
+  await expect(group).toBeVisible();
+  await expect(radius).toHaveCount(0);
+  await expect(shadow).toHaveCount(0);
+  await expect(
+    group.getByRole("button", { exact: true, name: "清理未使用图片" })
+  ).toBeVisible();
   await page.reload();
   await page.getByRole("button", { name: "设置样式" }).click();
-  await expect(group).toHaveCount(0);
+  await expect(group).toBeVisible();
+  await expect(radius).toHaveCount(0);
+  await expect(shadow).toHaveCount(0);
+  await expect(
+    group.getByRole("button", { exact: true, name: "清理未使用图片" })
+  ).toBeVisible();
   await editor.fill(markdown);
   await expect(group).toBeVisible();
   await expect(radius.getByLabel("大", { exact: true })).toBeChecked();
