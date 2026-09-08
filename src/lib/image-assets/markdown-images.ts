@@ -1,4 +1,5 @@
 import { fromMarkdown } from "mdast-util-from-markdown";
+import { normalizeUri } from "micromark-util-sanitize-uri";
 import { imageReference } from "../image-reference";
 
 export function unusedImageIds(ids: string[], markdown: string): string[] {
@@ -54,31 +55,23 @@ function destinationEnd(raw: string, from: number, angle: boolean): number {
   return raw.length;
 }
 
-export function replaceRemoteImage(
+type ImageNode = Extract<
+  ReturnType<typeof fromMarkdown>["children"][number],
+  { type: "image" }
+>;
+
+function findImage(
   markdown: string,
-  url: string,
-  source: string
-): string {
+  matches: (node: ImageNode) => boolean
+): ImageNode | null {
   const tree = fromMarkdown(markdown);
-  let range: { from: number; to: number } | undefined;
+  let found: ImageNode | null = null;
   function visit(node: typeof tree | (typeof tree.children)[number]): void {
-    if (range) {
+    if (found) {
       return;
     }
-    if (node.type === "image" && node.url === url && node.position) {
-      const start = node.position.start.offset;
-      const end = node.position.end.offset;
-      if (start === undefined || end === undefined) {
-        return;
-      }
-      const raw = markdown.slice(start, end);
-      let from = destinationStart(raw);
-      const angle = raw[from] === "<";
-      if (angle) {
-        from += 1;
-      }
-      const index = destinationEnd(raw, from, angle);
-      range = { from: start + from, to: start + index };
+    if (node.type === "image" && matches(node)) {
+      found = node;
     }
     if ("children" in node) {
       for (const child of node.children) {
@@ -87,7 +80,58 @@ export function replaceRemoteImage(
     }
   }
   visit(tree);
-  return range
-    ? markdown.slice(0, range.from) + source + markdown.slice(range.to)
+  return found;
+}
+
+function locateRemoteImage(markdown: string, url: string) {
+  const node = findImage(
+    markdown,
+    (image) => normalizeUri(image.url) === normalizeUri(url)
+  );
+  const start = node?.position?.start.offset;
+  const end = node?.position?.end.offset;
+  if (!node || start === undefined || end === undefined) {
+    return null;
+  }
+  const raw = markdown.slice(start, end);
+  let from = destinationStart(raw);
+  const angle = raw[from] === "<";
+  if (angle) {
+    from += 1;
+  }
+  return {
+    from: start + from,
+    node,
+    to: start + destinationEnd(raw, from, angle),
+  };
+}
+
+export function findRemoteImage(
+  markdown: string,
+  url: string
+): { from: number; to: number } | null {
+  const match = locateRemoteImage(markdown, url);
+  return match ? { from: match.from, to: match.to } : null;
+}
+
+export function replaceRemoteImage(
+  markdown: string,
+  url: string,
+  source: string
+): string {
+  const match = locateRemoteImage(markdown, url);
+  if (!match) {
+    return markdown;
+  }
+  const rewritten =
+    markdown.slice(0, match.from) + source + markdown.slice(match.to);
+  const image = findImage(
+    rewritten,
+    (node) => node.position?.start.offset === match.node.position?.start.offset
+  );
+  return image?.url === source &&
+    image.alt === match.node.alt &&
+    image.title === match.node.title
+    ? rewritten
     : markdown;
 }

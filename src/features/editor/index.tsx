@@ -31,7 +31,7 @@ interface EditorCardProps {
 export const EditorCard = ({ className }: EditorCardProps) => {
   const [editorView, setEditorView] = useState<EditorView | null>(null);
 
-  const cursor = useCursorLine(editorView);
+  const { cursor, onUpdate } = useCursorLine(editorView);
   useCursorSegment(cursor);
 
   const handleEditorViewReady = useCallback((view: EditorView) => {
@@ -48,7 +48,10 @@ export const EditorCard = ({ className }: EditorCardProps) => {
       <EditorToolbar editorView={editorView} />
       <ImageOptionsRow editorView={editorView} line={cursor?.text ?? ""} />
       <div className="relative min-h-0 flex-1 overflow-hidden">
-        <MarkdownEditor onEditorViewReady={handleEditorViewReady} />
+        <MarkdownEditor
+          onEditorViewReady={handleEditorViewReady}
+          onUpdate={onUpdate}
+        />
         <div
           aria-hidden="true"
           className="ds-fade-bottom absolute inset-x-0 bottom-0 h-14"

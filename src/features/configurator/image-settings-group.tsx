@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { imageAssets } from "@/lib/image-assets/image-assets";
 import { imageReference } from "@/lib/image-reference";
 import {
@@ -36,6 +37,8 @@ export const ImageSettingsGroup = () => {
   const hasImages = useMarkdownContentStore((state) =>
     imageReference.hasImages(state.content)
   );
+  const [message, setMessage] = useState("");
+  const dismissMessage = useCallback(() => setMessage(""), []);
   const [hasAssets, setHasAssets] = useState(false);
   useEffect(() => {
     let active = true;
@@ -55,7 +58,7 @@ export const ImageSettingsGroup = () => {
       unsubscribe();
     };
   }, []);
-  if (!(hasImages || hasAssets)) {
+  if (!(hasImages || hasAssets || message)) {
     return null;
   }
   return (
@@ -76,7 +79,20 @@ export const ImageSettingsGroup = () => {
           />
         </>
       )}
-      {hasAssets ? <CleanImagesButton /> : null}
+      {hasAssets ? <CleanImagesButton onMessage={setMessage} /> : null}
+      {message ? (
+        <div className="space-y-2 text-ink-2 text-xs">
+          <p role="status">{message}</p>
+          <Button
+            onClick={dismissMessage}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            知道了
+          </Button>
+        </div>
+      ) : null}
     </SettingsGroup>
   );
 };

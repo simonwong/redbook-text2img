@@ -4,7 +4,10 @@ import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { imageInputError } from "@/features/editor/image-input";
 import { imageAssets } from "@/lib/image-assets/image-assets";
-import { replaceRemoteImage } from "@/lib/image-assets/markdown-images";
+import {
+  findRemoteImage,
+  replaceRemoteImage,
+} from "@/lib/image-assets/markdown-images";
 import { fetchRemoteImage } from "@/lib/image-assets/remote-image";
 import { imageReference } from "@/lib/image-reference";
 import { useMarkdownContentStore } from "@/store/markdownContent";
@@ -16,6 +19,10 @@ export function RemoteImageImport({ url }: { url: string }) {
     setBusy(true);
     setError("");
     try {
+      if (!findRemoteImage(useMarkdownContentStore.getState().content, url)) {
+        setError("未找到可改写的图片引用，请从工具栏重新插入图片");
+        return;
+      }
       const id = await imageAssets.import(await fetchRemoteImage(url));
       const state = useMarkdownContentStore.getState();
       const content = replaceRemoteImage(

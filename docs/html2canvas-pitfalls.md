@@ -110,6 +110,6 @@ html2canvas-pro 2.4.1 已支持 `object-fit`。图片页使用 `object-fit: cove
 
 html2canvas-pro 2.4.1 支持图片圆角与阴影，但绘制 box-shadow 时直接把 CSS 长度赋给 `ctx.shadowOffsetX/Y` 和 `ctx.shadowBlur`。这些属性使用设备像素，不随 `ctx.scale` 缩放；用于隐藏原始填充的横向遮罩偏移也必须同步缩放，否则 3 倍导出时阴影会错位到画布外。
 
-`patches/html2canvas-pro@2.4.1.patch` 将三个参数（含遮罩偏移）乘导出倍率，保留原有径向渐变修复。`tests/e2e/content-image.spec.ts` 比较导出前预览截图与 PNG 的图片中心、圆角和下沿阴影采样点。截图必须在触发导出前获取，导出成功蒙层会覆盖可见预览，但不属于导出节点。
+`patches/html2canvas-pro@2.4.1.patch` 将三个参数（含遮罩偏移）乘导出倍率，保留原有径向渐变修复。该修复也让 clean-dark、gradient-cool、xiaohongshu-pink、gradient-warm 的引用块阴影出现在导出中；`tests/e2e/theme-blockquote-export.spec.ts` 比较引用块下沿与无阴影背景的像素差异，覆盖预览与三倍 PNG。`tests/e2e/content-image.spec.ts` 比较导出前预览截图与 PNG 的图片中心、圆角和下沿阴影采样点。截图必须在触发导出前获取，导出成功蒙层会覆盖可见预览，但不属于导出节点。
 
 浏览器默认给 img 设置 `overflow: clip`，库会把这个裁切同时用于图片背景与阴影，导致自身阴影被截掉。导出模块只在 html2canvas 的克隆节点上将 img 设为 `overflow: visible`，圆角由库的 padding-box 绘制路径裁切。预览保留浏览器的 `overflow: clip`，否则浏览器会让图片像素越过圆角。

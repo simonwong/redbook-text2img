@@ -40,6 +40,112 @@ async function edit(page: Page, markdown: string) {
   await page.locator(".cm-content").fill(markdown);
 }
 
+for (const source of [
+  "https://images.example/图片.png",
+  "<https://images.example/a b.png>",
+]) {
+  test(`归一化外链可导入并保留说明与标题：${source}`, async ({ page }) => {
+    await open(page);
+    await fixture(page);
+    await edit(page, `正文\n\n![远程配图](${source} "原始标题")`);
+    await page
+      .locator(".img-preview")
+      .getByRole("button", { exact: true, name: "导入" })
+      .click();
+    await expect(page.locator(".cm-content")).toContainText("image:");
+    await expect(page.locator(".cm-content")).toContainText("原始标题");
+    await expect(page.locator(".img-preview img")).toBeVisible();
+    await expect(page.locator(".img-preview img")).toHaveAttribute(
+      "alt",
+      "远程配图"
+    );
+  });
+}
+
+test("没有可改写的行内图片时显示原因，不抓取也不入库", async ({ page }) => {
+  await open(page);
+  await fixture(page);
+  await edit(page, `正文\n\n![远程配图][图片]\n\n[图片]: ${remote}`);
+  let requests = 0;
+  page.on("request", (request) => {
+    if (request.url().startsWith("https://images.example/")) {
+      requests += 1;
+    }
+  });
+  await page
+    .locator(".img-preview")
+    .getByRole("button", { exact: true, name: "导入" })
+    .click();
+  await expect(page.locator(".img-preview").getByRole("alert")).toContainText(
+    "未找到可改写的图片引用"
+  );
+  expect(requests).toBe(0);
+  await page.getByRole("button", { name: "设置样式" }).click();
+  await expect(
+    page.getByRole("button", { exact: true, name: "清理未使用图片" })
+  ).toHaveCount(0);
+});
+
+test("抓取期间编辑正文后按最新位置改写，保留新增内容", async ({ page }) => {
+  await open(page);
+  await fixture(page);
+  const requested = Promise.withResolvers<void>();
+  const release = Promise.withResolvers<void>();
+  await page.route(remote, async (route) => {
+    requested.resolve();
+    await release.promise;
+    await route.fallback();
+  });
+  await page
+    .locator(".img-preview")
+    .getByRole("button", { exact: true, name: "导入" })
+    .click();
+  await requested.promise;
+  await edit(page, `新增前文\n\n![新说明](${remote} "新标题")\n\n新增后文`);
+  release.resolve();
+  const editor = page.locator(".cm-content");
+  await expect(editor).toContainText("image:");
+  await expect(editor).toContainText("新增前文");
+  await expect(editor).toContainText("新增后文");
+  await expect(editor).toContainText("新标题");
+  await expect(page.locator(".img-preview img")).toHaveAttribute(
+    "alt",
+    "新说明"
+  );
+});
+
+test("光标在第一页，第三页导入外链后保持第三页，用户点击仍能翻页", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await open(page);
+  await fixture(page);
+  await edit(
+    page,
+    `第一页\n\n---\n\n第二页\n\n---\n\n第三页\n\n![远程配图](${remote})`
+  );
+  await page
+    .locator(".cm-content")
+    .getByText("第一页", { exact: true })
+    .click();
+  await expect(page.locator(".img-preview")).toContainText("第一页");
+  await page.clock.runFor(400);
+  await page.getByRole("button", { exact: true, name: "第 3 张图片" }).click();
+  const preview = page.locator(".img-preview");
+  await expect(preview).toContainText("第三页");
+  await preview.getByRole("button", { exact: true, name: "导入" }).click();
+  await expect(page.locator(".cm-content")).toContainText("image:");
+  await page.clock.runFor(400);
+  await expect(preview).toContainText("第三页");
+  await expect(preview.locator("img")).toBeVisible();
+  await page
+    .locator(".cm-content")
+    .getByText("第二页", { exact: true })
+    .click();
+  await page.clock.runFor(400);
+  await expect(preview).toContainText("第二页");
+});
+
 test("手写外链只显示占位；失败显示原因，重试入库后改写正文并出图", async ({
   page,
 }) => {
@@ -96,6 +202,10 @@ test("清理列出差集、取消保留资产，确认删除后恢复引用显�
     .getByRole("button", { exact: true, name: "清理未使用图片" })
     .click();
   await page.getByRole("button", { exact: true, name: "确认清理" }).click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "已清理 1 张图片" })
+  ).toBeVisible();
+  await page.getByRole("button", { exact: true, name: "知道了" }).click();
   await expect(
     page.getByRole("region", { exact: true, name: "图片" })
   ).toHaveCount(0);
@@ -178,6 +288,8 @@ test("图片分组随正文与资产库显隐，删引用后仅保留清理入�
   await cleanup.click();
   await expect(group.getByRole("status")).toContainText("发现 1 张");
   await group.getByRole("button", { exact: true, name: "确认清理" }).click();
+  await expect(group.getByRole("status")).toHaveText("已清理 1 张图片");
+  await group.getByRole("button", { exact: true, name: "知道了" }).click();
   await expect(group).toHaveCount(0);
   await expect(cleanup).toHaveCount(0);
 });

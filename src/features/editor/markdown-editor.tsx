@@ -3,11 +3,11 @@
 
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
-import { EditorView } from "@codemirror/view";
+import { EditorView, type ViewUpdate } from "@codemirror/view";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import CodeMirror from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 import { contentImageEvents } from "./image-input";
 
@@ -28,15 +28,32 @@ const editorLayoutTheme = EditorView.theme({
 
 interface MarkdownEditorProps {
   onEditorViewReady?: (view: EditorView) => void;
+  onUpdate?: (update: ViewUpdate) => void;
   placeholder?: string;
 }
 
 export function MarkdownEditor({
   placeholder,
   onEditorViewReady,
+  onUpdate,
 }: MarkdownEditorProps) {
   const [imageError, setImageError] = useState("");
-  const imageEvents = useMemo(() => contentImageEvents(setImageError), []);
+  const updateCallback = useRef(onUpdate);
+  useLayoutEffect(() => {
+    updateCallback.current = onUpdate;
+  }, [onUpdate]);
+  const extensions = useMemo(
+    () => [
+      markdown({ base: markdownLanguage, codeLanguages: languages }),
+      EditorView.lineWrapping,
+      editorLayoutTheme,
+      contentImageEvents(setImageError),
+      EditorView.updateListener.of((update) =>
+        updateCallback.current?.(update)
+      ),
+    ],
+    []
+  );
   const { content, setContent } = useMarkdownContentStore();
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
@@ -58,12 +75,7 @@ export function MarkdownEditor({
           lineNumbers: false,
         }}
         className={editorClassName}
-        extensions={[
-          markdown({ base: markdownLanguage, codeLanguages: languages }),
-          EditorView.lineWrapping,
-          editorLayoutTheme,
-          imageEvents,
-        ]}
+        extensions={extensions}
         onChange={setContent}
         onCreateEditor={(view) => onEditorViewReady?.(view)}
         placeholder={placeholder || "在这里输入您的 Markdown 内容..."}

@@ -6,13 +6,16 @@ import { imageAssets } from "@/lib/image-assets/image-assets";
 import { unusedImageIds } from "@/lib/image-assets/markdown-images";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 
-export function CleanImagesButton() {
+export function CleanImagesButton({
+  onMessage,
+}: {
+  onMessage: (message: string) => void;
+}) {
   const [candidates, setCandidates] = useState<string[] | null>(null);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
   const inspect = useCallback(async () => {
     setBusy(true);
-    setMessage("");
+    onMessage("");
     try {
       setCandidates(
         unusedImageIds(
@@ -21,11 +24,11 @@ export function CleanImagesButton() {
         )
       );
     } catch {
-      setMessage("无法读取图片库，请重试");
+      onMessage("无法读取图片库，请重试");
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [onMessage]);
   const clean = useCallback(async () => {
     setBusy(true);
     let deleted = 0;
@@ -40,14 +43,14 @@ export function CleanImagesButton() {
           deleted += 1;
         }
       }
-      setMessage(`已清理 ${deleted} 张图片`);
+      onMessage(`已清理 ${deleted} 张图片`);
     } catch {
-      setMessage(`已清理 ${deleted} 张图片，其余删除失败，请重试`);
+      onMessage(`已清理 ${deleted} 张图片，其余删除失败，请重试`);
     } finally {
       setCandidates(null);
       setBusy(false);
     }
-  }, [candidates]);
+  }, [candidates, onMessage]);
   const cancel = useCallback(() => setCandidates(null), []);
   return (
     <div className="space-y-2 text-ink-2 text-xs">
@@ -88,7 +91,6 @@ export function CleanImagesButton() {
           </div>
         </div>
       )}
-      {Boolean(message) && <p role="status">{message}</p>}
     </div>
   );
 }
