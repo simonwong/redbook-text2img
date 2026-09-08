@@ -1,6 +1,7 @@
-import type { EditorView } from "@codemirror/view";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { usePreviewNavigationStore } from "@/store/preview-navigation";
+
+import type { CursorLine } from "./use-cursor-line";
 
 const SEPARATOR_PATTERN = /^-{3,}$/;
 
@@ -19,7 +20,7 @@ function computeSegmentIndex(doc: string, cursorPos: number): number {
 
     if (trimmed.match(SEPARATOR_PATTERN)) {
       if (hasContentSinceLastSep) {
-        segmentIndex++;
+        segmentIndex += 1;
         hasContentSinceLastSep = false;
       }
     } else if (trimmed) {
@@ -32,42 +33,17 @@ function computeSegmentIndex(doc: string, cursorPos: number): number {
   return segmentIndex;
 }
 
-export function useCursorSegment(editorView: EditorView | null) {
-  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const prevIdxRef = useRef(-1);
+export function useCursorSegment(cursor: CursorLine | null) {
   const setActiveSegmentIndex = usePreviewNavigationStore(
     (s) => s.setActiveSegmentIndex
   );
-
   useEffect(() => {
-    if (!editorView) {
+    if (!cursor?.userEvent) {
       return;
     }
-
-    const syncSegment = () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-      timerRef.current = setTimeout(() => {
-        const cursorPos = editorView.state.selection.main.head;
-        const doc = editorView.state.doc.toString();
-        const idx = computeSegmentIndex(doc, cursorPos);
-        if (idx !== prevIdxRef.current) {
-          prevIdxRef.current = idx;
-          setActiveSegmentIndex(idx);
-        }
-      }, 150);
-    };
-
-    editorView.dom.addEventListener("keyup", syncSegment);
-    editorView.dom.addEventListener("click", syncSegment);
-
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-      editorView.dom.removeEventListener("keyup", syncSegment);
-      editorView.dom.removeEventListener("click", syncSegment);
-    };
-  }, [editorView, setActiveSegmentIndex]);
+    const timer = setTimeout(() => {
+      setActiveSegmentIndex(computeSegmentIndex(cursor.doc, cursor.cursorPos));
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [cursor, setActiveSegmentIndex]);
 }

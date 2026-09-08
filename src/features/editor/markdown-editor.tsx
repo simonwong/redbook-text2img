@@ -1,12 +1,17 @@
+/** biome-ignore-all lint/performance/noJsxPropsBind: React Compiler caches event handlers. */
 "use client";
 
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
-import { EditorView } from "@codemirror/view";
+import { EditorView, type ViewUpdate } from "@codemirror/view";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import CodeMirror from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { useMarkdownContentStore } from "@/store/markdownContent";
+import { contentImageEvents } from "./image-input";
+import { ImageNoticeBanner } from "./image-notice-banner";
+import { showImageNotice } from "./image-notices";
 
 const editorClassName = [
   "h-full",
@@ -25,19 +30,38 @@ const editorLayoutTheme = EditorView.theme({
 
 interface MarkdownEditorProps {
   onEditorViewReady?: (view: EditorView) => void;
+  onUpdate?: (update: ViewUpdate) => void;
   placeholder?: string;
 }
 
 export function MarkdownEditor({
   placeholder,
   onEditorViewReady,
+  onUpdate,
 }: MarkdownEditorProps) {
+  const updateCallback = useRef(onUpdate);
+  useLayoutEffect(() => {
+    updateCallback.current = onUpdate;
+  }, [onUpdate]);
+  const extensions = useMemo(
+    () => [
+      markdown({ base: markdownLanguage, codeLanguages: languages }),
+      EditorView.lineWrapping,
+      editorLayoutTheme,
+      contentImageEvents(showImageNotice),
+      EditorView.updateListener.of((update) =>
+        updateCallback.current?.(update)
+      ),
+    ],
+    []
+  );
   const { content, setContent } = useMarkdownContentStore();
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
 
   return (
     <div className="h-full overflow-hidden">
+      <ImageNoticeBanner />
       <CodeMirror
         basicSetup={{
           foldGutter: false,
@@ -45,11 +69,7 @@ export function MarkdownEditor({
           lineNumbers: false,
         }}
         className={editorClassName}
-        extensions={[
-          markdown({ base: markdownLanguage, codeLanguages: languages }),
-          EditorView.lineWrapping,
-          editorLayoutTheme,
-        ]}
+        extensions={extensions}
         onChange={setContent}
         onCreateEditor={(view) => onEditorViewReady?.(view)}
         placeholder={placeholder || "在这里输入您的 Markdown 内容..."}

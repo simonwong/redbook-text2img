@@ -1,4 +1,7 @@
+import { isolateHistory } from "@codemirror/commands";
 import type { EditorView } from "@codemirror/view";
+
+const headingPattern = /^#{1,6}\s/;
 
 function wrapSelection(view: EditorView, before: string, after: string) {
   const { from, to } = view.state.selection.main;
@@ -8,13 +11,13 @@ function wrapSelection(view: EditorView, before: string, after: string) {
     view.dispatch({
       changes: {
         from,
-        to,
         insert: selected.slice(before.length, -after.length || undefined),
+        to,
       },
     });
   } else {
     view.dispatch({
-      changes: { from, to, insert: `${before}${selected}${after}` },
+      changes: { from, insert: `${before}${selected}${after}`, to },
       selection: { anchor: from + before.length, head: to + before.length },
     });
   }
@@ -28,7 +31,7 @@ function insertAtLineStart(view: EditorView, prefix: string) {
 
   if (lineText.startsWith(prefix)) {
     view.dispatch({
-      changes: { from: line.from, to: line.from + prefix.length, insert: "" },
+      changes: { from: line.from, insert: "", to: line.from + prefix.length },
     });
   } else {
     view.dispatch({
@@ -54,14 +57,14 @@ export function insertHeading(view: EditorView, level: number) {
   const prefix = `${"#".repeat(level)} `;
   const { from } = view.state.selection.main;
   const line = view.state.doc.lineAt(from);
-  const headingMatch = line.text.match(/^#{1,6}\s/);
+  const headingMatch = line.text.match(headingPattern);
 
   if (headingMatch) {
     view.dispatch({
       changes: {
         from: line.from,
-        to: line.from + headingMatch[0].length,
         insert: prefix,
+        to: line.from + headingMatch[0].length,
       },
     });
   } else {
@@ -87,6 +90,23 @@ export function insertHorizontalRule(view: EditorView) {
 
   view.dispatch({
     changes: { from: line.to, insert: insertText },
+  });
+  view.focus();
+}
+
+export function insertContentImage(
+  view: EditorView,
+  source: string | string[],
+  range: { from: number; to: number } = view.state.selection.main
+) {
+  const { from, to } = range;
+  const sources = Array.isArray(source) ? source : [source];
+  const insert = `\n\n${sources.map((url) => `![内容图片](${url})`).join("\n\n")}\n\n`;
+  view.dispatch({
+    annotations: isolateHistory.of("full"),
+    changes: { from, insert, to },
+    selection: { anchor: from + insert.length },
+    userEvent: "input.image",
   });
   view.focus();
 }

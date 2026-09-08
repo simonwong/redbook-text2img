@@ -1,5 +1,5 @@
 diff --git a/dist/html2canvas-pro.cjs b/dist/html2canvas-pro.cjs
-index 8dcf7cac545d51a799c3e490b18bb2d11389b996..422767ce07b50ff130dbdbb646b0e17bf8fb6dd8 100644
+index 8dcf7cac545d51a799c3e490b18bb2d11389b996..91f274fcf7698c4ce2965227c1744a827ecdde0d 100644
 --- a/dist/html2canvas-pro.cjs
 +++ b/dist/html2canvas-pro.cjs
 @@ -9734,20 +9734,26 @@ var BackgroundRenderer = class {
@@ -52,8 +52,22 @@ index 8dcf7cac545d51a799c3e490b18bb2d11389b996..422767ce07b50ff130dbdbb646b0e17b
  				this.ctx.restore();
  			}
  		}
+@@ -10721,10 +10731,10 @@ var CanvasRenderer = class CanvasRenderer {
+ 					this.ctx.clip();
+ 					this.path(shadowPaintingArea);
+ 				}
+-				this.ctx.shadowOffsetX = shadow.offsetX.number + maskOffset;
+-				this.ctx.shadowOffsetY = shadow.offsetY.number;
++				this.ctx.shadowOffsetX = (shadow.offsetX.number + maskOffset) * this.options.scale;
++				this.ctx.shadowOffsetY = shadow.offsetY.number * this.options.scale;
+ 				this.ctx.shadowColor = asString(shadow.color);
+-				this.ctx.shadowBlur = shadow.blur.number;
++				this.ctx.shadowBlur = shadow.blur.number * this.options.scale;
+ 				this.ctx.fillStyle = shadow.inset ? asString(shadow.color) : "rgba(0,0,0,1)";
+ 				this.ctx.fill();
+ 				this.ctx.restore();
 diff --git a/dist/html2canvas-pro.esm.js b/dist/html2canvas-pro.esm.js
-index 4e795fca83ac33075ee6c3737400718753bd3f63..2cd9bc5872fdd57bde68d3e0a45f22cd479f47fc 100644
+index 4e795fca83ac33075ee6c3737400718753bd3f63..685e8fe51bb6cf1fa6a66c3a90fed6d701ef0929 100644
 --- a/dist/html2canvas-pro.esm.js
 +++ b/dist/html2canvas-pro.esm.js
 @@ -9730,20 +9730,26 @@ var BackgroundRenderer = class {
@@ -106,8 +120,22 @@ index 4e795fca83ac33075ee6c3737400718753bd3f63..2cd9bc5872fdd57bde68d3e0a45f22cd
  				this.ctx.restore();
  			}
  		}
+@@ -10717,10 +10727,10 @@ var CanvasRenderer = class CanvasRenderer {
+ 					this.ctx.clip();
+ 					this.path(shadowPaintingArea);
+ 				}
+-				this.ctx.shadowOffsetX = shadow.offsetX.number + maskOffset;
+-				this.ctx.shadowOffsetY = shadow.offsetY.number;
++				this.ctx.shadowOffsetX = (shadow.offsetX.number + maskOffset) * this.options.scale;
++				this.ctx.shadowOffsetY = shadow.offsetY.number * this.options.scale;
+ 				this.ctx.shadowColor = asString(shadow.color);
+-				this.ctx.shadowBlur = shadow.blur.number;
++				this.ctx.shadowBlur = shadow.blur.number * this.options.scale;
+ 				this.ctx.fillStyle = shadow.inset ? asString(shadow.color) : "rgba(0,0,0,1)";
+ 				this.ctx.fill();
+ 				this.ctx.restore();
 diff --git a/dist/html2canvas-pro.js b/dist/html2canvas-pro.js
-index 6856b82c590db9541cba6e84a9f4111ce285c7da..f8411983d693a42bedc4e01cc94aa2a464c9456b 100644
+index 6856b82c590db9541cba6e84a9f4111ce285c7da..4cbb4c25efa4ba1367e43bffb1ba8122ca99deda 100644
 --- a/dist/html2canvas-pro.js
 +++ b/dist/html2canvas-pro.js
 @@ -9737,20 +9737,26 @@
@@ -160,3 +188,35 @@ index 6856b82c590db9541cba6e84a9f4111ce285c7da..f8411983d693a42bedc4e01cc94aa2a4
  					this.ctx.restore();
  				}
  			}
+@@ -10724,10 +10734,10 @@
+ 						this.ctx.clip();
+ 						this.path(shadowPaintingArea);
+ 					}
+-					this.ctx.shadowOffsetX = shadow.offsetX.number + maskOffset;
+-					this.ctx.shadowOffsetY = shadow.offsetY.number;
++					this.ctx.shadowOffsetX = (shadow.offsetX.number + maskOffset) * this.options.scale;
++					this.ctx.shadowOffsetY = shadow.offsetY.number * this.options.scale;
+ 					this.ctx.shadowColor = asString(shadow.color);
+-					this.ctx.shadowBlur = shadow.blur.number;
++					this.ctx.shadowBlur = shadow.blur.number * this.options.scale;
+ 					this.ctx.fillStyle = shadow.inset ? asString(shadow.color) : "rgba(0,0,0,1)";
+ 					this.ctx.fill();
+ 					this.ctx.restore();
+diff --git a/dist/lib/render/canvas/canvas-renderer.js b/dist/lib/render/canvas/canvas-renderer.js
+index 64a5ca982980b201023788d35b67935be12b15f0..fd74a1e057b69267f8438e3b3338099e9f3c3eb5 100644
+--- a/dist/lib/render/canvas/canvas-renderer.js
++++ b/dist/lib/render/canvas/canvas-renderer.js
+@@ -254,10 +254,10 @@ class CanvasRenderer {
+                     this.ctx.clip();
+                     this.path(shadowPaintingArea);
+                 }
+-                this.ctx.shadowOffsetX = shadow.offsetX.number + maskOffset;
+-                this.ctx.shadowOffsetY = shadow.offsetY.number;
++                this.ctx.shadowOffsetX = (shadow.offsetX.number + maskOffset) * this.options.scale;
++                this.ctx.shadowOffsetY = shadow.offsetY.number * this.options.scale;
+                 this.ctx.shadowColor = (0, color_utilities_1.asString)(shadow.color);
+-                this.ctx.shadowBlur = shadow.blur.number;
++                this.ctx.shadowBlur = shadow.blur.number * this.options.scale;
+                 this.ctx.fillStyle = shadow.inset ? (0, color_utilities_1.asString)(shadow.color) : 'rgba(0,0,0,1)';
+                 this.ctx.fill();
+                 this.ctx.restore();

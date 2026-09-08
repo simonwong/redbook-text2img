@@ -10,7 +10,12 @@ import { useContentThemeStore } from "@/store/theme";
 import { ConfigurationField } from "./configuration-field";
 
 /** 用分段控件表达的字符串型配置字段 */
-type SegmentField = "aspectRatio" | "cardFrame" | "fontId";
+type SegmentField =
+  | "aspectRatio"
+  | "cardFrame"
+  | "fontId"
+  | "imageRadius"
+  | "imageShadow";
 
 interface ConfigurationSegmentRowProps {
   field: SegmentField;

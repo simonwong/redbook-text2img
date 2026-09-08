@@ -73,6 +73,7 @@ await new Promise<void>((resolve) => {
 - 实际导出含非空正文的 PNG；可见 DOM 或背景色不能代替内容验证。
 - 对像素敏感改动，以 Playwright 元素截图作 ground truth，解码导出 PNG 并比较内容、背景和页脚采样点。
 - 运行命中改动的 `tests/e2e/theme-presets-*.spec.ts` 或 `tests/e2e/background-picker.spec.ts`。
+- 内容图片需实际上传并导出 PNG，解码后采样图片区域，确认包含图片像素而非背景色；批量 ZIP 中逐张检查含图卡片，图片页检查裁切后的四角与中心。对应 `tests/e2e/content-image.spec.ts` 与 `tests/e2e/image-page.spec.ts`，圆角、阴影还需与导出前的预览截图比较。
 
 ## 7. `filter` 可以导出，`backdrop-filter` 不行
 
@@ -94,3 +95,21 @@ html2canvas-pro 2.4.1 的 `renderRadialGradient` 把椭圆渐变先画进一张 
 主题背景的光晕几乎都是这种写法，1:1 与 9:16 全部中招，3:4 上蜜光暖阳、樱花奶霜也会。仓库用 `patches/html2canvas-pro@2.4.1.patch` 修正了算法：以横向半径 `rx` 画圆形渐变，离屏画布取 `2rx × 2ry` 的完整包围盒再按 `ry / rx` 缩放，并先用最后一个色标填满整个区域（浏览器就是这样把径向渐变延伸到结束形状之外的）。
 
 升级 html2canvas-pro 时先确认上游是否已修，未修则重新生成补丁；`tests/e2e/theme-system-release.spec.ts` 的 9:16 接缝测试会在补丁失效时失败。
+
+## 9. 内容图片导出前必须等解码与布局
+
+html2canvas-pro 只等图片像素加载，不等预览 DOM 按图片尺寸完成布局；图片尚未解码时，测得的高度可能为 0。`src/features/preview/hooks/use-image-export.ts` 在单张与批量共用的绘制入口等待资产占位更新，再通过 `Promise.all` 等待节点内所有 `img.decode()`，最后调用 html2canvas-pro。资产加载超过 10 秒或解码失败时终止本次导出。不要把等待移到某个按钮或仅保留批量切页的两帧等待。
+
+当前 `useCORS: true` 配置下，跨域图片没有 CORS 许可时，html2canvas-pro 会在加载失败后静默跳过图片：导出成功但缺图，而非抛出可捕获的导出错误。因此 http/https 图片必须先导入本地资产库；未导入外链与缺失资产均以文字占位导出，导入按钮与错误操作区通过 `data-export-ignore` 仅从克隆节点移除。
+
+react-markdown 的默认 URL 过滤会清空 `image:`，内容图片需显式放行该协议。仅含图片的 p 必须替换为全宽 figure，否则收缩段落无法按内容区居中；正文和封面配图使用 auto 宽高与 max-width/max-height 双约束。
+
+html2canvas-pro 2.4.1 已支持 `object-fit`。图片页使用 `object-fit: cover` 与居中位置，把图片裁切铺满卡片；对应样式由 `src/lib/theme/generator.ts` 生成。正文配图保留完整画面，图片页接受边缘裁切，两者按各自规则验证导出。
+
+## 10. `box-shadow` 的 Canvas 参数必须按导出倍率缩放（已打补丁）
+
+html2canvas-pro 2.4.1 支持图片圆角与阴影，但绘制 box-shadow 时直接把 CSS 长度赋给 `ctx.shadowOffsetX/Y` 和 `ctx.shadowBlur`。这些属性使用设备像素，不随 `ctx.scale` 缩放；用于隐藏原始填充的横向遮罩偏移也必须同步缩放，否则 3 倍导出时阴影会错位到画布外。
+
+`patches/html2canvas-pro@2.4.1.patch` 将三个参数（含遮罩偏移）乘导出倍率，保留原有径向渐变修复。该修复也让 clean-dark、gradient-cool、xiaohongshu-pink、gradient-warm 的引用块阴影出现在导出中；`tests/e2e/theme-blockquote-export.spec.ts` 比较引用块下沿与无阴影背景的像素差异，覆盖预览与三倍 PNG。`tests/e2e/content-image.spec.ts` 比较导出前预览截图与 PNG 的图片中心、圆角和下沿阴影采样点。截图必须在触发导出前获取，导出成功蒙层会覆盖可见预览，但不属于导出节点。
+
+浏览器默认给 img 设置 `overflow: clip`，库会把这个裁切同时用于图片背景与阴影，导致自身阴影被截掉。导出模块只在 html2canvas 的克隆节点上将 img 设为 `overflow: visible`，圆角由库的 padding-box 绘制路径裁切。预览保留浏览器的 `overflow: clip`，否则浏览器会让图片像素越过圆角。

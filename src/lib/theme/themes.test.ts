@@ -16,6 +16,8 @@ const firstFourConfigurations = {
     coverLayout: "bottom-left",
     density: "normal",
     fontId: "sans",
+    imageRadius: "large",
+    imageShadow: "light",
   },
   "clean-light": {
     accentColor: "#1b2540",
@@ -26,6 +28,8 @@ const firstFourConfigurations = {
     coverLayout: "center-poster",
     density: "normal",
     fontId: "sans",
+    imageRadius: "small",
+    imageShadow: "light",
   },
   "gradient-warm": {
     accentColor: "#92530c",
@@ -36,6 +40,8 @@ const firstFourConfigurations = {
     coverLayout: "center-poster",
     density: "normal",
     fontId: "sans",
+    imageRadius: "large",
+    imageShadow: "light",
   },
   "trianglify-minimalist": {
     accentColor: "#f4f6fb",
@@ -46,6 +52,8 @@ const firstFourConfigurations = {
     coverLayout: "top-left",
     density: "snug",
     fontId: "sans",
+    imageRadius: "large",
+    imageShadow: "none",
   },
 } satisfies Record<string, StyleConfiguration>;
 
@@ -59,6 +67,8 @@ const secondFourConfigurations = {
     coverLayout: "center-poster",
     density: "snug",
     fontId: "sans",
+    imageRadius: "small",
+    imageShadow: "none",
   },
   "gradient-cool": {
     accentColor: "#2c5aad",
@@ -69,6 +79,8 @@ const secondFourConfigurations = {
     coverLayout: "center-poster",
     density: "normal",
     fontId: "serif",
+    imageRadius: "small",
+    imageShadow: "light",
   },
   "reading-mode": {
     accentColor: "#6b4a2e",
@@ -79,6 +91,8 @@ const secondFourConfigurations = {
     coverLayout: "top-left",
     density: "normal",
     fontId: "serif",
+    imageRadius: "none",
+    imageShadow: "none",
   },
   "xiaohongshu-pink": {
     accentColor: "#b32259",
@@ -89,6 +103,8 @@ const secondFourConfigurations = {
     coverLayout: "center-poster",
     density: "normal",
     fontId: "sans",
+    imageRadius: "large",
+    imageShadow: "strong",
   },
 } satisfies Record<string, StyleConfiguration>;
 
@@ -96,17 +112,18 @@ const ratio = (foreground: string, background: string): number =>
   contrastRatio(hexToRgb(foreground), hexToRgb(background));
 
 describe("内置主题 1–4", () => {
-  it.each(
-    Object.entries(firstFourConfigurations)
-  )("%s 通过 Seam 公开完整样式配置", (themeId, configuration) => {
-    const snapshot = styleSystem.read(
-      styleSystem.hydrate({ currentThemeId: themeId })
-    );
+  it.each(Object.entries(firstFourConfigurations))(
+    "%s 通过 Seam 公开完整样式配置",
+    (themeId, configuration) => {
+      const snapshot = styleSystem.read(
+        styleSystem.hydrate({ currentThemeId: themeId })
+      );
 
-    expect(snapshot.themeConfiguration).toEqual(configuration);
-    expect(snapshot.configuration).toEqual(configuration);
-    expect(snapshot.isModified).toBe(false);
-  });
+      expect(snapshot.themeConfiguration).toEqual(configuration);
+      expect(snapshot.configuration).toEqual(configuration);
+      expect(snapshot.isModified).toBe(false);
+    }
+  );
 
   it("任意两个主题至少有一个可见配置维度不同", () => {
     const configurations = Object.values(firstFourConfigurations);
@@ -127,48 +144,49 @@ describe("内置主题 1–4", () => {
     }
   });
 
-  it.each([
-    "trianglify-minimalist",
-    "gradient-warm",
-  ])("%s 的容器化语义色满足 WCAG AA", (themeId) => {
-    const styles = styleSystem.resolve(
-      styleSystem.hydrate({ currentThemeId: themeId }),
-      { page: "body" }
-    ).styles;
+  it.each(["trianglify-minimalist", "gradient-warm"])(
+    "%s 的容器化语义色满足 WCAG AA",
+    (themeId) => {
+      const { styles } = styleSystem.resolve(
+        styleSystem.hydrate({ currentThemeId: themeId }),
+        { page: "body" }
+      );
 
-    // 文字直接落在图案/渐变背景上，正文级对比由 e2e 像素采样校验；
-    // 这里只断言能静态求值的容器化元素（高亮/引用/代码）与链接下划线。
-    expect(
-      ratio(String(styles.mark.color), String(styles.mark.backgroundColor))
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(
-      ratio(
-        String(styles.blockquote.color),
-        String(styles.blockquote.backgroundColor)
-      )
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(
-      ratio(String(styles.code.color), String(styles.code.backgroundColor))
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(
-      ratio(String(styles.pre.color), String(styles.pre.backgroundColor))
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(styles.a.textDecoration).toBe("underline");
-  });
+      // 文字直接落在图案/渐变背景上，正文级对比由 e2e 像素采样校验；
+      // 这里只断言能静态求值的容器化元素（高亮/引用/代码）与链接下划线。
+      expect(
+        ratio(String(styles.mark.color), String(styles.mark.backgroundColor))
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        ratio(
+          String(styles.blockquote.color),
+          String(styles.blockquote.backgroundColor)
+        )
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        ratio(String(styles.code.color), String(styles.code.backgroundColor))
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        ratio(String(styles.pre.color), String(styles.pre.backgroundColor))
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(styles.a.textDecoration).toBe("underline");
+    }
+  );
 });
 
 describe("内置主题 5–8", () => {
-  it.each(
-    Object.entries(secondFourConfigurations)
-  )("%s 通过 Seam 公开完整样式配置", (themeId, configuration) => {
-    const snapshot = styleSystem.read(
-      styleSystem.hydrate({ currentThemeId: themeId })
-    );
+  it.each(Object.entries(secondFourConfigurations))(
+    "%s 通过 Seam 公开完整样式配置",
+    (themeId, configuration) => {
+      const snapshot = styleSystem.read(
+        styleSystem.hydrate({ currentThemeId: themeId })
+      );
 
-    expect(snapshot.themeConfiguration).toEqual(configuration);
-    expect(snapshot.configuration).toEqual(configuration);
-    expect(snapshot.isModified).toBe(false);
-  });
+      expect(snapshot.themeConfiguration).toEqual(configuration);
+      expect(snapshot.configuration).toEqual(configuration);
+      expect(snapshot.isModified).toBe(false);
+    }
+  );
 
   it("任意两个主题至少有一个可见配置维度不同", () => {
     const configurations = Object.values(secondFourConfigurations);
@@ -189,52 +207,54 @@ describe("内置主题 5–8", () => {
     }
   });
 
-  it.each(
-    Object.entries(secondFourConfigurations)
-  )("%s 保留用户覆盖，未覆盖字段采用主题配置", (themeId, configuration) => {
-    const state = styleSystem.hydrate({
-      currentThemeId: themeId,
-      overrides: { density: "spacious" },
-    });
-    const snapshot = styleSystem.read(state);
+  it.each(Object.entries(secondFourConfigurations))(
+    "%s 保留用户覆盖，未覆盖字段采用主题配置",
+    (themeId, configuration) => {
+      const state = styleSystem.hydrate({
+        currentThemeId: themeId,
+        overrides: { density: "spacious" },
+      });
+      const snapshot = styleSystem.read(state);
 
-    expect(snapshot.themeConfiguration).toEqual(configuration);
-    expect(snapshot.configuration).toEqual({
-      ...configuration,
-      density: "spacious",
-    });
-    expect(snapshot.overridden.density).toBe(true);
-  });
-
-  it.each([
-    "reading-mode",
-    "apple-notes",
-  ])("%s 的纯色或底板语义色满足 WCAG AA", (themeId) => {
-    const styles = styleSystem.resolve(
-      styleSystem.hydrate({ currentThemeId: themeId }),
-      { page: "body" }
-    ).styles;
-    const background = String(
-      styles.innerContainer.backgroundColor ?? styles.container.backgroundColor
-    );
-    const textColors = [
-      styles.h1.color,
-      styles.p.color,
-      styles.strong.color,
-      styles.em.color,
-      styles.ul.color,
-      styles.a.color,
-      styles.footer.color,
-    ];
-
-    for (const color of textColors) {
-      expect(ratio(String(color), background)).toBeGreaterThanOrEqual(4.5);
+      expect(snapshot.themeConfiguration).toEqual(configuration);
+      expect(snapshot.configuration).toEqual({
+        ...configuration,
+        density: "spacious",
+      });
+      expect(snapshot.overridden.density).toBe(true);
     }
-    expect(
-      ratio(String(styles.mark.color), String(styles.mark.backgroundColor))
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(styles.a.textDecoration).toBe("underline");
-  });
+  );
+
+  it.each(["reading-mode", "apple-notes"])(
+    "%s 的纯色或底板语义色满足 WCAG AA",
+    (themeId) => {
+      const { styles } = styleSystem.resolve(
+        styleSystem.hydrate({ currentThemeId: themeId }),
+        { page: "body" }
+      );
+      const background = String(
+        styles.innerContainer.backgroundColor ??
+          styles.container.backgroundColor
+      );
+      const textColors = [
+        styles.h1.color,
+        styles.p.color,
+        styles.strong.color,
+        styles.em.color,
+        styles.ul.color,
+        styles.a.color,
+        styles.footer.color,
+      ];
+
+      for (const color of textColors) {
+        expect(ratio(String(color), background)).toBeGreaterThanOrEqual(4.5);
+      }
+      expect(
+        ratio(String(styles.mark.color), String(styles.mark.backgroundColor))
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(styles.a.textDecoration).toBe("underline");
+    }
+  );
 
   it("Apple 备忘录由主题内部细节生成装饰顶栏且无底板", () => {
     const resolved = styleSystem.resolve(
@@ -261,17 +281,22 @@ const onBackgroundColors = (
   ["正文", String(styles.p.color)],
   ["加粗", String(styles.strong.color)],
   // 列表符号由 ::before 绘制，强调色只在自定义属性里
-  ["列表标记", String((styles.ul as Record<string, unknown>)["--marker-color"])],
+  [
+    "列表标记",
+    String((styles.ul as Record<string, unknown>)["--marker-color"]),
+  ],
   ["链接", String(styles.a.color)],
 ];
 
 describe("内置主题落在背景上的文字对比度", () => {
   it.each(
-    styleSystem.catalog().flatMap((theme) =>
-      (["cover", "body"] as const).map(
-        (page) => [theme.id, page] as [string, "body" | "cover"]
+    styleSystem
+      .catalog()
+      .flatMap((theme) =>
+        (["cover", "body"] as const).map(
+          (page) => [theme.id, page] as [string, "body" | "cover"]
+        )
       )
-    )
   )("%s 的 %s 页文字对背景代表色不低于 4.5:1", (themeId, page) => {
     const state = styleSystem.hydrate({ currentThemeId: themeId });
     const reference = backgroundReferenceColor(

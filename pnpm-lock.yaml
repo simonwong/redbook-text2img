@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  html2canvas-pro@2.4.1: 20cf14fb8ef2df887523c383852081fa1c284aaa21bfe3cb8c8c92209895b7b9
+  html2canvas-pro@2.4.1: 154d2b049b5e03d949fccb1f440cdd7a083bf34b85be7e5f79e2128962e8c8c0
 
 importers:
 
@@ -52,10 +52,16 @@ importers:
         version: 2.1.1
       html2canvas-pro:
         specifier: ^2.4.1
-        version: 2.4.1(patch_hash=20cf14fb8ef2df887523c383852081fa1c284aaa21bfe3cb8c8c92209895b7b9)
+        version: 2.4.1(patch_hash=154d2b049b5e03d949fccb1f440cdd7a083bf34b85be7e5f79e2128962e8c8c0)
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
+      mdast-util-from-markdown:
+        specifier: ^2.0.3
+        version: 2.0.3
+      micromark-util-sanitize-uri:
+        specifier: 2.0.1
+        version: 2.0.1
       next:
         specifier: 16.3.4
         version: 16.3.4(@babel/core@7.29.7)(@playwright/test@1.62.1)(@types/node@26.4.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -120,6 +126,9 @@ importers:
       csstype:
         specifier: ^3.2.3
         version: 3.2.3
+      fake-indexeddb:
+        specifier: ^6.2.5
+        version: 6.2.5
       lint-staged:
         specifier: ^17.4.1
         version: 17.4.1
@@ -1902,6 +1911,10 @@ packages:
 
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
+
+  fake-indexeddb@6.2.5:
+    resolution: {integrity: sha512-CGnyrvbhPlWYMngksqrSSUT1BAVP49dZocrHuK0SvtR0D5TMs5wP0o3j7jexDJW01KSadjBp1M/71o/KR3nD1w==}
+    engines: {node: '>=18'}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -3720,7 +3733,7 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.9
+      '@codemirror/view': 6.43.10
       '@lezer/common': 1.5.2
 
   '@codemirror/commands@6.11.0':
@@ -3934,7 +3947,7 @@ snapshots:
   '@codemirror/language@6.12.4':
     dependencies:
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.9
+      '@codemirror/view': 6.43.10
       '@lezer/common': 1.5.2
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.10
@@ -3947,13 +3960,13 @@ snapshots:
   '@codemirror/lint@6.9.7':
     dependencies:
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.9
+      '@codemirror/view': 6.43.10
       crelt: 1.0.7
 
   '@codemirror/search@6.7.1':
     dependencies:
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.9
+      '@codemirror/view': 6.43.10
       crelt: 1.0.7
 
   '@codemirror/state@6.7.1':
@@ -3964,7 +3977,7 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.9
+      '@codemirror/view': 6.43.10
       '@lezer/highlight': 1.2.3
 
   '@codemirror/view@6.43.10':
@@ -4950,7 +4963,7 @@ snapshots:
       '@codemirror/lint': 6.9.7
       '@codemirror/search': 6.7.1
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.9
+      '@codemirror/view': 6.43.10
 
   comma-separated-tokens@2.0.3: {}
 
@@ -5217,6 +5230,8 @@ snapshots:
 
   extend@3.0.2: {}
 
+  fake-indexeddb@6.2.5: {}
+
   fast-deep-equal@3.1.3: {}
 
   fast-glob@3.3.3:
@@ -5371,7 +5386,7 @@ snapshots:
 
   html-url-attributes@3.0.1: {}
 
-  html2canvas-pro@2.4.1(patch_hash=20cf14fb8ef2df887523c383852081fa1c284aaa21bfe3cb8c8c92209895b7b9):
+  html2canvas-pro@2.4.1(patch_hash=154d2b049b5e03d949fccb1f440cdd7a083bf34b85be7e5f79e2128962e8c8c0):
     dependencies:
       css-line-break: 2.1.0
       text-segmentation: 1.0.3

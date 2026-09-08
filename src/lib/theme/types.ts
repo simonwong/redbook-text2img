@@ -147,6 +147,9 @@ export type CardAspectRatio = "3:4" | "1:1" | "9:16";
 /** 卡片边框（封闭集合）；white 为 3px 白色内边距，属于导出内容 */
 export type CardFrame = "none" | "white";
 
+export type ImageRadius = "none" | "small" | "large";
+export type ImageShadow = "none" | "light" | "strong";
+
 /** Internal shape matching the resolved public style configuration */
 export interface StyleAdjustments {
   /** 强调色（6 位十六进制）：正文标题、加粗、列表标记、引用边线与链接共用 */
@@ -158,6 +161,8 @@ export interface StyleAdjustments {
   readonly coverLayout: CoverLayout;
   readonly density: Density;
   readonly fontId: "sans" | "serif" | "kai" | "mono";
+  readonly imageRadius: ImageRadius;
+  readonly imageShadow: ImageShadow;
 }
 
 // ============================================================

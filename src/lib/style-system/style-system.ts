@@ -69,6 +69,8 @@ const configurationOptions = {
   density: ["compact", "snug", "normal", "relaxed", "spacious"],
   fontId: fontPresets.map(({ id }) => id),
   frost: ["none", "light", "medium", "strong"],
+  imageRadius: ["none", "small", "large"],
+  imageShadow: ["none", "light", "strong"],
 } satisfies StyleConfigurationOptions;
 
 const diffConfiguration = (
@@ -112,6 +114,12 @@ const diffConfiguration = (
     overrides.fontId = configuration.fontId;
   }
 
+  if (configuration.imageRadius !== themeConfiguration.imageRadius) {
+    overrides.imageRadius = configuration.imageRadius;
+  }
+  if (configuration.imageShadow !== themeConfiguration.imageShadow) {
+    overrides.imageShadow = configuration.imageShadow;
+  }
   return overrides;
 };
 
@@ -177,6 +185,8 @@ const gradientDirections = new Set<string>([
 ]);
 const fontIds = new Set<string>(configurationOptions.fontId);
 const frostLevels = new Set<string>(configurationOptions.frost);
+const imageRadii = new Set<string>(configurationOptions.imageRadius);
+const imageShadows = new Set<string>(configurationOptions.imageShadow);
 const densities = new Set<string>(configurationOptions.density);
 // 旧三档持久化值中仅 balanced 消失，按像素等价迁移到 normal；
 // 五档新值（含 compact/spacious）恒等保留，保证界面可选且刷新稳定。
@@ -319,6 +329,14 @@ const sanitizeConfiguration = (value: unknown): StyleConfigurationOverrides => {
       : {}),
     ...(density ? { density } : {}),
     ...(fontId ? { fontId } : {}),
+    ...(typeof value.imageRadius === "string" &&
+    imageRadii.has(value.imageRadius)
+      ? { imageRadius: value.imageRadius as StyleConfiguration["imageRadius"] }
+      : {}),
+    ...(typeof value.imageShadow === "string" &&
+    imageShadows.has(value.imageShadow)
+      ? { imageShadow: value.imageShadow as StyleConfiguration["imageShadow"] }
+      : {}),
   };
 };
 
@@ -594,6 +612,8 @@ const read = (state: StyleSystemState): StyleSystemSnapshot => {
       coverLayout: "coverLayout" in state.overrides,
       density: "density" in state.overrides,
       fontId: "fontId" in state.overrides,
+      imageRadius: "imageRadius" in state.overrides,
+      imageShadow: "imageShadow" in state.overrides,
     },
     theme: theme.item,
     themeConfiguration: cloneConfiguration(themeConfiguration),
@@ -622,14 +642,16 @@ const resolve = (
           headingAlignment: "left",
         };
 
+  const styles = generateStyles(
+    adjustedStyle,
+    context.page === "cover"
+      ? { coverStyle: { ...foundation.coverStyle, ...coverLayout } }
+      : undefined
+  );
+  const { frost: _frost, ...imageStyles } = styles;
   return {
-    headerBar: foundation.headerBar,
-    styles: generateStyles(
-      adjustedStyle,
-      context.page === "cover"
-        ? { coverStyle: { ...foundation.coverStyle, ...coverLayout } }
-        : undefined
-    ),
+    headerBar: context.page === "image" ? undefined : foundation.headerBar,
+    styles: context.page === "image" ? imageStyles : styles,
     theme: theme.item,
   };
 };
