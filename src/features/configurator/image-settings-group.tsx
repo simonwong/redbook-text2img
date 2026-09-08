@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { imageAssets } from "@/lib/image-assets/image-assets";
 import { imageReference } from "@/lib/image-reference";
@@ -34,8 +34,10 @@ const shadowOptions = options.imageShadow.map((value) => ({
 }));
 
 export const ImageSettingsGroup = () => {
-  const hasImages = useMarkdownContentStore((state) =>
-    imageReference.hasImages(state.content)
+  const content = useMarkdownContentStore((state) => state.content);
+  const hasImages = useMemo(
+    () => imageReference.ids(content).length > 0,
+    [content]
   );
   const [message, setMessage] = useState("");
   const dismissMessage = useCallback(() => setMessage(""), []);

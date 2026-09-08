@@ -6,6 +6,8 @@ import {
 } from "./store";
 
 type ImageSnapshot = { status: "ready"; url: string } | { status: "missing" };
+const failedReads = new Set<string>();
+const missingSnapshot = { status: "missing" } as const;
 const snapshots = new Map<string, ImageSnapshot>();
 const pending = new Map<string, Promise<void>>();
 const listeners = new Set<() => void>();
@@ -26,11 +28,15 @@ function fallback() {
 }
 
 function database() {
-  persistent ??= createIndexedDBImageStore().catch(fallback);
+  persistent ??= createIndexedDBImageStore().catch(() => {
+    persistent = undefined;
+    return null;
+  });
   return persistent;
 }
 
 function cache(id: string, blob: Blob | null) {
+  failedReads.delete(id);
   snapshots.set(
     id,
     blob
@@ -54,7 +60,10 @@ export const imageAssets = {
     const store = await database();
     let id: string;
     try {
-      id = await (sessionOnly ? memory : (store ?? memory)).put(blob);
+      if (!store) {
+        throw new Error("图片库不可用");
+      }
+      id = await (sessionOnly ? memory : store).put(blob);
     } catch {
       fallback();
       id = await memory.put(blob);
@@ -79,19 +88,22 @@ export const imageAssets = {
     }
     const request = (async () => {
       const store = await database();
-      const blob =
-        (await memory.get(id)) ??
-        (await store?.get(id).catch(() => {
-          fallback();
-          return null;
-        })) ??
-        null;
-      cache(id, blob);
+      try {
+        const blob = (await memory.get(id)) ?? (await store?.get(id)) ?? null;
+        if (!(blob || store)) {
+          throw new Error("图片库不可用");
+        }
+        cache(id, blob);
+      } catch {
+        failedReads.add(id);
+        emit();
+      }
     })().finally(() => pending.delete(id));
     pending.set(id, request);
     return request;
   },
-  snapshot: (id: string) => snapshots.get(id),
+  snapshot: (id: string) =>
+    snapshots.get(id) ?? (failedReads.has(id) ? missingSnapshot : undefined),
   subscribe(listener: () => void) {
     listeners.add(listener);
     return () => {

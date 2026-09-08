@@ -6,10 +6,25 @@ import { fetchImage } from "../../../lib/image-proxy/fetch-image";
 
 export const runtime = "nodejs";
 
-export async function GET(request: Request): Promise<Response> {
+function allowedOrigin(request: Request): boolean {
   const site = request.headers.get("sec-fetch-site");
-  if (site !== "same-origin" && site !== "none") {
-    return Response.json({ error: "FETCH_DENIED" }, { status: 403 });
+  if (site !== null) {
+    return site === "same-origin" || site === "none";
+  }
+  const source =
+    request.headers.get("origin") ?? request.headers.get("referer");
+  try {
+    return (
+      source !== null && new URL(source).origin === new URL(request.url).origin
+    );
+  } catch {
+    return false;
+  }
+}
+
+export async function GET(request: Request): Promise<Response> {
+  if (!allowedOrigin(request)) {
+    return Response.json({ error: "FORBIDDEN_ORIGIN" }, { status: 403 });
   }
   const url = new URL(request.url);
   const controller = new AbortController();

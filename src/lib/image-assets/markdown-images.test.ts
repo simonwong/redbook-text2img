@@ -80,3 +80,10 @@ it("清理差集保留正文引用（含参数、引用式），忽略代码", (
     )
   ).toEqual(["unused"]);
 });
+
+it("引用式远程图片明确不改写", () => {
+  const content = "![说明][photo]\n\n[photo]: https://images.example/a.png";
+  expect(
+    replaceRemoteImage(content, "https://images.example/a.png", "image:abc")
+  ).toBe(content);
+});

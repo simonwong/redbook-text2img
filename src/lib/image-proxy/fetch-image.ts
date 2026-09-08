@@ -3,6 +3,7 @@ import { lookup } from "node:dns/promises";
 import { request as httpRequest, type IncomingMessage } from "node:http";
 import { request as httpsRequest } from "node:https";
 import { isIP } from "node:net";
+import { imageType } from "../image-assets/image-type";
 import { ImageImportError, maxImageBytes } from "./errors";
 import { validateImageTarget } from "./policy";
 
@@ -20,43 +21,6 @@ function aborted<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
       .then(resolve, reject)
       .finally(() => signal.removeEventListener("abort", stop));
   });
-}
-
-function imageType(bytes: Buffer, declared: string): string {
-  if (!declared.toLowerCase().startsWith("image/")) {
-    throw new ImageImportError("NOT_IMAGE");
-  }
-  if (bytes.subarray(0, 8).equals(Buffer.from("89504e470d0a1a0a", "hex"))) {
-    return "image/png";
-  }
-  if (bytes.subarray(0, 3).equals(Buffer.from("ffd8ff", "hex"))) {
-    return "image/jpeg";
-  }
-  const start = bytes.toString("ascii", 0, 6);
-  if (start === "GIF87a" || start === "GIF89a") {
-    return "image/gif";
-  }
-  if (
-    bytes.toString("ascii", 0, 4) === "RIFF" &&
-    bytes.toString("ascii", 8, 12) === "WEBP"
-  ) {
-    return "image/webp";
-  }
-  if (bytes.toString("ascii", 0, 2) === "BM") {
-    return "image/bmp";
-  }
-  if (bytes.toString("ascii", 4, 8) === "ftyp") {
-    const end = Math.min(bytes.readUInt32BE(0), bytes.length, 64);
-    for (let offset = 8; offset + 4 <= end; offset += 4) {
-      if (
-        offset !== 12 &&
-        ["avif", "avis"].includes(bytes.toString("ascii", offset, offset + 4))
-      ) {
-        return "image/avif";
-      }
-    }
-  }
-  throw new ImageImportError("NOT_IMAGE");
 }
 
 async function openImageResponse(
@@ -90,7 +54,13 @@ async function openImageResponse(
             headers: { accept: "image/*", "accept-encoding": "identity" },
             lookup: (_hostname, options, callback) => {
               if (options.all) {
-                callback(null, [address]);
+                callback(
+                  null,
+                  addresses.map((entry) => ({
+                    address: entry.address,
+                    family: entry.family,
+                  }))
+                );
               } else {
                 callback(null, address.address, address.family);
               }

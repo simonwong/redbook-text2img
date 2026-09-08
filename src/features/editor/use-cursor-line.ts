@@ -2,25 +2,21 @@ import type { EditorView, ViewUpdate } from "@codemirror/view";
 import { ExternalChange } from "@uiw/react-codemirror";
 import { useCallback, useEffect, useState } from "react";
 
-export interface CursorLine {
-  cursorPos: number;
-  doc: string;
-  text: string;
-  userEvent: boolean;
-}
+import { type CursorLine, readCursorLine } from "./cursor-line";
+
+export type { CursorLine } from "./cursor-line";
 
 export function useCursorLine(editorView: EditorView | null) {
   const [cursor, setCursor] = useState<CursorLine | null>(null);
-  const sync = useCallback((view: EditorView, userEvent: boolean) => {
-    const { state } = view;
-    const cursorPos = state.selection.main.head;
-    setCursor({
-      cursorPos,
-      doc: state.doc.toString(),
-      text: state.doc.lineAt(cursorPos).text,
-      userEvent,
-    });
-  }, []);
+  const sync = useCallback(
+    (view: EditorView, userEvent: boolean, docChanged: boolean) => {
+      const { state } = view;
+      setCursor((previous) =>
+        readCursorLine(previous, state, docChanged, userEvent)
+      );
+    },
+    []
+  );
   const onUpdate = useCallback(
     (update: ViewUpdate) => {
       if (update.docChanged || update.selectionSet) {
@@ -31,14 +27,14 @@ export function useCursorLine(editorView: EditorView | null) {
               tr.isUserEvent("input") ||
               tr.isUserEvent("delete")
           ) && !update.transactions.some((tr) => tr.annotation(ExternalChange));
-        sync(update.view, userEvent);
+        sync(update.view, userEvent, update.docChanged);
       }
     },
     [sync]
   );
   useEffect(() => {
     if (editorView) {
-      sync(editorView, false);
+      sync(editorView, false, true);
     }
   }, [editorView, sync]);
   return { cursor, onUpdate };

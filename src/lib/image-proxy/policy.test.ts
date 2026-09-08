@@ -92,3 +92,17 @@ describe("图片代理目标校验", () => {
     ).toThrowError("INVALID_ADDRESS");
   });
 });
+
+it.each([
+  "http://[::1]/",
+  "http://images.example:8080/a",
+  "https://images.example:22/a",
+  "http://[2001:db8::]/",
+  "http://[2002::]/",
+  "http://[2001:0::]/",
+  "http://[64:ff9b::]/",
+])("拒绝保留 IPv6 与非标准端口 %s", (url) => {
+  expect(() => validateImageTarget(url, "editor.example")).toThrow(
+    "INVALID_ADDRESS"
+  );
+});

@@ -72,3 +72,36 @@ it("浏览器取消流时终止上游请求", async () => {
   await result.body?.cancel();
   expect(upstreamSignal?.aborted).toBe(true);
 });
+
+it.each([
+  [{ origin: "https://editor.example" }, 200],
+  [{ referer: "https://editor.example/editor" }, 200],
+  [
+    { origin: "https://other.example", referer: "https://editor.example/" },
+    403,
+  ],
+  [{ referer: "invalid" }, 403],
+  [{}, 403],
+])(
+  "缺 Fetch Metadata 时按 Origin 或 Referer 校验 %j",
+  async (headers, status) => {
+    upstream.mockResolvedValue({
+      body: (async function* () {
+        yield await Promise.resolve(Buffer.from([1]));
+      })(),
+      contentType: "image/png",
+    });
+    const result = await GET(
+      new Request(
+        "https://editor.example/api/image-proxy?url=https://images.example/a",
+        { headers: headers as HeadersInit }
+      )
+    );
+    expect(result.status).toBe(status);
+    if (status === 403) {
+      expect(await result.json()).toEqual({ error: "FORBIDDEN_ORIGIN" });
+    } else {
+      await result.text();
+    }
+  }
+);

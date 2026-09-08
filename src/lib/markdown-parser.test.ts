@@ -53,10 +53,9 @@ describe("配图封面", () => {
   });
   it.each([
     "正文\n# 标题",
-    "![外链](https://example.com/a.png)\n# 标题",
     "![图](image:abc)\n## 二级标题",
     "![图](image:abc)\n正文\n# 标题",
-  ])("不跳过普通正文或外链：%s", (content) => {
+  ])("不跳过普通正文：%s", (content) => {
     expect(parseMarkdownToImages(content)[0].isCover).toBe(false);
   });
   it("无前置图片的封面行为不变", () => {
@@ -65,4 +64,17 @@ describe("配图封面", () => {
       title: "标题",
     });
   });
+});
+
+it("外链导入前后保持封面身份与标题", () => {
+  for (const source of [
+    "https://example.com/a.png",
+    "HTTPS://example.com/a.png",
+    "/local.png",
+    "image:abc",
+  ]) {
+    expect(
+      parseMarkdownToImages(`![# 假标题](${source})\n\n# 标题`)[0]
+    ).toMatchObject({ isCover: true, title: "标题" });
+  }
 });

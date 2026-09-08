@@ -221,13 +221,16 @@ test("移动端本地上传竖图，等比限高并可导出", async ({ page }) 
   await page.setViewportSize({ height: 844, width: 390 });
   await seed(page);
   await upload(page, false, true);
-  const geometry = await page
-    .locator(".img-preview img")
-    .evaluate((element: HTMLImageElement) => ({
-      height: element.offsetHeight,
-      width: element.offsetWidth,
-    }));
-  expect(geometry).toEqual({ height: 250, width: 125 });
+  await expect
+    .poll(() =>
+      page
+        .locator(".img-preview img")
+        .evaluate(async (element: HTMLImageElement) => {
+          await element.decode();
+          return { height: element.offsetHeight, width: element.offsetWidth };
+        })
+    )
+    .toEqual({ height: 250, width: 125 });
   expect(await redPixels(page, await download(page, "导出"))).toBeGreaterThan(
     50_000
   );
@@ -485,3 +488,45 @@ test("窄屏图片选项可滚动、回显显式默认值并省略默认参数",
   await editor.locator(".cm-line").filter({ hasText: "结尾" }).click();
   await expect(options).toBeHidden();
 });
+
+test("单张和批量导出解码失败均显示可读错误", async ({ page }) => {
+  await seed(page);
+  await upload(page);
+  const editor = page.locator(".cm-content");
+  const markdown = await editor.innerText();
+  await editor.fill(`${markdown}\n\n---\n\n${markdown}`);
+  await page.evaluate(() => {
+    HTMLImageElement.prototype.decode = () =>
+      Promise.reject(new Error("decode failed"));
+  });
+  await page.getByRole("button", { exact: true, name: "导出" }).click();
+  await expect(
+    page.getByRole("alert").filter({ hasText: "图片解码失败" })
+  ).toHaveText("图片解码失败，请重新插入该图片");
+  await page.getByRole("button", { exact: true, name: "全部" }).click();
+  await expect(
+    page.getByRole("alert").filter({ hasText: "图片解码失败" })
+  ).toHaveText("图片解码失败，请重新插入该图片");
+});
+
+for (const name of ["导出", "全部"]) {
+  test(`资产加载超时在${name}中提示原因`, async ({ page }) => {
+    await seed(page, "正文\n\n---\n\n第二页");
+    await page.clock.install();
+    await page
+      .locator(".img-preview > div")
+      .first()
+      .evaluate((element) =>
+        element.setAttribute("data-image-loading", "true")
+      );
+    const button = page.getByRole("button", { exact: true, name });
+    await button.click();
+    await expect(button).toBeDisabled();
+    await page.clock.runFor(100);
+    await page.clock.fastForward(10_001);
+    await expect(
+      page.getByRole("alert").filter({ hasText: "图片仍在加载" })
+    ).toHaveText("图片仍在加载，请稍后重试");
+    await expect(button).toBeEnabled();
+  });
+}

@@ -142,3 +142,32 @@ it("响应体停滞也受同一个 10 秒超时限制", async () => {
   await pending;
   expect(stalled.destroyed).toBe(true);
 });
+
+it("lookup all 保留全部已校验地址", async () => {
+  setup([response([png])]);
+  const addresses = [
+    { address: "93.184.216.34", family: 4 },
+    { address: "2606:4700:4700::1111", family: 6 },
+  ];
+  network.lookup.mockResolvedValue(addresses);
+  await consume();
+  const resolved = vi.fn();
+  network.request.mock.calls[0][1].lookup(
+    "images.example",
+    { all: true },
+    resolved
+  );
+  expect(resolved).toHaveBeenCalledWith(null, addresses);
+});
+
+it.each(["http://[::1]/", "http://[::ffff:8.8.8.8]/"])(
+  "重定向到受限 IPv6 字面量拒绝 %s",
+  async (location) => {
+    setup([response([], { location }, 302)]);
+    await expect(consume()).rejects.toThrow("INVALID_ADDRESS");
+  }
+);
+it("重定向缺少 Location 拒绝", async () => {
+  setup([response([], {}, 302)]);
+  await expect(consume()).rejects.toThrow("FETCH_DENIED");
+});

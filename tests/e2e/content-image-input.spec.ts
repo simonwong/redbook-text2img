@@ -191,3 +191,74 @@ test("生产代理拒绝跨站调用与本机目标", async ({ request }) => {
   expect(invalid.status()).toBe(400);
   expect(await invalid.json()).toEqual({ error: "INVALID_ADDRESS" });
 });
+
+test("多文件部分失败仍插入成功项，列出失败文件且一步撤销", async ({ page }) => {
+  await open(page);
+  await page.locator(".cm-content").evaluate(async (element) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 32;
+    canvas.height = 16;
+    const blob = await new Promise<Blob>((resolve) =>
+      canvas.toBlob((value) => {
+        if (value) {
+          resolve(value);
+        }
+      })
+    );
+    const data = new DataTransfer();
+    data.items.add(new File([blob], "成功一.png", { type: "image/png" }));
+    data.items.add(new File(["broken"], "损坏.png", { type: "image/png" }));
+    data.items.add(new File([blob], "成功二.png", { type: "image/png" }));
+    element.dispatchEvent(
+      new ClipboardEvent("paste", {
+        bubbles: true,
+        cancelable: true,
+        clipboardData: data,
+      })
+    );
+  });
+  await expect(
+    page.getByRole("alert").filter({ hasText: "损坏.png" })
+  ).toBeVisible();
+  await expect(page.locator(".img-preview img")).toHaveCount(2);
+  await page.getByRole("button", { exact: true, name: "撤销" }).click();
+  await expect(page.locator(".cm-content")).not.toContainText("image:");
+});
+
+test("文件错误在弹层关闭后仍可见，横幅堆叠、可关闭且六秒消失", async ({
+  page,
+}) => {
+  await open(page);
+  await page.clock.install();
+  await page.getByRole("button", { exact: true, name: "插入图片" }).click();
+  await page.getByLabel("选择内容图片", { exact: true }).setInputFiles({
+    buffer: Buffer.from("broken"),
+    mimeType: "image/png",
+    name: "损坏文件.png",
+  });
+  await page.keyboard.press("Escape");
+  await expect(
+    page.getByRole("alert").filter({ hasText: "损坏文件.png" })
+  ).toBeVisible();
+  await page.locator(".cm-content").evaluate((element) => {
+    const data = new DataTransfer();
+    data.items.add(new File(["broken"], "粘贴失败.png", { type: "image/png" }));
+    element.dispatchEvent(
+      new ClipboardEvent("paste", {
+        bubbles: true,
+        cancelable: true,
+        clipboardData: data,
+      })
+    );
+  });
+  const first = page.getByRole("alert").filter({ hasText: "损坏文件.png" });
+  const second = page.getByRole("alert").filter({ hasText: "粘贴失败.png" });
+  await expect(second).toBeVisible();
+  const a = await first.boundingBox();
+  const b = await second.boundingBox();
+  expect(a && b && b.y >= a.y + a.height).toBe(true);
+  await first.getByRole("button", { name: "关闭提示" }).click();
+  await expect(first).toHaveCount(0);
+  await page.clock.fastForward(6000);
+  await expect(second).toHaveCount(0);
+});

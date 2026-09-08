@@ -52,6 +52,7 @@
     "@types/react-dom": "^19.2.5",
     "babel-plugin-react-compiler": "1.0.0",
     "csstype": "^3.2.3",
+    "fake-indexeddb": "^6.2.5",
     "lint-staged": "^17.4.1",
     "postcss": "^8.5.26",
     "typescript": "^7.0.2",

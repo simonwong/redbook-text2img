@@ -14,7 +14,12 @@ interface Range {
 }
 const pending = new WeakMap<EditorView, Set<Range>>();
 
+class ImageBatchError extends Error {}
+
 export function imageInputError(error: unknown): string {
+  if (error instanceof ImageBatchError) {
+    return error.message;
+  }
   return error instanceof ImageImportError
     ? imageImportErrors[error.code].message
     : "图片无法读取或存入，请换一张图片重试";
@@ -35,10 +40,13 @@ export async function importContentImages(
   try {
     const files =
       typeof source === "string" ? [await fetchRemoteImage(source)] : source;
-    const ids = await Promise.all(
+    const results = await Promise.allSettled(
       files.map((file) => imageAssets.import(file))
     );
-    if (view.dom.isConnected) {
+    const ids = results.flatMap((result) =>
+      result.status === "fulfilled" ? [result.value] : []
+    );
+    if (ids.length > 0 && view.dom.isConnected) {
       insertContentImage(
         view,
         ids.map((id) =>
@@ -46,6 +54,16 @@ export async function importContentImages(
         ),
         target
       );
+    }
+    const failures = results.flatMap((result, index) =>
+      result.status === "rejected"
+        ? [
+            `${files[index] instanceof File ? files[index].name : "图片链接"}：${imageInputError(result.reason)}`,
+          ]
+        : []
+    );
+    if (failures.length > 0) {
+      throw new ImageBatchError(failures.join("；"));
     }
   } finally {
     ranges.delete(target);

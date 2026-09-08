@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import ReactMarkdown, {
   defaultUrlTransform,
   type UrlTransform,
 } from "react-markdown";
+import { imageAssets } from "@/lib/image-assets/image-assets";
+import { imageReference } from "@/lib/image-reference";
 import type { ImageSegment } from "@/lib/markdown-parser";
 import { styleSystem } from "@/lib/style-system/style-system";
 import { useContentThemeStore, useWatermarkStore } from "@/store/theme";
@@ -44,6 +46,14 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   const textPage = segment.isCover ? "cover" : "body";
   const page = segment.isImagePage ? "image" : textPage;
   const pageImage = segment.image;
+  const imageId = pageImage
+    ? (imageReference.parse(pageImage.source)?.id ?? "")
+    : "";
+  const imageSnapshot = useSyncExternalStore(
+    imageAssets.subscribe,
+    () => imageAssets.snapshot(imageId),
+    () => undefined
+  );
 
   const { styles, headerBar } = useMemo(
     () =>
@@ -61,11 +71,19 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   // 白边（cardFrame = white）是导出内容的一部分：导出节点变为白边层，卡片画布退到内层
   const cardBody = pageImage ? (
     <>
-      <ContentImage
-        alt={pageImage.alt}
-        src={pageImage.source}
-        style={styles.imagePage}
-      />
+      <div
+        style={
+          imageSnapshot?.status === "ready"
+            ? { height: "100%" }
+            : { ...styles.innerContainer, height: "100%" }
+        }
+      >
+        <ContentImage
+          alt={pageImage.alt}
+          src={pageImage.source}
+          style={styles.imagePage}
+        />
+      </div>
       <CardWatermark
         pageNumber={watermarkPage}
         signature={signature.trim()}
@@ -144,16 +162,15 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   );
 
   // 磨砂：模糊图片层与蒙层铺在卡片容器内、内容之下，全部属于导出节点
-  const canvasBody =
-    styles.frost && !pageImage ? (
-      <>
-        <div style={styles.frost.blurLayer} />
-        <div style={styles.frost.veil} />
-        <div style={styles.frost.contentLayer}>{cardBody}</div>
-      </>
-    ) : (
-      cardBody
-    );
+  const canvasBody = styles.frost ? (
+    <>
+      <div style={styles.frost.blurLayer} />
+      <div style={styles.frost.veil} />
+      <div style={styles.frost.contentLayer}>{cardBody}</div>
+    </>
+  ) : (
+    cardBody
+  );
 
   if (styles.card.frame) {
     return (

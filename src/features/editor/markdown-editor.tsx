@@ -7,9 +7,11 @@ import { EditorView, type ViewUpdate } from "@codemirror/view";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import CodeMirror from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 import { contentImageEvents } from "./image-input";
+import { ImageNoticeBanner } from "./image-notice-banner";
+import { showImageNotice } from "./image-notices";
 
 const editorClassName = [
   "h-full",
@@ -37,7 +39,6 @@ export function MarkdownEditor({
   onEditorViewReady,
   onUpdate,
 }: MarkdownEditorProps) {
-  const [imageError, setImageError] = useState("");
   const updateCallback = useRef(onUpdate);
   useLayoutEffect(() => {
     updateCallback.current = onUpdate;
@@ -47,7 +48,7 @@ export function MarkdownEditor({
       markdown({ base: markdownLanguage, codeLanguages: languages }),
       EditorView.lineWrapping,
       editorLayoutTheme,
-      contentImageEvents(setImageError),
+      contentImageEvents(showImageNotice),
       EditorView.updateListener.of((update) =>
         updateCallback.current?.(update)
       ),
@@ -60,14 +61,7 @@ export function MarkdownEditor({
 
   return (
     <div className="h-full overflow-hidden">
-      {imageError ? (
-        <p
-          className="pointer-events-none fixed top-20 right-4 left-4 z-50 rounded-lg border bg-background p-3 text-sm shadow-md"
-          role="alert"
-        >
-          {imageError}
-        </p>
-      ) : null}
+      <ImageNoticeBanner />
       <CodeMirror
         basicSetup={{
           foldGutter: false,

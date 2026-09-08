@@ -7,6 +7,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   type ChangeEvent,
   type FormEvent,
+  useEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/popover";
 import { imageAssets } from "@/lib/image-assets/image-assets";
 import { imageInputError, importContentImages } from "./image-input";
+import { showImageNotice } from "./image-notices";
 
 export function InsertImageButton({
   editorView,
@@ -28,7 +30,6 @@ export function InsertImageButton({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const sessionOnly = useSyncExternalStore(
@@ -37,27 +38,35 @@ export function InsertImageButton({
     () => false
   );
 
+  useEffect(() => {
+    if (sessionOnly) {
+      showImageNotice(
+        "图片仅在本次会话保留，关闭页面后将丢失。浏览器本地图片存储不可用。",
+        "status"
+      );
+    }
+  }, [sessionOnly]);
+
   async function insert(source: Blob[] | string) {
     if (!editorView || busy) {
       return;
     }
     setBusy(true);
-    setError("");
     try {
       await importContentImages(editorView, source);
       setOpen(false);
       setUrl("");
     } catch (failure) {
-      setError(imageInputError(failure));
+      showImageNotice(imageInputError(failure));
     } finally {
       setBusy(false);
     }
   }
   function handleFile(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files ?? []);
     event.target.value = "";
-    if (file) {
-      insert([file]);
+    if (files.length > 0) {
+      insert(files);
     }
   }
   function handleLink(event: FormEvent<HTMLFormElement>) {
@@ -111,29 +120,17 @@ export function InsertImageButton({
               {busy ? "图片处理中…" : "导入链接"}
             </Button>
           </form>
-          {error ? (
-            <p className="text-destructive text-xs" role="alert">
-              {error}
-            </p>
-          ) : null}
         </PopoverContent>
       </Popover>
       <input
         accept="image/*"
         aria-label="选择内容图片"
         className="hidden"
+        multiple
         onChange={handleFile}
         ref={inputRef}
         type="file"
       />
-      {sessionOnly ? (
-        <p
-          className="pointer-events-none fixed top-20 right-4 left-4 z-50 rounded-lg border bg-background p-3 text-sm shadow-md md:left-auto md:max-w-sm"
-          role="status"
-        >
-          图片仅在本次会话保留，关闭页面后将丢失。浏览器本地图片存储不可用。
-        </p>
-      ) : null}
     </>
   );
 }

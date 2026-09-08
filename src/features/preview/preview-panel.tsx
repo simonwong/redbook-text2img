@@ -15,6 +15,7 @@ import { styleSystem } from "@/lib/style-system/style-system";
 import { useMarkdownContentStore } from "@/store/markdownContent";
 import { usePreviewNavigationStore } from "@/store/preview-navigation";
 import { useContentThemeStore, useSettingsPanelStore } from "@/store/theme";
+import { ExportError } from "./export-error";
 import { ExportProgressBar } from "./export-progress-bar";
 import { ExportSuccessOverlay } from "./export-success-overlay";
 import { useContentOverflow } from "./hooks/use-content-overflow";
@@ -120,6 +121,7 @@ export const PreviewPanel = ({
   const contentRef = useRef<HTMLDivElement | null>(null);
   const previewAreaRef = useRef<HTMLDivElement | null>(null);
   const scale = usePreviewScale(previewAreaRef, card.width, card.height);
+  const [exportError, setExportError] = useState("");
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
   const [exportProgress, setExportProgress] = useState({
@@ -136,12 +138,15 @@ export const PreviewPanel = ({
     if (!element) {
       return;
     }
+    setExportError("");
     setIsExporting(true);
     try {
       await exportSingleImage(element, activeSegmentIndex);
       setExportSuccess(true);
     } catch (error) {
-      console.error("导出图片失败", error);
+      setExportError(
+        error instanceof Error ? error.message : "导出图片失败，请重试"
+      );
     } finally {
       setIsExporting(false);
     }
@@ -149,6 +154,7 @@ export const PreviewPanel = ({
 
   const handleExportAll = useCallback(async () => {
     const savedIndex = activeSegmentIndex;
+    setExportError("");
     setIsExporting(true);
 
     try {
@@ -176,7 +182,9 @@ export const PreviewPanel = ({
       await downloadZip(zip);
       setExportSuccess(true);
     } catch (error) {
-      console.error("批量导出失败", error);
+      setExportError(
+        error instanceof Error ? error.message : "批量导出失败，请重试"
+      );
     } finally {
       setActiveSegmentIndex(savedIndex);
       setIsExporting(false);
@@ -249,6 +257,7 @@ export const PreviewPanel = ({
         <div aria-hidden="true" className="ds-veil" />
         <MeshGrain />
 
+        <ExportError message={exportError} />
         <ExportProgressBar
           current={exportProgress.current}
           isExporting={isExporting && exportProgress.total > 0}

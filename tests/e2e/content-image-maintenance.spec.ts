@@ -213,6 +213,30 @@ test("清理列出差集、取消保留资产，确认删除后恢复引用显�
   await edit(page, content);
   await expect(page.locator(".img-preview")).toContainText("图片未找到");
   await expect(page.locator(".img-preview img")).toHaveCount(0);
+  await edit(
+    page,
+    content
+      .split("\n")
+      .filter((line) => line.startsWith("!["))
+      .join("\n")
+  );
+  const card = page.locator(".img-preview");
+  const placeholder = card.getByText("图片未找到", { exact: false });
+  await expect(placeholder).toBeVisible();
+  const bounds = await placeholder.evaluate((element) => {
+    const frame = element.closest(".img-preview");
+    if (!frame) {
+      throw new Error("Missing card");
+    }
+    const outer = frame.getBoundingClientRect();
+    const inner = element.getBoundingClientRect();
+    return { x: inner.x - outer.x, y: inner.y - outer.y };
+  });
+  await card.screenshot({
+    path: test.info().outputPath("missing-image-page.png"),
+  });
+  expect(bounds.x).toBeGreaterThan(10);
+  expect(bounds.y).toBeGreaterThan(10);
 });
 
 test("未导入占位随 PNG 导出，操作按钮不进入克隆画布", async ({ page }) => {
@@ -270,7 +294,7 @@ test("图片分组随正文与资产库显隐，删引用后仅保留清理入�
   await expect(cleanup).toHaveCount(0);
   await fixture(page);
   await edit(page, `正文\n\n![远程配图](${remote})`);
-  await expect(group).toBeVisible();
+  await expect(group).toHaveCount(0);
   await expect(cleanup).toHaveCount(0);
   await page
     .locator(".img-preview")

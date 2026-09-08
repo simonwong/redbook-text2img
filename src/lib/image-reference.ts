@@ -66,7 +66,7 @@ export const imageReference = {
     return `image:${normalized.id}${query ? `?${query}` : ""}`;
   },
   hasImages(markdown: string): boolean {
-    return imageSources(markdown).length > 0;
+    return imageReference.ids(markdown).length > 0;
   },
   ids(markdown: string): string[] {
     return [
@@ -79,7 +79,7 @@ export const imageReference = {
     ];
   },
   parse,
-  single(markdown: string) {
+  single(markdown: string, includeRemote = false) {
     const tree = fromMarkdown(markdown);
     const [paragraph] = tree.children;
     if (
@@ -94,7 +94,7 @@ export const imageReference = {
       return null;
     }
     const reference = parse(image.url);
-    return reference
+    return reference || includeRemote
       ? { alt: image.alt ?? "", reference, source: image.url }
       : null;
   },

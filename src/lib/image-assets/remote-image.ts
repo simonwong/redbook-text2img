@@ -5,6 +5,8 @@ import {
   maxImageBytes,
 } from "../image-proxy/errors";
 
+import { imageType } from "./image-type";
+
 async function directImage(url: string): Promise<Blob> {
   const response = await fetch(url, {
     credentials: "omit",
@@ -34,7 +36,12 @@ async function directImage(url: string): Promise<Blob> {
       }
       parts.push(next.value);
     }
-    return new Blob(parts, { type });
+    const blob = new Blob(parts, { type });
+    const detected = imageType(
+      new Uint8Array(await blob.slice(0, 16).arrayBuffer()),
+      type
+    );
+    return blob.slice(0, blob.size, detected);
   } finally {
     await reader.cancel();
   }

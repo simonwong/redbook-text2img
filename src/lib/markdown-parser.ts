@@ -82,7 +82,7 @@ const processSegmentTitles = (segments: ImageSegment[]): void => {
       segment.title = "图片页";
     }
     const firstText =
-      lines.find((line) => !imageReference.single(line))?.trim() ?? "";
+      lines.find((line) => !imageReference.single(line, true))?.trim() ?? "";
     const hasH1 = firstText.startsWith("# ");
     segment.isFirstImage = hasH1;
     segment.isCover = hasH1; // 包含 # 一级标题的视为封面

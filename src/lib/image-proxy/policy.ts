@@ -56,7 +56,10 @@ export function validateImageTarget(
     const url = new URL(source);
     const host = hostname(url.host);
     if (
-      !["http:", "https:"].includes(url.protocol) ||
+      !(
+        ["http:", "https:"].includes(url.protocol) &&
+        ["", "80", "443"].includes(url.port)
+      ) ||
       url.username ||
       url.password ||
       host === "localhost" ||

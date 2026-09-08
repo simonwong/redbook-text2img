@@ -37,7 +37,7 @@ it("识别真实图片并提取去重资产 id，忽略代码和普通链接", (
   expect(imageReference.ids(markdown)).toEqual(["a", "b"]);
   expect(imageReference.hasImages(markdown)).toBe(true);
   expect(imageReference.hasImages("![外链](https://example.com/a.png)")).toBe(
-    true
+    false
   );
   expect(
     imageReference.hasImages("`![代码](image:a)`\n\n[链接](image:b)")

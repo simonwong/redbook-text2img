@@ -2021,3 +2021,23 @@ describe("自定义主题", () => {
     });
   });
 });
+
+it("图片页在 resolve 出口去掉磨砂，正文仍保留", () => {
+  const state = styleSystem.hydrate({
+    currentThemeId: "clean-light",
+    overrides: {
+      background: {
+        dataUrl: "data:image/png;base64,aA==",
+        frost: "strong",
+        kind: "image",
+        tone: "light",
+      },
+    },
+  });
+  expect(
+    styleSystem.resolve(state, { page: "body" }).styles.frost
+  ).toBeDefined();
+  expect(
+    styleSystem.resolve(state, { page: "image" }).styles
+  ).not.toHaveProperty("frost");
+});

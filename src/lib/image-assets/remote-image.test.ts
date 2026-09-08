@@ -7,11 +7,13 @@ afterEach(() => fetcher.mockReset());
 
 it("直连使用 CORS 且不带 Referer，成功返回图片 Blob", async () => {
   fetcher.mockResolvedValue(
-    new Response("pixels", { headers: { "content-type": "image/png" } })
+    new Response(new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]), {
+      headers: { "content-type": "image/png" },
+    })
   );
-  expect(
-    await (await fetchRemoteImage("https://images.example/a")).text()
-  ).toBe("pixels");
+  expect((await fetchRemoteImage("https://images.example/a")).type).toBe(
+    "image/png"
+  );
   expect(fetcher).toHaveBeenCalledWith(
     "https://images.example/a",
     expect.objectContaining({ mode: "cors", referrerPolicy: "no-referrer" })
@@ -68,5 +70,43 @@ it("缺少完成标记的截断流不能入库", async () => {
   fetcher.mockResolvedValueOnce(new Response('{"chunk":"AQID"}\n'));
   await expect(fetchRemoteImage("https://images.example/a")).rejects.toThrow(
     "FETCH_DENIED"
+  );
+});
+
+it.each([
+  ["<svg xmlns='http://www.w3.org/2000/svg'/>", "image/svg+xml"],
+  ["<html>not pixels</html>", "image/png"],
+])("直连伪图片不可入库 %s", async (body, type) => {
+  fetcher.mockResolvedValueOnce(
+    new Response(body, { headers: { "content-type": type } })
+  );
+  fetcher.mockResolvedValueOnce(
+    Response.json({ error: "NOT_IMAGE" }, { status: 415 })
+  );
+  await expect(fetchRemoteImage("https://images.example/a")).rejects.toThrow(
+    "NOT_IMAGE"
+  );
+});
+
+it.each([
+  "not json\n",
+  "null\n",
+  '{"chunk":"AQID"}\n{"done":true,"type":"image/png"}\n{"chunk":"BA=="}\n',
+  '{"done":true,"type":"image/png"}\n',
+])("无效协议流不能入库 %s", async (body) => {
+  fetcher.mockRejectedValueOnce(new TypeError("network"));
+  fetcher.mockResolvedValueOnce(new Response(body));
+  await expect(fetchRemoteImage("https://images.example/a")).rejects.toThrow(
+    "FETCH_DENIED"
+  );
+});
+
+it("同源拒绝码传到客户端", async () => {
+  fetcher.mockRejectedValueOnce(new TypeError("network"));
+  fetcher.mockResolvedValueOnce(
+    Response.json({ error: "FORBIDDEN_ORIGIN" }, { status: 403 })
+  );
+  await expect(fetchRemoteImage("https://images.example/a")).rejects.toThrow(
+    "FORBIDDEN_ORIGIN"
   );
 });

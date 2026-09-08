@@ -642,14 +642,16 @@ const resolve = (
           headingAlignment: "left",
         };
 
+  const styles = generateStyles(
+    adjustedStyle,
+    context.page === "cover"
+      ? { coverStyle: { ...foundation.coverStyle, ...coverLayout } }
+      : undefined
+  );
+  const { frost: _frost, ...imageStyles } = styles;
   return {
     headerBar: context.page === "image" ? undefined : foundation.headerBar,
-    styles: generateStyles(
-      adjustedStyle,
-      context.page === "cover"
-        ? { coverStyle: { ...foundation.coverStyle, ...coverLayout } }
-        : undefined
-    ),
+    styles: context.page === "image" ? imageStyles : styles,
     theme: theme.item,
   };
 };

@@ -3,6 +3,10 @@ export const imageImportErrors = {
     message: "该站点不允许抓取，请先保存图片后本地上传",
     status: 502,
   },
+  FORBIDDEN_ORIGIN: {
+    message: "请求来源不被允许，请从本站重新导入图片",
+    status: 403,
+  },
   INVALID_ADDRESS: {
     message: "地址不合法，请使用公开的 http 或 https 图片链接",
     status: 400,
