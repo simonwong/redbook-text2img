@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/performance/noJsxPropsBind: React Compiler caches the section render callback. */
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -11,7 +12,7 @@ import {
 import { useMarkdownContentStore } from "@/store/markdownContent";
 import { CleanImagesButton } from "./clean-images-button";
 import { ConfigurationSegmentRow } from "./configuration-segment-row";
-import { SettingsGroup } from "./settings-group";
+import { SettingsSection } from "./settings-section";
 
 const options = styleSystem.configurationOptions();
 const radiusLabels: Record<StyleConfiguration["imageRadius"], string> = {
@@ -64,37 +65,47 @@ export const ImageSettingsGroup = () => {
     return null;
   }
   return (
-    <SettingsGroup headingId="image-section-heading" title="图片">
-      {hasImages && (
-        <>
-          <ConfigurationSegmentRow
-            field="imageRadius"
-            label="圆角"
-            labelId="image-radius-label"
-            options={radiusOptions}
-          />
-          <ConfigurationSegmentRow
-            field="imageShadow"
-            label="阴影"
-            labelId="image-shadow-label"
-            options={shadowOptions}
-          />
-        </>
+    <CleanImagesButton
+      onMessage={setMessage}
+      render={(action, confirmation) => (
+        <SettingsSection
+          action={action}
+          headingId="image-section-heading"
+          title="图片设置"
+        >
+          {hasImages && (
+            <>
+              <ConfigurationSegmentRow
+                field="imageRadius"
+                label="圆角"
+                labelId="image-radius-label"
+                options={radiusOptions}
+              />
+              <ConfigurationSegmentRow
+                field="imageShadow"
+                label="阴影"
+                labelId="image-shadow-label"
+                options={shadowOptions}
+              />
+            </>
+          )}
+          {confirmation}
+          {message ? (
+            <div className="space-y-2 text-ink-2 text-xs">
+              <p role="status">{message}</p>
+              <Button
+                onClick={dismissMessage}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                知道了
+              </Button>
+            </div>
+          ) : null}
+        </SettingsSection>
       )}
-      {hasAssets ? <CleanImagesButton onMessage={setMessage} /> : null}
-      {message ? (
-        <div className="space-y-2 text-ink-2 text-xs">
-          <p role="status">{message}</p>
-          <Button
-            onClick={dismissMessage}
-            size="sm"
-            type="button"
-            variant="ghost"
-          >
-            知道了
-          </Button>
-        </div>
-      ) : null}
-    </SettingsGroup>
+      visible={hasAssets}
+    />
   );
 };

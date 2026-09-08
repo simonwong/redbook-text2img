@@ -261,8 +261,6 @@ export const ConfiguratorContent = () => {
         />
       </SettingsGroup>
 
-      <ImageSettingsGroup />
-
       <SettingsGroup headingId={sectionHeadingIds.bodyHeading} title="正文标题">
         <ConfigurationField
           isModified={overridden.bodyHeadingAlignment}
@@ -316,6 +314,7 @@ export const ConfiguratorContent = () => {
       </SettingsGroup>
 
       <CustomThemeActions />
+      <ImageSettingsGroup />
     </div>
   );
 };

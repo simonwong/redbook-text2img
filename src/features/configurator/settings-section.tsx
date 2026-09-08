@@ -8,7 +8,6 @@ interface SettingsSectionProps {
   title: string;
 }
 
-/** 扁平面板里唯一带可见标题的分组 */
 export const SettingsSection = ({
   action,
   children,

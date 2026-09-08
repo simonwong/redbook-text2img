@@ -53,7 +53,7 @@ export function ImageOptionsRow({
   return (
     <section
       aria-label="图片选项"
-      className="flex shrink-0 items-center gap-3 overflow-x-auto px-3 py-2"
+      className="flex shrink-0 items-center gap-3 overflow-x-auto px-3 py-1.5"
     >
       <span className="shrink-0 text-ink-2 text-xs" id={alignId}>
         对齐

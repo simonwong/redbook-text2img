@@ -47,9 +47,9 @@ export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
   };
 
   return (
-    <div className="flex items-center justify-between gap-2 px-2.5 pt-2.5">
+    <div className="flex items-center justify-between gap-2 px-2.5 pt-2">
       {/* 格式工具药丸：按钮之间留 2px，分组间 12px；窄面板时横向滚动而不是把右侧挤出去 */}
-      <div className="ds-raised ds-scrollbar-none flex h-[42px] min-w-0 items-center gap-0.5 overflow-x-auto rounded-full px-[6px]">
+      <div className="ds-raised ds-scrollbar-none flex h-9 min-w-0 items-center gap-0.5 overflow-x-auto rounded-full px-1">
         <ToolbarButton
           icon={TextBoldIcon}
           label="加粗"
@@ -97,17 +97,18 @@ export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
           label="分割线 ---"
           onClick={() => exec(insertHorizontalRule)}
         />
+        <ToolbarSeparator />
+        <InsertImageButton editorView={editorView} />
       </div>
 
       {/* 文档操作：撤销、模板与重置，和格式工具分开成右侧一组 */}
       <div className="flex shrink-0 items-center gap-1">
-        <div className="ds-raised flex h-[42px] items-center gap-0.5 rounded-full px-[6px]">
+        <div className="ds-raised flex h-9 items-center gap-0.5 rounded-full px-1">
           <ToolbarButton
             icon={ArrowTurnBackwardIcon}
             label="撤销"
             onClick={() => exec(undo)}
           />
-          <InsertImageButton editorView={editorView} />
           <TemplatePicker />
         </div>
         {Boolean(isChange) && (

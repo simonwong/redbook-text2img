@@ -207,7 +207,7 @@ test("清理列出差集、取消保留资产，确认删除后恢复引用显�
   ).toBeVisible();
   await page.getByRole("button", { exact: true, name: "知道了" }).click();
   await expect(
-    page.getByRole("region", { exact: true, name: "图片" })
+    page.getByRole("region", { exact: true, name: "图片设置" })
   ).toHaveCount(0);
   await page.getByRole("button", { exact: true, name: "关闭样式设置" }).click();
   await edit(page, content);
@@ -285,7 +285,7 @@ test("图片分组随正文与资产库显隐，删引用后仅保留清理入�
   await open(page);
   await edit(page, "正文");
   await page.getByRole("button", { name: "设置样式" }).click();
-  const group = page.getByRole("region", { exact: true, name: "图片" });
+  const group = page.getByRole("region", { exact: true, name: "图片设置" });
   const cleanup = page.getByRole("button", {
     exact: true,
     name: "清理未使用图片",
@@ -305,6 +305,11 @@ test("图片分组随正文与资产库显隐，删引用后仅保留清理入�
     group.getByRole("button", { exact: true, name: "清理未使用图片" })
   ).toBeVisible();
   await expect(group.getByRole("group")).toHaveCount(2);
+  const heading = group.getByRole("heading", { name: "图片设置" });
+  await expect(heading).toBeVisible();
+  await expect(
+    heading.locator("..").getByRole("button", { name: "清理未使用图片" })
+  ).toBeVisible();
   await edit(page, "正文");
   await expect(group).toBeVisible();
   await expect(group.getByRole("group")).toHaveCount(0);

@@ -357,7 +357,7 @@ test("图片设置随正文显隐，圆角阴影即时预览、导出并持久�
   await page.setViewportSize({ height: 1000, width: 1440 });
   await seed(page);
   await page.getByRole("button", { name: "设置样式" }).click();
-  const group = page.getByRole("region", { exact: true, name: "图片" });
+  const group = page.getByRole("region", { exact: true, name: "图片设置" });
   await expect(group).toHaveCount(0);
   await upload(page);
   await expect(group).toBeVisible();

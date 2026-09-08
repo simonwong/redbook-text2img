@@ -84,7 +84,7 @@ export function InsertImageButton({
           <HugeiconsIcon className="size-4" icon={Image02Icon} />
         </PopoverTrigger>
         <PopoverContent
-          align="end"
+          align="start"
           className="w-72 max-w-[calc(100vw-2rem)]"
           finalFocus={false}
         >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { type ReactNode, useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { imageAssets } from "@/lib/image-assets/image-assets";
 import { unusedImageIds } from "@/lib/image-assets/markdown-images";
@@ -8,8 +8,12 @@ import { useMarkdownContentStore } from "@/store/markdownContent";
 
 export function CleanImagesButton({
   onMessage,
+  render,
+  visible,
 }: {
   onMessage: (message: string) => void;
+  render: (action: ReactNode, confirmation: ReactNode) => ReactNode;
+  visible: boolean;
 }) {
   const [candidates, setCandidates] = useState<string[] | null>(null);
   const [busy, setBusy] = useState(false);
@@ -52,8 +56,8 @@ export function CleanImagesButton({
     }
   }, [candidates, onMessage]);
   const cancel = useCallback(() => setCandidates(null), []);
-  return (
-    <div className="space-y-2 text-ink-2 text-xs">
+  return render(
+    visible ? (
       <Button
         disabled={busy}
         onClick={inspect}
@@ -63,34 +67,34 @@ export function CleanImagesButton({
       >
         清理未使用图片
       </Button>
-      {candidates !== null && (
-        <div className="space-y-2">
-          <p role="status">
-            发现 {candidates.length}{" "}
-            张未使用图片。多标签页只以当前内容为准，清理后无法恢复。
-          </p>
-          <div className="flex gap-2">
-            <Button
-              disabled={busy || candidates.length === 0}
-              onClick={clean}
-              size="sm"
-              type="button"
-              variant="secondary"
-            >
-              确认清理
-            </Button>
-            <Button
-              disabled={busy}
-              onClick={cancel}
-              size="sm"
-              type="button"
-              variant="ghost"
-            >
-              取消
-            </Button>
-          </div>
+    ) : null,
+    candidates === null ? null : (
+      <div className="space-y-2 text-ink-2 text-xs">
+        <p role="status">
+          发现 {candidates.length}{" "}
+          张未使用图片。多标签页只以当前内容为准，清理后无法恢复。
+        </p>
+        <div className="flex gap-2">
+          <Button
+            disabled={busy || candidates.length === 0}
+            onClick={clean}
+            size="sm"
+            type="button"
+            variant="secondary"
+          >
+            确认清理
+          </Button>
+          <Button
+            disabled={busy}
+            onClick={cancel}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            取消
+          </Button>
         </div>
-      )}
-    </div>
+      </div>
+    )
   );
 }
