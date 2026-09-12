@@ -3,13 +3,9 @@ import { generateFAQStructuredData } from "./faq-data";
 
 // 网站基础信息
 export const siteConfig = {
-  name: "小红书图片生成器",
-  title: "小红书图片生成器 - Markdown转图片，免费在线工具",
+  creator: "@simonwong",
   description:
     "免费将 Markdown 文字转成小红书、小绿书、公众号图文风格图片，多种精美主题模板，支持批量导出高清图。无需注册，打开即用，数据本地处理更安全。",
-  url: "https://redbook-text2img.site",
-  ogImage: "/og.png",
-  creator: "@simonwong",
   keywords: [
     "小红书",
     "图片生成器",
@@ -31,106 +27,90 @@ export const siteConfig = {
     "社交媒体图片制作",
     "文字转图片工具",
   ],
+  name: "小红书图片生成器",
+  ogImage: "/og.png",
+  title: "小红书图片生成器 - Markdown转图片，免费在线工具",
+  url: "https://redbook-text2img.com",
 };
 
 // 基础SEO metadata
 export const baseMetadata: Metadata = {
-  title: {
-    default: siteConfig.title,
-    template: `%s | ${siteConfig.name}`,
+  alternates: {
+    canonical: "/",
   },
-  description: siteConfig.description,
-  keywords: siteConfig.keywords,
   authors: [
     {
       name: "Simon Wong",
       url: "https://github.com/simonwong",
     },
   ],
+  category: "technology",
   creator: siteConfig.creator,
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
   metadataBase: new URL(siteConfig.url),
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
-    type: "website",
-    locale: "zh_CN",
-    url: siteConfig.url,
-    title: siteConfig.title,
     description: siteConfig.description,
-    siteName: siteConfig.name,
     images: [
       {
+        alt: `${siteConfig.name} - ${siteConfig.description}`,
+        height: 630,
+        type: "image/png",
         url: siteConfig.ogImage,
         width: 1200,
-        height: 630,
-        alt: `${siteConfig.name} - ${siteConfig.description}`,
-        type: "image/png",
       },
     ],
+    locale: "zh_CN",
+    siteName: siteConfig.name,
+    title: siteConfig.title,
+    type: "website",
+    url: siteConfig.url,
+  },
+  robots: {
+    follow: true,
+    googleBot: {
+      follow: true,
+      index: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+    index: true,
+  },
+  title: {
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.name}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.title,
+    creator: siteConfig.creator,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
-    creator: siteConfig.creator,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
+    title: siteConfig.title,
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
-    yahoo: process.env.NEXT_PUBLIC_YAHOO_VERIFICATION,
     other: {
       "baidu-site-verification":
         process.env.NEXT_PUBLIC_BAIDU_VERIFICATION || "",
     },
+    yahoo: process.env.NEXT_PUBLIC_YAHOO_VERIFICATION,
+    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
   },
-  category: "technology",
 };
 
 // WebApplication 结构化数据
 export const webAppStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: siteConfig.name,
-  description: siteConfig.description,
-  url: siteConfig.url,
   applicationCategory: "UtilitiesApplication",
-  operatingSystem: "Web Browser",
-  browserRequirements: "Requires JavaScript. Requires HTML5.",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "CNY",
-    availability: "https://schema.org/InStock",
-  },
   author: {
     "@type": "Person",
     name: "Simon Wong",
     url: "https://github.com/simonwong",
   },
-  publisher: {
-    "@type": "Organization",
-    name: siteConfig.name,
-    logo: {
-      "@type": "ImageObject",
-      url: `${siteConfig.url}/logo.svg`,
-    },
-  },
-  image: `${siteConfig.url}${siteConfig.ogImage}`,
-  screenshot: `${siteConfig.url}${siteConfig.ogImage}`,
-  softwareVersion: "1.0.0",
+  browserRequirements: "Requires JavaScript. Requires HTML5.",
+  description: siteConfig.description,
   featureList: [
     "Markdown 转图片",
     "多种样式模板",
@@ -139,6 +119,26 @@ export const webAppStructuredData = {
     "自定义样式",
     "批量导出",
   ],
+  image: `${siteConfig.url}${siteConfig.ogImage}`,
+  name: siteConfig.name,
+  offers: {
+    "@type": "Offer",
+    availability: "https://schema.org/InStock",
+    price: "0",
+    priceCurrency: "CNY",
+  },
+  operatingSystem: "Web Browser",
+  publisher: {
+    "@type": "Organization",
+    logo: {
+      "@type": "ImageObject",
+      url: `${siteConfig.url}/logo.svg`,
+    },
+    name: siteConfig.name,
+  },
+  screenshot: `${siteConfig.url}${siteConfig.ogImage}`,
+  softwareVersion: "1.0.0",
+  url: siteConfig.url,
 };
 
 // FAQ 结构化数据（从 faq-data.ts 生成）
@@ -148,37 +148,37 @@ export const faqStructuredData = generateFAQStructuredData();
 export const howToStructuredData = {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  name: "如何使用小红书图片生成器",
   description: "简单三步，快速将 Markdown 文本转换为精美的小红书风格图片",
-  totalTime: "PT2M",
   estimatedCost: {
     "@type": "MonetaryAmount",
     currency: "CNY",
     value: "0",
   },
+  name: "如何使用小红书图片生成器",
   step: [
     {
       "@type": "HowToStep",
-      position: 1,
+      image: `${siteConfig.url}/og.png`,
       name: "输入内容",
+      position: 1,
       text: "在左侧编辑器中输入或粘贴您的 Markdown 文本内容",
-      image: `${siteConfig.url}/og.png`,
     },
     {
       "@type": "HowToStep",
-      position: 2,
+      image: `${siteConfig.url}/og.png`,
       name: "选择样式",
+      position: 2,
       text: "在右侧配置面板中选择预设样式或自定义背景颜色、字体大小等",
-      image: `${siteConfig.url}/og.png`,
     },
     {
       "@type": "HowToStep",
-      position: 3,
-      name: "导出图片",
-      text: "点击导出按钮，将生成的图片保存到本地",
       image: `${siteConfig.url}/og.png`,
+      name: "导出图片",
+      position: 3,
+      text: "点击导出按钮，将生成的图片保存到本地",
     },
   ],
+  totalTime: "PT2M",
 };
 
 // 组合所有结构化数据
@@ -195,27 +195,27 @@ export function generatePageMetadata(
   path?: string
 ): Metadata {
   return {
-    title,
-    description: description || siteConfig.description,
     alternates: {
       canonical: path || "/",
     },
+    description: description || siteConfig.description,
     openGraph: {
-      title,
       description: description || siteConfig.description,
-      url: `${siteConfig.url}${path || ""}`,
       images: [
         {
+          alt: `${title} - ${siteConfig.name}`,
+          height: 630,
           url: siteConfig.ogImage,
           width: 1200,
-          height: 630,
-          alt: `${title} - ${siteConfig.name}`,
         },
       ],
-    },
-    twitter: {
       title,
+      url: `${siteConfig.url}${path || ""}`,
+    },
+    title,
+    twitter: {
       description: description || siteConfig.description,
+      title,
     },
   };
 }
