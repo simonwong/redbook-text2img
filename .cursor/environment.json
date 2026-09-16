@@ -1,0 +1,4 @@
+{
+  "name": "redbook-text2img",
+  "install": "./.cursor/install.sh"
+}
