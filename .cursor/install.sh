@@ -9,9 +9,12 @@ cd "$(dirname "$0")/.."
 # ---------------------------------------------------------------------------
 # System fonts.
 # The theme presets render Simplified-Chinese content and the e2e suite
-# compares the live DOM against html2canvas-pro exports. Matching the exact
-# font families the app requests (see src/lib/theme/fonts.ts) keeps that
-# pixel comparison stable in headless Chromium.
+# compares the live DOM against html2canvas-pro exports. fonts-noto-cjk ships
+# the Noto Sans/Serif CJK SC families; the fontconfig alias below makes the
+# exact families the app requests ("Noto Sans SC" / "Noto Serif SC", see
+# src/lib/theme/fonts.ts) resolve to those CJK faces, which keeps the
+# preview-vs-export pixel comparison within tolerance in headless Chromium
+# regardless of the base image's other fonts.
 # ---------------------------------------------------------------------------
 export DEBIAN_FRONTEND=noninteractive
 
@@ -27,9 +30,9 @@ $SUDO apt-get install -y --no-install-recommends \
   curl \
   ca-certificates
 
-# Install the exact "Noto Serif SC" / "Noto Sans SC" families requested by the
-# serif and sans theme stacks. The Debian package only ships the differently
-# named "Noto ... CJK SC" families, so fetch the Google Fonts variable builds.
+# Provide the exact "Noto Serif SC" / "Noto Sans SC" family names as real files
+# too (the Debian package only ships the differently named "... CJK SC"
+# families). The alias below still routes rendering to the CJK faces.
 FONT_DIR="/usr/share/fonts/truetype/noto-sc"
 $SUDO mkdir -p "$FONT_DIR"
 install_google_font() {
@@ -46,6 +49,24 @@ install_google_font "NotoSerifSC.ttf" \
   "https://github.com/google/fonts/raw/main/ofl/notoserifsc/NotoSerifSC%5Bwght%5D.ttf"
 install_google_font "NotoSansSC.ttf" \
   "https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf"
+
+# Route the app's requested SC families to the Noto CJK faces so the e2e
+# preview-vs-html2canvas-pro ink comparison stays within tolerance.
+$SUDO tee /etc/fonts/conf.d/99-redbook-cjk.conf >/dev/null <<'FONTCONF'
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <match target="pattern">
+    <test name="family"><string>Noto Serif SC</string></test>
+    <edit name="family" mode="prepend" binding="strong"><string>Noto Serif CJK SC</string></edit>
+  </match>
+  <match target="pattern">
+    <test name="family"><string>Noto Sans SC</string></test>
+    <edit name="family" mode="prepend" binding="strong"><string>Noto Sans CJK SC</string></edit>
+  </match>
+</fontconfig>
+FONTCONF
+
 $SUDO fc-cache -f >/dev/null
 
 # ---------------------------------------------------------------------------
