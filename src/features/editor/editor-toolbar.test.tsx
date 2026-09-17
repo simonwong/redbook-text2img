@@ -11,3 +11,8 @@ it("插入图片紧随分割线，位于撤销之前", () => {
     html.indexOf('aria-label="撤销"')
   );
 });
+
+it("工具栏上下留白，避免正文贴住操作栏", () => {
+  const html = renderToStaticMarkup(<EditorToolbar editorView={null} />);
+  expect(html).toContain("py-2.5");
+});
