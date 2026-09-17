@@ -47,7 +47,7 @@ export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
   };
 
   return (
-    <div className="flex items-center justify-between gap-2 px-2.5 pt-2">
+    <div className="flex shrink-0 items-center justify-between gap-2 px-2.5 py-2.5">
       {/* 格式工具药丸：按钮之间留 2px，分组间 12px；窄面板时横向滚动而不是把右侧挤出去 */}
       <div className="ds-raised ds-scrollbar-none flex h-9 min-w-0 items-center gap-0.5 overflow-x-auto rounded-full px-1">
         <ToolbarButton
