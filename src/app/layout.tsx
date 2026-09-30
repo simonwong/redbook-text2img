@@ -5,7 +5,7 @@ import { Inter } from "next/font/google";
 import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { baseMetadata, structuredData } from "@/lib/seo-config";
+import { baseMetadata } from "@/lib/seo-config";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -24,9 +24,6 @@ export const metadata: Metadata = {
     telephone: false,
   },
   other: {
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-title": "小红书图片生成器",
-    "application-name": "小红书图片生成器",
     "mobile-web-app-capable": "yes",
   },
 };
@@ -55,17 +52,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {structuredData.map((data, index) => (
-          <script
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: use for seo
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(data),
-            }}
-            // biome-ignore lint/suspicious/noArrayIndexKey: static array
-            key={index}
-            type="application/ld+json"
-          />
-        ))}
         <link href="/icon-512.png" rel="apple-touch-icon" sizes="512x512" />
       </head>
       <body>
