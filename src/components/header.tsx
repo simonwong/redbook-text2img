@@ -22,7 +22,7 @@ export const Header = () => {
     <header className="flex h-10 shrink-0 items-center gap-3 px-1">
       <Link aria-label="Home" className="flex items-center gap-2.5" href="/">
         <span className="ds-raised flex size-[30px] items-center justify-center rounded-full shadow-[var(--ds-sh-raised),0_6px_14px_-6px_rgba(255,59,74,0.5)]">
-          <Image alt="Logo" height={15} src="/logo.svg" width={15} />
+          <Image alt="Logo" height={15} src="/logo.png" width={15} />
         </span>
         <span className="hidden font-bold text-[14px] text-ink tracking-[-0.01em] sm:inline-flex">
           小红书图片生成器

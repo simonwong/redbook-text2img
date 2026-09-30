@@ -9,7 +9,7 @@ import {
   type StyleConfiguration,
   styleSystem,
 } from "@/lib/style-system/style-system";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useMarkdownContentStore } from "@/store/markdown-content";
 import { CleanImagesButton } from "./clean-images-button";
 import { ConfigurationSegmentRow } from "./configuration-segment-row";
 import { SettingsSection } from "./settings-section";

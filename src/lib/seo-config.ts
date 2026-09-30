@@ -132,7 +132,7 @@ export const webAppStructuredData = {
     "@type": "Organization",
     logo: {
       "@type": "ImageObject",
-      url: `${siteConfig.url}/logo.svg`,
+      url: `${siteConfig.url}/icon-512.png`,
     },
     name: siteConfig.name,
   },

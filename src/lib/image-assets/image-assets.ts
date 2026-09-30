@@ -36,6 +36,10 @@ function database() {
 }
 
 function cache(id: string, blob: Blob | null) {
+  const previous = snapshots.get(id);
+  if (previous?.status === "ready") {
+    URL.revokeObjectURL(previous.url);
+  }
   failedReads.delete(id);
   snapshots.set(
     id,
@@ -52,7 +56,6 @@ export const imageAssets = {
     const store = await database();
     await store?.delete(id);
     await memory.delete(id);
-    snapshots.delete(id);
     cache(id, null);
   },
   async import(file: Blob): Promise<string> {

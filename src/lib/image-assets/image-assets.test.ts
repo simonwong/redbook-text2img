@@ -1,6 +1,6 @@
 import "fake-indexeddb/auto";
 import { afterEach, expect, it, vi } from "vitest";
-import { useMarkdownContentStore } from "../../store/markdownContent";
+import { useMarkdownContentStore } from "../../store/markdown-content";
 import { imageAssets } from "./image-assets";
 
 const pixels = new Blob(["pixels"], { type: "image/png" });

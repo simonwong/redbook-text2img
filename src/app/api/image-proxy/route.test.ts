@@ -105,3 +105,25 @@ it.each([
     }
   }
 );
+it("同一来源一分钟内超过 30 次返回 429", async () => {
+  upstream.mockRejectedValue(new ImageImportError("NOT_IMAGE"));
+  const limited = () =>
+    GET(
+      new Request(
+        "https://editor.example/api/image-proxy?url=https://a.example/a",
+        {
+          headers: {
+            "sec-fetch-site": "same-origin",
+            "x-forwarded-for": "203.0.113.9",
+          },
+        }
+      )
+    );
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    // biome-ignore lint/performance/noAwaitInLoops: Requests are counted in order.
+    expect((await limited()).status).toBe(415);
+  }
+  const result = await limited();
+  expect(result.status).toBe(429);
+  expect(await result.json()).toEqual({ error: "RATE_LIMITED" });
+});

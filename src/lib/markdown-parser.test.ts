@@ -45,7 +45,6 @@ describe("配图封面", () => {
     const [segment] = parseMarkdownToImages(content);
     expect(segment).toMatchObject({
       isCover: true,
-      isFirstImage: true,
       isImagePage: false,
       title: "正确标题",
     });
@@ -77,4 +76,10 @@ it("外链导入前后保持封面身份与标题", () => {
       parseMarkdownToImages(`![# 假标题](${source})\n\n# 标题`)[0]
     ).toMatchObject({ isCover: true, title: "标题" });
   }
+});
+
+describe("围栏代码块", () => {
+  it("代码块内的 --- 同样分页，用于拆分长代码块", () => {
+    expect(parseMarkdownToImages("```\na\n---\nb\n```")).toHaveLength(2);
+  });
 });

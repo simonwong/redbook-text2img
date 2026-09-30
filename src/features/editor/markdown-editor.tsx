@@ -8,7 +8,7 @@ import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import CodeMirror from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
 import { useLayoutEffect, useMemo, useRef } from "react";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useMarkdownContentStore } from "@/store/markdown-content";
 import { contentImageEvents } from "./image-input";
 import { ImageNoticeBanner } from "./image-notice-banner";
 import { showImageNotice } from "./image-notices";

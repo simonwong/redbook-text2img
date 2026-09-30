@@ -3,8 +3,18 @@ import {
   imageImportErrors,
 } from "../../../lib/image-proxy/errors";
 import { fetchImage } from "../../../lib/image-proxy/fetch-image";
+import { createRateLimiter } from "../../../lib/image-proxy/rate-limit";
 
 export const runtime = "nodejs";
+
+// 来源头可以被非浏览器客户端伪造，按 IP 限流压住把代理当免费出口的连续调用
+const allowRequest = createRateLimiter(30, 60_000);
+
+function clientAddress(request: Request): string {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown"
+  );
+}
 
 function allowedOrigin(request: Request): boolean {
   const site = request.headers.get("sec-fetch-site");
@@ -25,6 +35,15 @@ function allowedOrigin(request: Request): boolean {
 export async function GET(request: Request): Promise<Response> {
   if (!allowedOrigin(request)) {
     return Response.json({ error: "FORBIDDEN_ORIGIN" }, { status: 403 });
+  }
+  if (!allowRequest(clientAddress(request))) {
+    return Response.json(
+      { error: "RATE_LIMITED" },
+      {
+        headers: { "cache-control": "no-store", "retry-after": "60" },
+        status: imageImportErrors.RATE_LIMITED.status,
+      }
+    );
   }
   const url = new URL(request.url);
   const controller = new AbortController();

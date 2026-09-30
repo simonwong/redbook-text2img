@@ -9,6 +9,8 @@ import { baseMetadata, structuredData } from "@/lib/seo-config";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
+const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
@@ -80,7 +82,7 @@ export default function RootLayout({
           </ThemeProvider>
         </div>
         <Analytics />
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
+        {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       </body>
     </html>
   );

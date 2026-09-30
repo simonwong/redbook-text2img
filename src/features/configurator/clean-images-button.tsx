@@ -4,7 +4,7 @@ import { type ReactNode, useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { imageAssets } from "@/lib/image-assets/image-assets";
 import { unusedImageIds } from "@/lib/image-assets/markdown-images";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useMarkdownContentStore } from "@/store/markdown-content";
 
 export function CleanImagesButton({
   onMessage,

@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/performance/noJsxPropsBind: React Compiler caches event handlers. */
 "use client";
 
 import { NoteIcon } from "@hugeicons/core-free-icons";
@@ -10,10 +11,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { type Template, templates } from "@/lib/templates";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useMarkdownContentStore } from "@/store/markdown-content";
 
 export const TemplatePicker = () => {
-  const { setContent } = useMarkdownContentStore();
+  const setContent = useMarkdownContentStore((s) => s.setContent);
   const [open, setOpen] = useState(false);
 
   const handleSelect = (template: Template) => {

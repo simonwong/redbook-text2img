@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, expect, it } from "vitest";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useMarkdownContentStore } from "@/store/markdown-content";
 import { ImageSettingsGroup } from "./image-settings-group";
 
 const initialState = useMarkdownContentStore.getInitialState();

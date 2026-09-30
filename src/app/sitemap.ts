@@ -2,26 +2,21 @@ import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/seo-config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const currentDate = new Date();
-
   return [
     {
-      url: siteConfig.url,
-      lastModified: currentDate,
       changeFrequency: "weekly",
       priority: 1,
+      url: siteConfig.url,
     },
     {
-      url: `${siteConfig.url}/faq`,
-      lastModified: currentDate,
       changeFrequency: "monthly",
       priority: 0.9,
+      url: `${siteConfig.url}/faq`,
     },
     {
-      url: `${siteConfig.url}/changelog`,
-      lastModified: currentDate,
       changeFrequency: "monthly",
       priority: 0.8,
+      url: `${siteConfig.url}/changelog`,
     },
   ];
 }
