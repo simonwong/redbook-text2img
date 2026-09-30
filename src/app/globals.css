@@ -7,44 +7,40 @@
 
 :root {
   --radius: 0.625rem;
-  --card: oklch(0.995 0.001 80);
-  --card-foreground: oklch(0.18 0 0);
-  --popover: oklch(0.995 0.001 80);
-  --popover-foreground: oklch(0.18 0 0);
-  --primary: oklch(0.505 0.213 27.518);
-  --primary-foreground: oklch(0.971 0.013 17.38);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.955 0.002 80);
-  --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.955 0.002 80);
-  --accent-foreground: oklch(0.22 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.97 0.002 80);
-  --sidebar-foreground: oklch(0.18 0 0);
-  --sidebar-primary: oklch(0.577 0.245 27.325);
-  --sidebar-primary-foreground: oklch(0.971 0.013 17.38);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --background: oklch(0.99 0.002 80);
-  --foreground: oklch(0.18 0 0);
+
+  /*
+   * shadcn 语义 token 全部映射到下面的 ds token：基础组件与自绘界面共用一套色值，
+   * 明暗切换只改 ds token，这里不需要暗色副本。
+   */
+  --background: var(--ds-ground);
+  --foreground: var(--ds-ink);
+  --card: var(--ds-panel-top);
+  --card-foreground: var(--ds-ink);
+  --popover: var(--ds-panel-top);
+  --popover-foreground: var(--ds-ink);
+  --primary: var(--ds-ink);
+  --primary-foreground: var(--ds-on-ink);
+  --secondary: var(--ds-well);
+  --secondary-foreground: var(--ds-ink);
+  --muted: var(--ds-well);
+  --muted-foreground: var(--ds-ink-2);
+  --accent: var(--ds-well);
+  --accent-foreground: var(--ds-ink);
+  --destructive: var(--ds-danger);
+  --destructive-foreground: #fff;
+  --border: var(--ds-line-strong);
+  --input: var(--ds-line-strong);
+  --ring: var(--ds-ink-3);
 
   /* ---- 视觉重设计 token（轻拟物 · 磨砂彩色玻璃） ---- */
   --ds-ground: #ebebee;
   --ds-ink: #111114;
   --ds-ink-2: #6b6b73;
-  --ds-ink-3: #a0a0a8;
+  /* 三级文字用于 11px 的说明与占位，保持在 3:1 以上 */
+  --ds-ink-3: #8b8b94;
+  /* 品牌红取自 logo；danger 同色相但更深，用在文字上对比度够 */
+  --ds-brand: #ff3b4a;
+  --ds-danger: #d92637;
   --ds-line: rgba(17, 17, 20, 0.06);
   --ds-line-strong: rgba(17, 17, 20, 0.1);
   --ds-well: rgba(17, 17, 20, 0.05);
@@ -121,44 +117,13 @@
 }
 
 .dark {
-  --background: oklch(0.185 0.005 270);
-  --foreground: oklch(0.93 0 0);
-  --card: oklch(0.22 0.005 270);
-  --card-foreground: oklch(0.93 0 0);
-  --popover: oklch(0.22 0.005 270);
-  --popover-foreground: oklch(0.93 0 0);
-  --primary: oklch(0.444 0.177 26.899);
-  --primary-foreground: oklch(0.971 0.013 17.38);
-  --secondary: oklch(0.27 0.005 270);
-  --secondary-foreground: oklch(0.93 0 0);
-  --muted: oklch(0.26 0.005 270);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.26 0.005 270);
-  --accent-foreground: oklch(0.93 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.21 0.005 270);
-  --sidebar-foreground: oklch(0.93 0 0);
-  --sidebar-primary: oklch(0.637 0.237 25.331);
-  --sidebar-primary-foreground: oklch(0.971 0.013 17.38);
-  --sidebar-accent: oklch(0.26 0.005 270);
-  --sidebar-accent-foreground: oklch(0.93 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-
   /* ---- 视觉重设计 token · 暗色（SPEC 第 9 节） ---- */
   --ds-ground: #121215;
   --ds-ink: #f2f2f5;
   --ds-ink-2: #a3a3ad;
-  --ds-ink-3: #6b6b75;
+  --ds-ink-3: #7e7e89;
+  --ds-brand: #ff5462;
+  --ds-danger: #ff6b76;
   --ds-line: rgba(255, 255, 255, 0.07);
   --ds-line-strong: rgba(255, 255, 255, 0.12);
   --ds-well: rgba(255, 255, 255, 0.06);
@@ -243,28 +208,16 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-brand: var(--ds-brand);
   --color-ink: var(--ds-ink);
   --color-ink-2: var(--ds-ink-2);
   --color-ink-3: var(--ds-ink-3);
@@ -669,4 +622,22 @@
   height: 14px;
   border: 2px solid #fff;
   box-shadow: 0 1px 3px rgb(0 0 0 / 35%);
+}
+
+/*
+ * 长文排版（更新日志）。typography 插件的默认色是独立的灰阶，这里改用 ds token，
+ * 明暗模式随 token 切换，不需要 prose-invert。放在层外以压过插件的工具类。
+ */
+.ds-prose {
+  --tw-prose-body: var(--ds-ink-2);
+  --tw-prose-headings: var(--ds-ink);
+  --tw-prose-bold: var(--ds-ink);
+  --tw-prose-links: var(--ds-ink);
+  --tw-prose-code: var(--ds-ink);
+  --tw-prose-bullets: var(--ds-ink-3);
+  --tw-prose-counters: var(--ds-ink-3);
+  --tw-prose-hr: var(--ds-line-strong);
+  --tw-prose-quotes: var(--ds-ink);
+  --tw-prose-quote-borders: var(--ds-line-strong);
+  font-size: 14px;
 }

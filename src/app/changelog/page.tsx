@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import ReactMarkdown from "react-markdown";
 import { JsonLd } from "@/components/json-ld";
+import { PageShell } from "@/components/page-shell";
 import {
   generateBreadcrumbStructuredData,
   generatePageMetadata,
@@ -19,15 +20,19 @@ const ChangeLogPage = async () => {
   const changelogContent = await readFile(changelogPath, "utf8");
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
+    <PageShell
+      description="小红书图片生成器各版本的功能更新与修复记录。"
+      title="更新日志"
+    >
       <JsonLd
         data={generateBreadcrumbStructuredData("更新日志", "/changelog")}
       />
-      <div className="prose prose-lg prose-gray dark:prose-invert max-w-none">
-        <h1>更新日志</h1>
-        <ReactMarkdown>{changelogContent}</ReactMarkdown>
+      <div className="ds-panel px-5 py-5 sm:px-7">
+        <div className="ds-prose prose max-w-none">
+          <ReactMarkdown>{changelogContent}</ReactMarkdown>
+        </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 

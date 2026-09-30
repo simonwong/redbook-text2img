@@ -25,7 +25,7 @@ export const Header = () => {
         className="flex items-center gap-2.5"
         href="/"
       >
-        <span className="ds-raised flex size-[30px] items-center justify-center rounded-full shadow-[var(--ds-sh-raised),0_6px_14px_-6px_rgba(255,59,74,0.5)]">
+        <span className="ds-raised flex size-[30px] items-center justify-center rounded-full shadow-[var(--ds-sh-raised),0_6px_14px_-6px_color-mix(in_srgb,var(--ds-brand)_50%,transparent)]">
           <Image alt="" height={15} src="/logo.png" width={15} />
         </span>
         <span className="hidden font-bold text-[14px] text-ink tracking-[-0.01em] sm:inline-flex">
@@ -112,7 +112,7 @@ export const Header = () => {
                   target="_blank"
                   title="小红书"
                 >
-                  <XiaohongshuIcon className="size-6 text-[#ff3b4a]" />
+                  <XiaohongshuIcon className="size-6 text-brand" />
                 </Link>
               </div>
             </div>
