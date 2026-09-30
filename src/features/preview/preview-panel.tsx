@@ -4,7 +4,6 @@ import { FileText } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   useCallback,
-  useDeferredValue,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -81,8 +80,7 @@ export const PreviewPanel = ({
   closeDrawerOnOpenSettings,
   onOpenSettings,
 }: PreviewPanelProps) => {
-  // 预览让位于输入：按键先更新编辑器，解析与渲染随后跟上
-  const markdown = useDeferredValue(useMarkdownContentStore((s) => s.content));
+  const markdown = useMarkdownContentStore((s) => s.content);
   const toggleSettings = useSettingsPanelStore((s) => s.toggle);
   const {
     activeSegmentIndex,
