@@ -1,70 +1,76 @@
 import type { Metadata } from "next";
-import { generateFAQStructuredData } from "./faq-data";
+import packageJson from "../../package.json";
 
 // 网站基础信息
 export const siteConfig = {
   creator: "@simonwong",
   description:
     "免费将 Markdown 文字转成小红书、小绿书、公众号图文风格图片，多种精美主题模板，支持批量导出高清图。无需注册，打开即用，数据本地处理更安全。",
+  // 搜索引擎基本不读 keywords，只留与产品直接对应的检索词
   keywords: [
-    "小红书",
-    "图片生成器",
+    "小红书图片生成器",
     "Markdown转图片",
-    "社交媒体工具",
     "文字转图片",
-    "小红书笔记",
-    "图片制作",
-    "在线工具",
-    "免费工具",
-    "Markdown编辑器",
-    "小红书图片",
-    "社交媒体图片",
-    "内容创作",
-    "图片设计",
-    "文案配图",
+    "小红书笔记配图",
     "小绿书图片生成",
-    "公众号图文图片生成",
-    "社交媒体图片制作",
-    "文字转图片工具",
+    "公众号图文配图",
+    "在线图片生成工具",
   ],
   name: "小红书图片生成器",
   ogImage: "/og.png",
+  screenshot: "/screenshot-1.png",
   title: "小红书图片生成器 - Markdown转图片，免费在线工具",
   url: "https://redbook-text2img.com",
 };
+
+const author = {
+  "@type": "Person",
+  name: "Simon Wong",
+  url: "https://github.com/simonwong",
+};
+
+// 嵌套字段在路由段之间是整体替换而不是合并，子页面要带上这些公共字段
+const sharedOpenGraph = {
+  locale: "zh_CN",
+  siteName: siteConfig.name,
+  type: "website",
+} as const;
+
+const sharedTwitter = {
+  card: "summary_large_image" as const,
+  creator: siteConfig.creator,
+  images: [siteConfig.ogImage],
+};
+
+const openGraphImage = (alt: string) => ({
+  alt,
+  height: 630,
+  type: "image/png",
+  url: siteConfig.ogImage,
+  width: 1200,
+});
+
+// 未配置的验证码不输出空 meta
+const baiduVerification = process.env.NEXT_PUBLIC_BAIDU_VERIFICATION;
 
 // 基础SEO metadata
 export const baseMetadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  authors: [
-    {
-      name: "Simon Wong",
-      url: "https://github.com/simonwong",
-    },
-  ],
+  applicationName: siteConfig.name,
+  authors: [{ name: author.name, url: author.url }],
   category: "technology",
   creator: siteConfig.creator,
   description: siteConfig.description,
   keywords: siteConfig.keywords,
   metadataBase: new URL(siteConfig.url),
   openGraph: {
+    ...sharedOpenGraph,
     description: siteConfig.description,
-    images: [
-      {
-        alt: `${siteConfig.name} - ${siteConfig.description}`,
-        height: 630,
-        type: "image/png",
-        url: siteConfig.ogImage,
-        width: 1200,
-      },
-    ],
-    locale: "zh_CN",
-    siteName: siteConfig.name,
+    images: [openGraphImage(siteConfig.title)],
     title: siteConfig.title,
-    type: "website",
-    url: siteConfig.url,
+    url: "/",
   },
   robots: {
     follow: true,
@@ -82,140 +88,107 @@ export const baseMetadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   twitter: {
-    card: "summary_large_image",
-    creator: siteConfig.creator,
+    ...sharedTwitter,
     description: siteConfig.description,
-    images: [siteConfig.ogImage],
     title: siteConfig.title,
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-    other: {
-      "baidu-site-verification":
-        process.env.NEXT_PUBLIC_BAIDU_VERIFICATION || "",
-    },
+    other: baiduVerification
+      ? { "baidu-site-verification": baiduVerification }
+      : undefined,
     yahoo: process.env.NEXT_PUBLIC_YAHOO_VERIFICATION,
     yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
   },
 };
 
-// WebApplication 结构化数据
+// 页面特定的metadata生成器
+export function generatePageMetadata(
+  title: string,
+  description: string,
+  path: string
+): Metadata {
+  const socialTitle = `${title} | ${siteConfig.name}`;
+  return {
+    alternates: {
+      canonical: path,
+    },
+    description,
+    openGraph: {
+      ...sharedOpenGraph,
+      description,
+      images: [openGraphImage(socialTitle)],
+      title: socialTitle,
+      url: path,
+    },
+    title,
+    twitter: {
+      ...sharedTwitter,
+      description,
+      title: socialTitle,
+    },
+  };
+}
+
+// WebSite 结构化数据：告诉搜索引擎站点名称
+export const webSiteStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  description: siteConfig.description,
+  inLanguage: "zh-CN",
+  name: siteConfig.name,
+  url: siteConfig.url,
+};
+
+// WebApplication 结构化数据，只放在首页
 export const webAppStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  applicationCategory: "UtilitiesApplication",
-  author: {
-    "@type": "Person",
-    name: "Simon Wong",
-    url: "https://github.com/simonwong",
-  },
+  applicationCategory: "DesignApplication",
+  author,
   browserRequirements: "Requires JavaScript. Requires HTML5.",
   description: siteConfig.description,
   featureList: [
     "Markdown 转图片",
-    "多种样式模板",
-    "一键导出",
-    "实时预览",
-    "自定义样式",
-    "批量导出",
+    "8 个内置主题与自定义主题",
+    "实时分页预览",
+    "正文插入图片",
+    "单张与批量导出高清 PNG",
+    "内容与图片仅保存在浏览器本地",
   ],
   image: `${siteConfig.url}${siteConfig.ogImage}`,
+  inLanguage: "zh-CN",
+  isAccessibleForFree: true,
   name: siteConfig.name,
   offers: {
     "@type": "Offer",
-    availability: "https://schema.org/InStock",
     price: "0",
     priceCurrency: "CNY",
   },
-  operatingSystem: "Web Browser",
-  publisher: {
-    "@type": "Organization",
-    logo: {
-      "@type": "ImageObject",
-      url: `${siteConfig.url}/logo.svg`,
-    },
-    name: siteConfig.name,
-  },
-  screenshot: `${siteConfig.url}${siteConfig.ogImage}`,
-  softwareVersion: "1.0.0",
+  operatingSystem: "Any",
+  screenshot: `${siteConfig.url}${siteConfig.screenshot}`,
+  softwareVersion: packageJson.version,
   url: siteConfig.url,
 };
 
-// FAQ 结构化数据（从 faq-data.ts 生成）
-export const faqStructuredData = generateFAQStructuredData();
-
-// HowTo 结构化数据
-export const howToStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "HowTo",
-  description: "简单三步，快速将 Markdown 文本转换为精美的小红书风格图片",
-  estimatedCost: {
-    "@type": "MonetaryAmount",
-    currency: "CNY",
-    value: "0",
-  },
-  name: "如何使用小红书图片生成器",
-  step: [
-    {
-      "@type": "HowToStep",
-      image: `${siteConfig.url}/og.png`,
-      name: "输入内容",
-      position: 1,
-      text: "在左侧编辑器中输入或粘贴您的 Markdown 文本内容",
-    },
-    {
-      "@type": "HowToStep",
-      image: `${siteConfig.url}/og.png`,
-      name: "选择样式",
-      position: 2,
-      text: "在右侧配置面板中选择预设样式或自定义背景颜色、字体大小等",
-    },
-    {
-      "@type": "HowToStep",
-      image: `${siteConfig.url}/og.png`,
-      name: "导出图片",
-      position: 3,
-      text: "点击导出按钮，将生成的图片保存到本地",
-    },
-  ],
-  totalTime: "PT2M",
-};
-
-// 组合所有结构化数据
-export const structuredData = [
-  webAppStructuredData,
-  faqStructuredData,
-  howToStructuredData,
-];
-
-// 页面特定的metadata生成器
-export function generatePageMetadata(
-  title: string,
-  description?: string,
-  path?: string
-): Metadata {
+// 子页面的面包屑结构化数据
+export function generateBreadcrumbStructuredData(name: string, path: string) {
   return {
-    alternates: {
-      canonical: path || "/",
-    },
-    description: description || siteConfig.description,
-    openGraph: {
-      description: description || siteConfig.description,
-      images: [
-        {
-          alt: `${title} - ${siteConfig.name}`,
-          height: 630,
-          url: siteConfig.ogImage,
-          width: 1200,
-        },
-      ],
-      title,
-      url: `${siteConfig.url}${path || ""}`,
-    },
-    title,
-    twitter: {
-      description: description || siteConfig.description,
-      title,
-    },
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        item: siteConfig.url,
+        name: siteConfig.name,
+        position: 1,
+      },
+      {
+        "@type": "ListItem",
+        item: `${siteConfig.url}${path}`,
+        name,
+        position: 2,
+      },
+    ],
   };
 }

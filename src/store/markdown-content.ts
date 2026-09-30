@@ -1,11 +1,12 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
+import { createDebouncedStorage } from "./debounced-storage";
 
 interface MarkdownContentState {
   content: string;
   isChange: boolean;
-  setContent: (content: string) => void;
   resetContent: () => void;
+  setContent: (content: string) => void;
 }
 
 const defaultMarkdown = `# 欢迎使用图片生成器
@@ -70,12 +71,16 @@ export const useMarkdownContentStore = create<MarkdownContentState>()(
       (set) => ({
         content: defaultMarkdown,
         isChange: false,
-        setContent: (content) => set({ content, isChange: true }),
         resetContent: () => set({ content: defaultMarkdown, isChange: false }),
+        setContent: (content) => set({ content, isChange: true }),
       }),
       {
         name: "redbook-markdown-content",
+        storage: createJSONStorage(() =>
+          createDebouncedStorage(localStorage, 300)
+        ),
       }
-    )
+    ),
+    { enabled: process.env.NODE_ENV === "development" }
   )
 );

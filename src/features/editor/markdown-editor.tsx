@@ -4,11 +4,11 @@
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { EditorView, type ViewUpdate } from "@codemirror/view";
-import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
+import { githubDarkInit, githubLightInit } from "@uiw/codemirror-theme-github";
 import CodeMirror from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
 import { useLayoutEffect, useMemo, useRef } from "react";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useMarkdownContentStore } from "@/store/markdown-content";
 import { contentImageEvents } from "./image-input";
 import { ImageNoticeBanner } from "./image-notice-banner";
 import { showImageNotice } from "./image-notices";
@@ -27,6 +27,16 @@ const editorLayoutTheme = EditorView.theme({
   ".cm-content": { padding: "14px 20px 56px" },
   ".cm-line": { padding: "0" },
 });
+
+// 编辑区直接落在面板材质上：主题自带的底色会在工具栏下方切出一条色差
+const editorSurface = {
+  background: "transparent",
+  caret: "var(--ds-ink)",
+  foreground: "var(--ds-ink)",
+  gutterBackground: "transparent",
+};
+const lightTheme = githubLightInit({ settings: editorSurface });
+const darkTheme = githubDarkInit({ settings: editorSurface });
 
 interface MarkdownEditorProps {
   onEditorViewReady?: (view: EditorView) => void;
@@ -73,7 +83,7 @@ export function MarkdownEditor({
         onChange={setContent}
         onCreateEditor={(view) => onEditorViewReady?.(view)}
         placeholder={placeholder || "在这里输入您的 Markdown 内容..."}
-        theme={isDarkMode ? githubDark : githubLight}
+        theme={isDarkMode ? darkTheme : lightTheme}
         value={content}
       />
     </div>

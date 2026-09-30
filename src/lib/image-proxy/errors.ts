@@ -12,6 +12,7 @@ export const imageImportErrors = {
     status: 400,
   },
   NOT_IMAGE: { message: "不是图片，请检查链接或选择本地图片", status: 415 },
+  RATE_LIMITED: { message: "导入过于频繁，请稍后再试", status: 429 },
   TIMEOUT: { message: "抓取超时，请稍后重试或本地上传", status: 504 },
   TOO_LARGE: { message: "图片过大，请选择不超过 4MB 的图片", status: 413 },
 } as const;

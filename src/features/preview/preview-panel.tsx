@@ -12,7 +12,7 @@ import {
 } from "react";
 import { parseMarkdownToImages } from "@/lib/markdown-parser";
 import { styleSystem } from "@/lib/style-system/style-system";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useMarkdownContentStore } from "@/store/markdown-content";
 import { usePreviewNavigationStore } from "@/store/preview-navigation";
 import { useContentThemeStore, useSettingsPanelStore } from "@/store/theme";
 import { ExportError } from "./export-error";
@@ -80,8 +80,8 @@ export const PreviewPanel = ({
   closeDrawerOnOpenSettings,
   onOpenSettings,
 }: PreviewPanelProps) => {
-  const { content: markdown } = useMarkdownContentStore();
-  const { toggle: toggleSettings } = useSettingsPanelStore();
+  const markdown = useMarkdownContentStore((s) => s.content);
+  const toggleSettings = useSettingsPanelStore((s) => s.toggle);
   const {
     activeSegmentIndex,
     setActiveSegmentIndex,
@@ -92,7 +92,7 @@ export const PreviewPanel = ({
 
   const segments = useMemo(() => parseMarkdownToImages(markdown), [markdown]);
   const title = useMemo(
-    () => sanitizeFilename(segments.find((s) => s.isFirstImage)?.title ?? ""),
+    () => sanitizeFilename(segments.find((s) => s.isCover)?.title ?? ""),
     [segments]
   );
 

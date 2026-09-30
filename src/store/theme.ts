@@ -49,14 +49,9 @@ export const useContentThemeStore = create<ContentThemeState>()(
         return {
           ...initialStyleState,
 
-          selectPresetTheme: (themeId: string) =>
+          deleteCustomTheme: (id: string) =>
             set((state) =>
-              applyTransition(state, { themeId, type: "select-theme" })
-            ),
-
-          updateConfiguration: (patch: Partial<StyleConfiguration>) =>
-            set((state) =>
-              applyTransition(state, { patch, type: "update-configuration" })
+              applyTransition(state, { id, type: "delete-custom-theme" })
             ),
 
           resetConfiguration: () =>
@@ -67,11 +62,6 @@ export const useContentThemeStore = create<ContentThemeState>()(
           resetConfigurationField: (field: keyof StyleConfiguration) =>
             set((state) =>
               applyTransition(state, { field, type: "reset-field" })
-            ),
-
-          undoThemeSelection: () =>
-            set((state) =>
-              applyTransition(state, { type: "undo-theme-selection" })
             ),
 
           // 保存前先算出「保存之后」的持久化体积：写进去再失败无法回滚，
@@ -95,32 +85,43 @@ export const useContentThemeStore = create<ContentThemeState>()(
             return { ok: true };
           },
 
+          selectPresetTheme: (themeId: string) =>
+            set((state) =>
+              applyTransition(state, { themeId, type: "select-theme" })
+            ),
+
+          undoThemeSelection: () =>
+            set((state) =>
+              applyTransition(state, { type: "undo-theme-selection" })
+            ),
+
+          updateConfiguration: (patch: Partial<StyleConfiguration>) =>
+            set((state) =>
+              applyTransition(state, { patch, type: "update-configuration" })
+            ),
+
           updateCustomTheme: () =>
             set((state) =>
               applyTransition(state, { type: "update-custom-theme" })
             ),
-
-          deleteCustomTheme: (id: string) =>
-            set((state) =>
-              applyTransition(state, { id, type: "delete-custom-theme" })
-            ),
         };
       },
       {
-        name: "redbook-content-theme",
-        version: 6,
-        migrate: styleSystem.hydrate,
         merge: (persisted, current) => ({
           ...current,
           ...styleSystem.hydrate(persisted),
         }),
+        migrate: styleSystem.hydrate,
+        name: "redbook-content-theme",
         partialize: (state) => ({
           currentThemeId: state.currentThemeId,
           customThemes: state.customThemes,
           overrides: state.overrides,
         }),
+        version: 6,
       }
-    )
+    ),
+    { enabled: process.env.NODE_ENV === "development" }
   )
 );
 
@@ -139,21 +140,21 @@ export const useWatermarkStore = create<WatermarkState>()(
   devtools(
     persist(
       (set) => ({
-        signature: "",
-        showPageNumber: true,
+        setShowPageNumber: (showPageNumber: boolean) => set({ showPageNumber }),
 
         setSignature: (signature: string) => set({ signature }),
-
-        setShowPageNumber: (showPageNumber: boolean) => set({ showPageNumber }),
+        showPageNumber: true,
+        signature: "",
       }),
       {
         name: "redbook-watermark",
         partialize: (state) => ({
-          signature: state.signature,
           showPageNumber: state.showPageNumber,
+          signature: state.signature,
         }),
       }
-    )
+    ),
+    { enabled: process.env.NODE_ENV === "development" }
   )
 );
 
@@ -169,6 +170,6 @@ interface SettingsPanelState {
 
 export const useSettingsPanelStore = create<SettingsPanelState>()((set) => ({
   isOpen: false,
-  toggle: () => set((state) => ({ isOpen: !state.isOpen })),
   setIsOpen: (isOpen: boolean) => set({ isOpen }),
+  toggle: () => set((state) => ({ isOpen: !state.isOpen })),
 }));

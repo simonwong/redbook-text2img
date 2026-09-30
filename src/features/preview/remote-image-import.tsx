@@ -10,7 +10,7 @@ import {
 } from "@/lib/image-assets/markdown-images";
 import { fetchRemoteImage } from "@/lib/image-assets/remote-image";
 import { imageReference } from "@/lib/image-reference";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useMarkdownContentStore } from "@/store/markdown-content";
 
 export function RemoteImageImport({ url }: { url: string }) {
   const [busy, setBusy] = useState(false);

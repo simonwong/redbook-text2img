@@ -18,7 +18,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
-import { useMarkdownContentStore } from "@/store/markdownContent";
+import { useMarkdownContentStore } from "@/store/markdown-content";
 import { InsertImageButton } from "./insert-image-button";
 import {
   insertHeading,
@@ -38,7 +38,8 @@ interface EditorToolbarProps {
 }
 
 export const EditorToolbar = ({ editorView }: EditorToolbarProps) => {
-  const { resetContent, isChange } = useMarkdownContentStore();
+  const resetContent = useMarkdownContentStore((s) => s.resetContent);
+  const isChange = useMarkdownContentStore((s) => s.isChange);
 
   const exec = (fn: (view: EditorView) => void) => {
     if (editorView) {

@@ -1,11 +1,11 @@
 .img-preview ul {
-  list-style: none;
   padding: 0;
+  list-style: none;
 }
 .img-preview ul li::before {
-  content: "•";
   margin-right: 0.5em;
-  color: var(--marker-color, inherit);
   font-size: 1.2em;
   font-weight: bold;
+  color: var(--marker-color, inherit);
+  content: "•";
 }

@@ -1,11 +1,16 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import ReactMarkdown from "react-markdown";
-import { generatePageMetadata } from "@/lib/seo-config";
+import { JsonLd } from "@/components/json-ld";
+import { PageShell } from "@/components/page-shell";
+import {
+  generateBreadcrumbStructuredData,
+  generatePageMetadata,
+} from "@/lib/seo-config";
 
 export const metadata = generatePageMetadata(
   "更新日志",
-  "查看小红书图片生成器的功能更新和版本变更记录",
+  "小红书图片生成器各版本的更新记录：新增主题、样式配置、内容图片与导出方面的改动。",
   "/changelog"
 );
 
@@ -15,13 +20,19 @@ const ChangeLogPage = async () => {
   const changelogContent = await readFile(changelogPath, "utf8");
 
   return (
-    <>
-      <div className="container mx-auto max-w-4xl px-4 py-8">
-        <div className="prose prose-lg prose-gray dark:prose-invert max-w-none">
-          <ReactMarkdown components={{}}>{changelogContent}</ReactMarkdown>
+    <PageShell
+      description="小红书图片生成器各版本的功能更新与修复记录。"
+      title="更新日志"
+    >
+      <JsonLd
+        data={generateBreadcrumbStructuredData("更新日志", "/changelog")}
+      />
+      <div className="ds-panel px-5 py-5 sm:px-7">
+        <div className="ds-prose prose max-w-none">
+          <ReactMarkdown>{changelogContent}</ReactMarkdown>
         </div>
       </div>
-    </>
+    </PageShell>
   );
 };
 

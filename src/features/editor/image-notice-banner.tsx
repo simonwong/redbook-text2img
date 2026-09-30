@@ -12,7 +12,7 @@ export function ImageNoticeBanner() {
     <div className="pointer-events-none fixed top-20 right-4 left-4 z-[100] flex flex-col gap-2 md:left-auto md:max-w-sm">
       {notices.map((notice) => (
         <div
-          className="pointer-events-auto flex items-start gap-2 rounded-lg border bg-background p-3 text-sm shadow-md"
+          className="ds-pop pointer-events-auto flex items-start gap-2 p-3 text-[13px] text-ink"
           key={notice.id}
           role={notice.role}
         >
