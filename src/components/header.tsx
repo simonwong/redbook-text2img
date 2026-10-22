@@ -55,6 +55,24 @@ export const Header = () => {
         >
           更新日志
         </Button>
+        <Button
+          nativeButton={false}
+          render={<Link href="/about" />}
+          size="sm"
+          variant="ghost"
+        >
+          关于
+        </Button>
+        {/* 手机宽度放不下，隐私说明从关于页进入 */}
+        <Button
+          className="hidden sm:inline-flex"
+          nativeButton={false}
+          render={<Link href="/privacy" />}
+          size="sm"
+          variant="ghost"
+        >
+          隐私说明
+        </Button>
       </nav>
 
       <div className="ml-1 flex items-center gap-1.5">
@@ -121,7 +139,9 @@ export const Header = () => {
 
         <ThemeToggle />
 
+        {/* 手机宽度放不下，仓库链接在关于页 */}
         <Button
+          className="hidden sm:inline-flex"
           nativeButton={false}
           render={
             <Link

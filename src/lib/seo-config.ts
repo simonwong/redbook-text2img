@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
 import packageJson from "../../package.json";
+import {
+  GITHUB_LINK,
+  MOONUNDER_LINK,
+  PERSONAL_SITE_LINK,
+  TWITTER_LINK,
+  XIAO_HONG_SHU_LINK,
+} from "./contact";
 
 // 网站基础信息
 export const siteConfig = {
@@ -28,7 +35,8 @@ export const siteConfig = {
 const author = {
   "@type": "Person",
   name: "Simon Wong",
-  url: "https://github.com/simonwong",
+  sameAs: [GITHUB_LINK, TWITTER_LINK, XIAO_HONG_SHU_LINK],
+  url: PERSONAL_SITE_LINK,
 };
 
 // 嵌套字段在路由段之间是整体替换而不是合并，子页面要带上这些公共字段
@@ -171,6 +179,23 @@ export const webAppStructuredData = {
   screenshot: `${siteConfig.url}${siteConfig.screenshot}`,
   softwareVersion: packageJson.version,
   url: siteConfig.url,
+};
+
+// 关于页：说明站点由谁维护，以及作者与 MoonUnder 工作室的关系
+export const aboutPageStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  inLanguage: "zh-CN",
+  mainEntity: {
+    ...author,
+    worksFor: {
+      "@type": "Organization",
+      name: "MoonUnder",
+      url: MOONUNDER_LINK,
+    },
+  },
+  name: `关于${siteConfig.name}`,
+  url: `${siteConfig.url}/about`,
 };
 
 // 子页面的面包屑结构化数据
