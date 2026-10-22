@@ -5,12 +5,14 @@ import packageJson from "../../package.json";
 export const siteConfig = {
   creator: "@simonwong",
   description:
-    "免费将 Markdown 文字转成小红书、小绿书、公众号图文风格图片，多种精美主题模板，支持批量导出高清图。无需注册，打开即用，数据本地处理更安全。",
+    "免费把文字转成小红书图片：粘贴文字或 Markdown，自动分页生成图文卡片，也适用于小绿书和公众号配图。8 个主题可选，批量导出高清 PNG，无需注册，内容只存在浏览器本地。",
   // 搜索引擎基本不读 keywords，只留与产品直接对应的检索词
   keywords: [
     "小红书图片生成器",
-    "Markdown转图片",
+    "小红书文字转图片",
+    "小红书图文生成",
     "文字转图片",
+    "Markdown转图片",
     "小红书笔记配图",
     "小绿书图片生成",
     "公众号图文配图",
@@ -19,7 +21,7 @@ export const siteConfig = {
   name: "小红书图片生成器",
   ogImage: "/og.png",
   screenshot: "/screenshot-1.png",
-  title: "小红书图片生成器 - Markdown转图片，免费在线工具",
+  title: "小红书图片生成器 - 文字转图片，免费在线制作图文",
   url: "https://redbook-text2img.com",
 };
 
