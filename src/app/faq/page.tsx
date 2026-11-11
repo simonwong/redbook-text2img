@@ -1,6 +1,6 @@
 import { JsonLd } from "@/components/json-ld";
 import { PageShell } from "@/components/page-shell";
-import { TWITTER_LINK } from "@/lib/contact";
+import { TWITTER_HANDLE, TWITTER_LINK } from "@/lib/contact";
 import { faqData, generateFAQStructuredData } from "@/lib/faq-data";
 import {
   generateBreadcrumbStructuredData,
@@ -53,7 +53,7 @@ const FAQPage = () => (
           rel="noopener noreferrer"
           target="_blank"
         >
-          @simonwongio
+          @{TWITTER_HANDLE}
         </a>
         。
       </p>

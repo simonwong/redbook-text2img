@@ -237,6 +237,13 @@ test("移动端本地上传竖图，等比限高并可导出", async ({ page }) 
 });
 
 test("图片加载挤出正文后更新溢出提示", async ({ page }) => {
+  // 截断提示只在关闭自动拆分时出现（默认开启）
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "redbook-pagination",
+      JSON.stringify({ state: { autoSplit: false }, version: 0 })
+    );
+  });
   await seed(page, "正文段落。\n\n".repeat(7));
   const warning = page.getByText("以下内容导出时被截断，用 --- 分页", {
     exact: true,

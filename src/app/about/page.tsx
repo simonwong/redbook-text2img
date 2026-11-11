@@ -2,11 +2,13 @@ import Link from "next/link";
 import { ExternalTextLink } from "@/components/external-text-link";
 import { JsonLd } from "@/components/json-ld";
 import { PageShell } from "@/components/page-shell";
+import { WorkLinkCard } from "@/components/work-link-card";
 import {
-  GITHUB_LINK,
   MOONUNDER_LINK,
+  OTHER_WORKS,
   PERSONAL_SITE_LINK,
   REPOSITORY_LINK,
+  TWITTER_HANDLE,
   TWITTER_LINK,
   XIAO_HONG_SHU_LINK,
 } from "@/lib/contact";
@@ -55,20 +57,6 @@ const AboutPage = () => (
       </section>
 
       <section className={sectionClassName}>
-        <h2 className={headingClassName}>谁在维护</h2>
-        <p className={bodyClassName}>
-          我是 Simon
-          Wong，一名独立开发者，这个网站由我一个人开发和维护。我也在运营独立工作室{" "}
-          <ExternalTextLink href={MOONUNDER_LINK}>MoonUnder</ExternalTextLink>
-          ，做小而安静的应用，比如白噪音应用 Rainside 听雨。更多介绍见我的
-          <ExternalTextLink href={PERSONAL_SITE_LINK}>
-            个人网站
-          </ExternalTextLink>
-          。
-        </p>
-      </section>
-
-      <section className={sectionClassName}>
         <h2 className={headingClassName}>开源与数据</h2>
         <p className={bodyClassName}>
           项目代码在{" "}
@@ -84,19 +72,44 @@ const AboutPage = () => (
           里。
         </p>
       </section>
-    </div>
 
-    <div className="ds-well mt-6 rounded-[20px] px-5 py-4 text-center">
-      <h2 className={headingClassName}>联系我</h2>
-      <p className="mt-1.5 text-[13.5px] text-ink-2 leading-[1.75]">
-        问题和建议可以提到{" "}
-        <ExternalTextLink href={`${REPOSITORY_LINK}/issues`}>
-          GitHub Issues
-        </ExternalTextLink>
-        ，也可以在 <ExternalTextLink href={TWITTER_LINK}>X</ExternalTextLink>、
-        <ExternalTextLink href={XIAO_HONG_SHU_LINK}>小红书</ExternalTextLink> 或{" "}
-        <ExternalTextLink href={GITHUB_LINK}>GitHub</ExternalTextLink> 找到我。
-      </p>
+      <section className={sectionClassName}>
+        <h2 className={headingClassName}>关于我</h2>
+        <p className={bodyClassName}>
+          我是 Simon Wong，独立开发者，一个人开发和维护这个网站，同时运营工作室{" "}
+          <ExternalTextLink href={MOONUNDER_LINK}>
+            MoonUnder Studio
+          </ExternalTextLink>
+          。我的博客是{" "}
+          <ExternalTextLink href={PERSONAL_SITE_LINK}>
+            simonw.dev
+          </ExternalTextLink>
+          ，下面是我做的其他产品。
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          {OTHER_WORKS.map((work) => (
+            <WorkLinkCard
+              description={work.description}
+              href={work.url}
+              key={work.url}
+              title={work.linkText}
+            />
+          ))}
+        </div>
+        <p className="mt-3 text-[13.5px] text-ink-2 leading-[1.75]">
+          问题和建议可以提到{" "}
+          <ExternalTextLink href={`${REPOSITORY_LINK}/issues`}>
+            GitHub Issues
+          </ExternalTextLink>
+          ，也可以在{" "}
+          <ExternalTextLink href={TWITTER_LINK}>
+            X @{TWITTER_HANDLE}
+          </ExternalTextLink>{" "}
+          和{" "}
+          <ExternalTextLink href={XIAO_HONG_SHU_LINK}>小红书</ExternalTextLink>{" "}
+          找我。
+        </p>
+      </section>
     </div>
   </PageShell>
 );

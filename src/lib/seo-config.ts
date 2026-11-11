@@ -3,21 +3,24 @@ import packageJson from "../../package.json";
 import {
   GITHUB_LINK,
   MOONUNDER_LINK,
+  OTHER_WORKS,
   PERSONAL_SITE_LINK,
+  TWITTER_HANDLE,
   TWITTER_LINK,
   XIAO_HONG_SHU_LINK,
 } from "./contact";
 
 // 网站基础信息
 export const siteConfig = {
-  creator: "@simonwong",
+  creator: `@${TWITTER_HANDLE}`,
   description:
-    "免费把文字转成小红书图片：粘贴文字或 Markdown，自动分页生成图文卡片，也适用于小绿书和公众号配图。8 个主题可选，批量导出高清 PNG，无需注册，内容只存在浏览器本地。",
+    "免费把文字转成小红书图片：粘贴文字或 Markdown，自动分页生成小红书图文卡片，一级标题自动排成封面，也适用于小绿书和公众号配图。8 个主题可选，批量导出高清 PNG，无需注册，内容只存在浏览器本地。",
   // 搜索引擎基本不读 keywords，只留与产品直接对应的检索词
   keywords: [
     "小红书图片生成器",
     "小红书文字转图片",
     "小红书图文生成",
+    "小红书封面生成器",
     "文字转图片",
     "Markdown转图片",
     "小红书笔记配图",
@@ -28,7 +31,7 @@ export const siteConfig = {
   name: "小红书图片生成器",
   ogImage: "/og.png",
   screenshot: "/screenshot-1.png",
-  title: "小红书图片生成器 - 文字转图片，免费在线制作图文",
+  title: "小红书图片生成器 - 文字转图片，免费生成图文与封面",
   url: "https://redbook-text2img.com",
 };
 
@@ -162,6 +165,7 @@ export const webAppStructuredData = {
     "Markdown 转图片",
     "8 个内置主题与自定义主题",
     "实时分页预览",
+    "一级标题自动生成封面",
     "正文插入图片",
     "单张与批量导出高清 PNG",
     "内容与图片仅保存在浏览器本地",
@@ -181,7 +185,7 @@ export const webAppStructuredData = {
   url: siteConfig.url,
 };
 
-// 关于页：说明站点由谁维护，以及作者与 MoonUnder 工作室的关系
+// 关于页：说明站点由谁维护、作者与 MoonUnder Studio 的关系，以及作者的其他作品
 export const aboutPageStructuredData = {
   "@context": "https://schema.org",
   "@type": "AboutPage",
@@ -190,10 +194,17 @@ export const aboutPageStructuredData = {
     ...author,
     worksFor: {
       "@type": "Organization",
-      name: "MoonUnder",
+      name: "MoonUnder Studio",
       url: MOONUNDER_LINK,
     },
   },
+  mentions: OTHER_WORKS.map((work) => ({
+    "@type": "WebSite",
+    author: { "@type": "Person", name: author.name },
+    description: `${work.linkText}，${work.description}`,
+    name: work.name,
+    url: work.url,
+  })),
   name: `关于${siteConfig.name}`,
   url: `${siteConfig.url}/about`,
 };

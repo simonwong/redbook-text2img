@@ -65,6 +65,7 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
   await expect(themeRegion.locator("fieldset")).toHaveCount(1);
 
   for (const name of themeNames) {
+    // biome-ignore lint/performance/noAwaitInLoops: 逐个切换主题检查，必须按顺序进行
     const card = await selectTheme(page, name);
     await expect(page.getByRole("radio", { name })).toHaveAccessibleDescription(
       "当前主题"
@@ -202,6 +203,13 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
 
 test("8 个主题在超长正文上给出不进入导出卡片的分页提示", async ({ page }) => {
   await resetState(page, overflowingContent);
+  // 截断提示只在关闭自动拆分时出现（默认开启）
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "redbook-pagination",
+      JSON.stringify({ state: { autoSplit: false }, version: 0 })
+    );
+  });
   await page.setViewportSize({ height: 900, width: 1200 });
   await page.goto("/");
   await page.getByRole("button", { name: "第 2 张图片" }).click();
@@ -209,6 +217,7 @@ test("8 个主题在超长正文上给出不进入导出卡片的分页提示", 
 
   const warningText = "以下内容导出时被截断，用 --- 分页";
   for (const name of themeNames) {
+    // biome-ignore lint/performance/noAwaitInLoops: 逐个切换主题检查，必须按顺序进行
     await selectTheme(page, name);
     await expect(page.getByText(warningText, { exact: true })).toBeVisible();
   }
@@ -278,6 +287,7 @@ test("渐变主题 9:16 导出的椭圆光晕没有水平接缝", async ({ page 
 
   for (const name of gradientThemeNames) {
     // 切主题会清空覆盖，比例要在选完主题之后再选
+    // biome-ignore lint/performance/noAwaitInLoops: 逐个切换主题检查，必须按顺序进行
     await selectTheme(page, name);
     await page
       .getByRole("radio", { exact: true, name: "9:16" })

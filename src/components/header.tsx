@@ -25,10 +25,11 @@ export const Header = () => {
         className="flex items-center gap-2.5"
         href="/"
       >
-        <span className="ds-raised flex size-[30px] items-center justify-center rounded-full shadow-[var(--ds-sh-raised),0_6px_14px_-6px_color-mix(in_srgb,var(--ds-brand)_50%,transparent)]">
-          <Image alt="" height={15} src="/logo.png" width={15} />
+        {/* 标志放在一枚凸起的圆角方块里，像桌面上的 App 图标；不再用品牌色光晕 */}
+        <span className="ds-raised flex size-8 items-center justify-center rounded-[10px]">
+          <Image alt="" height={20} src="/logo.png" width={20} />
         </span>
-        <span className="hidden font-bold text-[14px] text-ink tracking-[-0.01em] sm:inline-flex">
+        <span className="hidden font-bold text-[15px] text-ink tracking-[-0.02em] sm:inline-flex">
           小红书图片生成器
         </span>
       </Link>
@@ -39,6 +40,15 @@ export const Header = () => {
         aria-label="Main Navigation"
         className="flex items-center gap-0.5 sm:gap-1"
       >
+        {/* 普通链接而不是 Link：同页点击要触发 hashchange 才能打开首页的说明弹窗 */}
+        <Button
+          nativeButton={false}
+          render={<a href="/#guide" />}
+          size="sm"
+          variant="ghost"
+        >
+          使用说明
+        </Button>
         <Button
           nativeButton={false}
           render={<Link href="/faq" />}
@@ -47,7 +57,9 @@ export const Header = () => {
         >
           常见问题
         </Button>
+        {/* 手机宽度放不下，更新日志从关于页进入 */}
         <Button
+          className="hidden sm:inline-flex"
           nativeButton={false}
           render={<Link href="/changelog" />}
           size="sm"

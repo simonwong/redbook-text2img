@@ -10,18 +10,22 @@ import {
   useRef,
   useState,
 } from "react";
-import { parseMarkdownToImages } from "@/lib/markdown-parser";
+import {
+  type ImageSegment,
+  parseMarkdownToImages,
+} from "@/lib/markdown-parser";
 import { styleSystem } from "@/lib/style-system/style-system";
 import { useMarkdownContentStore } from "@/store/markdown-content";
+import { usePaginationStore } from "@/store/pagination";
 import { usePreviewNavigationStore } from "@/store/preview-navigation";
 import { useContentThemeStore, useSettingsPanelStore } from "@/store/theme";
+import { AutoSplitLayer } from "./auto-split-layer";
 import { ExportError } from "./export-error";
 import { ExportProgressBar } from "./export-progress-bar";
 import { ExportSuccessOverlay } from "./export-success-overlay";
 import { useContentOverflow } from "./hooks/use-content-overflow";
 import { useImageExport } from "./hooks/use-image-export";
 import { ImagePreview } from "./image-preview";
-import { MeshGrain } from "./mesh-grain";
 import { OverflowCutLine } from "./overflow-cut-line";
 import { PreviewActionBar } from "./preview-action-bar";
 import { PreviewPager } from "./preview-pager";
@@ -86,11 +90,39 @@ export const PreviewPanel = ({
     activeSegmentIndex,
     setActiveSegmentIndex,
     setSegmentCount,
+    setSegmentStarts,
     goNext,
     goPrev,
   } = usePreviewNavigationStore();
 
-  const segments = useMemo(() => parseMarkdownToImages(markdown), [markdown]);
+  const sourceSegments = useMemo(
+    () => parseMarkdownToImages(markdown),
+    [markdown]
+  );
+  const { autoSplit, setAutoSplit } = usePaginationStore();
+  const [splitPages, setSplitPages] = useState<Record<string, ImageSegment[]>>(
+    {}
+  );
+  const handleSplitPages = useCallback(
+    (segmentId: string, pages: ImageSegment[]) =>
+      setSplitPages((current) => ({ ...current, [segmentId]: pages })),
+    []
+  );
+  const enableAutoSplit = useCallback(() => setAutoSplit(true), [setAutoSplit]);
+
+  // segments 是最终的卡片序列：自动拆分开启时，一个源码分段可能续出多张
+  const { segments, segmentStarts } = useMemo(() => {
+    const starts: number[] = [];
+    const pages: ImageSegment[] = [];
+    for (const segment of sourceSegments) {
+      starts.push(pages.length);
+      // 图片页不量高：分段 id 会复用，不能沿用它还是文字页时留下的拆分结果
+      const split =
+        autoSplit && !segment.isImagePage ? splitPages[segment.id] : undefined;
+      pages.push(...(split ?? [segment]));
+    }
+    return { segmentStarts: starts, segments: pages };
+  }, [autoSplit, sourceSegments, splitPages]);
   const title = useMemo(
     () => sanitizeFilename(segments.find((s) => s.isCover)?.title ?? ""),
     [segments]
@@ -104,6 +136,10 @@ export const PreviewPanel = ({
   useEffect(() => {
     setSegmentCount(segments.length);
   }, [segments.length, setSegmentCount]);
+
+  useEffect(() => {
+    setSegmentStarts(segmentStarts);
+  }, [segmentStarts, setSegmentStarts]);
 
   const { currentThemeId, customThemes, overrides } = useContentThemeStore();
   // 卡片尺寸与圆角由渲染样式决定（比例与白边），预览不再写死
@@ -231,9 +267,7 @@ export const PreviewPanel = ({
   if (segments.length === 0) {
     return (
       <div className={cn("ds-frame h-full min-h-0", className)}>
-        <div className="ds-pane ds-mesh relative flex min-h-0 flex-col items-center justify-center overflow-hidden">
-          <div aria-hidden="true" className="ds-veil" />
-          <MeshGrain />
+        <div className="ds-pane ds-mat relative flex min-h-0 flex-col items-center justify-center overflow-hidden">
           <div
             className="ds-card-rim relative flex max-h-full max-w-full flex-col items-center justify-center gap-3 bg-white"
             style={{
@@ -253,9 +287,13 @@ export const PreviewPanel = ({
 
   return (
     <div className={cn("ds-frame h-full min-h-0", className)}>
-      <div className="ds-pane ds-mesh relative flex min-h-0 flex-col overflow-hidden">
-        <div aria-hidden="true" className="ds-veil" />
-        <MeshGrain />
+      <div className="ds-pane ds-mat relative flex min-h-0 flex-col overflow-hidden">
+        {autoSplit ? (
+          <AutoSplitLayer
+            onPages={handleSplitPages}
+            segments={sourceSegments}
+          />
+        ) : null}
 
         <ExportError message={exportError} />
         <ExportProgressBar
@@ -303,7 +341,10 @@ export const PreviewPanel = ({
                 ) : null}
                 {/* 裁切线贴着内容区底边，在缩放层内随卡片缩放，但是导出节点的兄弟，绝不进导出图 */}
                 {overflow.isOverflowing && !activeSegment?.isImagePage ? (
-                  <OverflowCutLine top={overflow.cutOffset} />
+                  <OverflowCutLine
+                    onAutoSplit={autoSplit ? undefined : enableAutoSplit}
+                    top={overflow.cutOffset}
+                  />
                 ) : null}
               </div>
             </div>
