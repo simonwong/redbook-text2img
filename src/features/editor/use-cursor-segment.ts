@@ -32,16 +32,14 @@ function computeSegmentIndex(doc: string, cursorPos: number): number {
 }
 
 export function useCursorSegment(cursor: CursorLine | null) {
-  const setActiveSegmentIndex = usePreviewNavigationStore(
-    (s) => s.setActiveSegmentIndex
-  );
+  const goToSegment = usePreviewNavigationStore((s) => s.goToSegment);
   useEffect(() => {
     if (!cursor?.userEvent) {
       return;
     }
     const timer = setTimeout(() => {
-      setActiveSegmentIndex(computeSegmentIndex(cursor.doc, cursor.cursorPos));
+      goToSegment(computeSegmentIndex(cursor.doc, cursor.cursorPos));
     }, 150);
     return () => clearTimeout(timer);
-  }, [cursor, setActiveSegmentIndex]);
+  }, [cursor, goToSegment]);
 }

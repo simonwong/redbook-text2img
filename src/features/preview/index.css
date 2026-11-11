@@ -1,8 +1,11 @@
-.img-preview ul {
+/* .img-measure 是自动拆分量高度用的隐藏副本，列表样式必须与预览一致 */
+.img-preview ul,
+.img-measure ul {
   padding: 0;
   list-style: none;
 }
-.img-preview ul li::before {
+.img-preview ul li::before,
+.img-measure ul li::before {
   margin-right: 0.5em;
   font-size: 1.2em;
   font-weight: bold;

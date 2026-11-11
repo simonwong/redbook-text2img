@@ -5,6 +5,11 @@ import ReactMarkdown, {
   defaultUrlTransform,
   type UrlTransform,
 } from "react-markdown";
+import {
+  autoSplit,
+  type BlockLines,
+  type PositionedNode,
+} from "@/lib/auto-split/auto-split";
 import { imageAssets } from "@/lib/image-assets/image-assets";
 import { imageReference } from "@/lib/image-reference";
 import type { ImageSegment } from "@/lib/markdown-parser";
@@ -28,14 +33,20 @@ const transformImageUrl: UrlTransform = (url, key, node) => {
 };
 
 interface ImagePreviewProps {
+  /** 自动拆分量高度时用：渲染时写入每个顶层内容块的源码行号 */
+  blockLinesRef?: React.RefObject<BlockLines[]>;
   contentRef?: React.Ref<HTMLDivElement>;
+  /** 仅用于量高度的隐藏副本：不带导出节点的类名，避免被当成真正的预览卡片 */
+  measureOnly?: boolean;
   pageNumber: { current: number; total: number };
   ref?: React.Ref<HTMLDivElement>;
   segment: ImageSegment;
 }
 
 export const ImagePreview: React.FC<ImagePreviewProps> = ({
+  blockLinesRef,
   contentRef,
+  measureOnly,
   pageNumber,
   ref,
   segment,
@@ -63,6 +74,19 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
       ),
     [currentThemeId, customThemes, overrides, page]
   );
+
+  const rehypePlugins = useMemo(
+    () =>
+      blockLinesRef
+        ? [
+            () => (tree: PositionedNode) => {
+              blockLinesRef.current = autoSplit.collectBlockLines(tree);
+            },
+          ]
+        : [],
+    [blockLinesRef]
+  );
+  const rootClassName = measureOnly ? "img-measure" : "img-preview";
 
   // 页码只在非封面页显示（封面为第 1 张，计数含封面）；署名在所有卡片显示
   const watermarkPage =
@@ -147,6 +171,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
               ),
               ul: ({ children }) => <ul style={styles.ul}>{children}</ul>,
             }}
+            rehypePlugins={rehypePlugins}
             urlTransform={transformImageUrl}
           >
             {segment.content}
@@ -174,14 +199,14 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
 
   if (styles.card.frame) {
     return (
-      <div className="img-preview" ref={ref} style={styles.card.frame}>
+      <div className={rootClassName} ref={ref} style={styles.card.frame}>
         <div style={styles.container}>{canvasBody}</div>
       </div>
     );
   }
 
   return (
-    <div className="img-preview" ref={ref} style={styles.container}>
+    <div className={rootClassName} ref={ref} style={styles.container}>
       {canvasBody}
     </div>
   );

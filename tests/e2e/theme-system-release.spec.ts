@@ -202,6 +202,13 @@ test("8 个真实主题缩略图使用同一配置链并暴露明确状态", asy
 
 test("8 个主题在超长正文上给出不进入导出卡片的分页提示", async ({ page }) => {
   await resetState(page, overflowingContent);
+  // 截断提示只在关闭自动拆分时出现（默认开启）
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "redbook-pagination",
+      JSON.stringify({ state: { autoSplit: false }, version: 0 })
+    );
+  });
   await page.setViewportSize({ height: 900, width: 1200 });
   await page.goto("/");
   await page.getByRole("button", { name: "第 2 张图片" }).click();

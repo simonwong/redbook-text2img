@@ -303,88 +303,23 @@
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.3);
   }
 
-  /* ---- 材质 5：mesh（带颗粒的彩色场，只在预览内面） ---- */
-  .ds-mesh {
+  /* ---- 材质 5：mat（点阵工作台，只在预览内面） ----
+     中性底色上一层细点阵，像一块裁切垫：预览区的主角是卡片，背景只交代「卡片放在台面上」 */
+  .ds-mat {
     position: relative;
-    background-color: #fcfcfd;
-    background-image:
-      radial-gradient(
-        ellipse 52% 46% at 10% 6%,
-        rgba(255, 176, 82, 0.85) 0%,
-        rgba(255, 176, 82, 0) 100%
-      ),
-      radial-gradient(
-        ellipse 40% 36% at 42% 42%,
-        rgba(255, 140, 160, 0.42) 0%,
-        rgba(255, 140, 160, 0) 100%
-      ),
-      radial-gradient(
-        ellipse 48% 42% at 92% 100%,
-        rgba(150, 140, 255, 0.72) 0%,
-        rgba(150, 140, 255, 0) 100%
-      ),
-      radial-gradient(
-        ellipse 38% 40% at 100% 55%,
-        rgba(255, 150, 175, 0.32) 0%,
-        rgba(255, 150, 175, 0) 100%
-      );
+    background-color: #f1f1f4;
+    background-image: radial-gradient(
+      rgba(17, 17, 20, 0.13) 1px,
+      transparent 1.2px
+    );
+    background-size: 18px 18px;
   }
-  .dark .ds-mesh {
+  .dark .ds-mat {
     background-color: #15151a;
-    background-image:
-      radial-gradient(
-        ellipse 52% 46% at 10% 6%,
-        rgba(255, 176, 82, 0.7) 0%,
-        rgba(255, 176, 82, 0) 100%
-      ),
-      radial-gradient(
-        ellipse 40% 36% at 42% 42%,
-        rgba(255, 140, 160, 0.36) 0%,
-        rgba(255, 140, 160, 0) 100%
-      ),
-      radial-gradient(
-        ellipse 48% 42% at 92% 100%,
-        rgba(150, 140, 255, 0.62) 0%,
-        rgba(150, 140, 255, 0) 100%
-      ),
-      radial-gradient(
-        ellipse 38% 40% at 100% 55%,
-        rgba(255, 150, 175, 0.28) 0%,
-        rgba(255, 150, 175, 0) 100%
-      );
-  }
-  /* mesh 之上、噪点之下的磨砂纱 */
-  .ds-veil {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.34) 0%,
-      rgba(255, 255, 255, 0.46) 100%
+    background-image: radial-gradient(
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1.2px
     );
-    -webkit-backdrop-filter: blur(30px) saturate(1.05);
-    backdrop-filter: blur(30px) saturate(1.05);
-  }
-  .dark .ds-veil {
-    background: linear-gradient(
-      180deg,
-      rgba(18, 18, 22, 0.12) 0%,
-      rgba(18, 18, 22, 0.26) 100%
-    );
-  }
-  .ds-grain {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    mix-blend-mode: multiply;
-    opacity: 0.07;
-  }
-  .dark .ds-grain {
-    mix-blend-mode: overlay;
-    opacity: 0.1;
   }
 
   /* ---- 材质 6：sheet（玻璃 + 2px 渐变边），只用于导出浮层 ---- */
@@ -415,25 +350,25 @@
       ),
       radial-gradient(
         ellipse 70% 90% at 12% 10%,
-        rgba(255, 176, 82, 0.95) 0%,
+        rgba(255, 176, 82, 0.55) 0%,
         rgba(255, 176, 82, 0) 100%
       ),
       radial-gradient(
         ellipse 60% 80% at 55% 60%,
-        rgba(255, 140, 160, 0.75) 0%,
+        rgba(255, 140, 160, 0.4) 0%,
         rgba(255, 140, 160, 0) 100%
       ),
       radial-gradient(
         ellipse 70% 90% at 95% 95%,
-        rgba(150, 140, 255, 0.9) 0%,
+        rgba(150, 140, 255, 0.5) 0%,
         rgba(150, 140, 255, 0) 100%
       );
     border: 1px solid rgba(255, 255, 255, 0.85);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.9),
-      inset 0 -6px 12px -8px rgba(150, 120, 255, 0.35),
+      inset 0 -6px 12px -8px rgba(150, 120, 255, 0.2),
       0 1px 2px rgba(17, 17, 20, 0.05),
-      0 8px 18px -10px rgba(200, 150, 255, 0.55);
+      0 8px 18px -10px rgba(120, 110, 160, 0.35);
     -webkit-backdrop-filter: blur(12px) saturate(1.3);
     backdrop-filter: blur(12px) saturate(1.3);
   }
@@ -506,8 +441,8 @@
     position: relative;
     box-shadow:
       0 0 0 1px rgba(17, 17, 20, 0.05),
-      0 2px 4px rgba(60, 40, 120, 0.06),
-      0 44px 80px -32px rgba(60, 40, 120, 0.55);
+      0 2px 4px rgba(17, 17, 20, 0.05),
+      0 36px 64px -32px rgba(17, 17, 20, 0.38);
   }
   .dark .ds-card-rim {
     box-shadow:
