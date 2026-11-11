@@ -1,4 +1,5 @@
-import { HomeIntro } from "@/components/home-intro";
+import { HomeGuideDialog } from "@/components/home-guide-dialog";
+import { HOME_INTRO_TITLE_ID, HomeIntro } from "@/components/home-intro";
 import { JsonLd } from "@/components/json-ld";
 import { Layout } from "@/features/layouts";
 import { webAppStructuredData, webSiteStructuredData } from "@/lib/seo-config";
@@ -10,7 +11,9 @@ const MarkdownToImageApp = () => (
     <div className="h-full max-h-full">
       <Layout />
     </div>
-    <HomeIntro />
+    <HomeGuideDialog labelledBy={HOME_INTRO_TITLE_ID}>
+      <HomeIntro />
+    </HomeGuideDialog>
   </>
 );
 
