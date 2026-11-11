@@ -12,12 +12,13 @@ import {
 export const siteConfig = {
   creator: "@simonwong",
   description:
-    "免费把文字转成小红书图片：粘贴文字或 Markdown，自动分页生成图文卡片，也适用于小绿书和公众号配图。8 个主题可选，批量导出高清 PNG，无需注册，内容只存在浏览器本地。",
+    "免费把文字转成小红书图片：粘贴文字或 Markdown，自动分页生成小红书图文卡片，一级标题自动排成封面，也适用于小绿书和公众号配图。8 个主题可选，批量导出高清 PNG，无需注册，内容只存在浏览器本地。",
   // 搜索引擎基本不读 keywords，只留与产品直接对应的检索词
   keywords: [
     "小红书图片生成器",
     "小红书文字转图片",
     "小红书图文生成",
+    "小红书封面生成器",
     "文字转图片",
     "Markdown转图片",
     "小红书笔记配图",
@@ -28,7 +29,7 @@ export const siteConfig = {
   name: "小红书图片生成器",
   ogImage: "/og.png",
   screenshot: "/screenshot-1.png",
-  title: "小红书图片生成器 - 文字转图片，免费在线制作图文",
+  title: "小红书图片生成器 - 文字转图片，免费生成图文与封面",
   url: "https://redbook-text2img.com",
 };
 
@@ -162,6 +163,7 @@ export const webAppStructuredData = {
     "Markdown 转图片",
     "8 个内置主题与自定义主题",
     "实时分页预览",
+    "一级标题自动生成封面",
     "正文插入图片",
     "单张与批量导出高清 PNG",
     "内容与图片仅保存在浏览器本地",
